@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Percy the Potty Pigeon: Routine at 25531</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-dark.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-wide.css" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-75RERFCHBG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-75RERFCHBG');
+</script>
+</head>
+<body class="Asm-c">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html"><img alt="logo" src="../images/logo.png" /></a></td>
+<td class="page-header">Routines</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="24553.html">24553</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#25531">Map</a></td>
+<td class="next">
+Next: <a href="25577.html">25577</a>
+</td>
+</tr>
+</table>
+<div class="description">25531: Routine at 63BB</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="5">
+<div class="details">
+<div class="paragraph">
+Used by the routine at <a href="25656.html">25656</a>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-2"><span id="25531"></span>25531</td>
+<td class="instruction">LD A,1</td>
+<td class="comment-1" rowspan="2">Write 1 to *<a href="24100.html#24481">24481</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25533"></span>25533</td>
+<td class="instruction">LD (24481),A</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="25536"></span>
+<div class="comments">
+<div class="paragraph">
+Open channel 2 (upper screen).
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25536"></span>25536</td>
+<td class="instruction">CALL 5633</td>
+<td class="comment-1" rowspan="1">Call <a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/1601.html">CHAN_OPEN</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25539"></span>25539</td>
+<td class="instruction">LD HL,25577</td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="25577.html">Messaging_Header</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25542"></span>25542</td>
+<td class="instruction">LD B,79</td>
+<td class="comment-1" rowspan="1">Set a counter in <span class="register">B</span> for the length of the string to print (79 characters).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25544"></span>25544</td>
+<td class="instruction">CALL <a href="26145.html">PrintString</a></td>
+<td class="comment-1" rowspan="1">Call <a href="26145.html">PrintString</a>.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="25547"></span>
+<div class="comments">
+<div class="paragraph">
+This entry point is used by the routine at <a href="25656.html">25656</a>.
+</div>
+<div class="paragraph">
+Use the Memory Refresh Register as a pointer offset into memory to source pseudo-random values.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-2"><span id="25547"></span>25547</td>
+<td class="instruction">LD A,R</td>
+<td class="comment-1" rowspan="2"><span class="register">E</span>=the contents of the Memory Refresh Register.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25549"></span>25549</td>
+<td class="instruction">LD E,A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25550"></span>25550</td>
+<td class="instruction">LD D,0</td>
+<td class="comment-1" rowspan="1"><span class="register">D</span>=0.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25552"></span>25552</td>
+<td class="instruction">LD B,32</td>
+<td class="comment-1" rowspan="1">Set a counter in <span class="register">B</span> for 32 attribute cells.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="25554"></span>
+<div class="comments">
+<div class="paragraph">
+Point to the bottom two rows of the attribute buffer.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25554"></span>25554</td>
+<td class="instruction">LD HL,23232</td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>=23232 (attribute buffer location).</td>
+</tr>
+<tr>
+<td class="asm-label">Colour_Loop</td>
+<td class="address-2"><span id="25557"></span>25557</td>
+<td class="instruction">LD A,(DE)</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">DE</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25558"></span>25558</td>
+<td class="instruction">AND %00000111</td>
+<td class="comment-1" rowspan="1">Keep only bits 0-2.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25560"></span>25560</td>
+<td class="instruction">INC DE</td>
+<td class="comment-1" rowspan="1">Increment <span class="register">DE</span> by one.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25561"></span>25561</td>
+<td class="instruction">CP 3</td>
+<td class="comment-1" rowspan="2">Jump to <a href="25531.html#25557">Colour_Loop</a> if <span class="register">A</span> is less than 3.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25563"></span>25563</td>
+<td class="instruction">JR C,<a href="25531.html#25557">Colour_Loop</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25565"></span>25565</td>
+<td class="instruction">PUSH DE</td>
+<td class="comment-1" rowspan="1">Stash <span class="register">DE</span> on the stack.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25566"></span>25566</td>
+<td class="instruction">LD E,A</td>
+<td class="comment-1" rowspan="1"><span class="register">E</span>=<span class="register">A</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25567"></span>25567</td>
+<td class="instruction">LD A,(HL)</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25568"></span>25568</td>
+<td class="instruction">AND %11110111</td>
+<td class="comment-1" rowspan="1">Keep only bits 0-2, 4-7.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25570"></span>25570</td>
+<td class="instruction">OR E</td>
+<td class="comment-1" rowspan="1">Set the bits from <span class="register">E</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25571"></span>25571</td>
+<td class="instruction">LD (HL),E</td>
+<td class="comment-1" rowspan="1">Write <span class="register">E</span> to *<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25572"></span>25572</td>
+<td class="instruction">POP DE</td>
+<td class="comment-1" rowspan="1">Restore <span class="register">DE</span> from the stack.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25573"></span>25573</td>
+<td class="instruction">INC HL</td>
+<td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25574"></span>25574</td>
+<td class="instruction">DJNZ <a href="25531.html#25557">Colour_Loop</a></td>
+<td class="comment-1" rowspan="1">Decrease counter by one and loop back to <a href="25531.html#25557">Colour_Loop</a> until counter is zero.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25576"></span>25576</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="24553.html">24553</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#25531">Map</a></td>
+<td class="next">
+Next: <a href="25577.html">25577</a>
+</td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">&copy; 1984 Gremlin Graphics Software Ltd &copy; 2025 ArcadeGeek LTD.</div>
+<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
+<div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
+<div><a href="../../asm/63BB.html">Switch to hexadecimal</a>.</div>
+</footer>
+</body>
+</html>

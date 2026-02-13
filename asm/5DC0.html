@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Percy the Potty Pigeon: Routine at 5DC0</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-dark.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-wide.css" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-75RERFCHBG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-75RERFCHBG');
+</script>
+</head>
+<body class="Asm-c">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html"><img alt="logo" src="../images/logo.png" /></a></td>
+<td class="page-header">Routines</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="5BFE.html">5BFE</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#5dc0">Map</a></td>
+<td class="next">
+Next: <a href="5E24.html">5E24</a>
+</td>
+</tr>
+</table>
+<div class="description">5DC0: Game Initialise</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="5">
+<div class="details">
+<div class="paragraph">
+Used by the routine at <a href="C1DD.html">GameEntryPoint</a>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Game_Initialise</td>
+<td class="address-2"><span id="5dc0"></span>5DC0</td>
+<td class="instruction">DI</td>
+<td class="comment-1" rowspan="1">Disable interrupts.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5dc1"></span>5DC1</td>
+<td class="instruction">XOR A</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=00.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5dc2"></span>5DC2</td>
+<td class="instruction">LD SP,$5BFE</td>
+<td class="comment-1" rowspan="1"><span class="register">SP</span>=<a href="5BFE.html">5BFE</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5dc5"></span>5DC5</td>
+<td class="instruction">LD ($5FBC),A</td>
+<td class="comment-1" rowspan="2">Write 00 to; <ul class="">
+<li>*<a href="5FBC.html">5FBC</a></li>
+<li>*<a href="5FAA.html">5FAA</a></li>
+</ul></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5dc8"></span>5DC8</td>
+<td class="instruction">LD ($5FAA),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5dcb"></span>5DCB</td>
+<td class="instruction">OUT ($FE),A</td>
+<td class="comment-1" rowspan="1">Set border to: 
+
+
+BLACK.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="5dcd"></span>
+<div class="comments">
+<div class="paragraph">
+Open channel 02 (upper screen) via <a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/1601.html">CHAN_OPEN</a>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5dcd"></span>5DCD</td>
+<td class="instruction">CALL $1601</td>
+<td class="comment-1" rowspan="1">Call <a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/1601.html">CHAN_OPEN</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5dd0"></span>5DD0</td>
+<td class="instruction">LD HL,$5AFF</td>
+<td class="comment-1" rowspan="5">Clear the screen and attribute buffers by filling 1AFF bytes from 5AFE downwards with 00.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5dd3"></span>5DD3</td>
+<td class="instruction">LD DE,$5AFE</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5dd6"></span>5DD6</td>
+<td class="instruction">LD (HL),$00</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5dd8"></span>5DD8</td>
+<td class="instruction">LD BC,$1AFF</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5ddb"></span>5DDB</td>
+<td class="instruction">LDDR</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="5ddd"></span>
+<div class="comments">
+<div class="paragraph">
+Sets the border colour to use when calling <a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/0D6B.html">CLS</a>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5ddd"></span>5DDD</td>
+<td class="instruction">LD A,$0F</td>
+<td class="comment-1" rowspan="2">Write 
+
+
+WHITE to *<a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/5C48.html">BORDCR</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5ddf"></span>5DDF</td>
+<td class="instruction">LD ($5C48),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5de2"></span>5DE2</td>
+<td class="instruction">LD IX,$DAC0</td>
+<td class="comment-1" rowspan="1"><span class="register">IX</span>=<a href="C1DD.html#dac0">DAC0</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5de6"></span>5DE6</td>
+<td class="instruction">LD (IX+$23),$00</td>
+<td class="comment-1" rowspan="1">Write 00 to *<span class="register">IX</span>+23.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5dea"></span>5DEA</td>
+<td class="instruction">LD (IX+$02),$07</td>
+<td class="comment-1" rowspan="1">Write 07 to *<span class="register">IX</span>+02.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5dee"></span>5DEE</td>
+<td class="instruction">LD (IX+$22),$FF</td>
+<td class="comment-1" rowspan="1">Write FF to *<span class="register">IX</span>+22.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5df2"></span>5DF2</td>
+<td class="instruction">CALL <a href="653D.html">$653D</a></td>
+<td class="comment-1" rowspan="1">Call <a href="653D.html">653D</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5df5"></span>5DF5</td>
+<td class="instruction">LD A,$FF</td>
+<td class="comment-1" rowspan="2">Write FF to *<a href="5FBC.html">5FBC</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5df7"></span>5DF7</td>
+<td class="instruction">LD ($5FBC),A</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="5dfa"></span>
+<div class="comments">
+<div class="paragraph">
+Main title screen input loop.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">TitleScreen_InputLoop</td>
+<td class="address-2"><span id="5dfa"></span>5DFA</td>
+<td class="instruction">CALL <a href="5FE9.html">$5FE9</a></td>
+<td class="comment-1" rowspan="1">Call <a href="5FE9.html">5FE9</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5dfd"></span>5DFD</td>
+<td class="instruction">LD A,$FD</td>
+<td class="comment-1" rowspan="2">Read from the keyboard; <table class="default">
+<tr>
+<th colspan="1" rowspan="2">Port Number</th>
+<th colspan="5" rowspan="1">Bit</th>
+</tr>
+<tr>
+<th colspan="1" rowspan="1">0</th>
+<th colspan="1" rowspan="1">1</th>
+<th colspan="1" rowspan="1">2</th>
+<th colspan="1" rowspan="1">3</th>
+<th colspan="1" rowspan="1">4</th>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">FD</td>
+<td class="centre" colspan="1" rowspan="1">A</td>
+<td class="centre" colspan="1" rowspan="1">S</td>
+<td class="centre" colspan="1" rowspan="1">D</td>
+<td class="centre" colspan="1" rowspan="1">F</td>
+<td class="centre" colspan="1" rowspan="1">G</td>
+</tr>
+</table></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5dff"></span>5DFF</td>
+<td class="instruction">IN A,($FE)</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5e01"></span>5E01</td>
+<td class="instruction">AND %00000010</td>
+<td class="comment-1" rowspan="1">Keep only the bit which relates to the "S" key (bit 1).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5e03"></span>5E03</td>
+<td class="instruction">CALL Z,<a href="6966.html">TitleScreen_BorderEffect</a></td>
+<td class="comment-1" rowspan="1">Call <a href="6966.html">TitleScreen_BorderEffect</a> if the "S" key was pressed.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5e06"></span>5E06</td>
+<td class="instruction">CALL <a href="6992.html">$6992</a></td>
+<td class="comment-1" rowspan="1">Call <a href="6992.html">6992</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5e09"></span>5E09</td>
+<td class="instruction">NOP</td>
+<td class="comment-1" rowspan="2">No operation.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5e0a"></span>5E0A</td>
+<td class="instruction">NOP</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5e0b"></span>5E0B</td>
+<td class="instruction">XOR A</td>
+<td class="comment-1" rowspan="3">Write 00 to; <ul class="">
+<li>*<a href="5FBB.html">5FBB</a></li>
+<li>*<a href="5FBD.html">5FBD</a></li>
+</ul></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5e0c"></span>5E0C</td>
+<td class="instruction">LD ($5FBB),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5e0f"></span>5E0F</td>
+<td class="instruction">LD ($5FBD),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5e12"></span>5E12</td>
+<td class="instruction">LD BC,$7FFE</td>
+<td class="comment-1" rowspan="2">Read from the keyboard; <table class="default">
+<tr>
+<th colspan="1" rowspan="2">Port Number</th>
+<th colspan="5" rowspan="1">Bit</th>
+</tr>
+<tr>
+<th colspan="1" rowspan="1">0</th>
+<th colspan="1" rowspan="1">1</th>
+<th colspan="1" rowspan="1">2</th>
+<th colspan="1" rowspan="1">3</th>
+<th colspan="1" rowspan="1">4</th>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">7F</td>
+<td class="centre" colspan="1" rowspan="1">SPACE</td>
+<td class="centre" colspan="1" rowspan="1">FULL-STOP</td>
+<td class="centre" colspan="1" rowspan="1">M</td>
+<td class="centre" colspan="1" rowspan="1">N</td>
+<td class="centre" colspan="1" rowspan="1">B</td>
+</tr>
+</table></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5e15"></span>5E15</td>
+<td class="instruction">IN A,(C)</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5e17"></span>5E17</td>
+<td class="instruction">RRA</td>
+<td class="comment-1" rowspan="2">Jump back to <a href="5DC0.html#5dfa">TitleScreen_InputLoop</a> if "SPACE" was not pressed.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5e18"></span>5E18</td>
+<td class="instruction">JR C,<a href="5DC0.html#5dfa">TitleScreen_InputLoop</a></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="5e1a"></span>
+<div class="comments">
+<div class="paragraph">
+The "SPACE" key has been pressed.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5e1a"></span>5E1A</td>
+<td class="instruction">LD B,$FE</td>
+<td class="comment-1" rowspan="2">Read from the keyboard; <table class="default">
+<tr>
+<th colspan="1" rowspan="2">Port Number</th>
+<th colspan="5" rowspan="1">Bit</th>
+</tr>
+<tr>
+<th colspan="1" rowspan="1">0</th>
+<th colspan="1" rowspan="1">1</th>
+<th colspan="1" rowspan="1">2</th>
+<th colspan="1" rowspan="1">3</th>
+<th colspan="1" rowspan="1">4</th>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">FE</td>
+<td class="centre" colspan="1" rowspan="1">SHIFT</td>
+<td class="centre" colspan="1" rowspan="1">Z</td>
+<td class="centre" colspan="1" rowspan="1">X</td>
+<td class="centre" colspan="1" rowspan="1">C</td>
+<td class="centre" colspan="1" rowspan="1">V</td>
+</tr>
+</table></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5e1c"></span>5E1C</td>
+<td class="instruction">IN A,(C)</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5e1e"></span>5E1E</td>
+<td class="instruction">RRA</td>
+<td class="comment-1" rowspan="2">Jump back to <a href="5DC0.html#5dfa">TitleScreen_InputLoop</a> if "CAPS SHIFT" was not pressed.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5e1f"></span>5E1F</td>
+<td class="instruction">JR C,<a href="5DC0.html#5dfa">TitleScreen_InputLoop</a></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="5e21"></span>
+<div class="comments">
+<div class="paragraph">
+Both "SPACE" and "CAPS SHIFT" were held down, so reset the game.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5e21"></span>5E21</td>
+<td class="instruction">EI</td>
+<td class="comment-1" rowspan="1">Enable interrupts.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5e22"></span>5E22</td>
+<td class="instruction">JR <a href="5DC0.html#5dc0">Game_Initialise</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="5DC0.html">Game_Initialise</a>.</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="5BFE.html">5BFE</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#5dc0">Map</a></td>
+<td class="next">
+Next: <a href="5E24.html">5E24</a>
+</td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">&copy; 1984 Gremlin Graphics Software Ltd &copy; 2025 ArcadeGeek LTD.</div>
+<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
+<div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
+<div><a href="../dec/asm/24000.html">Switch to decimal</a>.</div>
+</footer>
+</body>
+</html>

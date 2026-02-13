@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Percy the Potty Pigeon: Routine at 25948</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-dark.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-wide.css" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-75RERFCHBG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-75RERFCHBG');
+</script>
+</head>
+<body class="Asm-c">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html"><img alt="logo" src="../images/logo.png" /></a></td>
+<td class="page-header">Routines</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="25917.html">25917</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#25948">Map</a></td>
+<td class="next">
+Next: <a href="25985.html">25985</a>
+</td>
+</tr>
+</table>
+<div class="description">25948: Routine at 655C</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="5">
+<div class="details">
+<div class="paragraph">
+Used by the routine at <a href="25656.html">25656</a>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="address-2"><span id="25948"></span>25948</td>
+<td class="instruction">LD HL,20720</td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>=20720 (screen buffer location).</td>
+</tr>
+<tr>
+<td class="address-1"><span id="25951"></span>25951</td>
+<td class="instruction">CALL <a href="25985.html">PrintCharacter</a></td>
+<td class="comment-1" rowspan="1">Call <a href="25985.html">PrintCharacter</a>.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="25954"></span>
+<div class="comments">
+<div class="paragraph">
+This entry point is used by the routines at <a href="26011.html">26011</a> and <a href="26808.html">26808</a>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="address-2"><span id="25954"></span>25954</td>
+<td class="instruction">LD A,6</td>
+<td class="comment-1" rowspan="2">Write 6 to *<a href="24517.html">24517</a>.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="25956"></span>25956</td>
+<td class="instruction">LD (24517),A</td>
+</tr>
+<tr>
+<td class="address-1"><span id="25959"></span>25959</td>
+<td class="instruction">CALL <a href="24100.html">24100</a></td>
+<td class="comment-1" rowspan="1">Call <a href="24100.html">24100</a>.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="25962"></span>25962</td>
+<td class="instruction">LD B,96</td>
+<td class="comment-1" rowspan="1"><span class="register">B</span>=96.</td>
+</tr>
+<tr>
+<td class="address-2"><span id="25964"></span>25964</td>
+<td class="instruction">CALL <a href="25656.html#25804">25804</a></td>
+<td class="comment-1" rowspan="1">Call <a href="25656.html#25804">25804</a>.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="25967"></span>25967</td>
+<td class="instruction">DJNZ <a href="25948.html#25964">25964</a></td>
+<td class="comment-1" rowspan="1">Decrease counter by one and loop back to <a href="25948.html#25964">25964</a> until counter is zero.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="25969"></span>25969</td>
+<td class="instruction">LD HL,56000</td>
+<td class="comment-1" rowspan="2">Write 56 to *<a href="49629.html#56000">56000</a>.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="25972"></span>25972</td>
+<td class="instruction">LD (HL),56</td>
+</tr>
+<tr>
+<td class="address-1"><span id="25974"></span>25974</td>
+<td class="instruction">INC HL</td>
+<td class="comment-1" rowspan="2">Write 158 to *<a href="49629.html#56001">56001</a>.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="25975"></span>25975</td>
+<td class="instruction">LD (HL),158</td>
+</tr>
+<tr>
+<td class="address-1"><span id="25977"></span>25977</td>
+<td class="instruction">INC HL</td>
+<td class="comment-1" rowspan="2">Write 7 to *<a href="49629.html#56002">56002</a>.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="25978"></span>25978</td>
+<td class="instruction">LD (HL),7</td>
+</tr>
+<tr>
+<td class="address-1"><span id="25980"></span>25980</td>
+<td class="instruction">XOR A</td>
+<td class="comment-1" rowspan="2">Write 0 to *<a href="24100.html#24487">24487</a>.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="25981"></span>25981</td>
+<td class="instruction">LD (24487),A</td>
+</tr>
+<tr>
+<td class="address-1"><span id="25984"></span>25984</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="25917.html">25917</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#25948">Map</a></td>
+<td class="next">
+Next: <a href="25985.html">25985</a>
+</td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">&copy; 1984 Gremlin Graphics Software Ltd &copy; 2025 ArcadeGeek LTD.</div>
+<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
+<div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
+<div><a href="../../asm/655C.html">Switch to hexadecimal</a>.</div>
+</footer>
+</body>
+</html>

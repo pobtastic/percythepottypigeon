@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Percy the Potty Pigeon: Routine at 659B</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-dark.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-wide.css" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-75RERFCHBG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-75RERFCHBG');
+</script>
+</head>
+<body class="Asm-c">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html"><img alt="logo" src="../images/logo.png" /></a></td>
+<td class="page-header">Routines</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="6581.html">6581</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#659b">Map</a></td>
+<td class="next">
+Next: <a href="65EA.html">65EA</a>
+</td>
+</tr>
+</table>
+<div class="description">659B: Routine at 659B</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="5">
+<div class="details">
+<div class="paragraph">
+Used by the routine at <a href="653D.html">653D</a>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="address-2"><span id="659b"></span>659B</td>
+<td class="instruction">LD A,$0C</td>
+<td class="comment-1" rowspan="3">Write 0C to; <ul class="">
+<li>*<a href="5FC5.html">5FC5</a></li>
+<li>*<a href="5E24.html#5fa1">5FA1</a></li>
+</ul></td>
+</tr>
+<tr>
+<td class="address-1"><span id="659d"></span>659D</td>
+<td class="instruction">LD ($5FC5),A</td>
+</tr>
+<tr>
+<td class="address-1"><span id="65a0"></span>65A0</td>
+<td class="instruction">LD ($5FA1),A</td>
+</tr>
+<tr>
+<td class="address-1"><span id="65a3"></span>65A3</td>
+<td class="instruction">CALL <a href="5E24.html">$5E24</a></td>
+<td class="comment-1" rowspan="1">Call <a href="5E24.html">5E24</a>.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="65a6"></span>65A6</td>
+<td class="instruction">XOR A</td>
+<td class="comment-1" rowspan="2">Write 00 to *<a href="5E24.html#5fa1">5FA1</a>.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="65a7"></span>65A7</td>
+<td class="instruction">LD ($5FA1),A</td>
+</tr>
+<tr>
+<td class="address-1"><span id="65aa"></span>65AA</td>
+<td class="instruction">LD HL,$4896</td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>=4896 (screen buffer location).</td>
+</tr>
+<tr>
+<td class="address-1"><span id="65ad"></span>65AD</td>
+<td class="instruction">LD B,$04</td>
+<td class="comment-1" rowspan="1">Set a counter in <span class="register">B</span> for 04 rows of text data.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="65af"></span>65AF</td>
+<td class="instruction">LD DE,$660D</td>
+<td class="comment-1" rowspan="1">Point <span class="register">DE</span> to <a href="660D.html">Messaging_PressEnterToStart</a>.</td>
+</tr>
+<tr>
+<td class="address-2"><span id="65b2"></span>65B2</td>
+<td class="instruction">PUSH BC</td>
+<td class="comment-1" rowspan="2">Stash the row counter and screen buffer pointer on the stack.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="65b3"></span>65B3</td>
+<td class="instruction">PUSH HL</td>
+</tr>
+<tr>
+<td class="address-1"><span id="65b4"></span>65B4</td>
+<td class="instruction">LD B,$05</td>
+<td class="comment-1" rowspan="1">Set a counter in <span class="register">B</span> for 05 characters to print in each row.</td>
+</tr>
+<tr>
+<td class="address-2"><span id="65b6"></span>65B6</td>
+<td class="instruction">PUSH HL</td>
+<td class="comment-1" rowspan="3">Stash the screen buffer pointer, message pointer and the character counter on the stack.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="65b7"></span>65B7</td>
+<td class="instruction">PUSH DE</td>
+</tr>
+<tr>
+<td class="address-1"><span id="65b8"></span>65B8</td>
+<td class="instruction">PUSH BC</td>
+</tr>
+<tr>
+<td class="address-1"><span id="65b9"></span>65B9</td>
+<td class="instruction">LD A,(DE)</td>
+<td class="comment-1" rowspan="1">Fetch a character from the message string and store it in <span class="register">A</span>.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="65ba"></span>65BA</td>
+<td class="instruction">CALL <a href="6581.html">PrintCharacter</a></td>
+<td class="comment-1" rowspan="1">Call <a href="6581.html">PrintCharacter</a>.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="65bd"></span>65BD</td>
+<td class="instruction">POP BC</td>
+<td class="comment-1" rowspan="3">Restore the character counter, message pointer and the screen buffer pointer from the stack.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="65be"></span>65BE</td>
+<td class="instruction">POP DE</td>
+</tr>
+<tr>
+<td class="address-1"><span id="65bf"></span>65BF</td>
+<td class="instruction">POP HL</td>
+</tr>
+<tr>
+<td class="address-1"><span id="65c0"></span>65C0</td>
+<td class="instruction">INC L</td>
+<td class="comment-1" rowspan="1">Increment <span class="register">L</span> by one.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="65c1"></span>65C1</td>
+<td class="instruction">INC DE</td>
+<td class="comment-1" rowspan="1">Increment <span class="register">DE</span> by one.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="65c2"></span>65C2</td>
+<td class="instruction">DJNZ <a href="659B.html#65b6">$65B6</a></td>
+<td class="comment-1" rowspan="1">Decrease counter by one and loop back to <a href="659B.html#65b6">65B6</a> until counter is zero.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="65c4"></span>65C4</td>
+<td class="instruction">POP HL</td>
+<td class="comment-1" rowspan="1">Restore <span class="register">HL</span> from the stack.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="65c5"></span>65C5</td>
+<td class="instruction">LD BC,$0020</td>
+<td class="comment-1" rowspan="2"><span class="register">HL</span>+=0020.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="65c8"></span>65C8</td>
+<td class="instruction">ADD HL,BC</td>
+</tr>
+<tr>
+<td class="address-1"><span id="65c9"></span>65C9</td>
+<td class="instruction">POP BC</td>
+<td class="comment-1" rowspan="1">Restore <span class="register">BC</span> from the stack.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="65ca"></span>65CA</td>
+<td class="instruction">DJNZ <a href="659B.html#65b2">$65B2</a></td>
+<td class="comment-1" rowspan="1">Decrease counter by one and loop back to <a href="659B.html#65b2">65B2</a> until counter is zero.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="65cc"></span>65CC</td>
+<td class="instruction">LD B,$3D</td>
+<td class="comment-1" rowspan="1"><span class="register">B</span>=3D.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="65ce"></span>65CE</td>
+<td class="instruction">CALL <a href="FC1B.html">$FC1B</a></td>
+<td class="comment-1" rowspan="1">Call <a href="FC1B.html">FC1B</a>.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="65d1"></span>65D1</td>
+<td class="instruction">LD BC,$BFFE</td>
+<td class="comment-1" rowspan="2">Read from the keyboard; <table class="default">
+<tr>
+<th colspan="1" rowspan="2">Port Number</th>
+<th colspan="5" rowspan="1">Bit</th>
+</tr>
+<tr>
+<th colspan="1" rowspan="1">0</th>
+<th colspan="1" rowspan="1">1</th>
+<th colspan="1" rowspan="1">2</th>
+<th colspan="1" rowspan="1">3</th>
+<th colspan="1" rowspan="1">4</th>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">BF</td>
+<td class="centre" colspan="1" rowspan="1">ENTER</td>
+<td class="centre" colspan="1" rowspan="1">L</td>
+<td class="centre" colspan="1" rowspan="1">K</td>
+<td class="centre" colspan="1" rowspan="1">J</td>
+<td class="centre" colspan="1" rowspan="1">H</td>
+</tr>
+</table></td>
+</tr>
+<tr>
+<td class="address-2"><span id="65d4"></span>65D4</td>
+<td class="instruction">IN A,(C)</td>
+</tr>
+<tr>
+<td class="address-1"><span id="65d6"></span>65D6</td>
+<td class="instruction">RRCA</td>
+<td class="comment-1" rowspan="2">Jump to <a href="659B.html#65d4">65D4</a> if <span class="register">DE</span> is less than 3D.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="65d7"></span>65D7</td>
+<td class="instruction">JR C,<a href="659B.html#65d4">$65D4</a></td>
+</tr>
+<tr>
+<td class="address-1"><span id="65d9"></span>65D9</td>
+<td class="instruction">LD A,$01</td>
+<td class="comment-1" rowspan="2">Set the border to 
+
+
+BLUE.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="65db"></span>65DB</td>
+<td class="instruction">OUT ($FE),A</td>
+</tr>
+<tr>
+<td class="address-1"><span id="65dd"></span>65DD</td>
+<td class="instruction">LD B,$0A</td>
+<td class="comment-1" rowspan="1"><span class="register">B</span>=0A.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="65df"></span>65DF</td>
+<td class="instruction">LD HL,$5FA1</td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="5E24.html#5fa1">5FA1</a>.</td>
+</tr>
+<tr>
+<td class="address-2"><span id="65e2"></span>65E2</td>
+<td class="instruction">LD (HL),$00</td>
+<td class="comment-1" rowspan="1">Write 00 to *<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="65e4"></span>65E4</td>
+<td class="instruction">INC HL</td>
+<td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="65e5"></span>65E5</td>
+<td class="instruction">DJNZ <a href="659B.html#65e2">$65E2</a></td>
+<td class="comment-1" rowspan="1">Decrease counter by one and loop back to <a href="659B.html#65e2">65E2</a> until counter is zero.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="65e7"></span>65E7</td>
+<td class="instruction">JP <a href="655C.html#6562">$6562</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="655C.html#6562">6562</a>.</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="6581.html">6581</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#659b">Map</a></td>
+<td class="next">
+Next: <a href="65EA.html">65EA</a>
+</td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">&copy; 1984 Gremlin Graphics Software Ltd &copy; 2025 ArcadeGeek LTD.</div>
+<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
+<div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
+<div><a href="../dec/asm/26011.html">Switch to decimal</a>.</div>
+</footer>
+</body>
+</html>

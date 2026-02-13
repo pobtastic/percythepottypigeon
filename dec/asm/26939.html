@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Percy the Potty Pigeon: Routine at 26939</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-dark.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-wide.css" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-75RERFCHBG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-75RERFCHBG');
+</script>
+</head>
+<body class="Asm-c">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html"><img alt="logo" src="../images/logo.png" /></a></td>
+<td class="page-header">Routines</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="26871.html">26871</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#26939">Map</a></td>
+<td class="next">
+Next: <a href="26977.html">26977</a>
+</td>
+</tr>
+</table>
+<div class="description">26939: Routine at 693B</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="5">
+<div class="details">
+<div class="paragraph">
+Used by the routine at <a href="26808.html">26808</a>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="address-2"><span id="26939"></span>26939</td>
+<td class="instruction">PUSH BC</td>
+<td class="comment-1" rowspan="3">Stash <span class="register">BC</span>, <span class="register">HL</span> and <span class="register">DE</span> on the stack.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="26940"></span>26940</td>
+<td class="instruction">PUSH HL</td>
+</tr>
+<tr>
+<td class="address-1"><span id="26941"></span>26941</td>
+<td class="instruction">PUSH DE</td>
+</tr>
+<tr>
+<td class="address-1"><span id="26942"></span>26942</td>
+<td class="instruction">LD A,25</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=25.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="26944"></span>26944</td>
+<td class="instruction">CALL <a href="26155.html#26546">26546</a></td>
+<td class="comment-1" rowspan="1">Call <a href="26155.html#26546">26546</a>.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="26947"></span>26947</td>
+<td class="instruction">LD A,R</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=the contents of the Memory Refresh Register.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="26949"></span>26949</td>
+<td class="instruction">LD L,A</td>
+<td class="comment-1" rowspan="1"><span class="register">L</span>=<span class="register">A</span>.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="26950"></span>26950</td>
+<td class="instruction">LD H,0</td>
+<td class="comment-1" rowspan="1"><span class="register">H</span>=0.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="26952"></span>26952</td>
+<td class="instruction">LD A,(HL)</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="26953"></span>26953</td>
+<td class="instruction">LD (24500),A</td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<a href="24499.html#24500">24500</a>.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="26956"></span>26956</td>
+<td class="instruction">AND %00111000</td>
+<td class="comment-1" rowspan="1">Keep only bits 3-5.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="26958"></span>26958</td>
+<td class="instruction">LD (23624),A</td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/5C48.html">BORDCR</a>.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="26961"></span>26961</td>
+<td class="instruction">POP DE</td>
+<td class="comment-1" rowspan="2">Restore <span class="register">DE</span> and <span class="register">HL</span> from the stack.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="26962"></span>26962</td>
+<td class="instruction">POP HL</td>
+</tr>
+<tr>
+<td class="address-1"><span id="26963"></span>26963</td>
+<td class="instruction">PUSH HL</td>
+<td class="comment-1" rowspan="2">Stash <span class="register">HL</span> and <span class="register">DE</span> on the stack.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="26964"></span>26964</td>
+<td class="instruction">PUSH DE</td>
+</tr>
+<tr>
+<td class="address-1"><span id="26965"></span>26965</td>
+<td class="instruction">CALL 949</td>
+<td class="comment-1" rowspan="1">Call <a href="https://skoolkid.github.io/rom/asm/03B5.html">BEEP</a>.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="26968"></span>26968</td>
+<td class="instruction">POP DE</td>
+<td class="comment-1" rowspan="2">Restore <span class="register">DE</span> and <span class="register">HL</span> from the stack.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="26969"></span>26969</td>
+<td class="instruction">POP HL</td>
+</tr>
+<tr>
+<td class="address-1"><span id="26970"></span>26970</td>
+<td class="instruction">LD BC,15</td>
+<td class="comment-1" rowspan="1"><span class="register">BC</span>=0015.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="26973"></span>26973</td>
+<td class="instruction">SBC HL,DE</td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>-=<span class="register">DE</span> (with carry).</td>
+</tr>
+<tr>
+<td class="address-1"><span id="26975"></span>26975</td>
+<td class="instruction">POP BC</td>
+<td class="comment-1" rowspan="1">Restore <span class="register">BC</span> from the stack.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="26976"></span>26976</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="26871.html">26871</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#26939">Map</a></td>
+<td class="next">
+Next: <a href="26977.html">26977</a>
+</td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">&copy; 1984 Gremlin Graphics Software Ltd &copy; 2025 ArcadeGeek LTD.</div>
+<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
+<div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
+<div><a href="../../asm/693B.html">Switch to hexadecimal</a>.</div>
+</footer>
+</body>
+</html>

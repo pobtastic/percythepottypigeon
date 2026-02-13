@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Percy the Potty Pigeon: Routine at 25985</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-dark.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-wide.css" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-75RERFCHBG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-75RERFCHBG');
+</script>
+</head>
+<body class="Asm-c">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html"><img alt="logo" src="../images/logo.png" /></a></td>
+<td class="page-header">Routines</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="25948.html">25948</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#25985">Map</a></td>
+<td class="next">
+Next: <a href="26011.html">26011</a>
+</td>
+</tr>
+</table>
+<div class="description">25985: Print Character</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="5">
+<div class="details">
+<div class="paragraph">
+Used by the routines at <a href="25656.html">25656</a>, <a href="25948.html">25948</a>, <a href="26011.html">26011</a>, <a href="26155.html">26155</a>, <a href="26871.html">26871</a> and <a href="64539.html">64539</a>.
+</div>
+</div>
+<table class="input">
+<tr class="asm-input-header">
+<th colspan="2">Input</th>
+</tr>
+<tr>
+<td class="register">A</td>
+<td class="register-desc">ASCII character</td>
+</tr>
+<tr>
+<td class="register">HL</td>
+<td class="register-desc">Target screen buffer location</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td class="asm-label">PrintCharacter</td>
+<td class="address-2"><span id="25985"></span>25985</td>
+<td class="instruction">PUSH HL</td>
+<td class="comment-1" rowspan="1">Stash the screen buffer pointer on the stack.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25986"></span>25986</td>
+<td class="instruction">LD DE,(23606)</td>
+<td class="comment-1" rowspan="1"><span class="register">DE</span>=*<a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/5C36.html">CHARS</a>.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="25990"></span>
+<div class="comments">
+<div class="paragraph">
+Font data starts at character 32 (ASCII "SPACE"), so this allows us to reference the data from a zero index.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25990"></span>25990</td>
+<td class="instruction">SUB 32</td>
+<td class="comment-1" rowspan="1">Subtract 32 from the ASCII character input.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="25992"></span>
+<div class="comments">
+<div class="paragraph">
+<a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/5C36.html">CHARS</a> points 256 bytes before the actual font data, so incrementing <span class="register">D</span> adds 256 to compensate.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25992"></span>25992</td>
+<td class="instruction">INC D</td>
+<td class="comment-1" rowspan="1">Increment <span class="register">D</span> by one (add 256 to <span class="register">DE</span>).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25993"></span>25993</td>
+<td class="instruction">LD L,A</td>
+<td class="comment-1" rowspan="2">Set the ASCII character to print in <span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25994"></span>25994</td>
+<td class="instruction">LD H,0</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="25996"></span>
+<div class="comments">
+<div class="paragraph">
+Each ASCII character is 8 bytes of data, so this translates the character ID into the offset.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25996"></span>25996</td>
+<td class="instruction">ADD HL,HL</td>
+<td class="comment-1" rowspan="4">Multiply <span class="register">HL</span> by 8 and add the base font address.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25997"></span>25997</td>
+<td class="instruction">ADD HL,HL</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25998"></span>25998</td>
+<td class="instruction">ADD HL,HL</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25999"></span>25999</td>
+<td class="instruction">ADD HL,DE</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26000"></span>26000</td>
+<td class="instruction">EX DE,HL</td>
+<td class="comment-1" rowspan="1"><span class="register">DE</span> now points to the character font data.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26001"></span>26001</td>
+<td class="instruction">POP HL</td>
+<td class="comment-1" rowspan="1">Restore the screen buffer pointer from the stack into <span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26002"></span>26002</td>
+<td class="instruction">LD B,8</td>
+<td class="comment-1" rowspan="1">Set a line counter in <span class="register">B</span> (8 lines in a UDG).</td>
+</tr>
+<tr>
+<td class="asm-label">PrintCharacter_LineLoop</td>
+<td class="address-2"><span id="26004"></span>26004</td>
+<td class="instruction">LD A,(DE)</td>
+<td class="comment-1" rowspan="2">Copy the UDG data to the screen buffer.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26005"></span>26005</td>
+<td class="instruction">LD (HL),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26006"></span>26006</td>
+<td class="instruction">INC H</td>
+<td class="comment-1" rowspan="1">Move down one pixel line in the screen buffer.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26007"></span>26007</td>
+<td class="instruction">INC DE</td>
+<td class="comment-1" rowspan="1">Move to the next UDG graphic data byte.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26008"></span>26008</td>
+<td class="instruction">DJNZ <a href="25985.html#26004">PrintCharacter_LineLoop</a></td>
+<td class="comment-1" rowspan="1">Decrease the line counter by one and loop back to <a href="25985.html#26004">PrintCharacter_LineLoop</a> until all 8 lines of the UDG character have been drawn.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26010"></span>26010</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="25948.html">25948</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#25985">Map</a></td>
+<td class="next">
+Next: <a href="26011.html">26011</a>
+</td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">&copy; 1984 Gremlin Graphics Software Ltd &copy; 2025 ArcadeGeek LTD.</div>
+<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
+<div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
+<div><a href="../../asm/6581.html">Switch to hexadecimal</a>.</div>
+</footer>
+</body>
+</html>
