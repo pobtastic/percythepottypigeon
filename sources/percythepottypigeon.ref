@@ -1,0 +1,65 @@
+;
+; SkoolKit ref file for Percy the Potty Pigeon
+;
+; To build the HTML disassembly, run these commands:
+;   tap2sna.py @percythepottypigeon.t2s
+;   sna2skool.py -H -c sources/percythepottypigeon.ctl PercythePottyPigeon.z80 > sources/percythepottypigeon.skool
+;   skool2html.py -H sources/percythepottypigeon.skool -T dark -T wide -toOa
+
+[Config]
+Expand=#INCLUDE(Expand)
+RefFiles=bases.ref;analytics.ref;changelog.ref;pokes.ref
+GameDir=percythepottypigeon
+
+[Game]
+Game=Percy the Potty Pigeon
+Logo=#SCR$02,$00,$00,$18,$06,$4000,$5800(/images/logo)
+Copyright=&copy; 1984 Gremlin Graphics Software Ltd &copy; 2025 ArcadeGeek LTD.
+Repository=https://github.com/pobtastic/percythepottypigeon/
+LinkInternalOperands=1
+AddressAnchor={address#IF({base}==16)(:04x)}
+
+[PageHeaders]
+GameIndex=The complete<>RAM disassembly (work in progress)
+
+[Expand]
+#DEF(#COLOUR(id)
+  #LET(ink=$id&$07)#IF({ink}>=$00)(INK:
+    #MAP({ink})(
+      UNKNOWN,
+      0:BLACK,
+      1:BLUE,
+      2:RED,
+      3:MAGENTA,
+      4:GREEN,
+      5:CYAN,
+      6:YELLOW,
+      7:WHITE)),
+  #LET(paper=$id>>$03&$07)#IF({paper}>=$00)(PAPER:
+    #MAP({paper})(
+      UNKNOWN,
+      0:BLACK,
+      1:BLUE,
+      2:RED,
+      3:MAGENTA,
+      4:GREEN,
+      5:CYAN,
+      6:YELLOW,
+      7:WHITE))
+  #LET(bright=$id&$40)#IF({bright}>$00)((BRIGHT))
+  #LET(flash=$id&$80)#IF({flash}>$00)(FLASH: ON))
+
+#DEF(#INK(id)
+  #LET(bright=$id&$40)
+  #LET(flash=$id&$80)
+  #LET(ink=$id&$07)#IF({ink}>=$00)(
+    #MAP({ink})(
+      UNKNOWN,
+      0:BLACK,
+      1:BLUE,
+      2:RED,
+      3:MAGENTA,
+      4:GREEN,
+      5:CYAN,
+      6:YELLOW,
+      7:WHITE))#IF({bright}>$00)( (BRIGHT))#IF({flash}>$00)( (FLASH: ON)))

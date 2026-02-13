@@ -1,0 +1,14 @@
+; Copyright 2025 Paul Maddern (paul@arcadegeek.co.uk)
+
+[Poke:Infinite Lives]
+<div>
+  <code>POKE #R$652F,#N$00</code>
+</div>
+
+[Poke:255 Lives]
+<div>
+  <code>POKE #R$5FB3(#N$5FB3),#N$2F</code>
+</div>
+<div>
+  <code>POKE #R$654A(#N$654B),#N$2F</code>
+</div>

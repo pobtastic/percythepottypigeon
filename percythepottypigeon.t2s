@@ -1,0 +1,12 @@
+; tap2sna.py file for Percy the Potty Pigeon. Run
+;
+;   $ tap2sna.py @percythepottypigeon.t2s
+;
+; to create a Z80 snapshot.
+
+https://worldofspectrum.net/pub/sinclair/games/p/PercyThePottyPigeon.tzx.zip
+PercythePottyPigeon.z80
+
+--tape-name "Potty Pigeon.tzx"
+--tape-sum 481477f161026d4a7fe1c62b6a8289e1
+--start 0xC1DD
