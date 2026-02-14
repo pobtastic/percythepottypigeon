@@ -9,6 +9,8 @@ D $4000 #UDGTABLE { =h Percy the Potty Pigeon Loading Screen. } { #SCR$02(loadin
   $4000,$1800,$20 Pixels.
   $5800,$0300,$20 Attributes.
 
+i $5B00
+
 g $5BFE Stack
 
 c $5DC0 Game Initialise
@@ -35,8 +37,8 @@ N $5DDD #HTML(Sets the border colour to use when calling
   $5DEE,$04 Write #N$FF to *#REGix+#N$22.
   $5DF2,$03 Call #R$653D.
   $5DF5,$05 Write #N$FF to *#R$5FBC.
-N $5DFA Main title screen input loop.
-@ $5DFA label=TitleScreen_InputLoop
+N $5DFA Game pause input loop.
+@ $5DFA label=Pause_InputLoop
   $5DFA,$03 Call #R$5FE9.
   $5DFD,$04 Read from the keyboard;
 . #TABLE(default,centre,centre,centre,centre,centre,centre)
@@ -71,9 +73,197 @@ N $5E21 Both "SPACE" and "CAPS SHIFT" were held down, so reset the game.
   $5E21,$01 Enable interrupts.
   $5E22,$02 Jump to #R$5DC0.
 
-c $5E24
+c $5E24 Populate Level Buffer
+@ $5E24 label=PopulateLevelBuffer
+  $5E24,$03 #REGa=*#R$5FC5.
+  $5E27,$06 Write #R$83A9 to *#R$5FC3.
+  $5E2D,$06 Write #R$9BAA to *#R$5FC1.
+  $5E33,$04 Call #R$5FC6 if #REGa is not equal to #N$00.
+  $5E37,$0D Clear #N$17FF bytes from #R$C000 onwards.
+  $5E44,$05 Write #N$FF to *#R$5FBB.
+  $5E49,$06 Write #N($00FF,$04,$04) to *#R$5FB9.
+  $5E4F,$03 #REGde=#N$02C1.
+  $5E52,$03 #REGhl=*#R$5FC3.
+  $5E55,$01 #REGa=*#REGhl.
+  $5E56,$03 Jump to #R$5E6F if #REGa is zero.
+  $5E59,$04 Jump to #R$5E92 if #REGa is equal to #N$01.
+  $5E5D,$04 Jump to #R$5EAA if #REGa is equal to #N$02.
+  $5E61,$04 Jump to #R$5EDB if #REGa is equal to #N$03.
+  $5E65,$04 Jump to #R$5E72 if #REGa is equal to #N$04.
+  $5E69,$04 Jump to #R$5EC8 if #REGa is greater than or equal to #N$08.
+  $5E6D,$01 #HTML(Run the ERROR_1 routine:
+. <a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/0008.html">RST #N$08</a>.)
+  $5E6E,$01 Increment #REGb by one.
+  $5E6F,$01 Increment #REGhl by one.
+  $5E70,$02 Jump to #R$5E55.
 
-g $5FAA
+  $5E72,$01 Increment #REGhl by one.
+  $5E73,$01 #REGa=*#REGhl.
+  $5E74,$01 Increment #REGhl by one.
+  $5E75,$04 Jump to #R$5E88 if #REGa is equal to #N$01.
+  $5E79,$05 Jump to #R$5FE7 if #REGa is not equal to #N$02.
+  $5E7E,$01 Stash #REGhl on the stack.
+  $5E7F,$06 Write #R$A36A to *#R$5FC1.
+  $5E85,$01 Restore #REGhl from the stack.
+  $5E86,$02 Jump to #R$5E55.
+
+  $5E88,$01 Stash #REGhl on the stack.
+  $5E89,$06 Write #R$9BAA to *#R$5FC1.
+  $5E8F,$01 Restore #REGhl from the stack.
+  $5E90,$02 Jump to #R$5E55.
+
+  $5E92,$01 Increment #REGhl by one.
+  $5E93,$01 #REGa=*#REGhl.
+  $5E94,$01 Increment #REGhl by one.
+  $5E95,$01 #REGb=#REGa.
+  $5E96,$03 Stash #REGhl, #REGde and #REGbc on the stack.
+  $5E99,$02 #REGd=#N$01.
+  $5E9B,$03 Call #R$5F35.
+  $5E9E,$03 Restore #REGbc, #REGde and #REGhl from the stack.
+  $5EA1,$01 Decrease #REGde by one.
+  $5EA2,$04 Jump back to #R$5E6D if #REGde is zero.
+  $5EA6,$02 Decrease counter by one and loop back to #R$5E96 until counter is zero.
+  $5EA8,$02 Jump to #R$5E55.
+
+  $5EAA,$01 Increment #REGhl by one.
+  $5EAB,$01 #REGa=*#REGhl.
+  $5EAC,$01 #REGb=#REGa.
+  $5EAD,$01 Increment #REGhl by one.
+  $5EAE,$01 #REGa=*#REGhl.
+  $5EAF,$01 Increment #REGhl by one.
+  $5EB0,$04 Stash #REGaf, #REGbc, #REGde and #REGhl on the stack.
+  $5EB4,$02 #REGd=#N$00.
+  $5EB6,$03 Call #R$5F35.
+  $5EB9,$04 Restore #REGhl, #REGde, #REGbc and #REGaf from the stack.
+  $5EBD,$01 Exchange the #REGaf register with the shadow #REGaf register.
+  $5EBE,$01 Decrease #REGde by one.
+  $5EBF,$04 Jump back to #R$5E6D if #REGde is zero.
+  $5EC3,$01 Exchange the shadow #REGaf register with the #REGaf register.
+  $5EC4,$02 Decrease counter by one and loop back to #R$5EB0 until counter is zero.
+  $5EC6,$02 Jump to #R$5E55.
+
+  $5EC8,$01 #REGa=*#REGhl.
+  $5EC9,$01 Increment #REGhl by one.
+  $5ECA,$02 Stash #REGhl and #REGde on the stack.
+  $5ECC,$02 #REGd=#N$00.
+  $5ECE,$03 Call #R$5F35.
+  $5ED1,$02 Restore #REGde and #REGhl from the stack.
+  $5ED3,$01 Decrease #REGde by one.
+  $5ED4,$04 Jump back to #R$5E6D if #REGde is zero.
+  $5ED8,$03 Jump to #R$5E55.
+
+  $5EDB,$01 Increment #REGhl by one.
+  $5EDC,$01 #REGc=*#REGhl.
+  $5EDD,$04 #REGix=#R$D800.
+  $5EE1,$03 #REGde=#N($02C0,$04,$04).
+  $5EE4,$03 Write #REGc to *#REGix+#N$00.
+  $5EE7,$02 Increment #REGix by one.
+  $5EE9,$01 Decrease #REGde by one.
+  $5EEA,$04 Jump back to #R$5EE4 until #REGde is zero.
+  $5EEE,$01 Increment #REGhl by one.
+  $5EEF,$03 #REGde=#N($02C1,$04,$04).
+  $5EF2,$04 #REGix=#R$D800.
+  $5EF6,$01 #REGa=*#REGhl.
+  $5EF7,$04 Jump to #R$5F12 if #REGa is equal to #N$12.
+  $5EFB,$04 Jump to #R$5F21 if #REGa is equal to #N$1B.
+  $5EFF,$04 Jump to #R$5F74 if #REGa is equal to #N$24.
+  $5F03,$01 #REGc=*#REGhl.
+  $5F04,$03 Write #REGc to *#REGix+#N$00.
+  $5F07,$01 Decrease #REGde by one.
+  $5F08,$02 Increment #REGix by one.
+  $5F0A,$05 Jump back to #R$5E6D if #REGde is zero.
+  $5F0F,$01 Increment #REGhl by one.
+  $5F10,$02 Jump to #R$5EF6.
+
+  $5F12,$01 Increment #REGhl by one.
+  $5F13,$01 #REGb=*#REGhl.
+  $5F14,$02 Increment #REGix by one.
+  $5F16,$01 Decrease #REGde by one.
+  $5F17,$05 Jump back to #R$5E6D if #REGde is zero.
+  $5F1C,$02 Decrease counter by one and loop back to #R$5F14 until counter is zero.
+  $5F1E,$01 Increment #REGhl by one.
+  $5F1F,$02 Jump to #R$5EF6.
+
+  $5F21,$01 Increment #REGhl by one.
+  $5F22,$01 #REGb=*#REGhl.
+  $5F23,$01 Increment #REGhl by one.
+  $5F24,$01 #REGc=*#REGhl.
+  $5F25,$01 Increment #REGhl by one.
+  $5F26,$03 Write #REGc to *#REGix+#N$00.
+  $5F29,$02 Increment #REGix by one.
+  $5F2B,$01 Decrease #REGde by one.
+  $5F2C,$05 Jump back to #R$5E6D if #REGde is zero.
+  $5F31,$02 Decrease counter by one and loop back to #R$5F26 until counter is zero.
+  $5F33,$02 Jump to #R$5EF6.
+
+  $5F35,$04 #REGbc=*#R$5FB9.
+  $5F39,$01 Increment #REGc by one.
+  $5F3A,$01 Exchange the #REGaf register with the shadow #REGaf register.
+  $5F3B,$04 Jump to #R$5F41 if bit 5 of #REGc is set.
+  $5F3F,$02 Jump to #R$5F44.
+
+  $5F41,$01 Increment #REGb by one.
+  $5F42,$02 #REGc=#N$00.
+  $5F44,$04 Write #REGbc to *#R$5FB9.
+  $5F48,$03 Return if bit 0 of #REGd is set.
+  $5F4B,$01 #REGl=#REGc.
+  $5F4C,$01 #REGa=#REGb.
+  $5F4D,$02,b$01 Keep only bits 0-2.
+  $5F4F,$01 RRCA.
+  $5F50,$01 RRCA.
+  $5F51,$01 RRCA.
+  $5F52,$01 Set the bits from #REGl.
+  $5F53,$01 #REGl=#REGa.
+  $5F54,$01 #REGa=#REGb.
+  $5F55,$02,b$01 Keep only bits 3-4.
+  $5F57,$02,b$01 Set bits 6-7.
+  $5F59,$01 #REGh=#REGa.
+  $5F5A,$01 Stash #REGhl on the stack.
+  $5F5B,$04 #REGde=*#R$5FC1.
+  $5F5F,$01 Exchange the #REGaf register with the shadow #REGaf register.
+  $5F60,$02 #REGa-=#N$08.
+  $5F62,$01 #REGl=#REGa.
+  $5F63,$02 #REGh=#N$00.
+  $5F65,$01 #REGhl+=#REGhl.
+  $5F66,$01 #REGhl+=#REGhl.
+  $5F67,$01 #REGhl+=#REGhl.
+  $5F68,$01 #REGhl+=#REGde.
+  $5F69,$01 Exchange the #REGde and #REGhl registers.
+  $5F6A,$01 Restore #REGhl from the stack.
+  $5F6B,$02 #REGb=#N$08.
+  $5F6D,$01 #REGa=*#REGde.
+  $5F6E,$01 Write #REGa to *#REGhl.
+  $5F6F,$01 Increment #REGde by one.
+  $5F70,$01 Increment #REGh by one.
+  $5F71,$02 Decrease counter by one and loop back to #R$5F6D until counter is zero.
+  $5F73,$01 Return.
+
+  $5F74,$06 Jump to #R$5F83 if *#R$5FA9 is zero.
+  $5F7A,$04 Write #N$00 to *#R$5FA9.
+  $5F7E,$01 No operation.
+  $5F7F,$01 No operation.
+  $5F80,$03 Write #N$00 to *#R$DAE3.
+  $5F83,$03 #REGa=*#R$5FC5.
+  $5F86,$01 Decrease #REGa by one.
+  $5F87,$03 #REGde=#R$DE9E.
+  $5F8A,$01 #REGl=#REGa.
+  $5F8B,$02 #REGh=#N$00.
+  $5F8D,$01 #REGhl+=#REGhl.
+  $5F8E,$01 #REGhl+=#REGhl.
+  $5F8F,$01 #REGhl+=#REGhl.
+  $5F90,$01 #REGhl+=#REGhl.
+  $5F91,$01 #REGhl+=#REGhl.
+  $5F92,$01 #REGhl+=#REGde.
+  $5F93,$03 Write #REGhl to *#R$5FB5.
+  $5F96,$01 Enable interrupts.
+  $5F97,$01 Halt operation (suspend CPU until the next interrupt).
+  $5F98,$01 Disable interrupts.
+  $5F99,$02 #REGb=#N$16.
+  $5F9B,$03 #REGhl=#R$C000.
+  $5F9E,$03 Jump to #R$6438.
+
+g $5FA1
+B $5FA1,$0A,$01
 
 g $5FB1
 B $5FB1,$01
@@ -85,6 +275,11 @@ g $5FB3 Player Lives
 @ $5FB3 label=Lives
 B $5FB3,$01
 
+g $5FB5
+W $5FB5,$02
+
+g $5FB9
+
 g $5FBB
 
 g $5FBC
@@ -93,7 +288,33 @@ g $5FBD
 
 g $5FBE
 
+g $5FC1
+W $5FC1,$02
+
+g $5FC3
+W $5FC3,$02
+
 g $5FC5
+
+c $5FC6
+  $5FC6,$04 #REGd=*#R$5FC5.
+  $5FCA,$02 #REGe=#N$01.
+  $5FCC,$02 Return if *#R$5FC5 is equal to #N$01.
+  $5FCE,$03 #REGhl=#R$83AA.
+  $5FD1,$01 #REGa=*#REGhl.
+  $5FD2,$01 Increment #REGhl by one.
+  $5FD3,$03 Jump to #R$5FD8 if #REGa is zero.
+  $5FD6,$02 Jump to #R$5FD1.
+
+  $5FD8,$01 Increment #REGe by one.
+  $5FD9,$05 Jump to #R$5FE7 if #REGe is greater than or equal to #N$11.
+  $5FDE,$03 Jump to #R$5FE3 if #REGa is equal to #REGd.
+  $5FE1,$02 Jump to #R$5FD1.
+
+  $5FE3,$03 Write #REGhl to *#R$5FC3.
+  $5FE6,$01 Return.
+
+c $5FE7
 
 c $5FE9
 
@@ -145,6 +366,44 @@ t $63E9 Messaging: Header
   $6426,$12
 
 c $6438
+  $6438,$02 Stash #REGbc and #REGhl on the stack.
+  $643A,$03 Call #R$6456.
+  $643D,$02 Restore #REGhl and #REGbc from the stack.
+  $643F,$04 #REGl+=#N$20.
+  $6443,$03 Jump to #R$644A if #REGa is non-zero.
+  $6446,$04 #REGh+=#N$08.
+  $644A,$02 Decrease counter by one and loop back to #R$6438 until counter is zero.
+  $644C,$07 Call #R$63BB if *#R$5FA1 is zero.
+  $6453,$03 Jump to #R$63CB.
+
+c $6456 Draw Level Row
+@ $6456 label=DrawLevelRow
+  $6456,$02 #REGb=#N$08.
+  $6458,$03 Stash #REGhl, #REGbc and #REGhl on the stack.
+  $645B,$01 #REGd=#REGh.
+  $645C,$01 #REGe=#REGl.
+  $645D,$02 Reset bit 7 of #REGd.
+  $645F,$03 #REGbc=#N($0020,$04,$04).
+  $6462,$02 LDIR.
+  $6464,$02 Restore #REGhl and #REGbc from the stack.
+  $6466,$01 Increment #REGh by one.
+  $6467,$02 Decrease counter by one and loop back to #R$6459 until counter is zero.
+  $6469,$01 Restore #REGhl from the stack.
+  $646A,$01 #REGa=#REGh.
+  $646B,$03 RRCA.
+  $646E,$02,b$01 Keep only bits 0-1.
+  $6470,$02,b$01 Set bits 3-4, 6-7.
+  $6472,$01 #REGh=#REGa.
+  $6473,$01 #REGe=#REGl.
+  $6474,$01 #REGa=#REGh.
+  $6475,$02,b$01 Keep only bits 0-1.
+  $6477,$02,b$01 Set bits 3-4, 6.
+  $6479,$01 #REGd=#REGa.
+  $647A,$03 #REGbc=#N($0020,$04,$04).
+  $647D,$02 LDIR.
+  $647F,$01 Return.
+
+c $6480
 
 c $653D
   $654A,$08 Write #N$33 to; #LIST
@@ -382,32 +641,32 @@ c $693B
 b $6961
   $6961,$05
 
-c $6966 Title Screen Border Effect
-@ $6966 label=TitleScreen_BorderEffect
+c $6966 Pause Border Effect
+@ $6966 label=Pause_BorderEffect
 D $6966 Displays a rainbow-like cycling colour border while waiting for the
-. player to press "S" to start the game.
+. player to press "S" to unpause the game.
   $6966,$01 Enable interrupts.
   $6967,$05 Pause for #N$14 frames to give the player a moment before the
 . effect begins.
-@ $6969 label=TitleScreen_BorderEffect_ShortLoop
-@ $696C label=TitleScreen_BorderEffect_ColourCycle
+@ $6969 label=Pause_BorderEffect_ShortLoop
+@ $696C label=Pause_BorderEffect_ColourCycle
   $696C,$02 Set a frame counter in #REGb of #N$0E frames.
   $696E,$01 Halt operation (suspend CPU until the next interrupt).
 N $696F Derive a border colour (#N$00-#N$07) from the current frame loop
 . counter.
-@ $696F label=TitleScreen_BorderEffect_ColourLoop
+@ $696F label=Pause_BorderEffect_ColourLoop
   $696F,$01 Copy the frame counter value into #REGa.
   $6970,$02,b$01 Keep only bits 0-2.
 M $696F,$03 Load #REGa with bits 0-2 of the current frame counter value. This
 . limits the value to be between #N$00-#N$07 (i.e. the colour palette).
   $6972,$01 Stash the frame counter on the stack.
-@ $6973 label=TitleScreen_Border_PauseLoop_01
+@ $6973 label=Pause_Border_PauseLoop_01
   $6973,$02 Decrease the frame counter by one and loop until the counter is
 . zero.
   $6975,$01 Restore the frame counter from the stack.
   $6976,$01 But keep a copy of it back on the stack.
   $6977,$02 Set #REGb to #N$00 which increases the size of the counter.
-@ $6979 label=TitleScreen_Border_PauseLoop_02
+@ $6979 label=Pause_Border_PauseLoop_02
   $6979,$02 Decrease the frame counter by one and loop again until the counter
 . is zero.
   $697B,$01 Restore the frame counter from the stack.
@@ -448,6 +707,10 @@ c $69F7
 c $6DAB
 
 c $720F
+
+c $83A9
+
+c $83AA
 
 c $BB1C
 
