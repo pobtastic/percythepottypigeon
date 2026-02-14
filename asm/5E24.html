@@ -29,11 +29,11 @@ Prev: <a href="5DC0.html">5DC0</a>
 </td>
 <td class="up">Up: <a href="../maps/all.html#5e24">Map</a></td>
 <td class="next">
-Next: <a href="5FAA.html">5FAA</a>
+Next: <a href="5FA1.html">5FA1</a>
 </td>
 </tr>
 </table>
-<div class="description">5E24: Routine at 5E24</div>
+<div class="description">5E24: Populate Level Buffer</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
@@ -45,1184 +45,1313 @@ Used by the routines at <a href="5FE9.html">5FE9</a>, <a href="655C.html">655C</
 </td>
 </tr>
 <tr>
+<td class="asm-label">PopulateLevelBuffer</td>
 <td class="address-2"><span id="5e24"></span>5E24</td>
 <td class="instruction">LD A,($5FC5)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="5FC5.html">5FC5</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5e27"></span>5E27</td>
 <td class="instruction">LD HL,$83A9</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Write <a href="83A9.html">83A9</a> to *<a href="5FC3.html">5FC3</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5e2a"></span>5E2A</td>
 <td class="instruction">LD ($5FC3),HL</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5e2d"></span>5E2D</td>
 <td class="instruction">LD HL,$9BAA</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Write <a href="83AA.html#9baa">9BAA</a> to *<a href="5FC1.html">5FC1</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5e30"></span>5E30</td>
 <td class="instruction">LD ($5FC1),HL</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5e33"></span>5E33</td>
 <td class="instruction">OR A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Call <a href="5FC6.html">5FC6</a> if <span class="register">A</span> is not equal to 00.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5e34"></span>5E34</td>
-<td class="instruction">CALL NZ,$5FC6</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">CALL NZ,<a href="5FC6.html">$5FC6</a></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5e37"></span>5E37</td>
 <td class="instruction">LD HL,$C000</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="5">Clear 17FF bytes from <a href="BB1C.html#c000">C000</a> onwards.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5e3a"></span>5E3A</td>
 <td class="instruction">LD DE,$C001</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5e3d"></span>5E3D</td>
 <td class="instruction">LD (HL),$00</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5e3f"></span>5E3F</td>
 <td class="instruction">LD BC,$17FF</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5e42"></span>5E42</td>
 <td class="instruction">LDIR</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5e44"></span>5E44</td>
 <td class="instruction">LD A,$FF</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Write FF to *<a href="5FBB.html">5FBB</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5e46"></span>5E46</td>
 <td class="instruction">LD ($5FBB),A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5e49"></span>5E49</td>
 <td class="instruction">LD HL,$00FF</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Write 00FF to *<a href="5FB9.html">5FB9</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5e4c"></span>5E4C</td>
 <td class="instruction">LD ($5FB9),HL</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5e4f"></span>5E4F</td>
 <td class="instruction">LD DE,$02C1</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">DE</span>=02C1.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5e52"></span>5E52</td>
 <td class="instruction">LD HL,($5FC3)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>=*<a href="5FC3.html">5FC3</a>.</td>
 </tr>
 <tr>
+<td class="asm-label">PopulateLevelBuffer_0</td>
 <td class="address-2"><span id="5e55"></span>5E55</td>
 <td class="instruction">LD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">HL</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5e56"></span>5E56</td>
 <td class="instruction">OR A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Jump to <a href="5E24.html#5e6f">PopulateLevelBuffer_2</a> if <span class="register">A</span> is zero.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5e57"></span>5E57</td>
-<td class="instruction">JR Z,<a href="5E24.html#5e6f">$5E6F</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR Z,<a href="5E24.html#5e6f">PopulateLevelBuffer_2</a></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5e59"></span>5E59</td>
 <td class="instruction">CP $01</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Jump to <a href="5E24.html#5e92">PopulateLevelBuffer_5</a> if <span class="register">A</span> is equal to 01.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5e5b"></span>5E5B</td>
-<td class="instruction">JR Z,<a href="5E24.html#5e92">$5E92</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR Z,<a href="5E24.html#5e92">PopulateLevelBuffer_5</a></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5e5d"></span>5E5D</td>
 <td class="instruction">CP $02</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Jump to <a href="5E24.html#5eaa">PopulateLevelBuffer_7</a> if <span class="register">A</span> is equal to 02.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5e5f"></span>5E5F</td>
-<td class="instruction">JR Z,<a href="5E24.html#5eaa">$5EAA</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR Z,<a href="5E24.html#5eaa">PopulateLevelBuffer_7</a></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5e61"></span>5E61</td>
 <td class="instruction">CP $03</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Jump to <a href="5E24.html#5edb">PopulateLevelBuffer_10</a> if <span class="register">A</span> is equal to 03.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5e63"></span>5E63</td>
-<td class="instruction">JR Z,<a href="5E24.html#5edb">$5EDB</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR Z,<a href="5E24.html#5edb">PopulateLevelBuffer_10</a></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5e65"></span>5E65</td>
 <td class="instruction">CP $04</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Jump to <a href="5E24.html#5e72">PopulateLevelBuffer_3</a> if <span class="register">A</span> is equal to 04.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5e67"></span>5E67</td>
-<td class="instruction">JR Z,<a href="5E24.html#5e72">$5E72</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR Z,<a href="5E24.html#5e72">PopulateLevelBuffer_3</a></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5e69"></span>5E69</td>
 <td class="instruction">CP $08</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Jump to <a href="5E24.html#5ec8">PopulateLevelBuffer_9</a> if <span class="register">A</span> is greater than or equal to 08.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5e6b"></span>5E6B</td>
-<td class="instruction">JR NC,<a href="5E24.html#5ec8">$5EC8</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR NC,<a href="5E24.html#5ec8">PopulateLevelBuffer_9</a></td>
 </tr>
 <tr>
+<td class="asm-label">PopulateLevelBuffer_1</td>
 <td class="address-2"><span id="5e6d"></span>5E6D</td>
 <td class="instruction">RST $08</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Run the ERROR_1 routine: <a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/0008.html">RST 08</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5e6e"></span>5E6E</td>
 <td class="instruction">INC B</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Increment <span class="register">B</span> by one.</td>
 </tr>
 <tr>
+<td class="asm-label">PopulateLevelBuffer_2</td>
 <td class="address-2"><span id="5e6f"></span>5E6F</td>
 <td class="instruction">INC HL</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5e70"></span>5E70</td>
-<td class="instruction">JR <a href="5E24.html#5e55">$5E55</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR <a href="5E24.html#5e55">PopulateLevelBuffer_0</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="5E24.html#5e55">PopulateLevelBuffer_0</a>.</td>
 </tr>
 <tr>
+<td class="asm-label">PopulateLevelBuffer_3</td>
 <td class="address-2"><span id="5e72"></span>5E72</td>
 <td class="instruction">INC HL</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5e73"></span>5E73</td>
 <td class="instruction">LD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">HL</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5e74"></span>5E74</td>
 <td class="instruction">INC HL</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5e75"></span>5E75</td>
 <td class="instruction">CP $01</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Jump to <a href="5E24.html#5e88">PopulateLevelBuffer_4</a> if <span class="register">A</span> is equal to 01.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5e77"></span>5E77</td>
-<td class="instruction">JR Z,<a href="5E24.html#5e88">$5E88</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR Z,<a href="5E24.html#5e88">PopulateLevelBuffer_4</a></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5e79"></span>5E79</td>
 <td class="instruction">CP $02</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Jump to <a href="5FE7.html">5FE7</a> if <span class="register">A</span> is not equal to 02.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5e7b"></span>5E7B</td>
-<td class="instruction">JP NZ,$5FE7</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JP NZ,<a href="5FE7.html">$5FE7</a></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5e7e"></span>5E7E</td>
 <td class="instruction">PUSH HL</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Stash <span class="register">HL</span> on the stack.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5e7f"></span>5E7F</td>
 <td class="instruction">LD HL,$A36A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Write <a href="83AA.html#a36a">A36A</a> to *<a href="5FC1.html">5FC1</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5e82"></span>5E82</td>
 <td class="instruction">LD ($5FC1),HL</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5e85"></span>5E85</td>
 <td class="instruction">POP HL</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Restore <span class="register">HL</span> from the stack.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5e86"></span>5E86</td>
-<td class="instruction">JR <a href="5E24.html#5e55">$5E55</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR <a href="5E24.html#5e55">PopulateLevelBuffer_0</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="5E24.html#5e55">PopulateLevelBuffer_0</a>.</td>
 </tr>
 <tr>
+<td class="asm-label">PopulateLevelBuffer_4</td>
 <td class="address-2"><span id="5e88"></span>5E88</td>
 <td class="instruction">PUSH HL</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Stash <span class="register">HL</span> on the stack.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5e89"></span>5E89</td>
 <td class="instruction">LD HL,$9BAA</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Write <a href="83AA.html#9baa">9BAA</a> to *<a href="5FC1.html">5FC1</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5e8c"></span>5E8C</td>
 <td class="instruction">LD ($5FC1),HL</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5e8f"></span>5E8F</td>
 <td class="instruction">POP HL</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Restore <span class="register">HL</span> from the stack.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5e90"></span>5E90</td>
-<td class="instruction">JR <a href="5E24.html#5e55">$5E55</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR <a href="5E24.html#5e55">PopulateLevelBuffer_0</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="5E24.html#5e55">PopulateLevelBuffer_0</a>.</td>
 </tr>
 <tr>
+<td class="asm-label">PopulateLevelBuffer_5</td>
 <td class="address-2"><span id="5e92"></span>5E92</td>
 <td class="instruction">INC HL</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5e93"></span>5E93</td>
 <td class="instruction">LD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">HL</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5e94"></span>5E94</td>
 <td class="instruction">INC HL</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5e95"></span>5E95</td>
 <td class="instruction">LD B,A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">B</span>=<span class="register">A</span>.</td>
 </tr>
 <tr>
+<td class="asm-label">PopulateLevelBuffer_6</td>
 <td class="address-2"><span id="5e96"></span>5E96</td>
 <td class="instruction">PUSH HL</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Stash <span class="register">HL</span>, <span class="register">DE</span> and <span class="register">BC</span> on the stack.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5e97"></span>5E97</td>
 <td class="instruction">PUSH DE</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5e98"></span>5E98</td>
 <td class="instruction">PUSH BC</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5e99"></span>5E99</td>
 <td class="instruction">LD D,$01</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">D</span>=01.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5e9b"></span>5E9B</td>
-<td class="instruction">CALL <a href="5E24.html#5f35">$5F35</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">CALL <a href="5E24.html#5f35">PopulateLevelBuffer_17</a></td>
+<td class="comment-1" rowspan="1">Call <a href="5E24.html#5f35">PopulateLevelBuffer_17</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5e9e"></span>5E9E</td>
 <td class="instruction">POP BC</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Restore <span class="register">BC</span>, <span class="register">DE</span> and <span class="register">HL</span> from the stack.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5e9f"></span>5E9F</td>
 <td class="instruction">POP DE</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5ea0"></span>5EA0</td>
 <td class="instruction">POP HL</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5ea1"></span>5EA1</td>
 <td class="instruction">DEC DE</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Decrease <span class="register">DE</span> by one.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5ea2"></span>5EA2</td>
 <td class="instruction">LD A,E</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Jump back to <a href="5E24.html#5e6d">PopulateLevelBuffer_1</a> if <span class="register">DE</span> is zero.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5ea3"></span>5EA3</td>
 <td class="instruction">OR D</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5ea4"></span>5EA4</td>
-<td class="instruction">JR Z,<a href="5E24.html#5e6d">$5E6D</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR Z,<a href="5E24.html#5e6d">PopulateLevelBuffer_1</a></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5ea6"></span>5EA6</td>
-<td class="instruction">DJNZ <a href="5E24.html#5e96">$5E96</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">DJNZ <a href="5E24.html#5e96">PopulateLevelBuffer_6</a></td>
+<td class="comment-1" rowspan="1">Decrease counter by one and loop back to <a href="5E24.html#5e96">PopulateLevelBuffer_6</a> until counter is zero.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5ea8"></span>5EA8</td>
-<td class="instruction">JR <a href="5E24.html#5e55">$5E55</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR <a href="5E24.html#5e55">PopulateLevelBuffer_0</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="5E24.html#5e55">PopulateLevelBuffer_0</a>.</td>
 </tr>
 <tr>
+<td class="asm-label">PopulateLevelBuffer_7</td>
 <td class="address-2"><span id="5eaa"></span>5EAA</td>
 <td class="instruction">INC HL</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5eab"></span>5EAB</td>
 <td class="instruction">LD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">HL</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5eac"></span>5EAC</td>
 <td class="instruction">LD B,A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">B</span>=<span class="register">A</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5ead"></span>5EAD</td>
 <td class="instruction">INC HL</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5eae"></span>5EAE</td>
 <td class="instruction">LD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">HL</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5eaf"></span>5EAF</td>
 <td class="instruction">INC HL</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
 </tr>
 <tr>
+<td class="asm-label">PopulateLevelBuffer_8</td>
 <td class="address-2"><span id="5eb0"></span>5EB0</td>
 <td class="instruction">PUSH AF</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="4">Stash <span class="register">AF</span>, <span class="register">BC</span>, <span class="register">DE</span> and <span class="register">HL</span> on the stack.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5eb1"></span>5EB1</td>
 <td class="instruction">PUSH BC</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5eb2"></span>5EB2</td>
 <td class="instruction">PUSH DE</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5eb3"></span>5EB3</td>
 <td class="instruction">PUSH HL</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5eb4"></span>5EB4</td>
 <td class="instruction">LD D,$00</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">D</span>=00.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5eb6"></span>5EB6</td>
-<td class="instruction">CALL <a href="5E24.html#5f35">$5F35</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">CALL <a href="5E24.html#5f35">PopulateLevelBuffer_17</a></td>
+<td class="comment-1" rowspan="1">Call <a href="5E24.html#5f35">PopulateLevelBuffer_17</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5eb9"></span>5EB9</td>
 <td class="instruction">POP HL</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="4">Restore <span class="register">HL</span>, <span class="register">DE</span>, <span class="register">BC</span> and <span class="register">AF</span> from the stack.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5eba"></span>5EBA</td>
 <td class="instruction">POP DE</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5ebb"></span>5EBB</td>
 <td class="instruction">POP BC</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5ebc"></span>5EBC</td>
 <td class="instruction">POP AF</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5ebd"></span>5EBD</td>
 <td class="instruction">EX AF,AF'</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Exchange the <span class="register">AF</span> register with the shadow <span class="register">AF</span> register.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5ebe"></span>5EBE</td>
 <td class="instruction">DEC DE</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Decrease <span class="register">DE</span> by one.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5ebf"></span>5EBF</td>
 <td class="instruction">LD A,E</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Jump back to <a href="5E24.html#5e6d">PopulateLevelBuffer_1</a> if <span class="register">DE</span> is zero.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5ec0"></span>5EC0</td>
 <td class="instruction">OR D</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5ec1"></span>5EC1</td>
-<td class="instruction">JR Z,<a href="5E24.html#5e6d">$5E6D</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR Z,<a href="5E24.html#5e6d">PopulateLevelBuffer_1</a></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5ec3"></span>5EC3</td>
 <td class="instruction">EX AF,AF'</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Exchange the shadow <span class="register">AF</span> register with the <span class="register">AF</span> register.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5ec4"></span>5EC4</td>
-<td class="instruction">DJNZ <a href="5E24.html#5eb0">$5EB0</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">DJNZ <a href="5E24.html#5eb0">PopulateLevelBuffer_8</a></td>
+<td class="comment-1" rowspan="1">Decrease counter by one and loop back to <a href="5E24.html#5eb0">PopulateLevelBuffer_8</a> until counter is zero.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5ec6"></span>5EC6</td>
-<td class="instruction">JR <a href="5E24.html#5e55">$5E55</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR <a href="5E24.html#5e55">PopulateLevelBuffer_0</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="5E24.html#5e55">PopulateLevelBuffer_0</a>.</td>
 </tr>
 <tr>
+<td class="asm-label">PopulateLevelBuffer_9</td>
 <td class="address-2"><span id="5ec8"></span>5EC8</td>
 <td class="instruction">LD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">HL</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5ec9"></span>5EC9</td>
 <td class="instruction">INC HL</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5eca"></span>5ECA</td>
 <td class="instruction">PUSH HL</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Stash <span class="register">HL</span> and <span class="register">DE</span> on the stack.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5ecb"></span>5ECB</td>
 <td class="instruction">PUSH DE</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5ecc"></span>5ECC</td>
 <td class="instruction">LD D,$00</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">D</span>=00.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5ece"></span>5ECE</td>
-<td class="instruction">CALL <a href="5E24.html#5f35">$5F35</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">CALL <a href="5E24.html#5f35">PopulateLevelBuffer_17</a></td>
+<td class="comment-1" rowspan="1">Call <a href="5E24.html#5f35">PopulateLevelBuffer_17</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5ed1"></span>5ED1</td>
 <td class="instruction">POP DE</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Restore <span class="register">DE</span> and <span class="register">HL</span> from the stack.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5ed2"></span>5ED2</td>
 <td class="instruction">POP HL</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5ed3"></span>5ED3</td>
 <td class="instruction">DEC DE</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Decrease <span class="register">DE</span> by one.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5ed4"></span>5ED4</td>
 <td class="instruction">LD A,D</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Jump back to <a href="5E24.html#5e6d">PopulateLevelBuffer_1</a> if <span class="register">DE</span> is zero.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5ed5"></span>5ED5</td>
 <td class="instruction">OR E</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5ed6"></span>5ED6</td>
-<td class="instruction">JR Z,<a href="5E24.html#5e6d">$5E6D</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR Z,<a href="5E24.html#5e6d">PopulateLevelBuffer_1</a></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5ed8"></span>5ED8</td>
-<td class="instruction">JP <a href="5E24.html#5e55">$5E55</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JP <a href="5E24.html#5e55">PopulateLevelBuffer_0</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="5E24.html#5e55">PopulateLevelBuffer_0</a>.</td>
 </tr>
 <tr>
+<td class="asm-label">PopulateLevelBuffer_10</td>
 <td class="address-2"><span id="5edb"></span>5EDB</td>
 <td class="instruction">INC HL</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5edc"></span>5EDC</td>
 <td class="instruction">LD C,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">C</span>=*<span class="register">HL</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5edd"></span>5EDD</td>
 <td class="instruction">LD IX,$D800</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">IX</span>=<a href="C1DD.html#d800">D800</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5ee1"></span>5EE1</td>
 <td class="instruction">LD DE,$02C0</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">DE</span>=02C0.</td>
 </tr>
 <tr>
+<td class="asm-label">PopulateLevelBuffer_11</td>
 <td class="address-2"><span id="5ee4"></span>5EE4</td>
 <td class="instruction">LD (IX+$00),C</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write <span class="register">C</span> to *<span class="register">IX</span>+00.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5ee7"></span>5EE7</td>
 <td class="instruction">INC IX</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Increment <span class="register">IX</span> by one.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5ee9"></span>5EE9</td>
 <td class="instruction">DEC DE</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Decrease <span class="register">DE</span> by one.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5eea"></span>5EEA</td>
 <td class="instruction">LD A,E</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Jump back to <a href="5E24.html#5ee4">PopulateLevelBuffer_11</a> until <span class="register">DE</span> is zero.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5eeb"></span>5EEB</td>
 <td class="instruction">OR D</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5eec"></span>5EEC</td>
-<td class="instruction">JR NZ,<a href="5E24.html#5ee4">$5EE4</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR NZ,<a href="5E24.html#5ee4">PopulateLevelBuffer_11</a></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5eee"></span>5EEE</td>
 <td class="instruction">INC HL</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5eef"></span>5EEF</td>
 <td class="instruction">LD DE,$02C1</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">DE</span>=02C1.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5ef2"></span>5EF2</td>
 <td class="instruction">LD IX,$D800</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">IX</span>=<a href="C1DD.html#d800">D800</a>.</td>
 </tr>
 <tr>
+<td class="asm-label">PopulateLevelBuffer_12</td>
 <td class="address-2"><span id="5ef6"></span>5EF6</td>
 <td class="instruction">LD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">HL</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5ef7"></span>5EF7</td>
 <td class="instruction">CP $12</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Jump to <a href="5E24.html#5f12">PopulateLevelBuffer_13</a> if <span class="register">A</span> is equal to 12.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5ef9"></span>5EF9</td>
-<td class="instruction">JR Z,<a href="5E24.html#5f12">$5F12</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR Z,<a href="5E24.html#5f12">PopulateLevelBuffer_13</a></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5efb"></span>5EFB</td>
 <td class="instruction">CP $1B</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Jump to <a href="5E24.html#5f21">PopulateLevelBuffer_15</a> if <span class="register">A</span> is equal to 1B.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5efd"></span>5EFD</td>
-<td class="instruction">JR Z,<a href="5E24.html#5f21">$5F21</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR Z,<a href="5E24.html#5f21">PopulateLevelBuffer_15</a></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5eff"></span>5EFF</td>
 <td class="instruction">CP $24</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Jump to <a href="5E24.html#5f74">PopulateLevelBuffer_21</a> if <span class="register">A</span> is equal to 24.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f01"></span>5F01</td>
-<td class="instruction">JR Z,<a href="5E24.html#5f74">$5F74</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR Z,<a href="5E24.html#5f74">PopulateLevelBuffer_21</a></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f03"></span>5F03</td>
 <td class="instruction">LD C,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">C</span>=*<span class="register">HL</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f04"></span>5F04</td>
 <td class="instruction">LD (IX+$00),C</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write <span class="register">C</span> to *<span class="register">IX</span>+00.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f07"></span>5F07</td>
 <td class="instruction">DEC DE</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Decrease <span class="register">DE</span> by one.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f08"></span>5F08</td>
 <td class="instruction">INC IX</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Increment <span class="register">IX</span> by one.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f0a"></span>5F0A</td>
 <td class="instruction">LD A,E</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Jump back to <a href="5E24.html#5e6d">PopulateLevelBuffer_1</a> if <span class="register">DE</span> is zero.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f0b"></span>5F0B</td>
 <td class="instruction">OR D</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f0c"></span>5F0C</td>
-<td class="instruction">JP Z,<a href="5E24.html#5e6d">$5E6D</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JP Z,<a href="5E24.html#5e6d">PopulateLevelBuffer_1</a></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f0f"></span>5F0F</td>
 <td class="instruction">INC HL</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f10"></span>5F10</td>
-<td class="instruction">JR <a href="5E24.html#5ef6">$5EF6</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR <a href="5E24.html#5ef6">PopulateLevelBuffer_12</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="5E24.html#5ef6">PopulateLevelBuffer_12</a>.</td>
 </tr>
 <tr>
+<td class="asm-label">PopulateLevelBuffer_13</td>
 <td class="address-2"><span id="5f12"></span>5F12</td>
 <td class="instruction">INC HL</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f13"></span>5F13</td>
 <td class="instruction">LD B,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">B</span>=*<span class="register">HL</span>.</td>
 </tr>
 <tr>
+<td class="asm-label">PopulateLevelBuffer_14</td>
 <td class="address-2"><span id="5f14"></span>5F14</td>
 <td class="instruction">INC IX</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Increment <span class="register">IX</span> by one.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f16"></span>5F16</td>
 <td class="instruction">DEC DE</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Decrease <span class="register">DE</span> by one.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f17"></span>5F17</td>
 <td class="instruction">LD A,E</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Jump back to <a href="5E24.html#5e6d">PopulateLevelBuffer_1</a> if <span class="register">DE</span> is zero.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f18"></span>5F18</td>
 <td class="instruction">OR D</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f19"></span>5F19</td>
-<td class="instruction">JP Z,<a href="5E24.html#5e6d">$5E6D</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JP Z,<a href="5E24.html#5e6d">PopulateLevelBuffer_1</a></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f1c"></span>5F1C</td>
-<td class="instruction">DJNZ <a href="5E24.html#5f14">$5F14</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">DJNZ <a href="5E24.html#5f14">PopulateLevelBuffer_14</a></td>
+<td class="comment-1" rowspan="1">Decrease counter by one and loop back to <a href="5E24.html#5f14">PopulateLevelBuffer_14</a> until counter is zero.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f1e"></span>5F1E</td>
 <td class="instruction">INC HL</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f1f"></span>5F1F</td>
-<td class="instruction">JR <a href="5E24.html#5ef6">$5EF6</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR <a href="5E24.html#5ef6">PopulateLevelBuffer_12</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="5E24.html#5ef6">PopulateLevelBuffer_12</a>.</td>
 </tr>
 <tr>
+<td class="asm-label">PopulateLevelBuffer_15</td>
 <td class="address-2"><span id="5f21"></span>5F21</td>
 <td class="instruction">INC HL</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f22"></span>5F22</td>
 <td class="instruction">LD B,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">B</span>=*<span class="register">HL</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f23"></span>5F23</td>
 <td class="instruction">INC HL</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f24"></span>5F24</td>
 <td class="instruction">LD C,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">C</span>=*<span class="register">HL</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f25"></span>5F25</td>
 <td class="instruction">INC HL</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
 </tr>
 <tr>
+<td class="asm-label">PopulateLevelBuffer_16</td>
 <td class="address-2"><span id="5f26"></span>5F26</td>
 <td class="instruction">LD (IX+$00),C</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write <span class="register">C</span> to *<span class="register">IX</span>+00.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f29"></span>5F29</td>
 <td class="instruction">INC IX</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Increment <span class="register">IX</span> by one.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f2b"></span>5F2B</td>
 <td class="instruction">DEC DE</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Decrease <span class="register">DE</span> by one.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f2c"></span>5F2C</td>
 <td class="instruction">LD A,E</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Jump back to <a href="5E24.html#5e6d">PopulateLevelBuffer_1</a> if <span class="register">DE</span> is zero.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f2d"></span>5F2D</td>
 <td class="instruction">OR D</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f2e"></span>5F2E</td>
-<td class="instruction">JP Z,<a href="5E24.html#5e6d">$5E6D</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JP Z,<a href="5E24.html#5e6d">PopulateLevelBuffer_1</a></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f31"></span>5F31</td>
-<td class="instruction">DJNZ <a href="5E24.html#5f26">$5F26</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">DJNZ <a href="5E24.html#5f26">PopulateLevelBuffer_16</a></td>
+<td class="comment-1" rowspan="1">Decrease counter by one and loop back to <a href="5E24.html#5f26">PopulateLevelBuffer_16</a> until counter is zero.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f33"></span>5F33</td>
-<td class="instruction">JR <a href="5E24.html#5ef6">$5EF6</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR <a href="5E24.html#5ef6">PopulateLevelBuffer_12</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="5E24.html#5ef6">PopulateLevelBuffer_12</a>.</td>
 </tr>
 <tr>
+<td class="asm-label">PopulateLevelBuffer_17</td>
 <td class="address-2"><span id="5f35"></span>5F35</td>
 <td class="instruction">LD BC,($5FB9)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">BC</span>=*<a href="5FB9.html">5FB9</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f39"></span>5F39</td>
 <td class="instruction">INC C</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Increment <span class="register">C</span> by one.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f3a"></span>5F3A</td>
 <td class="instruction">EX AF,AF'</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Exchange the <span class="register">AF</span> register with the shadow <span class="register">AF</span> register.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f3b"></span>5F3B</td>
 <td class="instruction">BIT 5,C</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Jump to <a href="5E24.html#5f41">PopulateLevelBuffer_18</a> if bit 5 of <span class="register">C</span> is set.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f3d"></span>5F3D</td>
-<td class="instruction">JR NZ,<a href="5E24.html#5f41">$5F41</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR NZ,<a href="5E24.html#5f41">PopulateLevelBuffer_18</a></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f3f"></span>5F3F</td>
-<td class="instruction">JR <a href="5E24.html#5f44">$5F44</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR <a href="5E24.html#5f44">PopulateLevelBuffer_19</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="5E24.html#5f44">PopulateLevelBuffer_19</a>.</td>
 </tr>
 <tr>
+<td class="asm-label">PopulateLevelBuffer_18</td>
 <td class="address-2"><span id="5f41"></span>5F41</td>
 <td class="instruction">INC B</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Increment <span class="register">B</span> by one.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f42"></span>5F42</td>
 <td class="instruction">LD C,$00</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">C</span>=00.</td>
 </tr>
 <tr>
+<td class="asm-label">PopulateLevelBuffer_19</td>
 <td class="address-2"><span id="5f44"></span>5F44</td>
 <td class="instruction">LD ($5FB9),BC</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write <span class="register">BC</span> to *<a href="5FB9.html">5FB9</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f48"></span>5F48</td>
 <td class="instruction">BIT 0,D</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Return if bit 0 of <span class="register">D</span> is set.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f4a"></span>5F4A</td>
 <td class="instruction">RET NZ</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f4b"></span>5F4B</td>
 <td class="instruction">LD L,C</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">L</span>=<span class="register">C</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f4c"></span>5F4C</td>
 <td class="instruction">LD A,B</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=<span class="register">B</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f4d"></span>5F4D</td>
-<td class="instruction">AND $07</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">AND %00000111</td>
+<td class="comment-1" rowspan="1">Keep only bits 0-2.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f4f"></span>5F4F</td>
 <td class="instruction">RRCA</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">RRCA.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f50"></span>5F50</td>
 <td class="instruction">RRCA</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">RRCA.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f51"></span>5F51</td>
 <td class="instruction">RRCA</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">RRCA.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f52"></span>5F52</td>
 <td class="instruction">OR L</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Set the bits from <span class="register">L</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f53"></span>5F53</td>
 <td class="instruction">LD L,A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">L</span>=<span class="register">A</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f54"></span>5F54</td>
 <td class="instruction">LD A,B</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=<span class="register">B</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f55"></span>5F55</td>
-<td class="instruction">AND $18</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">AND %00011000</td>
+<td class="comment-1" rowspan="1">Keep only bits 3-4.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f57"></span>5F57</td>
-<td class="instruction">OR $C0</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">OR %11000000</td>
+<td class="comment-1" rowspan="1">Set bits 6-7.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f59"></span>5F59</td>
 <td class="instruction">LD H,A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">H</span>=<span class="register">A</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f5a"></span>5F5A</td>
 <td class="instruction">PUSH HL</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Stash <span class="register">HL</span> on the stack.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f5b"></span>5F5B</td>
 <td class="instruction">LD DE,($5FC1)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">DE</span>=*<a href="5FC1.html">5FC1</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f5f"></span>5F5F</td>
 <td class="instruction">EX AF,AF'</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Exchange the <span class="register">AF</span> register with the shadow <span class="register">AF</span> register.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f60"></span>5F60</td>
 <td class="instruction">SUB $08</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>-=08.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f62"></span>5F62</td>
 <td class="instruction">LD L,A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">L</span>=<span class="register">A</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f63"></span>5F63</td>
 <td class="instruction">LD H,$00</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">H</span>=00.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f65"></span>5F65</td>
 <td class="instruction">ADD HL,HL</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>+=<span class="register">HL</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f66"></span>5F66</td>
 <td class="instruction">ADD HL,HL</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>+=<span class="register">HL</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f67"></span>5F67</td>
 <td class="instruction">ADD HL,HL</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>+=<span class="register">HL</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f68"></span>5F68</td>
 <td class="instruction">ADD HL,DE</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>+=<span class="register">DE</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f69"></span>5F69</td>
 <td class="instruction">EX DE,HL</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Exchange the <span class="register">DE</span> and <span class="register">HL</span> registers.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f6a"></span>5F6A</td>
 <td class="instruction">POP HL</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Restore <span class="register">HL</span> from the stack.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f6b"></span>5F6B</td>
 <td class="instruction">LD B,$08</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">B</span>=08.</td>
 </tr>
 <tr>
+<td class="asm-label">PopulateLevelBuffer_20</td>
 <td class="address-2"><span id="5f6d"></span>5F6D</td>
 <td class="instruction">LD A,(DE)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">DE</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f6e"></span>5F6E</td>
 <td class="instruction">LD (HL),A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">HL</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f6f"></span>5F6F</td>
 <td class="instruction">INC DE</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Increment <span class="register">DE</span> by one.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f70"></span>5F70</td>
 <td class="instruction">INC H</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Increment <span class="register">H</span> by one.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f71"></span>5F71</td>
-<td class="instruction">DJNZ <a href="5E24.html#5f6d">$5F6D</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">DJNZ <a href="5E24.html#5f6d">PopulateLevelBuffer_20</a></td>
+<td class="comment-1" rowspan="1">Decrease counter by one and loop back to <a href="5E24.html#5f6d">PopulateLevelBuffer_20</a> until counter is zero.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f73"></span>5F73</td>
 <td class="instruction">RET</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Return.</td>
 </tr>
 <tr>
+<td class="asm-label">PopulateLevelBuffer_21</td>
 <td class="address-2"><span id="5f74"></span>5F74</td>
 <td class="instruction">LD A,($5FA9)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Jump to <a href="5E24.html#5f83">PopulateLevelBuffer_22</a> if *<a href="5FA1.html#5fa9">5FA9</a> is zero.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f77"></span>5F77</td>
 <td class="instruction">OR A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f78"></span>5F78</td>
-<td class="instruction">JR Z,<a href="5E24.html#5f83">$5F83</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR Z,<a href="5E24.html#5f83">PopulateLevelBuffer_22</a></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f7a"></span>5F7A</td>
 <td class="instruction">XOR A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Write 00 to *<a href="5FA1.html#5fa9">5FA9</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f7b"></span>5F7B</td>
 <td class="instruction">LD ($5FA9),A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f7e"></span>5F7E</td>
 <td class="instruction">NOP</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">No operation.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f7f"></span>5F7F</td>
 <td class="instruction">NOP</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">No operation.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f80"></span>5F80</td>
 <td class="instruction">LD ($DAE3),A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write 00 to *<a href="C1DD.html#dae3">DAE3</a>.</td>
 </tr>
 <tr>
+<td class="asm-label">PopulateLevelBuffer_22</td>
 <td class="address-2"><span id="5f83"></span>5F83</td>
 <td class="instruction">LD A,($5FC5)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="5FC5.html">5FC5</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f86"></span>5F86</td>
 <td class="instruction">DEC A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Decrease <span class="register">A</span> by one.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f87"></span>5F87</td>
 <td class="instruction">LD DE,$DE9E</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">DE</span>=<a href="C1DD.html#de9e">DE9E</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f8a"></span>5F8A</td>
 <td class="instruction">LD L,A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">L</span>=<span class="register">A</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f8b"></span>5F8B</td>
 <td class="instruction">LD H,$00</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">H</span>=00.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f8d"></span>5F8D</td>
 <td class="instruction">ADD HL,HL</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>+=<span class="register">HL</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f8e"></span>5F8E</td>
 <td class="instruction">ADD HL,HL</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>+=<span class="register">HL</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f8f"></span>5F8F</td>
 <td class="instruction">ADD HL,HL</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>+=<span class="register">HL</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f90"></span>5F90</td>
 <td class="instruction">ADD HL,HL</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>+=<span class="register">HL</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f91"></span>5F91</td>
 <td class="instruction">ADD HL,HL</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>+=<span class="register">HL</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f92"></span>5F92</td>
 <td class="instruction">ADD HL,DE</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>+=<span class="register">DE</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f93"></span>5F93</td>
 <td class="instruction">LD ($5FB5),HL</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write <span class="register">HL</span> to *<a href="5FB5.html">5FB5</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f96"></span>5F96</td>
 <td class="instruction">EI</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Enable interrupts.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f97"></span>5F97</td>
 <td class="instruction">HALT</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Halt operation (suspend CPU until the next interrupt).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f98"></span>5F98</td>
 <td class="instruction">DI</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Disable interrupts.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f99"></span>5F99</td>
 <td class="instruction">LD B,$16</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">B</span>=16.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f9b"></span>5F9B</td>
 <td class="instruction">LD HL,$C000</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="BB1C.html#c000">C000</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5f9e"></span>5F9E</td>
 <td class="instruction">JP <a href="6438.html">$6438</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="5fa1"></span>5FA1</td>
-<td class="instruction">NOP</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="5fa2"></span>5FA2</td>
-<td class="instruction">NOP</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="5fa3"></span>5FA3</td>
-<td class="instruction">NOP</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="5fa4"></span>5FA4</td>
-<td class="instruction">NOP</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="5fa5"></span>5FA5</td>
-<td class="instruction">NOP</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="5fa6"></span>5FA6</td>
-<td class="instruction">NOP</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="5fa7"></span>5FA7</td>
-<td class="instruction">NOP</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="5fa8"></span>5FA8</td>
-<td class="instruction">NOP</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="5fa9"></span>5FA9</td>
-<td class="instruction">NOP</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Jump to <a href="6438.html">6438</a>.</td>
 </tr>
 </table>
 <table class="asm-navigation">
@@ -1232,7 +1361,7 @@ Prev: <a href="5DC0.html">5DC0</a>
 </td>
 <td class="up">Up: <a href="../maps/all.html#5e24">Map</a></td>
 <td class="next">
-Next: <a href="5FAA.html">5FAA</a>
+Next: <a href="5FA1.html">5FA1</a>
 </td>
 </tr>
 </table>

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Percy the Potty Pigeon: Routine at 24518</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-dark.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-wide.css" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-75RERFCHBG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-75RERFCHBG');
+</script>
+</head>
+<body class="Asm-c">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html"><img alt="logo" src="../images/logo.png" /></a></td>
+<td class="page-header">Routines</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="24517.html">24517</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#24518">Map</a></td>
+<td class="next">
+Next: <a href="24551.html">24551</a>
+</td>
+</tr>
+</table>
+<div class="description">24518: Routine at 5FC6</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="5">
+<div class="details">
+<div class="paragraph">
+Used by the routine at <a href="24100.html">PopulateLevelBuffer</a>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="address-2"><span id="24518"></span>24518</td>
+<td class="instruction">LD A,(24517)</td>
+<td class="comment-1" rowspan="2"><span class="register">D</span>=*<a href="24517.html">24517</a>.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="24521"></span>24521</td>
+<td class="instruction">LD D,A</td>
+</tr>
+<tr>
+<td class="address-1"><span id="24522"></span>24522</td>
+<td class="instruction">LD E,1</td>
+<td class="comment-1" rowspan="1"><span class="register">E</span>=1.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="24524"></span>24524</td>
+<td class="instruction">CP E</td>
+<td class="comment-1" rowspan="2">Return if *<a href="24517.html">24517</a> is equal to 1.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="24525"></span>24525</td>
+<td class="instruction">RET Z</td>
+</tr>
+<tr>
+<td class="address-1"><span id="24526"></span>24526</td>
+<td class="instruction">LD HL,33706</td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="33706.html">33706</a>.</td>
+</tr>
+<tr>
+<td class="address-2"><span id="24529"></span>24529</td>
+<td class="instruction">LD A,(HL)</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="24530"></span>24530</td>
+<td class="instruction">INC HL</td>
+<td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="24531"></span>24531</td>
+<td class="instruction">OR A</td>
+<td class="comment-1" rowspan="2">Jump to <a href="24518.html#24536">24536</a> if <span class="register">A</span> is zero.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="24532"></span>24532</td>
+<td class="instruction">JR Z,<a href="24518.html#24536">24536</a></td>
+</tr>
+<tr>
+<td class="address-1"><span id="24534"></span>24534</td>
+<td class="instruction">JR <a href="24518.html#24529">24529</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="24518.html#24529">24529</a>.</td>
+</tr>
+<tr>
+<td class="address-2"><span id="24536"></span>24536</td>
+<td class="instruction">INC E</td>
+<td class="comment-1" rowspan="1">Increment <span class="register">E</span> by one.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="24537"></span>24537</td>
+<td class="instruction">LD A,E</td>
+<td class="comment-1" rowspan="3">Jump to <a href="24551.html">24551</a> if <span class="register">E</span> is greater than or equal to 17.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="24538"></span>24538</td>
+<td class="instruction">CP 17</td>
+</tr>
+<tr>
+<td class="address-1"><span id="24540"></span>24540</td>
+<td class="instruction">JR NC,<a href="24551.html">24551</a></td>
+</tr>
+<tr>
+<td class="address-1"><span id="24542"></span>24542</td>
+<td class="instruction">CP D</td>
+<td class="comment-1" rowspan="2">Jump to <a href="24518.html#24547">24547</a> if <span class="register">A</span> is equal to <span class="register">D</span>.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="24543"></span>24543</td>
+<td class="instruction">JR Z,<a href="24518.html#24547">24547</a></td>
+</tr>
+<tr>
+<td class="address-1"><span id="24545"></span>24545</td>
+<td class="instruction">JR <a href="24518.html#24529">24529</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="24518.html#24529">24529</a>.</td>
+</tr>
+<tr>
+<td class="address-2"><span id="24547"></span>24547</td>
+<td class="instruction">LD (24515),HL</td>
+<td class="comment-1" rowspan="1">Write <span class="register">HL</span> to *<a href="24515.html">24515</a>.</td>
+</tr>
+<tr>
+<td class="address-1"><span id="24550"></span>24550</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="24517.html">24517</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#24518">Map</a></td>
+<td class="next">
+Next: <a href="24551.html">24551</a>
+</td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">&copy; 1984 Gremlin Graphics Software Ltd &copy; 2025 ArcadeGeek LTD.</div>
+<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
+<div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
+<div><a href="../../asm/5FC6.html">Switch to hexadecimal</a>.</div>
+</footer>
+</body>
+</html>

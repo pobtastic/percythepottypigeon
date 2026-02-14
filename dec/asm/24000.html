@@ -68,7 +68,7 @@ Used by the routine at <a href="49629.html">GameEntryPoint</a>.
 <td class="instruction">LD (24508),A</td>
 <td class="comment-1" rowspan="2">Write 0 to; <ul class="">
 <li>*<a href="24508.html">24508</a></li>
-<li>*<a href="24490.html">24490</a></li>
+<li>*<a href="24481.html#24490">24490</a></li>
 </ul></td>
 </tr>
 <tr>
@@ -197,13 +197,13 @@ WHITE to *<a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom
 <span id="24058"></span>
 <div class="comments">
 <div class="paragraph">
-Main title screen input loop.
+Game pause input loop.
 </div>
 </div>
 </td>
 </tr>
 <tr>
-<td class="asm-label">TitleScreen_InputLoop</td>
+<td class="asm-label">Pause_InputLoop</td>
 <td class="address-2"><span id="24058"></span>24058</td>
 <td class="instruction">CALL <a href="24553.html">24553</a></td>
 <td class="comment-1" rowspan="1">Call <a href="24553.html">24553</a>.</td>
@@ -248,8 +248,8 @@ Main title screen input loop.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="24067"></span>24067</td>
-<td class="instruction">CALL Z,<a href="26982.html">TitleScreen_BorderEffect</a></td>
-<td class="comment-1" rowspan="1">Call <a href="26982.html">TitleScreen_BorderEffect</a> if the "S" key was pressed.</td>
+<td class="instruction">CALL Z,<a href="26982.html">Pause_BorderEffect</a></td>
+<td class="comment-1" rowspan="1">Call <a href="26982.html">Pause_BorderEffect</a> if the "S" key was pressed.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -322,12 +322,12 @@ Main title screen input loop.
 <td class="asm-label"></td>
 <td class="address-1"><span id="24087"></span>24087</td>
 <td class="instruction">RRA</td>
-<td class="comment-1" rowspan="2">Jump back to <a href="24000.html#24058">TitleScreen_InputLoop</a> if "SPACE" was not pressed.</td>
+<td class="comment-1" rowspan="2">Jump back to <a href="24000.html#24058">Pause_InputLoop</a> if "SPACE" was not pressed.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="24088"></span>24088</td>
-<td class="instruction">JR C,<a href="24000.html#24058">TitleScreen_InputLoop</a></td>
+<td class="instruction">JR C,<a href="24000.html#24058">Pause_InputLoop</a></td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
@@ -374,12 +374,12 @@ The "SPACE" key has been pressed.
 <td class="asm-label"></td>
 <td class="address-1"><span id="24094"></span>24094</td>
 <td class="instruction">RRA</td>
-<td class="comment-1" rowspan="2">Jump back to <a href="24000.html#24058">TitleScreen_InputLoop</a> if "CAPS SHIFT" was not pressed.</td>
+<td class="comment-1" rowspan="2">Jump back to <a href="24000.html#24058">Pause_InputLoop</a> if "CAPS SHIFT" was not pressed.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="24095"></span>24095</td>
-<td class="instruction">JR C,<a href="24000.html#24058">TitleScreen_InputLoop</a></td>
+<td class="instruction">JR C,<a href="24000.html#24058">Pause_InputLoop</a></td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">

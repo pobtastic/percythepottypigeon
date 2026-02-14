@@ -33,7 +33,7 @@ Next: <a href="27026.html">27026</a>
 </td>
 </tr>
 </table>
-<div class="description">26982: Title Screen Border Effect</div>
+<div class="description">26982: Pause Border Effect</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
@@ -42,13 +42,13 @@ Next: <a href="27026.html">27026</a>
 Used by the routine at <a href="24000.html">Game_Initialise</a>.
 </div>
 <div class="paragraph">
-Displays a rainbow-like cycling colour border while waiting for the player to press "S" to start the game.
+Displays a rainbow-like cycling colour border while waiting for the player to press "S" to unpause the game.
 </div>
 </div>
 </td>
 </tr>
 <tr>
-<td class="asm-label">TitleScreen_BorderEffect</td>
+<td class="asm-label">Pause_BorderEffect</td>
 <td class="address-2"><span id="26982"></span>26982</td>
 <td class="instruction">EI</td>
 <td class="comment-1" rowspan="1">Enable interrupts.</td>
@@ -60,17 +60,17 @@ Displays a rainbow-like cycling colour border while waiting for the player to pr
 <td class="comment-1" rowspan="3">Pause for 20 frames to give the player a moment before the effect begins.</td>
 </tr>
 <tr>
-<td class="asm-label">TitleScreen_BorderEffect_ShortLoop</td>
+<td class="asm-label">Pause_BorderEffect_ShortLoop</td>
 <td class="address-2"><span id="26985"></span>26985</td>
 <td class="instruction">HALT</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26986"></span>26986</td>
-<td class="instruction">DJNZ <a href="26982.html#26985">TitleScreen_BorderEffect_ShortLoop</a></td>
+<td class="instruction">DJNZ <a href="26982.html#26985">Pause_BorderEffect_ShortLoop</a></td>
 </tr>
 <tr>
-<td class="asm-label">TitleScreen_BorderEffect_ColourCycle</td>
+<td class="asm-label">Pause_BorderEffect_ColourCycle</td>
 <td class="address-2"><span id="26988"></span>26988</td>
 <td class="instruction">LD B,14</td>
 <td class="comment-1" rowspan="1">Set a frame counter in <span class="register">B</span> of 14 frames.</td>
@@ -92,7 +92,7 @@ Derive a border colour (0-7) from the current frame loop counter.
 </td>
 </tr>
 <tr>
-<td class="asm-label">TitleScreen_BorderEffect_ColourLoop</td>
+<td class="asm-label">Pause_BorderEffect_ColourLoop</td>
 <td class="address-2"><span id="26991"></span>26991</td>
 <td class="instruction">LD A,B</td>
 <td class="comment-1" rowspan="2">Load <span class="register">A</span> with bits 0-2 of the current frame counter value. This limits the value to be between 0-7 (i.e. the colour palette).</td>
@@ -109,9 +109,9 @@ Derive a border colour (0-7) from the current frame loop counter.
 <td class="comment-1" rowspan="1">Stash the frame counter on the stack.</td>
 </tr>
 <tr>
-<td class="asm-label">TitleScreen_Border_PauseLoop_01</td>
+<td class="asm-label">Pause_Border_PauseLoop_01</td>
 <td class="address-2"><span id="26995"></span>26995</td>
-<td class="instruction">DJNZ <a href="26982.html#26995">TitleScreen_Border_PauseLoop_01</a></td>
+<td class="instruction">DJNZ <a href="26982.html#26995">Pause_Border_PauseLoop_01</a></td>
 <td class="comment-1" rowspan="1">Decrease the frame counter by one and loop until the counter is zero.</td>
 </tr>
 <tr>
@@ -133,9 +133,9 @@ Derive a border colour (0-7) from the current frame loop counter.
 <td class="comment-1" rowspan="1">Set <span class="register">B</span> to 0 which increases the size of the counter.</td>
 </tr>
 <tr>
-<td class="asm-label">TitleScreen_Border_PauseLoop_02</td>
+<td class="asm-label">Pause_Border_PauseLoop_02</td>
 <td class="address-2"><span id="27001"></span>27001</td>
-<td class="instruction">DJNZ <a href="26982.html#27001">TitleScreen_Border_PauseLoop_02</a></td>
+<td class="instruction">DJNZ <a href="26982.html#27001">Pause_Border_PauseLoop_02</a></td>
 <td class="comment-1" rowspan="1">Decrease the frame counter by one and loop again until the counter is zero.</td>
 </tr>
 <tr>
@@ -153,8 +153,8 @@ Derive a border colour (0-7) from the current frame loop counter.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="27006"></span>27006</td>
-<td class="instruction">DJNZ <a href="26982.html#26991">TitleScreen_BorderEffect_ColourLoop</a></td>
-<td class="comment-1" rowspan="1">Decrease counter by one and loop back to <a href="26982.html#26991">TitleScreen_BorderEffect_ColourLoop</a> until counter is zero.</td>
+<td class="instruction">DJNZ <a href="26982.html#26991">Pause_BorderEffect_ColourLoop</a></td>
+<td class="comment-1" rowspan="1">Decrease counter by one and loop back to <a href="26982.html#26991">Pause_BorderEffect_ColourLoop</a> until counter is zero.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -196,8 +196,8 @@ Derive a border colour (0-7) from the current frame loop counter.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="27014"></span>27014</td>
-<td class="instruction">JR NZ,<a href="26982.html#26988">TitleScreen_BorderEffect_ColourCycle</a></td>
-<td class="comment-1" rowspan="1">Jump back to <a href="26982.html#26988">TitleScreen_BorderEffect_ColourCycle</a> if the "S" key was not pressed.</td>
+<td class="instruction">JR NZ,<a href="26982.html#26988">Pause_BorderEffect_ColourCycle</a></td>
+<td class="comment-1" rowspan="1">Jump back to <a href="26982.html#26988">Pause_BorderEffect_ColourCycle</a> if the "S" key was not pressed.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
