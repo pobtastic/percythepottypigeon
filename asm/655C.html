@@ -33,23 +33,28 @@ Next: <a href="6581.html">6581</a>
 </td>
 </tr>
 </table>
-<div class="description">655C: Routine at 655C</div>
+<div class="description">655C: Start Level</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
 <div class="details">
 <div class="paragraph">
-Used by the routine at <a href="6480.html">6480</a>.
+Used by the routine at <a href="6480.html">Handle_Title_Screen</a>.
+</div>
+<div class="paragraph">
+Print at 50F0; set <a href="5FC5.html">CurrentRoom</a>=06; call <a href="5E24.html">PopulateRoomBuffer</a>; loop <a href="6480.html#64cc">Handle_Title_Screen_5</a> 60 times; set <a href="C1DD.html#dac0">DAC0</a> area. Clear <a href="5FA7.html">Title_Countdown</a>.
 </div>
 </div>
 </td>
 </tr>
 <tr>
+<td class="asm-label">Start_Level</td>
 <td class="address-2"><span id="655c"></span>655C</td>
 <td class="instruction">LD HL,$50F0</td>
 <td class="comment-1" rowspan="1"><span class="register">HL</span>=50F0 (screen buffer location).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="655f"></span>655F</td>
 <td class="instruction">CALL <a href="6581.html">PrintCharacter</a></td>
 <td class="comment-1" rowspan="1">Call <a href="6581.html">PrintCharacter</a>.</td>
@@ -59,77 +64,92 @@ Used by the routine at <a href="6480.html">6480</a>.
 <span id="6562"></span>
 <div class="comments">
 <div class="paragraph">
-This entry point is used by the routines at <a href="659B.html">659B</a> and <a href="68B8.html">68B8</a>.
+This entry point is used by the routines at <a href="659B.html">Show_Game_Over_Screen</a> and <a href="68B8.html">Handle_Life_Lost</a>.
 </div>
 </div>
 </td>
 </tr>
 <tr>
+<td class="asm-label">Start_Level_0</td>
 <td class="address-2"><span id="6562"></span>6562</td>
 <td class="instruction">LD A,$06</td>
-<td class="comment-1" rowspan="2">Write 06 to *<a href="5FC5.html">5FC5</a>.</td>
+<td class="comment-1" rowspan="2">Write 06 to *<a href="5FC5.html">CurrentRoom</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6564"></span>6564</td>
 <td class="instruction">LD ($5FC5),A</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6567"></span>6567</td>
-<td class="instruction">CALL <a href="5E24.html">PopulateLevelBuffer</a></td>
-<td class="comment-1" rowspan="1">Call <a href="5E24.html">PopulateLevelBuffer</a>.</td>
+<td class="instruction">CALL <a href="5E24.html">PopulateRoomBuffer</a></td>
+<td class="comment-1" rowspan="1">Call <a href="5E24.html">PopulateRoomBuffer</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="656a"></span>656A</td>
 <td class="instruction">LD B,$60</td>
 <td class="comment-1" rowspan="1"><span class="register">B</span>=60.</td>
 </tr>
 <tr>
+<td class="asm-label">Start_Level_1</td>
 <td class="address-2"><span id="656c"></span>656C</td>
-<td class="instruction">CALL <a href="6480.html#64cc">$64CC</a></td>
-<td class="comment-1" rowspan="1">Call <a href="6480.html#64cc">64CC</a>.</td>
+<td class="instruction">CALL <a href="6480.html#64cc">Handle_Title_Screen_5</a></td>
+<td class="comment-1" rowspan="1">Call <a href="6480.html#64cc">Handle_Title_Screen_5</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="656f"></span>656F</td>
-<td class="instruction">DJNZ <a href="655C.html#656c">$656C</a></td>
-<td class="comment-1" rowspan="1">Decrease counter by one and loop back to <a href="655C.html#656c">656C</a> until counter is zero.</td>
+<td class="instruction">DJNZ <a href="655C.html#656c">Start_Level_1</a></td>
+<td class="comment-1" rowspan="1">Decrease counter by one and loop back to <a href="655C.html#656c">Start_Level_1</a> until counter is zero.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6571"></span>6571</td>
 <td class="instruction">LD HL,$DAC0</td>
 <td class="comment-1" rowspan="2">Write 38 to *<a href="C1DD.html#dac0">DAC0</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6574"></span>6574</td>
 <td class="instruction">LD (HL),$38</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6576"></span>6576</td>
 <td class="instruction">INC HL</td>
 <td class="comment-1" rowspan="2">Write 9E to *<a href="C1DD.html#dac1">DAC1</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6577"></span>6577</td>
 <td class="instruction">LD (HL),$9E</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6579"></span>6579</td>
 <td class="instruction">INC HL</td>
 <td class="comment-1" rowspan="2">Write 07 to *<a href="C1DD.html#dac2">DAC2</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="657a"></span>657A</td>
 <td class="instruction">LD (HL),$07</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="657c"></span>657C</td>
 <td class="instruction">XOR A</td>
-<td class="comment-1" rowspan="2">Write 00 to *<a href="5FA1.html#5fa7">5FA7</a>.</td>
+<td class="comment-1" rowspan="2">Write 00 to *<a href="5FA7.html">Title_Countdown</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="657d"></span>657D</td>
 <td class="instruction">LD ($5FA7),A</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6580"></span>6580</td>
 <td class="instruction">RET</td>
 <td class="comment-1" rowspan="1">Return.</td>
@@ -148,7 +168,7 @@ Next: <a href="6581.html">6581</a>
 </table>
 <footer>
 <div class="release"></div>
-<div class="copyright">&copy; 1984 Gremlin Graphics Software Ltd &copy; 2025 ArcadeGeek LTD.</div>
+<div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
 <div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
 <div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
 <div><a href="../dec/asm/25948.html">Switch to decimal</a>.</div>

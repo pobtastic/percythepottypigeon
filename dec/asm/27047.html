@@ -33,218 +33,262 @@ Next: <a href="27127.html">27127</a>
 </td>
 </tr>
 </table>
-<div class="description">27047: Routine at 69A7</div>
+<div class="description">27047: Run Main Loop Body</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
 <div class="details">
 <div class="paragraph">
-Used by the routine at <a href="27026.html">27026</a>.
+Used by the routine at <a href="27026.html">Run_Game_Frame</a>.
+</div>
+<div class="paragraph">
+DI; clear <a href="49629.html#56007">56007</a> and <a href="49629.html#56043">56043</a>; then call <a href="27127.html">Load_Level_Data</a>, <a href="28075.html">Dispatch_Game_State</a>, <a href="29199.html">Clear_Or_Update_Buffer</a>.
 </div>
 </div>
 </td>
 </tr>
 <tr>
+<td class="asm-label">Run_Main_Loop_Body</td>
 <td class="address-2"><span id="27047"></span>27047</td>
 <td class="instruction">DI</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27048"></span>27048</td>
 <td class="instruction">PUSH IX</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27050"></span>27050</td>
 <td class="instruction">PUSH IY</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27052"></span>27052</td>
 <td class="instruction">LD B,7</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27054"></span>27054</td>
 <td class="instruction">LD HL,56007</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27057"></span>27057</td>
 <td class="instruction">LD C,0</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label">Run_Main_Loop_Body_0</td>
 <td class="address-2"><span id="27059"></span>27059</td>
 <td class="instruction">LD (HL),C</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27060"></span>27060</td>
 <td class="instruction">INC HL</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27061"></span>27061</td>
 <td class="instruction">INC HL</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27062"></span>27062</td>
 <td class="instruction">INC HL</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27063"></span>27063</td>
 <td class="instruction">INC HL</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27064"></span>27064</td>
-<td class="instruction">DJNZ <a href="27047.html#27059">27059</a></td>
+<td class="instruction">DJNZ <a href="27047.html#27059">Run_Main_Loop_Body_0</a></td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27066"></span>27066</td>
 <td class="instruction">LD HL,56043</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27069"></span>27069</td>
 <td class="instruction">LD B,6</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label">Run_Main_Loop_Body_1</td>
 <td class="address-2"><span id="27071"></span>27071</td>
 <td class="instruction">LD (HL),C</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27072"></span>27072</td>
 <td class="instruction">INC HL</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27073"></span>27073</td>
 <td class="instruction">INC HL</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27074"></span>27074</td>
 <td class="instruction">INC HL</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27075"></span>27075</td>
 <td class="instruction">INC HL</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27076"></span>27076</td>
-<td class="instruction">DJNZ <a href="27047.html#27071">27071</a></td>
+<td class="instruction">DJNZ <a href="27047.html#27071">Run_Main_Loop_Body_1</a></td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27078"></span>27078</td>
 <td class="instruction">LD A,(24510)</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27081"></span>27081</td>
 <td class="instruction">OR A</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27082"></span>27082</td>
-<td class="instruction">CALL NZ,<a href="27127.html#27813">27813</a></td>
+<td class="instruction">CALL NZ,<a href="27127.html#27813">Load_Level_Data_42</a></td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27085"></span>27085</td>
-<td class="instruction">CALL <a href="27127.html">27127</a></td>
+<td class="instruction">CALL <a href="27127.html">Load_Level_Data</a></td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27088"></span>27088</td>
-<td class="instruction">CALL <a href="28075.html">28075</a></td>
+<td class="instruction">CALL <a href="28075.html">Dispatch_Game_State</a></td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27091"></span>27091</td>
-<td class="instruction">CALL <a href="29199.html">29199</a></td>
+<td class="instruction">CALL <a href="29199.html">Clear_Or_Update_Buffer</a></td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27094"></span>27094</td>
 <td class="instruction">LD A,(24517)</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27097"></span>27097</td>
 <td class="instruction">CP 4</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27099"></span>27099</td>
-<td class="instruction">CALL Z,<a href="28075.html#28802">28802</a></td>
+<td class="instruction">CALL Z,<a href="28075.html#28802">Dispatch_Game_State_37</a></td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27102"></span>27102</td>
 <td class="instruction">LD A,(24493)</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27105"></span>27105</td>
 <td class="instruction">OR A</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27106"></span>27106</td>
-<td class="instruction">CALL NZ,<a href="25728.html#25790">25790</a></td>
+<td class="instruction">CALL NZ,<a href="25728.html#25790">Handle_Title_Screen_4</a></td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27109"></span>27109</td>
 <td class="instruction">LD A,(24499)</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27112"></span>27112</td>
 <td class="instruction">LD (27843),A</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27115"></span>27115</td>
 <td class="instruction">XOR A</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27116"></span>27116</td>
 <td class="instruction">LD (24510),A</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27119"></span>27119</td>
 <td class="instruction">INC A</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27120"></span>27120</td>
 <td class="instruction">OUT (254),A</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27122"></span>27122</td>
 <td class="instruction">POP IY</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27124"></span>27124</td>
 <td class="instruction">POP IX</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27126"></span>27126</td>
 <td class="instruction">RET</td>
 <td class="comment-0" rowspan="1"></td>
@@ -263,7 +307,7 @@ Next: <a href="27127.html">27127</a>
 </table>
 <footer>
 <div class="release"></div>
-<div class="copyright">&copy; 1984 Gremlin Graphics Software Ltd &copy; 2025 ArcadeGeek LTD.</div>
+<div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
 <div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
 <div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
 <div><a href="../../asm/69A7.html">Switch to hexadecimal</a>.</div>

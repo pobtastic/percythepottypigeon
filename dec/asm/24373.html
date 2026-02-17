@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Percy the Potty Pigeon: Routine at 24373</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-dark.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-wide.css" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-75RERFCHBG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-75RERFCHBG');
+</script>
+</head>
+<body class="Asm-c">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html"><img alt="logo" src="../images/logo.png" /></a></td>
+<td class="page-header">Routines</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="24283.html">24283</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#24373">Map</a></td>
+<td class="next">
+Next: <a href="24481.html">24481</a>
+</td>
+</tr>
+</table>
+<div class="description">24373: Draw Room Tile</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="5">
+<div class="details">
+<div class="paragraph">
+Used by the routines at <a href="24210.html">Command01_RepeatedTile</a>, <a href="24234.html">Command02_TileWithAttribute</a> and <a href="24264.html">Command08+_SingleTile</a>.
+</div>
+<div class="paragraph">
+Draws a single tile to the screen buffer at the current drawing position stored in *<a href="24505.html">RoomDrawPosition</a>. The position is advanced after each call. If <span class="register">D</span>bit 0 is set, the position is advanced but no tile is drawn (used for blank/ skip tiles in command 1).
+</div>
+</div>
+<table class="input">
+<tr class="asm-input-header">
+<th colspan="2">Input</th>
+</tr>
+<tr>
+<td class="register">A</td>
+<td class="register-desc">Tile character to draw</td>
+</tr>
+<tr>
+<td class="register">D</td>
+<td class="register-desc">Bit 0: 1=advance position only, 0=draw and advance</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td class="asm-label">DrawRoomTile</td>
+<td class="address-2"><span id="24373"></span>24373</td>
+<td class="instruction">LD BC,(24505)</td>
+<td class="comment-1" rowspan="1"><span class="register">BC</span>=*<a href="24505.html">RoomDrawPosition</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24377"></span>24377</td>
+<td class="instruction">INC C</td>
+<td class="comment-1" rowspan="1">Increment the column in <span class="register">C</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24378"></span>24378</td>
+<td class="instruction">EX AF,AF'</td>
+<td class="comment-1" rowspan="1">Stash the tile character in shadow <span class="register">AF</span>.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="24379"></span>
+<div class="comments">
+<div class="paragraph">
+If the column has reached 32 (past the right edge), wrap to the next row.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24379"></span>24379</td>
+<td class="instruction">BIT 5,C</td>
+<td class="comment-1" rowspan="2">Jump to <a href="24373.html#24385">DrawRoomTile_NextRow</a> if bit 5 of <span class="register">C</span> is set.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24381"></span>24381</td>
+<td class="instruction">JR NZ,<a href="24373.html#24385">DrawRoomTile_NextRow</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24383"></span>24383</td>
+<td class="instruction">JR <a href="24373.html#24388">DrawRoomTile_StorePosition</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="24373.html#24388">DrawRoomTile_StorePosition</a>.</td>
+</tr>
+<tr>
+<td class="asm-label">DrawRoomTile_NextRow</td>
+<td class="address-2"><span id="24385"></span>24385</td>
+<td class="instruction">INC B</td>
+<td class="comment-1" rowspan="1">Increment the row in <span class="register">B</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24386"></span>24386</td>
+<td class="instruction">LD C,0</td>
+<td class="comment-1" rowspan="1">Reset the column to 0.</td>
+</tr>
+<tr>
+<td class="asm-label">DrawRoomTile_StorePosition</td>
+<td class="address-2"><span id="24388"></span>24388</td>
+<td class="instruction">LD (24505),BC</td>
+<td class="comment-1" rowspan="1">Write <span class="register">BC</span> to *<a href="24505.html">RoomDrawPosition</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24392"></span>24392</td>
+<td class="instruction">BIT 0,D</td>
+<td class="comment-1" rowspan="2">Return if bit 0 of <span class="register">D</span> is set.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24394"></span>24394</td>
+<td class="instruction">RET NZ</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="24395"></span>
+<div class="comments">
+<div class="paragraph">
+Calculate the screen buffer address from the column (<span class="register">C</span>) and row (<span class="register">B</span>) drawing position. This converts the character cell coordinates into a pixel address within the screen buffer at <a href="49152.html">RoomBuffer</a>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24395"></span>24395</td>
+<td class="instruction">LD L,C</td>
+<td class="comment-1" rowspan="1"><span class="register">L</span>=<span class="register">C</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24396"></span>24396</td>
+<td class="instruction">LD A,B</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=<span class="register">B</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24397"></span>24397</td>
+<td class="instruction">AND %00000111</td>
+<td class="comment-1" rowspan="1">Keep only bits 0-2.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24399"></span>24399</td>
+<td class="instruction">RRCA</td>
+<td class="comment-1" rowspan="1">RRCA.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24400"></span>24400</td>
+<td class="instruction">RRCA</td>
+<td class="comment-1" rowspan="1">RRCA.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24401"></span>24401</td>
+<td class="instruction">RRCA</td>
+<td class="comment-1" rowspan="1">RRCA.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24402"></span>24402</td>
+<td class="instruction">OR L</td>
+<td class="comment-1" rowspan="1">Merge in the column bits from <span class="register">L</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24403"></span>24403</td>
+<td class="instruction">LD L,A</td>
+<td class="comment-1" rowspan="1"><span class="register">L</span>=<span class="register">A</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24404"></span>24404</td>
+<td class="instruction">LD A,B</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=<span class="register">B</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24405"></span>24405</td>
+<td class="instruction">AND %00011000</td>
+<td class="comment-1" rowspan="1">Keep only bits 3-4.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24407"></span>24407</td>
+<td class="instruction">OR %11000000</td>
+<td class="comment-1" rowspan="1">Set bits 6-7 for the screen buffer base at <a href="49152.html">RoomBuffer</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24409"></span>24409</td>
+<td class="instruction">LD H,A</td>
+<td class="comment-1" rowspan="1"><span class="register">H</span>=<span class="register">A</span>.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="24410"></span>
+<div class="comments">
+<div class="paragraph">
+Look up the tile graphic data from the active tile set and copy all 8 pixel rows to the screen buffer.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24410"></span>24410</td>
+<td class="instruction">PUSH HL</td>
+<td class="comment-1" rowspan="1">Stash the screen buffer address on the stack.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24411"></span>24411</td>
+<td class="instruction">LD DE,(24513)</td>
+<td class="comment-1" rowspan="1"><span class="register">DE</span>=*<a href="24513.html">Pointer_ActiveTileSet</a> (active tile set base address).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24415"></span>24415</td>
+<td class="instruction">EX AF,AF'</td>
+<td class="comment-1" rowspan="1">Retrieve the tile character from shadow <span class="register">AF</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24416"></span>24416</td>
+<td class="instruction">SUB 8</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>-=8.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24418"></span>24418</td>
+<td class="instruction">LD L,A</td>
+<td class="comment-1" rowspan="2">Transfer the tile index to <span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24419"></span>24419</td>
+<td class="instruction">LD H,0</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24421"></span>24421</td>
+<td class="instruction">ADD HL,HL</td>
+<td class="comment-1" rowspan="3">Multiply by 8 (bytes per tile).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24422"></span>24422</td>
+<td class="instruction">ADD HL,HL</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24423"></span>24423</td>
+<td class="instruction">ADD HL,HL</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24424"></span>24424</td>
+<td class="instruction">ADD HL,DE</td>
+<td class="comment-1" rowspan="1">Add the tile set base address.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24425"></span>24425</td>
+<td class="instruction">EX DE,HL</td>
+<td class="comment-1" rowspan="1">Exchange so <span class="register">DE</span>=tile graphic data, <span class="register">HL</span>=screen buffer address.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24426"></span>24426</td>
+<td class="instruction">POP HL</td>
+<td class="comment-1" rowspan="1">Restore the screen buffer address from the stack.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24427"></span>24427</td>
+<td class="instruction">LD B,8</td>
+<td class="comment-1" rowspan="1">Set a line counter in <span class="register">B</span> of 8.</td>
+</tr>
+<tr>
+<td class="asm-label">DrawRoomTile_CopyLoop</td>
+<td class="address-2"><span id="24429"></span>24429</td>
+<td class="instruction">LD A,(DE)</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">DE</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24430"></span>24430</td>
+<td class="instruction">LD (HL),A</td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24431"></span>24431</td>
+<td class="instruction">INC DE</td>
+<td class="comment-1" rowspan="1">Advance the tile graphic data pointer.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24432"></span>24432</td>
+<td class="instruction">INC H</td>
+<td class="comment-1" rowspan="1">Move down one pixel row in the screen buffer.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24433"></span>24433</td>
+<td class="instruction">DJNZ <a href="24373.html#24429">DrawRoomTile_CopyLoop</a></td>
+<td class="comment-1" rowspan="1">Decrease the line counter by one and loop back to <a href="24373.html#24429">DrawRoomTile_CopyLoop</a> until all 8 rows are drawn.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24435"></span>24435</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="24436"></span>
+<div class="comments">
+<div class="paragraph">
+This entry point is used by the routine at <a href="24283.html">Command03_FillAttributes</a>.
+</div>
+<div class="paragraph">
+Attribute overlay command 36: end of attribute data. Finalises the room setup by resetting game flags and calculating the base address for this room's colour attribute lookup table.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">PopulateRoomBuffer_EndAttributes</td>
+<td class="address-2"><span id="24436"></span>24436</td>
+<td class="instruction">LD A,(24489)</td>
+<td class="comment-1" rowspan="3">Jump to <a href="24373.html#24451">PopulateRoomBuffer_SetAttributeBase</a> if *<a href="24489.html">Skip_Flag</a> is zero.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24439"></span>24439</td>
+<td class="instruction">OR A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24440"></span>24440</td>
+<td class="instruction">JR Z,<a href="24373.html#24451">PopulateRoomBuffer_SetAttributeBase</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24442"></span>24442</td>
+<td class="instruction">XOR A</td>
+<td class="comment-1" rowspan="2">Write 0 to *<a href="24489.html">Skip_Flag</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24443"></span>24443</td>
+<td class="instruction">LD (24489),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24446"></span>24446</td>
+<td class="instruction">NOP</td>
+<td class="comment-1" rowspan="1">No operation.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24447"></span>24447</td>
+<td class="instruction">NOP</td>
+<td class="comment-1" rowspan="1">No operation.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24448"></span>24448</td>
+<td class="instruction">LD (56035),A</td>
+<td class="comment-1" rowspan="1">Write 0 to *<a href="49629.html#56035">56035</a>.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="24451"></span>
+<div class="comments">
+<div class="paragraph">
+Calculate the base address for this room's colour attributes. Each room has 32 bytes of attribute data stored sequentially from <a href="49629.html#56990">56990</a>, so multiply the zero-indexed room number by 32 and add the base.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">PopulateRoomBuffer_SetAttributeBase</td>
+<td class="address-2"><span id="24451"></span>24451</td>
+<td class="instruction">LD A,(24517)</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="24517.html">CurrentRoom</a> (current room number).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24454"></span>24454</td>
+<td class="instruction">DEC A</td>
+<td class="comment-1" rowspan="1">Decrease by one to make zero-indexed.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24455"></span>24455</td>
+<td class="instruction">LD DE,56990</td>
+<td class="comment-1" rowspan="1"><span class="register">DE</span>=<a href="49629.html#56990">56990</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24458"></span>24458</td>
+<td class="instruction">LD L,A</td>
+<td class="comment-1" rowspan="2">Transfer the room index to <span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24459"></span>24459</td>
+<td class="instruction">LD H,0</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24460"></span>24460</td>
+<td class="instruction">NOP</td>
+<td class="comment-1" rowspan="5">Multiply by 32.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24461"></span>24461</td>
+<td class="instruction">ADD HL,HL</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24462"></span>24462</td>
+<td class="instruction">ADD HL,HL</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24463"></span>24463</td>
+<td class="instruction">ADD HL,HL</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24464"></span>24464</td>
+<td class="instruction">ADD HL,HL</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24465"></span>24465</td>
+<td class="instruction">ADD HL,HL</td>
+<td class="comment-1" rowspan="1">Add the base address.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24466"></span>24466</td>
+<td class="instruction">ADD HL,DE</td>
+<td class="comment-1" rowspan="2">Write the result to *<a href="24501.html">Saved_Pointer</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24467"></span>24467</td>
+<td class="instruction">LD (24501),HL</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="24470"></span>
+<div class="comments">
+<div class="paragraph">
+Wait for the next interrupt frame, then transfer the completed screen buffer to the display.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24470"></span>24470</td>
+<td class="instruction">EI</td>
+<td class="comment-1" rowspan="1">Enable interrupts.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24471"></span>24471</td>
+<td class="instruction">HALT</td>
+<td class="comment-1" rowspan="1">Halt operation (suspend CPU until the next interrupt).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24472"></span>24472</td>
+<td class="instruction">DI</td>
+<td class="comment-1" rowspan="1">Disable interrupts.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24473"></span>24473</td>
+<td class="instruction">LD B,22</td>
+<td class="comment-1" rowspan="1"><span class="register">B</span>=22.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24475"></span>24475</td>
+<td class="instruction">LD HL,49152</td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="49152.html">RoomBuffer</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24478"></span>24478</td>
+<td class="instruction">JP <a href="25656.html">Draw_Level_Rows</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="25656.html">Draw_Level_Rows</a>.</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="24283.html">24283</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#24373">Map</a></td>
+<td class="next">
+Next: <a href="24481.html">24481</a>
+</td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
+<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
+<div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
+<div><a href="../../asm/5F35.html">Switch to hexadecimal</a>.</div>
+</footer>
+</body>
+</html>

@@ -57,18 +57,28 @@ Used by the routine at <a href="49629.html">GameEntryPoint</a>.
 <td class="comment-1" rowspan="1"><span class="register">A</span>=0.</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="24002"></span>
+<div class="comments">
+<div class="paragraph">
+Put the stack pointer somewhere safe.
+</div>
+</div>
+</td>
+</tr>
+<tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="24002"></span>24002</td>
 <td class="instruction">LD SP,23550</td>
-<td class="comment-1" rowspan="1"><span class="register">SP</span>=<a href="23550.html">23550</a>.</td>
+<td class="comment-1" rowspan="1"><span class="register">SP</span>=<a href="23550.html">Stack</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="24005"></span>24005</td>
 <td class="instruction">LD (24508),A</td>
 <td class="comment-1" rowspan="2">Write 0 to; <ul class="">
-<li>*<a href="24508.html">24508</a></li>
-<li>*<a href="24481.html#24490">24490</a></li>
+<li>*<a href="24508.html">Pause_Flag</a></li>
+<li>*<a href="24490.html">24490</a></li>
 </ul></td>
 </tr>
 <tr>
@@ -178,14 +188,14 @@ WHITE to *<a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="24050"></span>24050</td>
-<td class="instruction">CALL <a href="25917.html">25917</a></td>
-<td class="comment-1" rowspan="1">Call <a href="25917.html">25917</a>.</td>
+<td class="instruction">CALL <a href="25917.html">Initialise_Lives</a></td>
+<td class="comment-1" rowspan="1">Call <a href="25917.html">Initialise_Lives</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="24053"></span>24053</td>
 <td class="instruction">LD A,255</td>
-<td class="comment-1" rowspan="2">Write 255 to *<a href="24508.html">24508</a>.</td>
+<td class="comment-1" rowspan="2">Write 255 to *<a href="24508.html">Pause_Flag</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -205,8 +215,8 @@ Game pause input loop.
 <tr>
 <td class="asm-label">Pause_InputLoop</td>
 <td class="address-2"><span id="24058"></span>24058</td>
-<td class="instruction">CALL <a href="24553.html">24553</a></td>
-<td class="comment-1" rowspan="1">Call <a href="24553.html">24553</a>.</td>
+<td class="instruction">CALL <a href="24553.html">Handle_Pause_Input</a></td>
+<td class="comment-1" rowspan="1">Call <a href="24553.html">Handle_Pause_Input</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -254,8 +264,8 @@ Game pause input loop.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="24070"></span>24070</td>
-<td class="instruction">CALL <a href="27026.html">27026</a></td>
-<td class="comment-1" rowspan="1">Call <a href="27026.html">27026</a>.</td>
+<td class="instruction">CALL <a href="27026.html">Run_Game_Frame</a></td>
+<td class="comment-1" rowspan="1">Call <a href="27026.html">Run_Game_Frame</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -273,8 +283,8 @@ Game pause input loop.
 <td class="address-1"><span id="24075"></span>24075</td>
 <td class="instruction">XOR A</td>
 <td class="comment-1" rowspan="3">Write 0 to; <ul class="">
-<li>*<a href="24507.html">24507</a></li>
-<li>*<a href="24509.html">24509</a></li>
+<li>*<a href="24507.html">Level_Flag</a></li>
+<li>*<a href="24509.html">Sub_State</a></li>
 </ul></td>
 </tr>
 <tr>
@@ -417,7 +427,7 @@ Next: <a href="24100.html">24100</a>
 </table>
 <footer>
 <div class="release"></div>
-<div class="copyright">&copy; 1984 Gremlin Graphics Software Ltd &copy; 2025 ArcadeGeek LTD.</div>
+<div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
 <div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
 <div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
 <div><a href="../../asm/5DC0.html">Switch to hexadecimal</a>.</div>

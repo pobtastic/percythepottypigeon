@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Percy the Potty Pigeon: Routine at 24210</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-dark.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-wide.css" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-75RERFCHBG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-75RERFCHBG');
+</script>
+</head>
+<body class="Asm-c">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html"><img alt="logo" src="../images/logo.png" /></a></td>
+<td class="page-header">Routines</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="24178.html">24178</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#24210">Map</a></td>
+<td class="next">
+Next: <a href="24234.html">24234</a>
+</td>
+</tr>
+</table>
+<div class="description">24210: Command 1: Draw Repeated Tile</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="5">
+<div class="details">
+<div class="paragraph">
+Used by the routine at <a href="24100.html">PopulateRoomBuffer</a>.
+</div>
+<div class="paragraph">
+Command 1: Draw a repeated tile. The following byte specifies how many times to repeat the current tile.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Command01_RepeatedTile</td>
+<td class="address-2"><span id="24210"></span>24210</td>
+<td class="instruction">INC HL</td>
+<td class="comment-1" rowspan="1">Increment the room data pointer by one.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24211"></span>24211</td>
+<td class="instruction">LD A,(HL)</td>
+<td class="comment-1" rowspan="1">Fetch the tile byte/ repeat counter.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24212"></span>24212</td>
+<td class="instruction">INC HL</td>
+<td class="comment-1" rowspan="1">Increment the room data pointer by one.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24213"></span>24213</td>
+<td class="instruction">LD B,A</td>
+<td class="comment-1" rowspan="1">Set the repeat counter in <span class="register">B</span>.</td>
+</tr>
+<tr>
+<td class="asm-label">RepeatedTile_Loop</td>
+<td class="address-2"><span id="24214"></span>24214</td>
+<td class="instruction">PUSH HL</td>
+<td class="comment-1" rowspan="3">Stash the room data pointer, tile counter and repeat counter on the stack.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24215"></span>24215</td>
+<td class="instruction">PUSH DE</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24216"></span>24216</td>
+<td class="instruction">PUSH BC</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24217"></span>24217</td>
+<td class="instruction">LD D,1</td>
+<td class="comment-1" rowspan="1"><span class="register">D</span>=1 (flag: advance position only, don't draw).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24219"></span>24219</td>
+<td class="instruction">CALL <a href="24373.html">DrawRoomTile</a></td>
+<td class="comment-1" rowspan="1">Call <a href="24373.html">DrawRoomTile</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24222"></span>24222</td>
+<td class="instruction">POP BC</td>
+<td class="comment-1" rowspan="3">Restore the repeat counter, tile counter and room data pointer from the stack.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24223"></span>24223</td>
+<td class="instruction">POP DE</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24224"></span>24224</td>
+<td class="instruction">POP HL</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24225"></span>24225</td>
+<td class="instruction">DEC DE</td>
+<td class="comment-1" rowspan="1">Decrease <span class="register">DE</span> by one.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24226"></span>24226</td>
+<td class="instruction">LD A,E</td>
+<td class="comment-1" rowspan="3">Jump to <a href="24100.html#24173">PopulateRoomBuffer_Error</a> if <span class="register">DE</span> is zero.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24227"></span>24227</td>
+<td class="instruction">OR D</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24228"></span>24228</td>
+<td class="instruction">JR Z,<a href="24100.html#24173">PopulateRoomBuffer_Error</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24230"></span>24230</td>
+<td class="instruction">DJNZ <a href="24210.html#24214">RepeatedTile_Loop</a></td>
+<td class="comment-1" rowspan="1">Decrease the repeat counter by one and loop back to <a href="24210.html#24214">RepeatedTile_Loop</a> until all repeats are processed.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="24232"></span>24232</td>
+<td class="instruction">JR <a href="24100.html#24149">PopulateRoomBuffer_ParseByte</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="24100.html#24149">PopulateRoomBuffer_ParseByte</a> to continue parsing.</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="24178.html">24178</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#24210">Map</a></td>
+<td class="next">
+Next: <a href="24234.html">24234</a>
+</td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
+<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
+<div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
+<div><a href="../../asm/5E92.html">Switch to hexadecimal</a>.</div>
+</footer>
+</body>
+</html>

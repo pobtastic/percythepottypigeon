@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Percy the Potty Pigeon: Routine at 5EC8</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-dark.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-wide.css" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-75RERFCHBG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-75RERFCHBG');
+</script>
+</head>
+<body class="Asm-c">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html"><img alt="logo" src="../images/logo.png" /></a></td>
+<td class="page-header">Routines</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="5EAA.html">5EAA</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#5ec8">Map</a></td>
+<td class="next">
+Next: <a href="5EDB.html">5EDB</a>
+</td>
+</tr>
+</table>
+<div class="description">5EC8: Command 08 (Or Higher): Single Tile</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="5">
+<div class="details">
+<div class="paragraph">
+Used by the routine at <a href="5E24.html">PopulateRoomBuffer</a>.
+</div>
+<div class="paragraph">
+Command 08+: draw a single tile. The command byte itself is the tile character to draw.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Command08+_SingleTile</td>
+<td class="address-2"><span id="5ec8"></span>5EC8</td>
+<td class="instruction">LD A,(HL)</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5ec9"></span>5EC9</td>
+<td class="instruction">INC HL</td>
+<td class="comment-1" rowspan="1">Increment the room data pointer by one.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5eca"></span>5ECA</td>
+<td class="instruction">PUSH HL</td>
+<td class="comment-1" rowspan="2">Stash the room data pointer and tile counter on the stack.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5ecb"></span>5ECB</td>
+<td class="instruction">PUSH DE</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5ecc"></span>5ECC</td>
+<td class="instruction">LD D,$00</td>
+<td class="comment-1" rowspan="1"><span class="register">D</span>=00 (flag: draw tile to screen buffer).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5ece"></span>5ECE</td>
+<td class="instruction">CALL <a href="5F35.html">DrawRoomTile</a></td>
+<td class="comment-1" rowspan="1">Call <a href="5F35.html">DrawRoomTile</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5ed1"></span>5ED1</td>
+<td class="instruction">POP DE</td>
+<td class="comment-1" rowspan="2">Restore the tile counter and room data pointer from the stack.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5ed2"></span>5ED2</td>
+<td class="instruction">POP HL</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5ed3"></span>5ED3</td>
+<td class="instruction">DEC DE</td>
+<td class="comment-1" rowspan="1">Decrease <span class="register">DE</span> by one.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5ed4"></span>5ED4</td>
+<td class="instruction">LD A,D</td>
+<td class="comment-1" rowspan="3">Jump back to <a href="5E24.html#5e6d">PopulateRoomBuffer_Error</a> if <span class="register">DE</span> is zero.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5ed5"></span>5ED5</td>
+<td class="instruction">OR E</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5ed6"></span>5ED6</td>
+<td class="instruction">JR Z,<a href="5E24.html#5e6d">PopulateRoomBuffer_Error</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5ed8"></span>5ED8</td>
+<td class="instruction">JP <a href="5E24.html#5e55">PopulateRoomBuffer_ParseByte</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="5E24.html#5e55">PopulateRoomBuffer_ParseByte</a> to continue parsing.</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="5EAA.html">5EAA</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#5ec8">Map</a></td>
+<td class="next">
+Next: <a href="5EDB.html">5EDB</a>
+</td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
+<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
+<div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
+<div><a href="../dec/asm/24264.html">Switch to decimal</a>.</div>
+</footer>
+</body>
+</html>

@@ -33,22 +33,25 @@ Next: <a href="25577.html">25577</a>
 </td>
 </tr>
 </table>
-<div class="description">25531: Routine at 63BB</div>
+<div class="description">25531: Print HUD Header</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
 <div class="details">
 <div class="paragraph">
-Used by the routine at <a href="25656.html">25656</a>.
+Used by the routine at <a href="25656.html">Draw_Level_Rows</a>.
+</div>
+<div class="paragraph">
+Set header-drawn flag, open channel 2 print Energy/Lives/Score string at <a href="25577.html">Messaging_Header</a>. Then <a href="25531.html#25547">Print_HUD_Header_0</a> colours bottom rows.
 </div>
 </div>
 </td>
 </tr>
 <tr>
-<td class="asm-label"></td>
+<td class="asm-label">Print_HUD_Header</td>
 <td class="address-2"><span id="25531"></span>25531</td>
 <td class="instruction">LD A,1</td>
-<td class="comment-1" rowspan="2">Write 1 to *<a href="24481.html">24481</a>.</td>
+<td class="comment-1" rowspan="2">Write 1 to *<a href="24481.html">Header_Drawn_Flag</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -94,7 +97,7 @@ Open channel 2 (upper screen).
 <span id="25547"></span>
 <div class="comments">
 <div class="paragraph">
-This entry point is used by the routine at <a href="25656.html">25656</a>.
+This entry point is used by the routine at <a href="25656.html">Draw_Level_Rows</a>.
 </div>
 <div class="paragraph">
 Use the Memory Refresh Register as a pointer offset into memory to source pseudo-random values.
@@ -103,7 +106,7 @@ Use the Memory Refresh Register as a pointer offset into memory to source pseudo
 </td>
 </tr>
 <tr>
-<td class="asm-label"></td>
+<td class="asm-label">Print_HUD_Header_0</td>
 <td class="address-2"><span id="25547"></span>25547</td>
 <td class="instruction">LD A,R</td>
 <td class="comment-1" rowspan="2"><span class="register">E</span>=the contents of the Memory Refresh Register.</td>
@@ -244,7 +247,7 @@ Next: <a href="25577.html">25577</a>
 </table>
 <footer>
 <div class="release"></div>
-<div class="copyright">&copy; 1984 Gremlin Graphics Software Ltd &copy; 2025 ArcadeGeek LTD.</div>
+<div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
 <div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
 <div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
 <div><a href="../../asm/63BB.html">Switch to hexadecimal</a>.</div>

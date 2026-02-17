@@ -33,23 +33,28 @@ Next: <a href="24553.html">24553</a>
 </td>
 </tr>
 </table>
-<div class="description">24551: Routine at 5FE7</div>
+<div class="description">24551: Raise Table Error</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
 <div class="details">
 <div class="paragraph">
-Used by the routines at <a href="24100.html">PopulateLevelBuffer</a> and <a href="24518.html">24518</a>.
+Used by the routines at <a href="24178.html">Command04_SwitchTileSet</a> and <a href="24518.html">FindRoomData</a>.
+</div>
+<div class="paragraph">
+RST 8 then LD A,(BC). Used when table index &gt;= 17 in <a href="24518.html">FindRoomData</a>.
 </div>
 </div>
 </td>
 </tr>
 <tr>
+<td class="asm-label">Raise_Table_Error</td>
 <td class="address-2"><span id="24551"></span>24551</td>
 <td class="instruction">RST 8</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="24552"></span>24552</td>
 <td class="instruction">LD A,(BC)</td>
 <td class="comment-0" rowspan="1"></td>
@@ -68,7 +73,7 @@ Next: <a href="24553.html">24553</a>
 </table>
 <footer>
 <div class="release"></div>
-<div class="copyright">&copy; 1984 Gremlin Graphics Software Ltd &copy; 2025 ArcadeGeek LTD.</div>
+<div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
 <div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
 <div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
 <div><a href="../../asm/5FE7.html">Switch to hexadecimal</a>.</div>

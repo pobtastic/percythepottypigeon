@@ -33,186 +33,225 @@ Next: <a href="26939.html">26939</a>
 </td>
 </tr>
 </table>
-<div class="description">26871: Routine at 68F7</div>
+<div class="description">26871: Update Lives Display</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
 <div class="details">
 <div class="paragraph">
-Used by the routines at <a href="25917.html">25917</a> and <a href="26808.html">26808</a>.
+Used by the routines at <a href="25917.html">Initialise_Lives</a> and <a href="26808.html">Handle_Life_Lost</a>.
+</div>
+<div class="paragraph">
+Read <a href="24497.html">Stored_Level_Or_Phase</a> and <a href="24499.html">Lives</a>; increment <a href="24497.html">Stored_Level_Or_Phase</a>; when <a href="24497.html">Stored_Level_Or_Phase</a>=4 give extra life and print at 20720.
 </div>
 </div>
 </td>
 </tr>
 <tr>
+<td class="asm-label">Update_Lives_Display</td>
 <td class="address-2"><span id="26871"></span>26871</td>
 <td class="instruction">LD A,(24497)</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="24497.html">24497</a>.</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="24497.html">Stored_Level_Or_Phase</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="26874"></span>26874</td>
 <td class="instruction">LD HL,24499</td>
 <td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="24499.html">Lives</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="26877"></span>26877</td>
 <td class="instruction">CP 5</td>
-<td class="comment-1" rowspan="2">Jump to <a href="26871.html#26897">26897</a> if <span class="register">A</span> is equal to 5.</td>
+<td class="comment-1" rowspan="2">Jump to <a href="26871.html#26897">Update_Lives_Display_0</a> if <span class="register">A</span> is equal to 5.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="26879"></span>26879</td>
-<td class="instruction">JR Z,<a href="26871.html#26897">26897</a></td>
+<td class="instruction">JR Z,<a href="26871.html#26897">Update_Lives_Display_0</a></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="26881"></span>26881</td>
 <td class="instruction">INC A</td>
 <td class="comment-1" rowspan="1">Increment <span class="register">A</span> by one.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="26882"></span>26882</td>
 <td class="instruction">LD (24497),A</td>
-<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<a href="24497.html">24497</a>.</td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<a href="24497.html">Stored_Level_Or_Phase</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="26885"></span>26885</td>
 <td class="instruction">CP 4</td>
-<td class="comment-1" rowspan="2">Jump to <a href="26871.html#26897">26897</a> if <span class="register">A</span> is not equal to 4.</td>
+<td class="comment-1" rowspan="2">Jump to <a href="26871.html#26897">Update_Lives_Display_0</a> if <span class="register">A</span> is not equal to 4.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="26887"></span>26887</td>
-<td class="instruction">JR NZ,<a href="26871.html#26897">26897</a></td>
+<td class="instruction">JR NZ,<a href="26871.html#26897">Update_Lives_Display_0</a></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="26889"></span>26889</td>
 <td class="instruction">INC (HL)</td>
 <td class="comment-1" rowspan="1">Increment *<span class="register">HL</span> by one.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="26890"></span>26890</td>
 <td class="instruction">LD A,(HL)</td>
 <td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">HL</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="26891"></span>26891</td>
 <td class="instruction">LD HL,20720</td>
 <td class="comment-1" rowspan="1"><span class="register">HL</span>=20720 (screen buffer location).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="26894"></span>26894</td>
 <td class="instruction">CALL <a href="25985.html">PrintCharacter</a></td>
 <td class="comment-1" rowspan="1">Call <a href="25985.html">PrintCharacter</a>.</td>
 </tr>
 <tr>
+<td class="asm-label">Update_Lives_Display_0</td>
 <td class="address-2"><span id="26897"></span>26897</td>
 <td class="instruction">LD A,(24497)</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="24497.html">24497</a>.</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="24497.html">Stored_Level_Or_Phase</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="26900"></span>26900</td>
 <td class="instruction">LD B,0</td>
 <td class="comment-1" rowspan="1"><span class="register">B</span>=0.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="26902"></span>26902</td>
 <td class="instruction">LD C,A</td>
 <td class="comment-1" rowspan="1"><span class="register">C</span>=<span class="register">A</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="26903"></span>26903</td>
 <td class="instruction">DEC C</td>
 <td class="comment-1" rowspan="1">Decrease <span class="register">C</span> by one.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="26904"></span>26904</td>
 <td class="instruction">LD HL,26977</td>
 <td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="26977.html">26977</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="26907"></span>26907</td>
 <td class="instruction">ADD HL,BC</td>
 <td class="comment-1" rowspan="1"><span class="register">HL</span>+=<span class="register">BC</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="26908"></span>26908</td>
 <td class="instruction">LD A,(HL)</td>
 <td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">HL</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="26909"></span>26909</td>
 <td class="instruction">LD HL,24498</td>
-<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="24498.html">24498</a>.</td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="24498.html">Aux_State</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="26912"></span>26912</td>
 <td class="instruction">LD (HL),A</td>
 <td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">HL</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="26913"></span>26913</td>
 <td class="instruction">LD HL,56990</td>
 <td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="49629.html#56990">56990</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="26916"></span>26916</td>
 <td class="instruction">LD BC,352</td>
 <td class="comment-1" rowspan="1"><span class="register">BC</span>=352.</td>
 </tr>
 <tr>
+<td class="asm-label">Update_Lives_Display_1</td>
 <td class="address-2"><span id="26919"></span>26919</td>
 <td class="instruction">LD A,(HL)</td>
-<td class="comment-1" rowspan="3">Jump to <a href="26871.html#26926">26926</a> if *<span class="register">HL</span> is not equal to 31.</td>
+<td class="comment-1" rowspan="3">Jump to <a href="26871.html#26926">Update_Lives_Display_2</a> if *<span class="register">HL</span> is not equal to 31.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="26920"></span>26920</td>
 <td class="instruction">CP 31</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="26922"></span>26922</td>
-<td class="instruction">JR NZ,<a href="26871.html#26926">26926</a></td>
+<td class="instruction">JR NZ,<a href="26871.html#26926">Update_Lives_Display_2</a></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="26924"></span>26924</td>
 <td class="instruction">LD (HL),0</td>
 <td class="comment-1" rowspan="1">Write 0 to *<span class="register">HL</span>.</td>
 </tr>
 <tr>
+<td class="asm-label">Update_Lives_Display_2</td>
 <td class="address-2"><span id="26926"></span>26926</td>
 <td class="instruction">CP 30</td>
-<td class="comment-1" rowspan="2">Jump to <a href="26871.html#26932">26932</a> if <span class="register">A</span> is not equal to 30.</td>
+<td class="comment-1" rowspan="2">Jump to <a href="26871.html#26932">Update_Lives_Display_3</a> if <span class="register">A</span> is not equal to 30.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="26928"></span>26928</td>
-<td class="instruction">JR NZ,<a href="26871.html#26932">26932</a></td>
+<td class="instruction">JR NZ,<a href="26871.html#26932">Update_Lives_Display_3</a></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="26930"></span>26930</td>
 <td class="instruction">LD (HL),0</td>
 <td class="comment-1" rowspan="1">Write 0 to *<span class="register">HL</span>.</td>
 </tr>
 <tr>
+<td class="asm-label">Update_Lives_Display_3</td>
 <td class="address-2"><span id="26932"></span>26932</td>
 <td class="instruction">INC HL</td>
 <td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="26933"></span>26933</td>
 <td class="instruction">DEC BC</td>
 <td class="comment-1" rowspan="1">Decrease <span class="register">BC</span> by one.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="26934"></span>26934</td>
 <td class="instruction">LD A,C</td>
-<td class="comment-1" rowspan="3">Jump back to <a href="26871.html#26919">26919</a> until <span class="register">BC</span> is zero.</td>
+<td class="comment-1" rowspan="3">Jump back to <a href="26871.html#26919">Update_Lives_Display_1</a> until <span class="register">BC</span> is zero.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="26935"></span>26935</td>
 <td class="instruction">OR B</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="26936"></span>26936</td>
-<td class="instruction">JR NZ,<a href="26871.html#26919">26919</a></td>
+<td class="instruction">JR NZ,<a href="26871.html#26919">Update_Lives_Display_1</a></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="26938"></span>26938</td>
 <td class="instruction">RET</td>
 <td class="comment-1" rowspan="1">Return.</td>
@@ -231,7 +270,7 @@ Next: <a href="26939.html">26939</a>
 </table>
 <footer>
 <div class="release"></div>
-<div class="copyright">&copy; 1984 Gremlin Graphics Software Ltd &copy; 2025 ArcadeGeek LTD.</div>
+<div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
 <div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
 <div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
 <div><a href="../../asm/68F7.html">Switch to hexadecimal</a>.</div>

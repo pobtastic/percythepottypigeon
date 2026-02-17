@@ -33,51 +33,62 @@ Next: <a href="27047.html">27047</a>
 </td>
 </tr>
 </table>
-<div class="description">27026: Routine at 6992</div>
+<div class="description">27026: Run Game Frame</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
 <div class="details">
 <div class="paragraph">
-Used by the routines at <a href="24000.html">Game_Initialise</a> and <a href="25728.html">25728</a>.
+Used by the routines at <a href="24000.html">Game_Initialise</a> and <a href="25728.html">Handle_Title_Screen</a>.
+</div>
+<div class="paragraph">
+Call <a href="26155.html">Compute_Sprite_Position</a>, <a href="26674.html">Update_State_Counters</a>; if <a href="24517.html">CurrentRoom</a>=6 call <a href="26090.html">Draw_InGame_Effect</a>; then <a href="27047.html">Run_Main_Loop_Body</a> and <a href="47900.html">47900</a>.
 </div>
 </div>
 </td>
 </tr>
 <tr>
+<td class="asm-label">Run_Game_Frame</td>
 <td class="address-2"><span id="27026"></span>27026</td>
-<td class="instruction">CALL <a href="26155.html">26155</a></td>
-<td class="comment-1" rowspan="1">Call <a href="26155.html">26155</a>.</td>
+<td class="instruction">CALL <a href="26155.html">Compute_Sprite_Position</a></td>
+<td class="comment-1" rowspan="1">Call <a href="26155.html">Compute_Sprite_Position</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27029"></span>27029</td>
-<td class="instruction">CALL <a href="26674.html">26674</a></td>
-<td class="comment-1" rowspan="1">Call <a href="26674.html">26674</a>.</td>
+<td class="instruction">CALL <a href="26674.html">Update_State_Counters</a></td>
+<td class="comment-1" rowspan="1">Call <a href="26674.html">Update_State_Counters</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27032"></span>27032</td>
 <td class="instruction">LD A,(24517)</td>
-<td class="comment-1" rowspan="3">Call <a href="26090.html">26090</a> if *<a href="24517.html">24517</a> is equal to 6.</td>
+<td class="comment-1" rowspan="3">Call <a href="26090.html">Draw_InGame_Effect</a> if *<a href="24517.html">CurrentRoom</a> is equal to 6.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27035"></span>27035</td>
 <td class="instruction">CP 6</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27037"></span>27037</td>
-<td class="instruction">CALL Z,<a href="26090.html">26090</a></td>
+<td class="instruction">CALL Z,<a href="26090.html">Draw_InGame_Effect</a></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27040"></span>27040</td>
-<td class="instruction">CALL <a href="27047.html">27047</a></td>
-<td class="comment-1" rowspan="1">Call <a href="27047.html">27047</a>.</td>
+<td class="instruction">CALL <a href="27047.html">Run_Main_Loop_Body</a></td>
+<td class="comment-1" rowspan="1">Call <a href="27047.html">Run_Main_Loop_Body</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27043"></span>27043</td>
 <td class="instruction">CALL <a href="47900.html">47900</a></td>
 <td class="comment-1" rowspan="1">Call <a href="47900.html">47900</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27046"></span>27046</td>
 <td class="instruction">RET</td>
 <td class="comment-1" rowspan="1">Return.</td>
@@ -96,7 +107,7 @@ Next: <a href="27047.html">27047</a>
 </table>
 <footer>
 <div class="release"></div>
-<div class="copyright">&copy; 1984 Gremlin Graphics Software Ltd &copy; 2025 ArcadeGeek LTD.</div>
+<div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
 <div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
 <div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
 <div><a href="../../asm/6992.html">Switch to hexadecimal</a>.</div>

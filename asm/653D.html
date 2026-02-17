@@ -33,7 +33,7 @@ Next: <a href="655C.html">655C</a>
 </td>
 </tr>
 </table>
-<div class="description">653D: Routine at 653D</div>
+<div class="description">653D: Initialise Lives</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
@@ -41,108 +41,141 @@ Next: <a href="655C.html">655C</a>
 <div class="paragraph">
 Used by the routine at <a href="5DC0.html">Game_Initialise</a>.
 </div>
+<div class="paragraph">
+Set <a href="5FB3.html">Lives</a> and <a href="5FBE.html">Lives_Backup</a> to 33 clear <a href="5FB1.html">Stored_Level_Or_Phase</a>, call <a href="68F7.html">Update_Lives_Display</a> then jump to <a href="659B.html">Show_Game_Over_Screen</a> (game over / title).
+</div>
 </div>
 </td>
 </tr>
 <tr>
+<td class="asm-label">Initialise_Lives</td>
 <td class="address-2"><span id="653d"></span>653D</td>
 <td class="instruction">NOP</td>
 <td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="653e"></span>653E</td>
 <td class="instruction">NOP</td>
 <td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="653f"></span>653F</td>
 <td class="instruction">NOP</td>
 <td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6540"></span>6540</td>
 <td class="instruction">NOP</td>
 <td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6541"></span>6541</td>
 <td class="instruction">NOP</td>
 <td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6542"></span>6542</td>
 <td class="instruction">NOP</td>
 <td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6543"></span>6543</td>
 <td class="instruction">NOP</td>
 <td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6544"></span>6544</td>
 <td class="instruction">NOP</td>
 <td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6545"></span>6545</td>
 <td class="instruction">NOP</td>
 <td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6546"></span>6546</td>
 <td class="instruction">NOP</td>
 <td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6547"></span>6547</td>
 <td class="instruction">NOP</td>
 <td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6548"></span>6548</td>
 <td class="instruction">NOP</td>
 <td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6549"></span>6549</td>
 <td class="instruction">NOP</td>
 <td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="654a"></span>
+<div class="comments">
+<div class="paragraph">
+See <a href="../reference/pokes.html#255_lives">255 Lives</a>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="654a"></span>654A</td>
 <td class="instruction">LD A,$33</td>
-<td class="comment-1" rowspan="3">Write 33 to; <ul class="">
-<li>*<a href="5FBE.html">5FBE</a></li>
+<td class="comment-1" rowspan="3">Write ASCII 33 ("&#51;") to; <ul class="">
+<li>*<a href="5FBE.html">Lives_Backup</a></li>
 <li>*<a href="5FB3.html">Lives</a></li>
 </ul></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="654c"></span>654C</td>
 <td class="instruction">LD ($5FBE),A</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="654f"></span>654F</td>
 <td class="instruction">LD ($5FB3),A</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6552"></span>6552</td>
 <td class="instruction">XOR A</td>
-<td class="comment-1" rowspan="2">Write 00 to *<a href="5FB1.html">5FB1</a>.</td>
+<td class="comment-1" rowspan="2">Write 00 to *<a href="5FB1.html">Stored_Level_Or_Phase</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6553"></span>6553</td>
 <td class="instruction">LD ($5FB1),A</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6556"></span>6556</td>
-<td class="instruction">CALL <a href="68F7.html">$68F7</a></td>
-<td class="comment-1" rowspan="1">Call <a href="68F7.html">68F7</a>.</td>
+<td class="instruction">CALL <a href="68F7.html">Update_Lives_Display</a></td>
+<td class="comment-1" rowspan="1">Call <a href="68F7.html">Update_Lives_Display</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6559"></span>6559</td>
-<td class="instruction">JP <a href="659B.html">$659B</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="659B.html">659B</a>.</td>
+<td class="instruction">JP <a href="659B.html">Show_Game_Over_Screen</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="659B.html">Show_Game_Over_Screen</a>.</td>
 </tr>
 </table>
 <table class="asm-navigation">
@@ -158,7 +191,7 @@ Next: <a href="655C.html">655C</a>
 </table>
 <footer>
 <div class="release"></div>
-<div class="copyright">&copy; 1984 Gremlin Graphics Software Ltd &copy; 2025 ArcadeGeek LTD.</div>
+<div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
 <div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
 <div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
 <div><a href="../dec/asm/25917.html">Switch to decimal</a>.</div>

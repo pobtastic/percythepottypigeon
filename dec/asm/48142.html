@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Percy the Potty Pigeon: Routine at 48142</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-dark.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-wide.css" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-75RERFCHBG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-75RERFCHBG');
+</script>
+</head>
+<body class="Asm-c">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html"><img alt="logo" src="../images/logo.png" /></a></td>
+<td class="page-header">Routines</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="47900.html">47900</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#48142">Map</a></td>
+<td class="next">
+Next: <a href="48183.html">48183</a>
+</td>
+</tr>
+</table>
+<div class="description">48142: Calculate Screen Buffer Address</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="5">
+<div class="details">
+<div class="paragraph">
+Used by the routine at <a href="47900.html">47900</a>.
+</div>
+<div class="paragraph">
+Converts a screen coordinate stored at <span class="register">IX</span> into a screen buffer address and pixel offset. The coordinate is stored as a two-byte value where <span class="register">IX</span>+0 holds the X position and <span class="register">IX</span>+1 holds the Y position. Returns with <span class="register">HL</span> pointing to the screen buffer address, <span class="register">A</span> (shadow) holding the row within the character cell (bits 0-2 of Y), and <span class="register">A</span> holding the pixel offset within the byte (bits 0-2 of X).
+</div>
+</div>
+<table class="input">
+<tr class="asm-input-header">
+<th colspan="2">Input</th>
+</tr>
+<tr>
+<td class="register">IX</td>
+<td class="register-desc">Pointer to a two-byte screen coordinate (X, Y)</td>
+</tr>
+</table>
+<table class="output">
+<tr class="asm-output-header">
+<th colspan="2">Output</th>
+</tr>
+<tr>
+<td class="register">HL</td>
+<td class="register-desc">Screen buffer address</td>
+</tr>
+<tr>
+<td class="register">A</td>
+<td class="register-desc">Pixel X offset within the byte (bits 0-2)</td>
+</tr>
+<tr>
+<td class="register">AF'</td>
+<td class="register-desc">Row within the character cell (bits 0-2 of Y)</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td class="asm-label">CalculateScreenBufferAddress</td>
+<td class="address-2"><span id="48142"></span>48142</td>
+<td class="instruction">LD C,(IX+0)</td>
+<td class="comment-1" rowspan="1"><span class="register">C</span>=*<span class="register">IX</span>+0.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48145"></span>48145</td>
+<td class="instruction">LD B,(IX+1)</td>
+<td class="comment-1" rowspan="1"><span class="register">B</span>=*<span class="register">IX</span>+1.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48148"></span>48148</td>
+<td class="instruction">LD A,C</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=<span class="register">C</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48149"></span>48149</td>
+<td class="instruction">AND %00000111</td>
+<td class="comment-1" rowspan="1">Keep only bits 0-2.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48151"></span>48151</td>
+<td class="instruction">PUSH AF</td>
+<td class="comment-1" rowspan="1">Stash the pixel X offset on the stack.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="48152"></span>
+<div class="comments">
+<div class="paragraph">
+Calculate the low byte of the screen buffer address. This combines the character column (X / 8) with the Y pixel row bits.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48152"></span>48152</td>
+<td class="instruction">LD A,C</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=<span class="register">C</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48153"></span>48153</td>
+<td class="instruction">RRCA</td>
+<td class="comment-1" rowspan="3">Rotate right three positions to divide X by 8.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48154"></span>48154</td>
+<td class="instruction">RRCA</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48155"></span>48155</td>
+<td class="instruction">RRCA</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48156"></span>48156</td>
+<td class="instruction">AND %00011111</td>
+<td class="comment-1" rowspan="1">Keep only bits 0-4 (character column, 0-31).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48158"></span>48158</td>
+<td class="instruction">LD L,A</td>
+<td class="comment-1" rowspan="1"><span class="register">L</span>=<span class="register">A</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48159"></span>48159</td>
+<td class="instruction">LD A,B</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=<span class="register">B</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48160"></span>48160</td>
+<td class="instruction">RLCA</td>
+<td class="comment-1" rowspan="2">Rotate left two positions.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48161"></span>48161</td>
+<td class="instruction">RLCA</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48162"></span>48162</td>
+<td class="instruction">AND %11100000</td>
+<td class="comment-1" rowspan="1">Keep only bits 5-7 (low bits of Y row).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48164"></span>48164</td>
+<td class="instruction">OR L</td>
+<td class="comment-1" rowspan="1">Merge the column and row bits together.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48165"></span>48165</td>
+<td class="instruction">LD L,A</td>
+<td class="comment-1" rowspan="1"><span class="register">L</span>=<span class="register">A</span>.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="48166"></span>
+<div class="comments">
+<div class="paragraph">
+Calculate the high byte of the screen buffer address. This encodes the character row and third-of-screen into the high byte, with the base address of 57344 (bits 5-7 set).
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48166"></span>48166</td>
+<td class="instruction">LD A,B</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=<span class="register">B</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48167"></span>48167</td>
+<td class="instruction">AND %00000111</td>
+<td class="comment-1" rowspan="1">Keep only bits 0-2 (pixel row within character cell).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48169"></span>48169</td>
+<td class="instruction">LD H,A</td>
+<td class="comment-1" rowspan="1"><span class="register">H</span>=<span class="register">A</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48170"></span>48170</td>
+<td class="instruction">LD A,B</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=<span class="register">B</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48171"></span>48171</td>
+<td class="instruction">AND %11000000</td>
+<td class="comment-1" rowspan="1">Keep only bits 6-7 (screen third selector).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48173"></span>48173</td>
+<td class="instruction">RRCA</td>
+<td class="comment-1" rowspan="3">Rotate right three positions to move bits 6-7 into bits 3-4.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48174"></span>48174</td>
+<td class="instruction">RRCA</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48175"></span>48175</td>
+<td class="instruction">RRCA</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48176"></span>48176</td>
+<td class="instruction">OR H</td>
+<td class="comment-1" rowspan="1">Merge with the pixel row bits in <span class="register">H</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48177"></span>48177</td>
+<td class="instruction">OR %11100000</td>
+<td class="comment-1" rowspan="1">Set bits 5-7 for the screen buffer base address (57344).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48179"></span>48179</td>
+<td class="instruction">LD H,A</td>
+<td class="comment-1" rowspan="1"><span class="register">H</span>=<span class="register">A</span>.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="48180"></span>
+<div class="comments">
+<div class="paragraph">
+Store the Y pixel row (character cell row) in shadow <span class="register">AF</span> and restore the pixel X offset as the return value in <span class="register">A</span>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48180"></span>48180</td>
+<td class="instruction">EX AF,AF'</td>
+<td class="comment-1" rowspan="1">Store the row-within-character in shadow <span class="register">AF</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48181"></span>48181</td>
+<td class="instruction">POP AF</td>
+<td class="comment-1" rowspan="1">Restore the pixel X offset from the stack.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48182"></span>48182</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="47900.html">47900</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#48142">Map</a></td>
+<td class="next">
+Next: <a href="48183.html">48183</a>
+</td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
+<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
+<div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
+<div><a href="../../asm/BC0E.html">Switch to hexadecimal</a>.</div>
+</footer>
+</body>
+</html>

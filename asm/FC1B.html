@@ -25,7 +25,7 @@ gtag('config', 'G-75RERFCHBG');
 <table class="asm-navigation">
 <tr>
 <td class="prev">
-Prev: <a href="C1DD.html">C1DD</a>
+Prev: <a href="F800.html">F800</a>
 </td>
 <td class="up">Up: <a href="../maps/all.html#fc1b">Map</a></td>
 <td class="next">
@@ -33,65 +33,66 @@ Next: <a href="FC3D.html">FC3D</a>
 </td>
 </tr>
 </table>
-<div class="description">FC1B: Routine at FC1B</div>
+<div class="description">FC1B: Print Pause Message</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
 <div class="details">
 <div class="paragraph">
-Used by the routine at <a href="659B.html">659B</a>.
+Used by the routine at <a href="659B.html">Show_Game_Over_Screen</a>.
+</div>
+<div class="paragraph">
+If <a href="5FBC.html">Pause_Flag</a> (pause) zero: copy from <a href="FC3D.html">Pause_Message_Data</a> to screen (50A6). Used by <a href="659B.html">Show_Game_Over_Screen</a>.
 </div>
 </div>
 </td>
 </tr>
 <tr>
+<td class="asm-label">Print_Pause_Message</td>
 <td class="address-2"><span id="fc1b"></span>FC1B</td>
 <td class="instruction">LD A,($5FBC)</td>
 <td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="fc1e"></span>FC1E</td>
 <td class="instruction">OR A</td>
 <td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
-<td class="routine-comment" colspan="5">
-<span id="fc1f"></span>
-<div class="comments">
-<div class="paragraph">
-This entry point is used by the routine at <a href="C1DD.html">GameEntryPoint</a>.
-</div>
-</div>
-</td>
-</tr>
-<tr>
-<td class="address-2"><span id="fc1f"></span>FC1F</td>
-<td class="instruction">JR NZ,<a href="FC3D.html#fc52">$FC52</a></td>
+<td class="asm-label"></td>
+<td class="address-1"><span id="fc1f"></span>FC1F</td>
+<td class="instruction">JR NZ,<a href="FC3D.html#fc52">Pause_Message_Data_0</a></td>
 <td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="fc21"></span>FC21</td>
 <td class="instruction">LD DE,$FC3D</td>
 <td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="fc24"></span>FC24</td>
 <td class="instruction">LD HL,$50A6</td>
 <td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="fc27"></span>FC27</td>
 <td class="instruction">LD B,$15</td>
 <td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="fc29"></span>FC29</td>
-<td class="instruction">CALL <a href="FC1B.html#fc2e">$FC2E</a></td>
+<td class="instruction">CALL <a href="FC1B.html#fc2e">Print_Pause_Message_0</a></td>
 <td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="fc2c"></span>FC2C</td>
-<td class="instruction">JR <a href="FC3D.html#fc89">$FC89</a></td>
+<td class="instruction">JR <a href="FC3D.html#fc89">Pause_Message_Data_5</a></td>
 <td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
@@ -99,77 +100,79 @@ This entry point is used by the routine at <a href="C1DD.html">GameEntryPoint</a
 <span id="fc2e"></span>
 <div class="comments">
 <div class="paragraph">
-This entry point is used by the routine at <a href="FC3D.html">FC3D</a>.
+This entry point is used by the routine at <a href="FC3D.html">Pause_Message_Data</a>.
 </div>
 </div>
 </td>
 </tr>
 <tr>
+<td class="asm-label">Print_Pause_Message_0</td>
 <td class="address-2"><span id="fc2e"></span>FC2E</td>
 <td class="instruction">LD A,(DE)</td>
 <td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="fc2f"></span>FC2F</td>
 <td class="instruction">PUSH DE</td>
 <td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="fc30"></span>FC30</td>
 <td class="instruction">PUSH HL</td>
 <td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="fc31"></span>FC31</td>
 <td class="instruction">PUSH BC</td>
 <td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="fc32"></span>FC32</td>
 <td class="instruction">CALL <a href="6581.html">PrintCharacter</a></td>
 <td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="fc35"></span>FC35</td>
 <td class="instruction">POP BC</td>
 <td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="fc36"></span>FC36</td>
 <td class="instruction">POP HL</td>
 <td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
-<td class="routine-comment" colspan="5">
-<span id="fc37"></span>
-<div class="comments">
-<div class="paragraph">
-This entry point is used by the routine at <a href="C1DD.html">GameEntryPoint</a>.
-</div>
-</div>
-</td>
-</tr>
-<tr>
-<td class="address-2"><span id="fc37"></span>FC37</td>
+<td class="asm-label"></td>
+<td class="address-1"><span id="fc37"></span>FC37</td>
 <td class="instruction">POP DE</td>
 <td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="fc38"></span>FC38</td>
 <td class="instruction">INC HL</td>
 <td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="fc39"></span>FC39</td>
 <td class="instruction">INC DE</td>
 <td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="fc3a"></span>FC3A</td>
-<td class="instruction">DJNZ <a href="FC1B.html#fc2e">$FC2E</a></td>
+<td class="instruction">DJNZ <a href="FC1B.html#fc2e">Print_Pause_Message_0</a></td>
 <td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="fc3c"></span>FC3C</td>
 <td class="instruction">RET</td>
 <td class="comment-1" rowspan="1">Return.</td>
@@ -178,7 +181,7 @@ This entry point is used by the routine at <a href="C1DD.html">GameEntryPoint</a
 <table class="asm-navigation">
 <tr>
 <td class="prev">
-Prev: <a href="C1DD.html">C1DD</a>
+Prev: <a href="F800.html">F800</a>
 </td>
 <td class="up">Up: <a href="../maps/all.html#fc1b">Map</a></td>
 <td class="next">
@@ -188,7 +191,7 @@ Next: <a href="FC3D.html">FC3D</a>
 </table>
 <footer>
 <div class="release"></div>
-<div class="copyright">&copy; 1984 Gremlin Graphics Software Ltd &copy; 2025 ArcadeGeek LTD.</div>
+<div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
 <div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
 <div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
 <div><a href="../dec/asm/64539.html">Switch to decimal</a>.</div>

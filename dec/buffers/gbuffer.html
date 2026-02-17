@@ -31,18 +31,102 @@ gtag('config', 'G-75RERFCHBG');
 </tr>
 <tr>
 <td class="map-g"><span id="23550"></span><a href="../asm/23550.html">23550</a></td>
-<td class="map-length">450</td>
+<td class="map-length">1</td>
 <td class="map-g-desc">
 <div class="map-entry-title-11"><a class="map-entry-title" href="../asm/23550.html">Stack</a></div>
 <div class="map-entry-desc">
+<div class="paragraph">
+Top of the stack (so, pushes below this point).
+</div>
 </div>
 </td>
 </tr>
 <tr>
 <td class="map-g"><span id="24481"></span><a href="../asm/24481.html">24481</a></td>
-<td class="map-length">16</td>
+<td class="map-length">1</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24481.html">Game status buffer entry at 5FA1</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24481.html">Header Drawn Flag</a></div>
+<div class="map-entry-desc">
+<div class="paragraph">
+0=draw HUD via <a href="../asm/25531.html">Print_HUD_Header</a> when needed; 1=already drawn.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="24482"></span><a href="../asm/24482.html">24482</a></td>
+<td class="map-length">1</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24482.html">Game status buffer entry at 5FA2</a></div>
+<div class="map-entry-desc">
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="24483"></span><a href="../asm/24483.html">24483</a></td>
+<td class="map-length">1</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24483.html">Game status buffer entry at 5FA3</a></div>
+<div class="map-entry-desc">
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="24484"></span><a href="../asm/24484.html">24484</a></td>
+<td class="map-length">1</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24484.html">Game status buffer entry at 5FA4</a></div>
+<div class="map-entry-desc">
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="24485"></span><a href="../asm/24485.html">24485</a></td>
+<td class="map-length">1</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24485.html">Game status buffer entry at 5FA5</a></div>
+<div class="map-entry-desc">
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="24486"></span><a href="../asm/24486.html">24486</a></td>
+<td class="map-length">1</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24486.html">Game status buffer entry at 5FA6</a></div>
+<div class="map-entry-desc">
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="24487"></span><a href="../asm/24487.html">24487</a></td>
+<td class="map-length">2</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24487.html">Title Countdown?</a></div>
+<div class="map-entry-desc">
+<div class="paragraph">
+Countdown or init; read at <a href="../asm/24553.html">Handle_Pause_Input</a>; when zero call <a href="../asm/25728.html">Handle_Title_Screen</a>. Cleared at <a href="../asm/25948.html">Start_Level</a>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="24489"></span><a href="../asm/24489.html">24489</a></td>
+<td class="map-length">1</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24489.html">Skip Flag?</a></div>
+<div class="map-entry-desc">
+<div class="paragraph">
+When zero at <a href="../asm/24373.html#24436">PopulateRoomBuffer_EndAttributes</a> jump to <a href="../asm/24373.html#24451">PopulateRoomBuffer_SetAttributeBase</a>. Cleared at <a href="../asm/24373.html#24442">24442</a>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="24490"></span><a href="../asm/24490.html">24490</a></td>
+<td class="map-length">7</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24490.html">Game status buffer entry at 5FAA</a></div>
 <div class="map-entry-desc">
 </div>
 </td>
@@ -51,8 +135,11 @@ gtag('config', 'G-75RERFCHBG');
 <td class="map-g"><span id="24497"></span><a href="../asm/24497.html">24497</a></td>
 <td class="map-length">1</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24497.html">Game status buffer entry at 5FB1</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24497.html">Stored Level Or Phase?</a></div>
 <div class="map-entry-desc">
+<div class="paragraph">
+Copied to <a href="../asm/24517.html">CurrentRoom</a> in some paths; cleared when lives are reset.
+</div>
 </div>
 </td>
 </tr>
@@ -60,17 +147,35 @@ gtag('config', 'G-75RERFCHBG');
 <td class="map-g"><span id="24498"></span><a href="../asm/24498.html">24498</a></td>
 <td class="map-length">1</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24498.html">Game status buffer entry at 5FB2</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24498.html">Aux State?</a></div>
 <div class="map-entry-desc">
+<div class="paragraph">
+Pointer base; used with <a href="../asm/26808.html">Handle_Life_Lost</a>.
+</div>
 </div>
 </td>
 </tr>
 <tr>
 <td class="map-g"><span id="24499"></span><a href="../asm/24499.html">24499</a></td>
-<td class="map-length">2</td>
+<td class="map-length">1</td>
 <td class="map-g-desc">
 <div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24499.html">Player Lives</a></div>
 <div class="map-entry-desc">
+<div class="paragraph">
+Current lives count. Synced with <a href="../asm/24510.html">Lives_Backup</a> for compare/display.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="24500"></span><a href="../asm/24500.html">24500</a></td>
+<td class="map-length">1</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24500.html">Border Colour / Rotating State</a></div>
+<div class="map-entry-desc">
+<div class="paragraph">
+At <a href="../asm/26939.html">Flash_Border_Step</a>: stored border colour, written with BORDCR. At <a href="../asm/26090.html">Draw_InGame_Effect</a>: rotating byte; RRCA and carry pick first or second tile (not border-related there).
+</div>
 </div>
 </td>
 </tr>
@@ -78,8 +183,11 @@ gtag('config', 'G-75RERFCHBG');
 <td class="map-g"><span id="24501"></span><a href="../asm/24501.html">24501</a></td>
 <td class="map-length">4</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24501.html">Game status buffer entry at 5FB5</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24501.html">Saved Pointer</a></div>
 <div class="map-entry-desc">
+<div class="paragraph">
+Caller <span class="register">HL</span> stored here; read at <a href="../asm/26155.html#26189">Compute_Sprite_Position_0</a>.
+</div>
 </div>
 </td>
 </tr>
@@ -87,8 +195,14 @@ gtag('config', 'G-75RERFCHBG');
 <td class="map-g"><span id="24505"></span><a href="../asm/24505.html">24505</a></td>
 <td class="map-length">2</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24505.html">Game status buffer entry at 5FB9</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24505.html">Room Drawing Position</a></div>
 <div class="map-entry-desc">
+<div class="paragraph">
+The two-byte drawing position used by <a href="../asm/24373.html">DrawRoomTile</a> to track where the next tile should be placed.
+</div>
+<div class="paragraph">
+The low byte is the column and the high byte is the row.
+</div>
 </div>
 </td>
 </tr>
@@ -96,8 +210,11 @@ gtag('config', 'G-75RERFCHBG');
 <td class="map-g"><span id="24507"></span><a href="../asm/24507.html">24507</a></td>
 <td class="map-length">1</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24507.html">Game status buffer entry at 5FBB</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24507.html">Level Flag?</a></div>
 <div class="map-entry-desc">
+<div class="paragraph">
+255 when level active; read in many game loops.
+</div>
 </div>
 </td>
 </tr>
@@ -105,8 +222,11 @@ gtag('config', 'G-75RERFCHBG');
 <td class="map-g"><span id="24508"></span><a href="../asm/24508.html">24508</a></td>
 <td class="map-length">1</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24508.html">Game status buffer entry at 5FBC</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24508.html">Pause Flag</a></div>
 <div class="map-entry-desc">
+<div class="paragraph">
+0=not paused, 255=paused; set at <a href="../asm/24000.html#24053">24053</a>.
+</div>
 </div>
 </td>
 </tr>
@@ -114,8 +234,11 @@ gtag('config', 'G-75RERFCHBG');
 <td class="map-g"><span id="24509"></span><a href="../asm/24509.html">24509</a></td>
 <td class="map-length">1</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24509.html">Game status buffer entry at 5FBD</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24509.html">Sub-State?</a></div>
 <div class="map-entry-desc">
+<div class="paragraph">
+Written from <span class="register">A</span> in <a href="../asm/26808.html#26833">26833</a>.
+</div>
 </div>
 </td>
 </tr>
@@ -123,8 +246,11 @@ gtag('config', 'G-75RERFCHBG');
 <td class="map-g"><span id="24510"></span><a href="../asm/24510.html">24510</a></td>
 <td class="map-length">3</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24510.html">Game status buffer entry at 5FBE</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24510.html">Lives Backup?</a></div>
 <div class="map-entry-desc">
+<div class="paragraph">
+Copy of <a href="../asm/24499.html">Lives</a> for compare/display; synced at <a href="../asm/25917.html#25932">25932</a>/<a href="../asm/27047.html#27116">27116</a>.
+</div>
 </div>
 </td>
 </tr>
@@ -132,8 +258,11 @@ gtag('config', 'G-75RERFCHBG');
 <td class="map-g"><span id="24513"></span><a href="../asm/24513.html">24513</a></td>
 <td class="map-length">2</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24513.html">Game status buffer entry at 5FC1</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24513.html">Pointer: Active Tile Set</a></div>
 <div class="map-entry-desc">
+<div class="paragraph">
+Holds the pointer to the currently active tile set.
+</div>
 </div>
 </td>
 </tr>
@@ -141,8 +270,11 @@ gtag('config', 'G-75RERFCHBG');
 <td class="map-g"><span id="24515"></span><a href="../asm/24515.html">24515</a></td>
 <td class="map-length">2</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24515.html">Game status buffer entry at 5FC3</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24515.html">Pointer: Current Room Data</a></div>
 <div class="map-entry-desc">
+<div class="paragraph">
+Points to the data for the current room.
+</div>
 </div>
 </td>
 </tr>
@@ -150,7 +282,31 @@ gtag('config', 'G-75RERFCHBG');
 <td class="map-g"><span id="24517"></span><a href="../asm/24517.html">24517</a></td>
 <td class="map-length">1</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24517.html">Game status buffer entry at 5FC5</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24517.html">Current Room</a></div>
+<div class="map-entry-desc">
+<div class="paragraph">
+The ID of the current Room (0-11).
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="49152"></span><a href="../asm/49152.html">49152</a></td>
+<td class="map-length">477</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/49152.html">Room Buffer</a></div>
+<div class="map-entry-desc">
+<div class="paragraph">
+Used by the routine at <a href="../asm/29199.html">Clear_Or_Update_Buffer</a>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="57344"></span><a href="../asm/57344.html">57344</a></td>
+<td class="map-length">6144</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/57344.html">Sprite Buffer</a></div>
 <div class="map-entry-desc">
 </div>
 </td>
@@ -158,7 +314,7 @@ gtag('config', 'G-75RERFCHBG');
 </table>
 <footer>
 <div class="release"></div>
-<div class="copyright">&copy; 1984 Gremlin Graphics Software Ltd &copy; 2025 ArcadeGeek LTD.</div>
+<div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
 <div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
 <div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
 <div><a href="../../buffers/gbuffer.html">Switch to hexadecimal</a>.</div>

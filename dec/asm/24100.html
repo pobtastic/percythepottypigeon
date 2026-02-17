@@ -29,32 +29,35 @@ Prev: <a href="24000.html">24000</a>
 </td>
 <td class="up">Up: <a href="../maps/all.html#24100">Map</a></td>
 <td class="next">
-Next: <a href="24481.html">24481</a>
+Next: <a href="24178.html">24178</a>
 </td>
 </tr>
 </table>
-<div class="description">24100: Populate Level Buffer</div>
+<div class="description">24100: Populate Room Buffer</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
 <div class="details">
 <div class="paragraph">
-Used by the routines at <a href="24553.html">24553</a>, <a href="25948.html">25948</a>, <a href="26011.html">26011</a> and <a href="26808.html">26808</a>.
+Used by the routines at <a href="24553.html">Handle_Pause_Input</a>, <a href="25948.html">Start_Level</a>, <a href="26011.html">Show_Game_Over_Screen</a> and <a href="26808.html">Handle_Life_Lost</a>.
+</div>
+<div class="paragraph">
+Fetch the current room number and set up the default tile and attribute data pointers.
 </div>
 </div>
 </td>
 </tr>
 <tr>
-<td class="asm-label">PopulateLevelBuffer</td>
+<td class="asm-label">PopulateRoomBuffer</td>
 <td class="address-2"><span id="24100"></span>24100</td>
 <td class="instruction">LD A,(24517)</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="24517.html">24517</a>.</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="24517.html">CurrentRoom</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="24103"></span>24103</td>
 <td class="instruction">LD HL,33705</td>
-<td class="comment-1" rowspan="2">Write <a href="33705.html">33705</a> to *<a href="24515.html">24515</a>.</td>
+<td class="comment-1" rowspan="2">Write <a href="33705.html">Level_Table_Start</a> to *<a href="24515.html">Pointer_CurrentRoomData</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -65,7 +68,7 @@ Used by the routines at <a href="24553.html">24553</a>, <a href="25948.html">259
 <td class="asm-label"></td>
 <td class="address-1"><span id="24109"></span>24109</td>
 <td class="instruction">LD HL,39850</td>
-<td class="comment-1" rowspan="2">Write <a href="33706.html#39850">39850</a> to *<a href="24513.html">24513</a>.</td>
+<td class="comment-1" rowspan="2">Write <a href="39850.html">TileSet_Default</a> to *<a href="24513.html">Pointer_ActiveTileSet</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -73,21 +76,41 @@ Used by the routines at <a href="24553.html">24553</a>, <a href="25948.html">259
 <td class="instruction">LD (24513),HL</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="24115"></span>
+<div class="comments">
+<div class="paragraph">
+If this is not room 0 look up the correct room data pointer.
+</div>
+</div>
+</td>
+</tr>
+<tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="24115"></span>24115</td>
 <td class="instruction">OR A</td>
-<td class="comment-1" rowspan="2">Call <a href="24518.html">24518</a> if <span class="register">A</span> is not equal to 0.</td>
+<td class="comment-1" rowspan="2">Call <a href="24518.html">FindRoomData</a> if this is not room 0.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="24116"></span>24116</td>
-<td class="instruction">CALL NZ,<a href="24518.html">24518</a></td>
+<td class="instruction">CALL NZ,<a href="24518.html">FindRoomData</a></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="24119"></span>
+<div class="comments">
+<div class="paragraph">
+Clear the screen buffer at <a href="49152.html">RoomBuffer</a>.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="24119"></span>24119</td>
 <td class="instruction">LD HL,49152</td>
-<td class="comment-1" rowspan="5">Clear 6143 bytes from <a href="47900.html#49152">49152</a> onwards.</td>
+<td class="comment-1" rowspan="5">Clear 6143 bytes from <a href="49152.html">RoomBuffer</a> onwards.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -110,10 +133,20 @@ Used by the routines at <a href="24553.html">24553</a>, <a href="25948.html">259
 <td class="instruction">LDIR</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="24132"></span>
+<div class="comments">
+<div class="paragraph">
+Initialise drawing state variables.
+</div>
+</div>
+</td>
+</tr>
+<tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="24132"></span>24132</td>
 <td class="instruction">LD A,255</td>
-<td class="comment-1" rowspan="2">Write 255 to *<a href="24507.html">24507</a>.</td>
+<td class="comment-1" rowspan="2">Write 255 to *<a href="24507.html">Level_Flag</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -124,7 +157,7 @@ Used by the routines at <a href="24553.html">24553</a>, <a href="25948.html">259
 <td class="asm-label"></td>
 <td class="address-1"><span id="24137"></span>24137</td>
 <td class="instruction">LD HL,255</td>
-<td class="comment-1" rowspan="2">Write 0255 to *<a href="24505.html">24505</a>.</td>
+<td class="comment-1" rowspan="2">Write 0255 to *<a href="24505.html">RoomDrawPosition</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -138,85 +171,118 @@ Used by the routines at <a href="24553.html">24553</a>, <a href="25948.html">259
 <td class="comment-1" rowspan="1"><span class="register">DE</span>=705.</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="24146"></span>
+<div class="comments">
+<div class="paragraph">
+Main room data parsing loop. Reads a command byte from the room data and dispatches to the appropriate handler based on its value.
+</div>
+</div>
+</td>
+</tr>
+<tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="24146"></span>24146</td>
 <td class="instruction">LD HL,(24515)</td>
-<td class="comment-1" rowspan="1"><span class="register">HL</span>=*<a href="24515.html">24515</a>.</td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>=*<a href="24515.html">Pointer_CurrentRoomData</a>.</td>
 </tr>
 <tr>
-<td class="asm-label">PopulateLevelBuffer_0</td>
+<td class="routine-comment" colspan="5">
+<span id="24149"></span>
+<div class="comments">
+<div class="paragraph">
+This entry point is used by the routines at <a href="24178.html">Command04_SwitchTileSet</a>, <a href="24210.html">Command01_RepeatedTile</a>, <a href="24234.html">Command02_TileWithAttribute</a> and <a href="24264.html">Command08+_SingleTile</a>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">PopulateRoomBuffer_ParseByte</td>
 <td class="address-2"><span id="24149"></span>24149</td>
 <td class="instruction">LD A,(HL)</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">HL</span>.</td>
+<td class="comment-1" rowspan="1">Fetch the room data byte from the pointer.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="24150"></span>24150</td>
 <td class="instruction">OR A</td>
-<td class="comment-1" rowspan="2">Jump to <a href="24100.html#24175">PopulateLevelBuffer_2</a> if <span class="register">A</span> is zero.</td>
+<td class="comment-1" rowspan="2">Jump to <a href="24100.html#24175">Command00_Skip</a> if the room data byte is 0.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="24151"></span>24151</td>
-<td class="instruction">JR Z,<a href="24100.html#24175">PopulateLevelBuffer_2</a></td>
+<td class="instruction">JR Z,<a href="24100.html#24175">Command00_Skip</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="24153"></span>24153</td>
 <td class="instruction">CP 1</td>
-<td class="comment-1" rowspan="2">Jump to <a href="24100.html#24210">PopulateLevelBuffer_5</a> if <span class="register">A</span> is equal to 1.</td>
+<td class="comment-1" rowspan="2">Jump to <a href="24210.html">Command01_RepeatedTile</a> if the room data byte is 1.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="24155"></span>24155</td>
-<td class="instruction">JR Z,<a href="24100.html#24210">PopulateLevelBuffer_5</a></td>
+<td class="instruction">JR Z,<a href="24210.html">Command01_RepeatedTile</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="24157"></span>24157</td>
 <td class="instruction">CP 2</td>
-<td class="comment-1" rowspan="2">Jump to <a href="24100.html#24234">PopulateLevelBuffer_7</a> if <span class="register">A</span> is equal to 2.</td>
+<td class="comment-1" rowspan="2">Jump to <a href="24234.html">Command02_TileWithAttribute</a> if the room data byte is 2.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="24159"></span>24159</td>
-<td class="instruction">JR Z,<a href="24100.html#24234">PopulateLevelBuffer_7</a></td>
+<td class="instruction">JR Z,<a href="24234.html">Command02_TileWithAttribute</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="24161"></span>24161</td>
 <td class="instruction">CP 3</td>
-<td class="comment-1" rowspan="2">Jump to <a href="24100.html#24283">PopulateLevelBuffer_10</a> if <span class="register">A</span> is equal to 3.</td>
+<td class="comment-1" rowspan="2">Jump to <a href="24283.html">Command03_FillAttributes</a> if the room data byte is 3.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="24163"></span>24163</td>
-<td class="instruction">JR Z,<a href="24100.html#24283">PopulateLevelBuffer_10</a></td>
+<td class="instruction">JR Z,<a href="24283.html">Command03_FillAttributes</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="24165"></span>24165</td>
 <td class="instruction">CP 4</td>
-<td class="comment-1" rowspan="2">Jump to <a href="24100.html#24178">PopulateLevelBuffer_3</a> if <span class="register">A</span> is equal to 4.</td>
+<td class="comment-1" rowspan="2">Jump to <a href="24178.html">Command04_SwitchTileSet</a> if the room data byte is 4.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="24167"></span>24167</td>
-<td class="instruction">JR Z,<a href="24100.html#24178">PopulateLevelBuffer_3</a></td>
+<td class="instruction">JR Z,<a href="24178.html">Command04_SwitchTileSet</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="24169"></span>24169</td>
 <td class="instruction">CP 8</td>
-<td class="comment-1" rowspan="2">Jump to <a href="24100.html#24264">PopulateLevelBuffer_9</a> if <span class="register">A</span> is greater than or equal to 8.</td>
+<td class="comment-1" rowspan="2">Jump to <a href="24264.html">Command08+_SingleTile</a> if the room data byte is 8 or higher.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="24171"></span>24171</td>
-<td class="instruction">JR NC,<a href="24100.html#24264">PopulateLevelBuffer_9</a></td>
+<td class="instruction">JR NC,<a href="24264.html">Command08+_SingleTile</a></td>
 </tr>
 <tr>
-<td class="asm-label">PopulateLevelBuffer_1</td>
+<td class="routine-comment" colspan="5">
+<span id="24173"></span>
+<div class="comments">
+<div class="paragraph">
+This entry point is used by the routines at <a href="24210.html">Command01_RepeatedTile</a>, <a href="24234.html">Command02_TileWithAttribute</a>, <a href="24264.html">Command08+_SingleTile</a> and <a href="24283.html">Command03_FillAttributes</a>.
+</div>
+<div class="paragraph">
+If none of the above matched, trigger an error.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">PopulateRoomBuffer_Error</td>
 <td class="address-2"><span id="24173"></span>24173</td>
 <td class="instruction">RST 8</td>
 <td class="comment-1" rowspan="1">Run the ERROR_1 routine: <a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/0008.html">RST 8</a>.</td>
@@ -228,1130 +294,26 @@ Used by the routines at <a href="24553.html">24553</a>, <a href="25948.html">259
 <td class="comment-1" rowspan="1">Increment <span class="register">B</span> by one.</td>
 </tr>
 <tr>
-<td class="asm-label">PopulateLevelBuffer_2</td>
+<td class="routine-comment" colspan="5">
+<span id="24175"></span>
+<div class="comments">
+<div class="paragraph">
+Command 0: no-op. Skip this byte and continue parsing.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Command00_Skip</td>
 <td class="address-2"><span id="24175"></span>24175</td>
 <td class="instruction">INC HL</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
+<td class="comment-1" rowspan="1">Increment the room data pointer by one.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="24176"></span>24176</td>
-<td class="instruction">JR <a href="24100.html#24149">PopulateLevelBuffer_0</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="24100.html#24149">PopulateLevelBuffer_0</a>.</td>
-</tr>
-<tr>
-<td class="asm-label">PopulateLevelBuffer_3</td>
-<td class="address-2"><span id="24178"></span>24178</td>
-<td class="instruction">INC HL</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24179"></span>24179</td>
-<td class="instruction">LD A,(HL)</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">HL</span>.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24180"></span>24180</td>
-<td class="instruction">INC HL</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24181"></span>24181</td>
-<td class="instruction">CP 1</td>
-<td class="comment-1" rowspan="2">Jump to <a href="24100.html#24200">PopulateLevelBuffer_4</a> if <span class="register">A</span> is equal to 1.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24183"></span>24183</td>
-<td class="instruction">JR Z,<a href="24100.html#24200">PopulateLevelBuffer_4</a></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24185"></span>24185</td>
-<td class="instruction">CP 2</td>
-<td class="comment-1" rowspan="2">Jump to <a href="24551.html">24551</a> if <span class="register">A</span> is not equal to 2.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24187"></span>24187</td>
-<td class="instruction">JP NZ,<a href="24551.html">24551</a></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24190"></span>24190</td>
-<td class="instruction">PUSH HL</td>
-<td class="comment-1" rowspan="1">Stash <span class="register">HL</span> on the stack.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24191"></span>24191</td>
-<td class="instruction">LD HL,41834</td>
-<td class="comment-1" rowspan="2">Write <a href="33706.html#41834">41834</a> to *<a href="24513.html">24513</a>.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24194"></span>24194</td>
-<td class="instruction">LD (24513),HL</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24197"></span>24197</td>
-<td class="instruction">POP HL</td>
-<td class="comment-1" rowspan="1">Restore <span class="register">HL</span> from the stack.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24198"></span>24198</td>
-<td class="instruction">JR <a href="24100.html#24149">PopulateLevelBuffer_0</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="24100.html#24149">PopulateLevelBuffer_0</a>.</td>
-</tr>
-<tr>
-<td class="asm-label">PopulateLevelBuffer_4</td>
-<td class="address-2"><span id="24200"></span>24200</td>
-<td class="instruction">PUSH HL</td>
-<td class="comment-1" rowspan="1">Stash <span class="register">HL</span> on the stack.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24201"></span>24201</td>
-<td class="instruction">LD HL,39850</td>
-<td class="comment-1" rowspan="2">Write <a href="33706.html#39850">39850</a> to *<a href="24513.html">24513</a>.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24204"></span>24204</td>
-<td class="instruction">LD (24513),HL</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24207"></span>24207</td>
-<td class="instruction">POP HL</td>
-<td class="comment-1" rowspan="1">Restore <span class="register">HL</span> from the stack.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24208"></span>24208</td>
-<td class="instruction">JR <a href="24100.html#24149">PopulateLevelBuffer_0</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="24100.html#24149">PopulateLevelBuffer_0</a>.</td>
-</tr>
-<tr>
-<td class="asm-label">PopulateLevelBuffer_5</td>
-<td class="address-2"><span id="24210"></span>24210</td>
-<td class="instruction">INC HL</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24211"></span>24211</td>
-<td class="instruction">LD A,(HL)</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">HL</span>.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24212"></span>24212</td>
-<td class="instruction">INC HL</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24213"></span>24213</td>
-<td class="instruction">LD B,A</td>
-<td class="comment-1" rowspan="1"><span class="register">B</span>=<span class="register">A</span>.</td>
-</tr>
-<tr>
-<td class="asm-label">PopulateLevelBuffer_6</td>
-<td class="address-2"><span id="24214"></span>24214</td>
-<td class="instruction">PUSH HL</td>
-<td class="comment-1" rowspan="3">Stash <span class="register">HL</span>, <span class="register">DE</span> and <span class="register">BC</span> on the stack.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24215"></span>24215</td>
-<td class="instruction">PUSH DE</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24216"></span>24216</td>
-<td class="instruction">PUSH BC</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24217"></span>24217</td>
-<td class="instruction">LD D,1</td>
-<td class="comment-1" rowspan="1"><span class="register">D</span>=1.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24219"></span>24219</td>
-<td class="instruction">CALL <a href="24100.html#24373">PopulateLevelBuffer_17</a></td>
-<td class="comment-1" rowspan="1">Call <a href="24100.html#24373">PopulateLevelBuffer_17</a>.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24222"></span>24222</td>
-<td class="instruction">POP BC</td>
-<td class="comment-1" rowspan="3">Restore <span class="register">BC</span>, <span class="register">DE</span> and <span class="register">HL</span> from the stack.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24223"></span>24223</td>
-<td class="instruction">POP DE</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24224"></span>24224</td>
-<td class="instruction">POP HL</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24225"></span>24225</td>
-<td class="instruction">DEC DE</td>
-<td class="comment-1" rowspan="1">Decrease <span class="register">DE</span> by one.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24226"></span>24226</td>
-<td class="instruction">LD A,E</td>
-<td class="comment-1" rowspan="3">Jump back to <a href="24100.html#24173">PopulateLevelBuffer_1</a> if <span class="register">DE</span> is zero.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24227"></span>24227</td>
-<td class="instruction">OR D</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24228"></span>24228</td>
-<td class="instruction">JR Z,<a href="24100.html#24173">PopulateLevelBuffer_1</a></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24230"></span>24230</td>
-<td class="instruction">DJNZ <a href="24100.html#24214">PopulateLevelBuffer_6</a></td>
-<td class="comment-1" rowspan="1">Decrease counter by one and loop back to <a href="24100.html#24214">PopulateLevelBuffer_6</a> until counter is zero.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24232"></span>24232</td>
-<td class="instruction">JR <a href="24100.html#24149">PopulateLevelBuffer_0</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="24100.html#24149">PopulateLevelBuffer_0</a>.</td>
-</tr>
-<tr>
-<td class="asm-label">PopulateLevelBuffer_7</td>
-<td class="address-2"><span id="24234"></span>24234</td>
-<td class="instruction">INC HL</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24235"></span>24235</td>
-<td class="instruction">LD A,(HL)</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">HL</span>.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24236"></span>24236</td>
-<td class="instruction">LD B,A</td>
-<td class="comment-1" rowspan="1"><span class="register">B</span>=<span class="register">A</span>.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24237"></span>24237</td>
-<td class="instruction">INC HL</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24238"></span>24238</td>
-<td class="instruction">LD A,(HL)</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">HL</span>.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24239"></span>24239</td>
-<td class="instruction">INC HL</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
-</tr>
-<tr>
-<td class="asm-label">PopulateLevelBuffer_8</td>
-<td class="address-2"><span id="24240"></span>24240</td>
-<td class="instruction">PUSH AF</td>
-<td class="comment-1" rowspan="4">Stash <span class="register">AF</span>, <span class="register">BC</span>, <span class="register">DE</span> and <span class="register">HL</span> on the stack.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24241"></span>24241</td>
-<td class="instruction">PUSH BC</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24242"></span>24242</td>
-<td class="instruction">PUSH DE</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24243"></span>24243</td>
-<td class="instruction">PUSH HL</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24244"></span>24244</td>
-<td class="instruction">LD D,0</td>
-<td class="comment-1" rowspan="1"><span class="register">D</span>=0.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24246"></span>24246</td>
-<td class="instruction">CALL <a href="24100.html#24373">PopulateLevelBuffer_17</a></td>
-<td class="comment-1" rowspan="1">Call <a href="24100.html#24373">PopulateLevelBuffer_17</a>.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24249"></span>24249</td>
-<td class="instruction">POP HL</td>
-<td class="comment-1" rowspan="4">Restore <span class="register">HL</span>, <span class="register">DE</span>, <span class="register">BC</span> and <span class="register">AF</span> from the stack.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24250"></span>24250</td>
-<td class="instruction">POP DE</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24251"></span>24251</td>
-<td class="instruction">POP BC</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24252"></span>24252</td>
-<td class="instruction">POP AF</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24253"></span>24253</td>
-<td class="instruction">EX AF,AF'</td>
-<td class="comment-1" rowspan="1">Exchange the <span class="register">AF</span> register with the shadow <span class="register">AF</span> register.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24254"></span>24254</td>
-<td class="instruction">DEC DE</td>
-<td class="comment-1" rowspan="1">Decrease <span class="register">DE</span> by one.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24255"></span>24255</td>
-<td class="instruction">LD A,E</td>
-<td class="comment-1" rowspan="3">Jump back to <a href="24100.html#24173">PopulateLevelBuffer_1</a> if <span class="register">DE</span> is zero.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24256"></span>24256</td>
-<td class="instruction">OR D</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24257"></span>24257</td>
-<td class="instruction">JR Z,<a href="24100.html#24173">PopulateLevelBuffer_1</a></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24259"></span>24259</td>
-<td class="instruction">EX AF,AF'</td>
-<td class="comment-1" rowspan="1">Exchange the shadow <span class="register">AF</span> register with the <span class="register">AF</span> register.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24260"></span>24260</td>
-<td class="instruction">DJNZ <a href="24100.html#24240">PopulateLevelBuffer_8</a></td>
-<td class="comment-1" rowspan="1">Decrease counter by one and loop back to <a href="24100.html#24240">PopulateLevelBuffer_8</a> until counter is zero.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24262"></span>24262</td>
-<td class="instruction">JR <a href="24100.html#24149">PopulateLevelBuffer_0</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="24100.html#24149">PopulateLevelBuffer_0</a>.</td>
-</tr>
-<tr>
-<td class="asm-label">PopulateLevelBuffer_9</td>
-<td class="address-2"><span id="24264"></span>24264</td>
-<td class="instruction">LD A,(HL)</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">HL</span>.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24265"></span>24265</td>
-<td class="instruction">INC HL</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24266"></span>24266</td>
-<td class="instruction">PUSH HL</td>
-<td class="comment-1" rowspan="2">Stash <span class="register">HL</span> and <span class="register">DE</span> on the stack.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24267"></span>24267</td>
-<td class="instruction">PUSH DE</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24268"></span>24268</td>
-<td class="instruction">LD D,0</td>
-<td class="comment-1" rowspan="1"><span class="register">D</span>=0.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24270"></span>24270</td>
-<td class="instruction">CALL <a href="24100.html#24373">PopulateLevelBuffer_17</a></td>
-<td class="comment-1" rowspan="1">Call <a href="24100.html#24373">PopulateLevelBuffer_17</a>.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24273"></span>24273</td>
-<td class="instruction">POP DE</td>
-<td class="comment-1" rowspan="2">Restore <span class="register">DE</span> and <span class="register">HL</span> from the stack.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24274"></span>24274</td>
-<td class="instruction">POP HL</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24275"></span>24275</td>
-<td class="instruction">DEC DE</td>
-<td class="comment-1" rowspan="1">Decrease <span class="register">DE</span> by one.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24276"></span>24276</td>
-<td class="instruction">LD A,D</td>
-<td class="comment-1" rowspan="3">Jump back to <a href="24100.html#24173">PopulateLevelBuffer_1</a> if <span class="register">DE</span> is zero.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24277"></span>24277</td>
-<td class="instruction">OR E</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24278"></span>24278</td>
-<td class="instruction">JR Z,<a href="24100.html#24173">PopulateLevelBuffer_1</a></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24280"></span>24280</td>
-<td class="instruction">JP <a href="24100.html#24149">PopulateLevelBuffer_0</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="24100.html#24149">PopulateLevelBuffer_0</a>.</td>
-</tr>
-<tr>
-<td class="asm-label">PopulateLevelBuffer_10</td>
-<td class="address-2"><span id="24283"></span>24283</td>
-<td class="instruction">INC HL</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24284"></span>24284</td>
-<td class="instruction">LD C,(HL)</td>
-<td class="comment-1" rowspan="1"><span class="register">C</span>=*<span class="register">HL</span>.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24285"></span>24285</td>
-<td class="instruction">LD IX,55296</td>
-<td class="comment-1" rowspan="1"><span class="register">IX</span>=<a href="49629.html#55296">55296</a>.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24289"></span>24289</td>
-<td class="instruction">LD DE,704</td>
-<td class="comment-1" rowspan="1"><span class="register">DE</span>=0704.</td>
-</tr>
-<tr>
-<td class="asm-label">PopulateLevelBuffer_11</td>
-<td class="address-2"><span id="24292"></span>24292</td>
-<td class="instruction">LD (IX+0),C</td>
-<td class="comment-1" rowspan="1">Write <span class="register">C</span> to *<span class="register">IX</span>+0.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24295"></span>24295</td>
-<td class="instruction">INC IX</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">IX</span> by one.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24297"></span>24297</td>
-<td class="instruction">DEC DE</td>
-<td class="comment-1" rowspan="1">Decrease <span class="register">DE</span> by one.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24298"></span>24298</td>
-<td class="instruction">LD A,E</td>
-<td class="comment-1" rowspan="3">Jump back to <a href="24100.html#24292">PopulateLevelBuffer_11</a> until <span class="register">DE</span> is zero.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24299"></span>24299</td>
-<td class="instruction">OR D</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24300"></span>24300</td>
-<td class="instruction">JR NZ,<a href="24100.html#24292">PopulateLevelBuffer_11</a></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24302"></span>24302</td>
-<td class="instruction">INC HL</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24303"></span>24303</td>
-<td class="instruction">LD DE,705</td>
-<td class="comment-1" rowspan="1"><span class="register">DE</span>=0705.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24306"></span>24306</td>
-<td class="instruction">LD IX,55296</td>
-<td class="comment-1" rowspan="1"><span class="register">IX</span>=<a href="49629.html#55296">55296</a>.</td>
-</tr>
-<tr>
-<td class="asm-label">PopulateLevelBuffer_12</td>
-<td class="address-2"><span id="24310"></span>24310</td>
-<td class="instruction">LD A,(HL)</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">HL</span>.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24311"></span>24311</td>
-<td class="instruction">CP 18</td>
-<td class="comment-1" rowspan="2">Jump to <a href="24100.html#24338">PopulateLevelBuffer_13</a> if <span class="register">A</span> is equal to 18.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24313"></span>24313</td>
-<td class="instruction">JR Z,<a href="24100.html#24338">PopulateLevelBuffer_13</a></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24315"></span>24315</td>
-<td class="instruction">CP 27</td>
-<td class="comment-1" rowspan="2">Jump to <a href="24100.html#24353">PopulateLevelBuffer_15</a> if <span class="register">A</span> is equal to 27.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24317"></span>24317</td>
-<td class="instruction">JR Z,<a href="24100.html#24353">PopulateLevelBuffer_15</a></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24319"></span>24319</td>
-<td class="instruction">CP 36</td>
-<td class="comment-1" rowspan="2">Jump to <a href="24100.html#24436">PopulateLevelBuffer_21</a> if <span class="register">A</span> is equal to 36.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24321"></span>24321</td>
-<td class="instruction">JR Z,<a href="24100.html#24436">PopulateLevelBuffer_21</a></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24323"></span>24323</td>
-<td class="instruction">LD C,(HL)</td>
-<td class="comment-1" rowspan="1"><span class="register">C</span>=*<span class="register">HL</span>.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24324"></span>24324</td>
-<td class="instruction">LD (IX+0),C</td>
-<td class="comment-1" rowspan="1">Write <span class="register">C</span> to *<span class="register">IX</span>+0.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24327"></span>24327</td>
-<td class="instruction">DEC DE</td>
-<td class="comment-1" rowspan="1">Decrease <span class="register">DE</span> by one.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24328"></span>24328</td>
-<td class="instruction">INC IX</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">IX</span> by one.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24330"></span>24330</td>
-<td class="instruction">LD A,E</td>
-<td class="comment-1" rowspan="3">Jump back to <a href="24100.html#24173">PopulateLevelBuffer_1</a> if <span class="register">DE</span> is zero.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24331"></span>24331</td>
-<td class="instruction">OR D</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24332"></span>24332</td>
-<td class="instruction">JP Z,<a href="24100.html#24173">PopulateLevelBuffer_1</a></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24335"></span>24335</td>
-<td class="instruction">INC HL</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24336"></span>24336</td>
-<td class="instruction">JR <a href="24100.html#24310">PopulateLevelBuffer_12</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="24100.html#24310">PopulateLevelBuffer_12</a>.</td>
-</tr>
-<tr>
-<td class="asm-label">PopulateLevelBuffer_13</td>
-<td class="address-2"><span id="24338"></span>24338</td>
-<td class="instruction">INC HL</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24339"></span>24339</td>
-<td class="instruction">LD B,(HL)</td>
-<td class="comment-1" rowspan="1"><span class="register">B</span>=*<span class="register">HL</span>.</td>
-</tr>
-<tr>
-<td class="asm-label">PopulateLevelBuffer_14</td>
-<td class="address-2"><span id="24340"></span>24340</td>
-<td class="instruction">INC IX</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">IX</span> by one.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24342"></span>24342</td>
-<td class="instruction">DEC DE</td>
-<td class="comment-1" rowspan="1">Decrease <span class="register">DE</span> by one.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24343"></span>24343</td>
-<td class="instruction">LD A,E</td>
-<td class="comment-1" rowspan="3">Jump back to <a href="24100.html#24173">PopulateLevelBuffer_1</a> if <span class="register">DE</span> is zero.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24344"></span>24344</td>
-<td class="instruction">OR D</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24345"></span>24345</td>
-<td class="instruction">JP Z,<a href="24100.html#24173">PopulateLevelBuffer_1</a></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24348"></span>24348</td>
-<td class="instruction">DJNZ <a href="24100.html#24340">PopulateLevelBuffer_14</a></td>
-<td class="comment-1" rowspan="1">Decrease counter by one and loop back to <a href="24100.html#24340">PopulateLevelBuffer_14</a> until counter is zero.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24350"></span>24350</td>
-<td class="instruction">INC HL</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24351"></span>24351</td>
-<td class="instruction">JR <a href="24100.html#24310">PopulateLevelBuffer_12</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="24100.html#24310">PopulateLevelBuffer_12</a>.</td>
-</tr>
-<tr>
-<td class="asm-label">PopulateLevelBuffer_15</td>
-<td class="address-2"><span id="24353"></span>24353</td>
-<td class="instruction">INC HL</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24354"></span>24354</td>
-<td class="instruction">LD B,(HL)</td>
-<td class="comment-1" rowspan="1"><span class="register">B</span>=*<span class="register">HL</span>.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24355"></span>24355</td>
-<td class="instruction">INC HL</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24356"></span>24356</td>
-<td class="instruction">LD C,(HL)</td>
-<td class="comment-1" rowspan="1"><span class="register">C</span>=*<span class="register">HL</span>.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24357"></span>24357</td>
-<td class="instruction">INC HL</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
-</tr>
-<tr>
-<td class="asm-label">PopulateLevelBuffer_16</td>
-<td class="address-2"><span id="24358"></span>24358</td>
-<td class="instruction">LD (IX+0),C</td>
-<td class="comment-1" rowspan="1">Write <span class="register">C</span> to *<span class="register">IX</span>+0.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24361"></span>24361</td>
-<td class="instruction">INC IX</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">IX</span> by one.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24363"></span>24363</td>
-<td class="instruction">DEC DE</td>
-<td class="comment-1" rowspan="1">Decrease <span class="register">DE</span> by one.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24364"></span>24364</td>
-<td class="instruction">LD A,E</td>
-<td class="comment-1" rowspan="3">Jump back to <a href="24100.html#24173">PopulateLevelBuffer_1</a> if <span class="register">DE</span> is zero.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24365"></span>24365</td>
-<td class="instruction">OR D</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24366"></span>24366</td>
-<td class="instruction">JP Z,<a href="24100.html#24173">PopulateLevelBuffer_1</a></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24369"></span>24369</td>
-<td class="instruction">DJNZ <a href="24100.html#24358">PopulateLevelBuffer_16</a></td>
-<td class="comment-1" rowspan="1">Decrease counter by one and loop back to <a href="24100.html#24358">PopulateLevelBuffer_16</a> until counter is zero.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24371"></span>24371</td>
-<td class="instruction">JR <a href="24100.html#24310">PopulateLevelBuffer_12</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="24100.html#24310">PopulateLevelBuffer_12</a>.</td>
-</tr>
-<tr>
-<td class="asm-label">PopulateLevelBuffer_17</td>
-<td class="address-2"><span id="24373"></span>24373</td>
-<td class="instruction">LD BC,(24505)</td>
-<td class="comment-1" rowspan="1"><span class="register">BC</span>=*<a href="24505.html">24505</a>.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24377"></span>24377</td>
-<td class="instruction">INC C</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">C</span> by one.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24378"></span>24378</td>
-<td class="instruction">EX AF,AF'</td>
-<td class="comment-1" rowspan="1">Exchange the <span class="register">AF</span> register with the shadow <span class="register">AF</span> register.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24379"></span>24379</td>
-<td class="instruction">BIT 5,C</td>
-<td class="comment-1" rowspan="2">Jump to <a href="24100.html#24385">PopulateLevelBuffer_18</a> if bit 5 of <span class="register">C</span> is set.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24381"></span>24381</td>
-<td class="instruction">JR NZ,<a href="24100.html#24385">PopulateLevelBuffer_18</a></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24383"></span>24383</td>
-<td class="instruction">JR <a href="24100.html#24388">PopulateLevelBuffer_19</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="24100.html#24388">PopulateLevelBuffer_19</a>.</td>
-</tr>
-<tr>
-<td class="asm-label">PopulateLevelBuffer_18</td>
-<td class="address-2"><span id="24385"></span>24385</td>
-<td class="instruction">INC B</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">B</span> by one.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24386"></span>24386</td>
-<td class="instruction">LD C,0</td>
-<td class="comment-1" rowspan="1"><span class="register">C</span>=0.</td>
-</tr>
-<tr>
-<td class="asm-label">PopulateLevelBuffer_19</td>
-<td class="address-2"><span id="24388"></span>24388</td>
-<td class="instruction">LD (24505),BC</td>
-<td class="comment-1" rowspan="1">Write <span class="register">BC</span> to *<a href="24505.html">24505</a>.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24392"></span>24392</td>
-<td class="instruction">BIT 0,D</td>
-<td class="comment-1" rowspan="2">Return if bit 0 of <span class="register">D</span> is set.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24394"></span>24394</td>
-<td class="instruction">RET NZ</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24395"></span>24395</td>
-<td class="instruction">LD L,C</td>
-<td class="comment-1" rowspan="1"><span class="register">L</span>=<span class="register">C</span>.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24396"></span>24396</td>
-<td class="instruction">LD A,B</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=<span class="register">B</span>.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24397"></span>24397</td>
-<td class="instruction">AND %00000111</td>
-<td class="comment-1" rowspan="1">Keep only bits 0-2.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24399"></span>24399</td>
-<td class="instruction">RRCA</td>
-<td class="comment-1" rowspan="1">RRCA.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24400"></span>24400</td>
-<td class="instruction">RRCA</td>
-<td class="comment-1" rowspan="1">RRCA.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24401"></span>24401</td>
-<td class="instruction">RRCA</td>
-<td class="comment-1" rowspan="1">RRCA.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24402"></span>24402</td>
-<td class="instruction">OR L</td>
-<td class="comment-1" rowspan="1">Set the bits from <span class="register">L</span>.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24403"></span>24403</td>
-<td class="instruction">LD L,A</td>
-<td class="comment-1" rowspan="1"><span class="register">L</span>=<span class="register">A</span>.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24404"></span>24404</td>
-<td class="instruction">LD A,B</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=<span class="register">B</span>.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24405"></span>24405</td>
-<td class="instruction">AND %00011000</td>
-<td class="comment-1" rowspan="1">Keep only bits 3-4.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24407"></span>24407</td>
-<td class="instruction">OR %11000000</td>
-<td class="comment-1" rowspan="1">Set bits 6-7.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24409"></span>24409</td>
-<td class="instruction">LD H,A</td>
-<td class="comment-1" rowspan="1"><span class="register">H</span>=<span class="register">A</span>.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24410"></span>24410</td>
-<td class="instruction">PUSH HL</td>
-<td class="comment-1" rowspan="1">Stash <span class="register">HL</span> on the stack.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24411"></span>24411</td>
-<td class="instruction">LD DE,(24513)</td>
-<td class="comment-1" rowspan="1"><span class="register">DE</span>=*<a href="24513.html">24513</a>.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24415"></span>24415</td>
-<td class="instruction">EX AF,AF'</td>
-<td class="comment-1" rowspan="1">Exchange the <span class="register">AF</span> register with the shadow <span class="register">AF</span> register.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24416"></span>24416</td>
-<td class="instruction">SUB 8</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>-=8.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24418"></span>24418</td>
-<td class="instruction">LD L,A</td>
-<td class="comment-1" rowspan="1"><span class="register">L</span>=<span class="register">A</span>.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24419"></span>24419</td>
-<td class="instruction">LD H,0</td>
-<td class="comment-1" rowspan="1"><span class="register">H</span>=0.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24421"></span>24421</td>
-<td class="instruction">ADD HL,HL</td>
-<td class="comment-1" rowspan="1"><span class="register">HL</span>+=<span class="register">HL</span>.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24422"></span>24422</td>
-<td class="instruction">ADD HL,HL</td>
-<td class="comment-1" rowspan="1"><span class="register">HL</span>+=<span class="register">HL</span>.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24423"></span>24423</td>
-<td class="instruction">ADD HL,HL</td>
-<td class="comment-1" rowspan="1"><span class="register">HL</span>+=<span class="register">HL</span>.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24424"></span>24424</td>
-<td class="instruction">ADD HL,DE</td>
-<td class="comment-1" rowspan="1"><span class="register">HL</span>+=<span class="register">DE</span>.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24425"></span>24425</td>
-<td class="instruction">EX DE,HL</td>
-<td class="comment-1" rowspan="1">Exchange the <span class="register">DE</span> and <span class="register">HL</span> registers.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24426"></span>24426</td>
-<td class="instruction">POP HL</td>
-<td class="comment-1" rowspan="1">Restore <span class="register">HL</span> from the stack.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24427"></span>24427</td>
-<td class="instruction">LD B,8</td>
-<td class="comment-1" rowspan="1"><span class="register">B</span>=8.</td>
-</tr>
-<tr>
-<td class="asm-label">PopulateLevelBuffer_20</td>
-<td class="address-2"><span id="24429"></span>24429</td>
-<td class="instruction">LD A,(DE)</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">DE</span>.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24430"></span>24430</td>
-<td class="instruction">LD (HL),A</td>
-<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">HL</span>.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24431"></span>24431</td>
-<td class="instruction">INC DE</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">DE</span> by one.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24432"></span>24432</td>
-<td class="instruction">INC H</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">H</span> by one.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24433"></span>24433</td>
-<td class="instruction">DJNZ <a href="24100.html#24429">PopulateLevelBuffer_20</a></td>
-<td class="comment-1" rowspan="1">Decrease counter by one and loop back to <a href="24100.html#24429">PopulateLevelBuffer_20</a> until counter is zero.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24435"></span>24435</td>
-<td class="instruction">RET</td>
-<td class="comment-1" rowspan="1">Return.</td>
-</tr>
-<tr>
-<td class="asm-label">PopulateLevelBuffer_21</td>
-<td class="address-2"><span id="24436"></span>24436</td>
-<td class="instruction">LD A,(24489)</td>
-<td class="comment-1" rowspan="3">Jump to <a href="24100.html#24451">PopulateLevelBuffer_22</a> if *<a href="24481.html#24489">24489</a> is zero.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24439"></span>24439</td>
-<td class="instruction">OR A</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24440"></span>24440</td>
-<td class="instruction">JR Z,<a href="24100.html#24451">PopulateLevelBuffer_22</a></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24442"></span>24442</td>
-<td class="instruction">XOR A</td>
-<td class="comment-1" rowspan="2">Write 0 to *<a href="24481.html#24489">24489</a>.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24443"></span>24443</td>
-<td class="instruction">LD (24489),A</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24446"></span>24446</td>
-<td class="instruction">NOP</td>
-<td class="comment-1" rowspan="1">No operation.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24447"></span>24447</td>
-<td class="instruction">NOP</td>
-<td class="comment-1" rowspan="1">No operation.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24448"></span>24448</td>
-<td class="instruction">LD (56035),A</td>
-<td class="comment-1" rowspan="1">Write 0 to *<a href="49629.html#56035">56035</a>.</td>
-</tr>
-<tr>
-<td class="asm-label">PopulateLevelBuffer_22</td>
-<td class="address-2"><span id="24451"></span>24451</td>
-<td class="instruction">LD A,(24517)</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="24517.html">24517</a>.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24454"></span>24454</td>
-<td class="instruction">DEC A</td>
-<td class="comment-1" rowspan="1">Decrease <span class="register">A</span> by one.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24455"></span>24455</td>
-<td class="instruction">LD DE,56990</td>
-<td class="comment-1" rowspan="1"><span class="register">DE</span>=<a href="49629.html#56990">56990</a>.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24458"></span>24458</td>
-<td class="instruction">LD L,A</td>
-<td class="comment-1" rowspan="1"><span class="register">L</span>=<span class="register">A</span>.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24459"></span>24459</td>
-<td class="instruction">LD H,0</td>
-<td class="comment-1" rowspan="1"><span class="register">H</span>=0.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24461"></span>24461</td>
-<td class="instruction">ADD HL,HL</td>
-<td class="comment-1" rowspan="1"><span class="register">HL</span>+=<span class="register">HL</span>.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24462"></span>24462</td>
-<td class="instruction">ADD HL,HL</td>
-<td class="comment-1" rowspan="1"><span class="register">HL</span>+=<span class="register">HL</span>.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24463"></span>24463</td>
-<td class="instruction">ADD HL,HL</td>
-<td class="comment-1" rowspan="1"><span class="register">HL</span>+=<span class="register">HL</span>.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24464"></span>24464</td>
-<td class="instruction">ADD HL,HL</td>
-<td class="comment-1" rowspan="1"><span class="register">HL</span>+=<span class="register">HL</span>.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24465"></span>24465</td>
-<td class="instruction">ADD HL,HL</td>
-<td class="comment-1" rowspan="1"><span class="register">HL</span>+=<span class="register">HL</span>.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24466"></span>24466</td>
-<td class="instruction">ADD HL,DE</td>
-<td class="comment-1" rowspan="1"><span class="register">HL</span>+=<span class="register">DE</span>.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24467"></span>24467</td>
-<td class="instruction">LD (24501),HL</td>
-<td class="comment-1" rowspan="1">Write <span class="register">HL</span> to *<a href="24501.html">24501</a>.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24470"></span>24470</td>
-<td class="instruction">EI</td>
-<td class="comment-1" rowspan="1">Enable interrupts.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24471"></span>24471</td>
-<td class="instruction">HALT</td>
-<td class="comment-1" rowspan="1">Halt operation (suspend CPU until the next interrupt).</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24472"></span>24472</td>
-<td class="instruction">DI</td>
-<td class="comment-1" rowspan="1">Disable interrupts.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24473"></span>24473</td>
-<td class="instruction">LD B,22</td>
-<td class="comment-1" rowspan="1"><span class="register">B</span>=22.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24475"></span>24475</td>
-<td class="instruction">LD HL,49152</td>
-<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="47900.html#49152">49152</a>.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24478"></span>24478</td>
-<td class="instruction">JP <a href="25656.html">25656</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="25656.html">25656</a>.</td>
+<td class="instruction">JR <a href="24100.html#24149">PopulateRoomBuffer_ParseByte</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="24100.html#24149">PopulateRoomBuffer_ParseByte</a>.</td>
 </tr>
 </table>
 <table class="asm-navigation">
@@ -1361,13 +323,13 @@ Prev: <a href="24000.html">24000</a>
 </td>
 <td class="up">Up: <a href="../maps/all.html#24100">Map</a></td>
 <td class="next">
-Next: <a href="24481.html">24481</a>
+Next: <a href="24178.html">24178</a>
 </td>
 </tr>
 </table>
 <footer>
 <div class="release"></div>
-<div class="copyright">&copy; 1984 Gremlin Graphics Software Ltd &copy; 2025 ArcadeGeek LTD.</div>
+<div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
 <div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
 <div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
 <div><a href="../../asm/5E24.html">Switch to hexadecimal</a>.</div>

@@ -33,97 +33,118 @@ Next: <a href="25686.html">25686</a>
 </td>
 </tr>
 </table>
-<div class="description">25656: Routine at 6438</div>
+<div class="description">25656: Draw Level Rows</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
 <div class="details">
 <div class="paragraph">
-Used by the routine at <a href="24100.html">PopulateLevelBuffer</a>.
+Used by the routine at <a href="24373.html">DrawRoomTile</a>.
+</div>
+<div class="paragraph">
+Loop B times: call <a href="25686.html">DrawLevelRow</a> (draw row), advance <span class="register">HL</span>. Then call <a href="25531.html">Print_HUD_Header</a> if header not drawn, and <a href="25531.html#25547">Print_HUD_Header_0</a> to colour bottom rows.
 </div>
 </div>
 </td>
 </tr>
 <tr>
+<td class="asm-label">Draw_Level_Rows</td>
 <td class="address-2"><span id="25656"></span>25656</td>
 <td class="instruction">PUSH BC</td>
 <td class="comment-1" rowspan="2">Stash <span class="register">BC</span> and <span class="register">HL</span> on the stack.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="25657"></span>25657</td>
 <td class="instruction">PUSH HL</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="25658"></span>25658</td>
 <td class="instruction">CALL <a href="25686.html">DrawLevelRow</a></td>
 <td class="comment-1" rowspan="1">Call <a href="25686.html">DrawLevelRow</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="25661"></span>25661</td>
 <td class="instruction">POP HL</td>
 <td class="comment-1" rowspan="2">Restore <span class="register">HL</span> and <span class="register">BC</span> from the stack.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="25662"></span>25662</td>
 <td class="instruction">POP BC</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="25663"></span>25663</td>
 <td class="instruction">LD A,32</td>
 <td class="comment-1" rowspan="3"><span class="register">L</span>+=32.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="25665"></span>25665</td>
 <td class="instruction">ADD A,L</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="25666"></span>25666</td>
 <td class="instruction">LD L,A</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="25667"></span>25667</td>
 <td class="instruction">OR A</td>
-<td class="comment-1" rowspan="2">Jump to <a href="25656.html#25674">25674</a> if <span class="register">A</span> is non-zero.</td>
+<td class="comment-1" rowspan="2">Jump to <a href="25656.html#25674">Draw_Level_Rows_0</a> if <span class="register">A</span> is non-zero.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="25668"></span>25668</td>
-<td class="instruction">JR NZ,<a href="25656.html#25674">25674</a></td>
+<td class="instruction">JR NZ,<a href="25656.html#25674">Draw_Level_Rows_0</a></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="25670"></span>25670</td>
 <td class="instruction">LD A,8</td>
 <td class="comment-1" rowspan="3"><span class="register">H</span>+=8.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="25672"></span>25672</td>
 <td class="instruction">ADD A,H</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="25673"></span>25673</td>
 <td class="instruction">LD H,A</td>
 </tr>
 <tr>
+<td class="asm-label">Draw_Level_Rows_0</td>
 <td class="address-2"><span id="25674"></span>25674</td>
-<td class="instruction">DJNZ <a href="25656.html#25656">25656</a></td>
-<td class="comment-1" rowspan="1">Decrease counter by one and loop back to <a href="25656.html">25656</a> until counter is zero.</td>
+<td class="instruction">DJNZ <a href="25656.html#25656">Draw_Level_Rows</a></td>
+<td class="comment-1" rowspan="1">Decrease counter by one and loop back to <a href="25656.html">Draw_Level_Rows</a> until counter is zero.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="25676"></span>25676</td>
 <td class="instruction">LD A,(24481)</td>
-<td class="comment-1" rowspan="3">Call <a href="25531.html">25531</a> if *<a href="24481.html">24481</a> is zero.</td>
+<td class="comment-1" rowspan="3">Call <a href="25531.html">Print_HUD_Header</a> if *<a href="24481.html">Header_Drawn_Flag</a> is zero.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="25679"></span>25679</td>
 <td class="instruction">OR A</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="25680"></span>25680</td>
-<td class="instruction">CALL Z,<a href="25531.html">25531</a></td>
+<td class="instruction">CALL Z,<a href="25531.html">Print_HUD_Header</a></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="25683"></span>25683</td>
-<td class="instruction">JP <a href="25531.html#25547">25547</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="25531.html#25547">25547</a>.</td>
+<td class="instruction">JP <a href="25531.html#25547">Print_HUD_Header_0</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="25531.html#25547">Print_HUD_Header_0</a>.</td>
 </tr>
 </table>
 <table class="asm-navigation">
@@ -139,7 +160,7 @@ Next: <a href="25686.html">25686</a>
 </table>
 <footer>
 <div class="release"></div>
-<div class="copyright">&copy; 1984 Gremlin Graphics Software Ltd &copy; 2025 ArcadeGeek LTD.</div>
+<div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
 <div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
 <div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
 <div><a href="../../asm/6438.html">Switch to hexadecimal</a>.</div>

@@ -33,107 +33,163 @@ Next: <a href="5FE7.html">5FE7</a>
 </td>
 </tr>
 </table>
-<div class="description">5FC6: Routine at 5FC6</div>
+<div class="description">5FC6: Set Room Data Pointer</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
 <div class="details">
 <div class="paragraph">
-Used by the routine at <a href="5E24.html">PopulateLevelBuffer</a>.
+Used by the routine at <a href="5E24.html">PopulateRoomBuffer</a>.
+</div>
+<div class="paragraph">
+Sets the room data pointer for the current room.
+</div>
+<div class="paragraph">
+The room data is stored as a series of blocks from <a href="83AA.html">Table_RoomData</a>, separated by 00 terminators. This routine scans through the data to find the block matching the *<a href="5FC5.html">CurrentRoom</a>.
 </div>
 </div>
 </td>
 </tr>
 <tr>
+<td class="asm-label">FindRoomData</td>
 <td class="address-2"><span id="5fc6"></span>5FC6</td>
 <td class="instruction">LD A,($5FC5)</td>
-<td class="comment-1" rowspan="2"><span class="register">D</span>=*<a href="5FC5.html">5FC5</a>.</td>
+<td class="comment-1" rowspan="2"><span class="register">D</span>=*<a href="5FC5.html">CurrentRoom</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5fc9"></span>5FC9</td>
 <td class="instruction">LD D,A</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5fca"></span>5FCA</td>
 <td class="instruction">LD E,$01</td>
-<td class="comment-1" rowspan="1"><span class="register">E</span>=01.</td>
+<td class="comment-1" rowspan="1"><span class="register">E</span>=01 (start searching from room 01).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5fcc"></span>5FCC</td>
 <td class="instruction">CP E</td>
-<td class="comment-1" rowspan="2">Return if *<a href="5FC5.html">5FC5</a> is equal to 01.</td>
+<td class="comment-1" rowspan="2">Return if the current room is 01 (the data pointer already defaults to the first room).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5fcd"></span>5FCD</td>
 <td class="instruction">RET Z</td>
 </tr>
 <tr>
-<td class="address-1"><span id="5fce"></span>5FCE</td>
-<td class="instruction">LD HL,$83AA</td>
-<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="83AA.html">83AA</a>.</td>
+<td class="routine-comment" colspan="5">
+<span id="5fce"></span>
+<div class="comments">
+<div class="paragraph">
+Scan through the room data blocks. Each block is terminated by 00 so count terminators to find the Nth room.
+</div>
+</div>
+</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5fce"></span>5FCE</td>
+<td class="instruction">LD HL,$83AA</td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="83AA.html">Table_RoomData</a> (start of room data).</td>
+</tr>
+<tr>
+<td class="asm-label">FindRoomData_ScanLoop</td>
 <td class="address-2"><span id="5fd1"></span>5FD1</td>
 <td class="instruction">LD A,(HL)</td>
 <td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">HL</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5fd2"></span>5FD2</td>
 <td class="instruction">INC HL</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
+<td class="comment-1" rowspan="1">Advance the data pointer.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5fd3"></span>5FD3</td>
 <td class="instruction">OR A</td>
-<td class="comment-1" rowspan="2">Jump to <a href="5FC6.html#5fd8">5FD8</a> if <span class="register">A</span> is zero.</td>
+<td class="comment-1" rowspan="2">Jump to <a href="5FC6.html#5fd8">FindRoomData_FoundTerminator</a> if a 00 terminator was found.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5fd4"></span>5FD4</td>
-<td class="instruction">JR Z,<a href="5FC6.html#5fd8">$5FD8</a></td>
+<td class="instruction">JR Z,<a href="5FC6.html#5fd8">FindRoomData_FoundTerminator</a></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5fd6"></span>5FD6</td>
-<td class="instruction">JR <a href="5FC6.html#5fd1">$5FD1</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="5FC6.html#5fd1">5FD1</a>.</td>
+<td class="instruction">JR <a href="5FC6.html#5fd1">FindRoomData_ScanLoop</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="5FC6.html#5fd1">FindRoomData_ScanLoop</a> to keep scanning.</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="5fd8"></span>
+<div class="comments">
+<div class="paragraph">
+Found a block terminator — check if we've reached the target room.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">FindRoomData_FoundTerminator</td>
 <td class="address-2"><span id="5fd8"></span>5FD8</td>
 <td class="instruction">INC E</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">E</span> by one.</td>
+<td class="comment-1" rowspan="1">Increment the room counter in <span class="register">E</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5fd9"></span>5FD9</td>
 <td class="instruction">LD A,E</td>
-<td class="comment-1" rowspan="3">Jump to <a href="5FE7.html">5FE7</a> if <span class="register">E</span> is greater than or equal to 11.</td>
+<td class="comment-1" rowspan="3">Jump to <a href="5FE7.html">Raise_Table_Error</a> if the room counter has exceeded 11 (maximum number of rooms — room not found).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5fda"></span>5FDA</td>
 <td class="instruction">CP $11</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5fdc"></span>5FDC</td>
-<td class="instruction">JR NC,<a href="5FE7.html">$5FE7</a></td>
+<td class="instruction">JR NC,<a href="5FE7.html">Raise_Table_Error</a></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5fde"></span>5FDE</td>
 <td class="instruction">CP D</td>
-<td class="comment-1" rowspan="2">Jump to <a href="5FC6.html#5fe3">5FE3</a> if <span class="register">A</span> is equal to <span class="register">D</span>.</td>
+<td class="comment-1" rowspan="2">Jump to <a href="5FC6.html#5fe3">FindRoomData_Found</a> if the room counter matches the target room number.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5fdf"></span>5FDF</td>
-<td class="instruction">JR Z,<a href="5FC6.html#5fe3">$5FE3</a></td>
+<td class="instruction">JR Z,<a href="5FC6.html#5fe3">FindRoomData_Found</a></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5fe1"></span>5FE1</td>
-<td class="instruction">JR <a href="5FC6.html#5fd1">$5FD1</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="5FC6.html#5fd1">5FD1</a>.</td>
+<td class="instruction">JR <a href="5FC6.html#5fd1">FindRoomData_ScanLoop</a></td>
+<td class="comment-1" rowspan="1">Otherwise, jump to <a href="5FC6.html#5fd1">FindRoomData_ScanLoop</a> to keep scanning.</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="5fe3"></span>
+<div class="comments">
+<div class="paragraph">
+The target room was found — store the pointer to its data.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">FindRoomData_Found</td>
 <td class="address-2"><span id="5fe3"></span>5FE3</td>
 <td class="instruction">LD ($5FC3),HL</td>
-<td class="comment-1" rowspan="1">Write <span class="register">HL</span> to *<a href="5FC3.html">5FC3</a>.</td>
+<td class="comment-1" rowspan="1">Write <span class="register">HL</span> to *<a href="5FC3.html">Pointer_CurrentRoomData</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="5fe6"></span>5FE6</td>
 <td class="instruction">RET</td>
 <td class="comment-1" rowspan="1">Return.</td>
@@ -152,7 +208,7 @@ Next: <a href="5FE7.html">5FE7</a>
 </table>
 <footer>
 <div class="release"></div>
-<div class="copyright">&copy; 1984 Gremlin Graphics Software Ltd &copy; 2025 ArcadeGeek LTD.</div>
+<div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
 <div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
 <div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
 <div><a href="../dec/asm/24518.html">Switch to decimal</a>.</div>

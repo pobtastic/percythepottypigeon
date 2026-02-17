@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Percy the Potty Pigeon: Routine at 5EAA</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-dark.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-wide.css" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-75RERFCHBG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-75RERFCHBG');
+</script>
+</head>
+<body class="Asm-c">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html"><img alt="logo" src="../images/logo.png" /></a></td>
+<td class="page-header">Routines</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="5E92.html">5E92</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#5eaa">Map</a></td>
+<td class="next">
+Next: <a href="5EC8.html">5EC8</a>
+</td>
+</tr>
+</table>
+<div class="description">5EAA: Command 02: Tile With Attribute</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="5">
+<div class="details">
+<div class="paragraph">
+Used by the routine at <a href="5E24.html">PopulateRoomBuffer</a>.
+</div>
+<div class="paragraph">
+Command 02: Draw a tile with an explicit attribute.
+</div>
+<div class="paragraph">
+The following two bytes specify the repeat count and the tile character to draw.
+</div>
+</div>
+<table class="input">
+<tr class="asm-input-header">
+<th colspan="2">Input</th>
+</tr>
+<tr>
+<td class="register">HL</td>
+<td class="register-desc">Pointer to the room data</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Command02_TileWithAttribute</td>
+<td class="address-2"><span id="5eaa"></span>5EAA</td>
+<td class="instruction">INC HL</td>
+<td class="comment-1" rowspan="1">Increment the room data pointer by one.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5eab"></span>5EAB</td>
+<td class="instruction">LD A,(HL)</td>
+<td class="comment-1" rowspan="2"><span class="register">B</span>=*<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5eac"></span>5EAC</td>
+<td class="instruction">LD B,A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5ead"></span>5EAD</td>
+<td class="instruction">INC HL</td>
+<td class="comment-1" rowspan="1">Increment the room data pointer by one.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5eae"></span>5EAE</td>
+<td class="instruction">LD A,(HL)</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5eaf"></span>5EAF</td>
+<td class="instruction">INC HL</td>
+<td class="comment-1" rowspan="1">Increment the room data pointer by one.</td>
+</tr>
+<tr>
+<td class="asm-label">TileWithAttribute_Loop</td>
+<td class="address-2"><span id="5eb0"></span>5EB0</td>
+<td class="instruction">PUSH AF</td>
+<td class="comment-1" rowspan="4">Stash the tile character, repeat counter, tile counter and room data pointer on the stack.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5eb1"></span>5EB1</td>
+<td class="instruction">PUSH BC</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5eb2"></span>5EB2</td>
+<td class="instruction">PUSH DE</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5eb3"></span>5EB3</td>
+<td class="instruction">PUSH HL</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5eb4"></span>5EB4</td>
+<td class="instruction">LD D,$00</td>
+<td class="comment-1" rowspan="1"><span class="register">D</span>=00 (flag: draw tile to screen buffer).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5eb6"></span>5EB6</td>
+<td class="instruction">CALL <a href="5F35.html">DrawRoomTile</a></td>
+<td class="comment-1" rowspan="1">Call <a href="5F35.html">DrawRoomTile</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5eb9"></span>5EB9</td>
+<td class="instruction">POP HL</td>
+<td class="comment-1" rowspan="4">Restore the room data pointer, tile counter, repeat counter and tile character from the stack.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5eba"></span>5EBA</td>
+<td class="instruction">POP DE</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5ebb"></span>5EBB</td>
+<td class="instruction">POP BC</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5ebc"></span>5EBC</td>
+<td class="instruction">POP AF</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5ebd"></span>5EBD</td>
+<td class="instruction">EX AF,AF'</td>
+<td class="comment-1" rowspan="1">Switch to shadow <span class="register">AF</span> to preserve the tile character.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5ebe"></span>5EBE</td>
+<td class="instruction">DEC DE</td>
+<td class="comment-1" rowspan="1">Decrease <span class="register">DE</span> by one.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5ebf"></span>5EBF</td>
+<td class="instruction">LD A,E</td>
+<td class="comment-1" rowspan="3">Jump back to <a href="5E24.html#5e6d">PopulateRoomBuffer_Error</a> if <span class="register">DE</span> is zero.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5ec0"></span>5EC0</td>
+<td class="instruction">OR D</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5ec1"></span>5EC1</td>
+<td class="instruction">JR Z,<a href="5E24.html#5e6d">PopulateRoomBuffer_Error</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5ec3"></span>5EC3</td>
+<td class="instruction">EX AF,AF'</td>
+<td class="comment-1" rowspan="1">Switch back to main <span class="register">AF</span> to retrieve the tile character.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5ec4"></span>5EC4</td>
+<td class="instruction">DJNZ <a href="5EAA.html#5eb0">TileWithAttribute_Loop</a></td>
+<td class="comment-1" rowspan="1">Decrease the repeat counter by one and loop back to <a href="5EAA.html#5eb0">TileWithAttribute_Loop</a> until all tiles are drawn.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5ec6"></span>5EC6</td>
+<td class="instruction">JR <a href="5E24.html#5e55">PopulateRoomBuffer_ParseByte</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="5E24.html#5e55">PopulateRoomBuffer_ParseByte</a> to continue parsing.</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="5E92.html">5E92</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#5eaa">Map</a></td>
+<td class="next">
+Next: <a href="5EC8.html">5EC8</a>
+</td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
+<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
+<div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
+<div><a href="../dec/asm/24234.html">Switch to decimal</a>.</div>
+</footer>
+</body>
+</html>

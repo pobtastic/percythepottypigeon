@@ -34,6 +34,21 @@ gtag('config', 'G-75RERFCHBG');
 <code>POKE <a href="../asm/25728.html#25903">25903</a>,0</code>
 </div>
 </div>
+<div class="paragraph">
+Removes the instruction which would otherwise decrease <a href="../asm/24499.html">Lives</a>.
+<table>
+<tbody>
+<tr>
+<td class="address-1"><a href="../asm/25728.html#25900">25900</a></td>
+<td class="instruction">LD <span class="register">HL</span>,<a href="../asm/24499.html">24499</a></td>
+</tr>
+<tr>
+<td class="address-1"><a href="../asm/25728.html#25903">25903</a></td>
+<td class="instruction">DEC (<span class="register">HL</span>)</td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 <div><span id="255_lives"></span></div>
 <div class="box box-2">
@@ -46,10 +61,17 @@ gtag('config', 'G-75RERFCHBG');
 <code>POKE <a href="../asm/25917.html#25930">25931</a>,47</code>
 </div>
 </div>
+<div class="paragraph">
+This changes the code which sets the starting lives from ASCII 51 ("&#51;
+lives") to be ASCII 47 (which is "&#48; lives" minus 1).
+</div>
+<div class="paragraph">
+So it cycles through an entire byte before reaching 0 again.
+</div>
 </div>
 <footer>
 <div class="release"></div>
-<div class="copyright">&copy; 1984 Gremlin Graphics Software Ltd &copy; 2025 ArcadeGeek LTD.</div>
+<div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
 <div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
 <div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
 <div><a href="../../reference/pokes.html">Switch to hexadecimal</a>.</div>

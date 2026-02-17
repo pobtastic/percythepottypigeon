@@ -33,15 +33,22 @@ Next: <a href="5FBB.html">5FBB</a>
 </td>
 </tr>
 </table>
-<div class="description">5FB9: Game status buffer entry at 5FB9</div>
+<div class="description">5FB9: Room Drawing Position</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
 <div class="details">
+<div class="paragraph">
+The two-byte drawing position used by <a href="5F35.html">DrawRoomTile</a> to track where the next tile should be placed.
+</div>
+<div class="paragraph">
+The low byte is the column and the high byte is the row.
+</div>
 </div>
 </td>
 </tr>
 <tr>
+<td class="asm-label">RoomDrawPosition</td>
 <td class="address-1"><span id="5fb9"></span>5FB9</td>
 <td class="instruction">DEFB $00,$00</td>
 <td class="comment-0" rowspan="1"></td>
@@ -60,7 +67,7 @@ Next: <a href="5FBB.html">5FBB</a>
 </table>
 <footer>
 <div class="release"></div>
-<div class="copyright">&copy; 1984 Gremlin Graphics Software Ltd &copy; 2025 ArcadeGeek LTD.</div>
+<div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
 <div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
 <div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
 <div><a href="../dec/asm/24505.html">Switch to decimal</a>.</div>

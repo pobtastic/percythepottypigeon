@@ -33,148 +33,178 @@ Next: <a href="68F7.html">68F7</a>
 </td>
 </tr>
 </table>
-<div class="description">68B8: Routine at 68B8</div>
+<div class="description">68B8: Handle Life Lost</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
 <div class="details">
 <div class="paragraph">
-Used by the routine at <a href="662B.html">662B</a>.
+Used by the routine at <a href="662B.html">Compute_Sprite_Position</a>.
+</div>
+<div class="paragraph">
+Decrement <a href="5FB2.html">Aux_State</a>; when zero loop <a href="693B.html">Flash_Border_Step</a> 28 times (border flash), set <a href="5FBD.html">Sub_State</a> and beep, then call <a href="68F7.html">Update_Lives_Display</a>.
 </div>
 </div>
 </td>
 </tr>
 <tr>
+<td class="asm-label">Handle_Life_Lost</td>
 <td class="address-2"><span id="68b8"></span>68B8</td>
 <td class="instruction">LD HL,$5FB2</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="68bb"></span>68BB</td>
 <td class="instruction">DEC (HL)</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="68bc"></span>68BC</td>
 <td class="instruction">RET NZ</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="68bd"></span>68BD</td>
 <td class="instruction">PUSH IX</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="68bf"></span>68BF</td>
 <td class="instruction">LD B,$28</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="68c1"></span>68C1</td>
 <td class="instruction">LD HL,$0320</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="68c4"></span>68C4</td>
 <td class="instruction">LD DE,$0008</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label">Handle_Life_Lost_0</td>
 <td class="address-2"><span id="68c7"></span>68C7</td>
-<td class="instruction">CALL <a href="693B.html">$693B</a></td>
+<td class="instruction">CALL <a href="693B.html">Flash_Border_Step</a></td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="68ca"></span>68CA</td>
-<td class="instruction">DJNZ <a href="68B8.html#68c7">$68C7</a></td>
+<td class="instruction">DJNZ <a href="68B8.html#68c7">Handle_Life_Lost_0</a></td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="68cc"></span>68CC</td>
 <td class="instruction">LD A,$0F</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="68ce"></span>68CE</td>
 <td class="instruction">LD ($5C48),A</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="68d1"></span>68D1</td>
 <td class="instruction">LD ($5FBD),A</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="68d4"></span>68D4</td>
 <td class="instruction">LD A,$01</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="68d6"></span>68D6</td>
 <td class="instruction">OUT ($FE),A</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="68d8"></span>68D8</td>
 <td class="instruction">POP IX</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="68da"></span>68DA</td>
-<td class="instruction">CALL <a href="68F7.html">$68F7</a></td>
+<td class="instruction">CALL <a href="68F7.html">Update_Lives_Display</a></td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="68dd"></span>68DD</td>
 <td class="instruction">LD A,($5FB1)</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="68e0"></span>68E0</td>
 <td class="instruction">ADD A,$0B</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="68e2"></span>68E2</td>
 <td class="instruction">LD ($5FC5),A</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="68e5"></span>68E5</td>
-<td class="instruction">CALL <a href="5E24.html">PopulateLevelBuffer</a></td>
+<td class="instruction">CALL <a href="5E24.html">PopulateRoomBuffer</a></td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="68e8"></span>68E8</td>
 <td class="instruction">LD HL,$FBF9</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="68eb"></span>68EB</td>
-<td class="instruction">CALL <a href="C1DD.html#fac4">GameEntryPoint_75</a></td>
+<td class="instruction">CALL $FAC4</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="68ee"></span>68EE</td>
 <td class="instruction">DI</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="68ef"></span>68EF</td>
-<td class="instruction">CALL <a href="655C.html#6562">$6562</a></td>
+<td class="instruction">CALL <a href="655C.html#6562">Start_Level_0</a></td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="68f2"></span>68F2</td>
 <td class="instruction">XOR A</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="68f3"></span>68F3</td>
 <td class="instruction">LD ($5FA5),A</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="68f6"></span>68F6</td>
 <td class="instruction">RET</td>
 <td class="comment-0" rowspan="1"></td>
@@ -193,7 +223,7 @@ Next: <a href="68F7.html">68F7</a>
 </table>
 <footer>
 <div class="release"></div>
-<div class="copyright">&copy; 1984 Gremlin Graphics Software Ltd &copy; 2025 ArcadeGeek LTD.</div>
+<div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
 <div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
 <div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
 <div><a href="../dec/asm/26808.html">Switch to decimal</a>.</div>

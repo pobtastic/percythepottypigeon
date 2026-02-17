@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Percy the Potty Pigeon: Routine at 5E72</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-dark.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-wide.css" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-75RERFCHBG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-75RERFCHBG');
+</script>
+</head>
+<body class="Asm-c">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html"><img alt="logo" src="../images/logo.png" /></a></td>
+<td class="page-header">Routines</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="5E24.html">5E24</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#5e72">Map</a></td>
+<td class="next">
+Next: <a href="5E92.html">5E92</a>
+</td>
+</tr>
+</table>
+<div class="description">5E72: Command 04: Switch Tile Set</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="5">
+<div class="details">
+<div class="paragraph">
+Used by the routine at <a href="5E24.html">PopulateRoomBuffer</a>.
+</div>
+<div class="paragraph">
+Command 04: Switch the tile set.
+</div>
+<div class="paragraph">
+The following byte selects which tile set to use — 01 for the default set at <a href="9BAA.html">TileSet_Default</a>, 02 for the alternate set at <a href="A36A.html">TileSet_Alternate</a>.
+</div>
+</div>
+<table class="input">
+<tr class="asm-input-header">
+<th colspan="2">Input</th>
+</tr>
+<tr>
+<td class="register">HL</td>
+<td class="register-desc">The room data pointer</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Command04_SwitchTileSet</td>
+<td class="address-2"><span id="5e72"></span>5E72</td>
+<td class="instruction">INC HL</td>
+<td class="comment-1" rowspan="1">Increment the room data pointer by one.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5e73"></span>5E73</td>
+<td class="instruction">LD A,(HL)</td>
+<td class="comment-1" rowspan="1">Fetch the tile set byte.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5e74"></span>5E74</td>
+<td class="instruction">INC HL</td>
+<td class="comment-1" rowspan="1">Increment the room data pointer by one.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5e75"></span>5E75</td>
+<td class="instruction">CP $01</td>
+<td class="comment-1" rowspan="2">Jump to <a href="5E72.html#5e88">Set_DefaultTileSet</a> if the tile set byte is equal to 01.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5e77"></span>5E77</td>
+<td class="instruction">JR Z,<a href="5E72.html#5e88">Set_DefaultTileSet</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5e79"></span>5E79</td>
+<td class="instruction">CP $02</td>
+<td class="comment-1" rowspan="2">Jump to <a href="5FE7.html">Raise_Table_Error</a> if the tile set byte is not equal to 02.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5e7b"></span>5E7B</td>
+<td class="instruction">JP NZ,<a href="5FE7.html">Raise_Table_Error</a></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="5e7e"></span>
+<div class="comments">
+<div class="paragraph">
+Tile set 02: switch to the alternate tile set.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5e7e"></span>5E7E</td>
+<td class="instruction">PUSH HL</td>
+<td class="comment-1" rowspan="1">Stash the room data pointer on the stack.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5e7f"></span>5E7F</td>
+<td class="instruction">LD HL,$A36A</td>
+<td class="comment-1" rowspan="2">Write <a href="A36A.html">TileSet_Alternate</a> to *<a href="5FC1.html">Pointer_ActiveTileSet</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5e82"></span>5E82</td>
+<td class="instruction">LD ($5FC1),HL</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5e85"></span>5E85</td>
+<td class="instruction">POP HL</td>
+<td class="comment-1" rowspan="1">Restore the room data pointer from the stack.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5e86"></span>5E86</td>
+<td class="instruction">JR <a href="5E24.html#5e55">PopulateRoomBuffer_ParseByte</a></td>
+<td class="comment-1" rowspan="1">Jump back to <a href="5E24.html#5e55">PopulateRoomBuffer_ParseByte</a> to continue parsing.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="5e88"></span>
+<div class="comments">
+<div class="paragraph">
+Tile set 01: switch back to the default tile set.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Set_DefaultTileSet</td>
+<td class="address-2"><span id="5e88"></span>5E88</td>
+<td class="instruction">PUSH HL</td>
+<td class="comment-1" rowspan="1">Stash the room data pointer on the stack.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5e89"></span>5E89</td>
+<td class="instruction">LD HL,$9BAA</td>
+<td class="comment-1" rowspan="2">Write <a href="9BAA.html">TileSet_Default</a> to *<a href="5FC1.html">Pointer_ActiveTileSet</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5e8c"></span>5E8C</td>
+<td class="instruction">LD ($5FC1),HL</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5e8f"></span>5E8F</td>
+<td class="instruction">POP HL</td>
+<td class="comment-1" rowspan="1">Restore the room data pointer from the stack.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5e90"></span>5E90</td>
+<td class="instruction">JR <a href="5E24.html#5e55">PopulateRoomBuffer_ParseByte</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="5E24.html#5e55">PopulateRoomBuffer_ParseByte</a> to continue parsing.</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="5E24.html">5E24</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#5e72">Map</a></td>
+<td class="next">
+Next: <a href="5E92.html">5E92</a>
+</td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
+<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
+<div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
+<div><a href="../dec/asm/24178.html">Switch to decimal</a>.</div>
+</footer>
+</body>
+</html>
