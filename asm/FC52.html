@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Percy the Potty Pigeon: Routine at FC52</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-dark.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-wide.css" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-75RERFCHBG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-75RERFCHBG');
+</script>
+</head>
+<body class="Asm-c">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html"><img alt="logo" src="../images/logo.png" /></a></td>
+<td class="page-header">Routines</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="FC3D.html">FC3D</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#fc52">Map</a></td>
+<td class="next">
+Next: <a href="FC99.html">FC99</a>
+</td>
+</tr>
+</table>
+<div class="description">FC52: Routine at FC52</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="5">
+<div class="details">
+<div class="paragraph">
+Used by the routine at <a href="FC1B.html">Print_Pause_Message</a>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="address-2"><span id="fc52"></span>FC52</td>
+<td class="instruction">LD HL,$682C</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fc55"></span>FC55</td>
+<td class="instruction">LD B,$07</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fc57"></span>FC57</td>
+<td class="instruction">LD DE,$FCAD</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-2"><span id="fc5a"></span>FC5A</td>
+<td class="instruction">LD A,(DE)</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fc5b"></span>FC5B</td>
+<td class="instruction">CP (HL)</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fc5c"></span>FC5C</td>
+<td class="instruction">JR Z,<a href="FC52.html#fc62">$FC62</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fc5e"></span>FC5E</td>
+<td class="instruction">JR NC,<a href="FC52.html#fc73">$FC73</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fc60"></span>FC60</td>
+<td class="instruction">JR C,<a href="FC52.html#fc68">$FC68</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-2"><span id="fc62"></span>FC62</td>
+<td class="instruction">DEC HL</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fc63"></span>FC63</td>
+<td class="instruction">DEC DE</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fc64"></span>FC64</td>
+<td class="instruction">DJNZ <a href="FC52.html#fc5a">$FC5A</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fc66"></span>FC66</td>
+<td class="instruction">JR <a href="FC52.html#fc73">$FC73</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-2"><span id="fc68"></span>FC68</td>
+<td class="instruction">LD HL,$6825</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fc6b"></span>FC6B</td>
+<td class="instruction">LD DE,$FCA6</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fc6e"></span>FC6E</td>
+<td class="instruction">LD BC,$0007</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fc71"></span>FC71</td>
+<td class="instruction">LDIR</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-2"><span id="fc73"></span>FC73</td>
+<td class="instruction">LD HL,$50A7</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fc76"></span>FC76</td>
+<td class="instruction">LD B,$0C</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fc78"></span>FC78</td>
+<td class="instruction">LD DE,$FC99</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fc7b"></span>FC7B</td>
+<td class="instruction">CALL <a href="FC1B.html#fc2e">Print_Pause_Message_0</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fc7e"></span>FC7E</td>
+<td class="instruction">LD IX,$FCA6</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fc82"></span>FC82</td>
+<td class="instruction">LD BC,$0007</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fc85"></span>FC85</td>
+<td class="instruction">ADD HL,BC</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fc86"></span>FC86</td>
+<td class="instruction">CALL <a href="662B.html#6811">Compute_Sprite_Position_40</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="fc89"></span>
+<div class="comments">
+<div class="paragraph">
+This entry point is used by the routine at <a href="FC1B.html">Print_Pause_Message</a>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="address-2"><span id="fc89"></span>FC89</td>
+<td class="instruction">LD HL,$6825</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fc8c"></span>FC8C</td>
+<td class="instruction">LD (HL),$00</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fc8e"></span>FC8E</td>
+<td class="instruction">LD DE,$6826</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fc91"></span>FC91</td>
+<td class="instruction">LD BC,$000A</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fc94"></span>FC94</td>
+<td class="instruction">LDIR</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fc96"></span>FC96</td>
+<td class="instruction">JP $FAC1</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="FC3D.html">FC3D</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#fc52">Map</a></td>
+<td class="next">
+Next: <a href="FC99.html">FC99</a>
+</td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
+<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
+<div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
+<div><a href="../dec/asm/64594.html">Switch to decimal</a>.</div>
+</footer>
+</body>
+</html>

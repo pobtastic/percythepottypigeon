@@ -45,7 +45,7 @@ Used by the routine at <a href="24100.html">PopulateRoomBuffer</a>.
 Sets the room data pointer for the current room.
 </div>
 <div class="paragraph">
-The room data is stored as a series of blocks from <a href="33706.html">Table_RoomData</a>, separated by 0 terminators. This routine scans through the data to find the block matching the *<a href="24517.html">CurrentRoom</a>.
+The room data is stored as a series of blocks from <a href="33706.html">Room01</a>, separated by 0 terminators. This routine scans through the data to find the block matching the *<a href="24517.html">CurrentRoom</a>.
 </div>
 </div>
 </td>
@@ -92,7 +92,7 @@ Scan through the room data blocks. Each block is terminated by 0 so count termin
 <td class="asm-label"></td>
 <td class="address-1"><span id="24526"></span>24526</td>
 <td class="instruction">LD HL,33706</td>
-<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="33706.html">Table_RoomData</a> (start of room data).</td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="33706.html">Room01</a> (start of room data).</td>
 </tr>
 <tr>
 <td class="asm-label">FindRoomData_ScanLoop</td>

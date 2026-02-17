@@ -33,7 +33,7 @@ Next: <a href="65EA.html">65EA</a>
 </td>
 </tr>
 </table>
-<div class="description">659B: Show Game Over Screen</div>
+<div class="description">659B: Main Menu</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
@@ -42,13 +42,23 @@ Next: <a href="65EA.html">65EA</a>
 Used by the routine at <a href="653D.html">Initialise_Lives</a>.
 </div>
 <div class="paragraph">
-State 0C: set <a href="5FC5.html">CurrentRoom</a> and <a href="5FA1.html">Header_Drawn_Flag</a>, call <a href="5E24.html">PopulateRoomBuffer</a>, print 4×5 text from <a href="660D.html">Messaging_PressEnterToStart</a>, call <a href="FC1B.html">Print_Pause_Message</a>, wait key, then jump to <a href="655C.html#6562">Start_Level_0</a>.
+Displays the pre-game introduction screen.
 </div>
 </div>
 </td>
 </tr>
 <tr>
-<td class="asm-label">Show_Game_Over_Screen</td>
+<td class="routine-comment" colspan="5">
+<span id="659b"></span>
+<div class="comments">
+<div class="paragraph">
+Room 0C is the.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">MainMenu</td>
 <td class="address-2"><span id="659b"></span>659B</td>
 <td class="instruction">LD A,$0C</td>
 <td class="comment-1" rowspan="3">Write 0C to; <ul class="">
@@ -102,7 +112,7 @@ State 0C: set <a href="5FC5.html">CurrentRoom</a> and <a href="5FA1.html">Header
 <td class="comment-1" rowspan="1">Point <span class="register">DE</span> to <a href="660D.html">Messaging_PressEnterToStart</a>.</td>
 </tr>
 <tr>
-<td class="asm-label">Show_Game_Over_Screen_0</td>
+<td class="asm-label">MainMenu_0</td>
 <td class="address-2"><span id="65b2"></span>65B2</td>
 <td class="instruction">PUSH BC</td>
 <td class="comment-1" rowspan="2">Stash the row counter and screen buffer pointer on the stack.</td>
@@ -119,7 +129,7 @@ State 0C: set <a href="5FC5.html">CurrentRoom</a> and <a href="5FA1.html">Header
 <td class="comment-1" rowspan="1">Set a counter in <span class="register">B</span> for 05 characters to print in each row.</td>
 </tr>
 <tr>
-<td class="asm-label">Show_Game_Over_Screen_1</td>
+<td class="asm-label">MainMenu_1</td>
 <td class="address-2"><span id="65b6"></span>65B6</td>
 <td class="instruction">PUSH HL</td>
 <td class="comment-1" rowspan="3">Stash the screen buffer pointer, message pointer and the character counter on the stack.</td>
@@ -177,8 +187,8 @@ State 0C: set <a href="5FC5.html">CurrentRoom</a> and <a href="5FA1.html">Header
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="65c2"></span>65C2</td>
-<td class="instruction">DJNZ <a href="659B.html#65b6">Show_Game_Over_Screen_1</a></td>
-<td class="comment-1" rowspan="1">Decrease counter by one and loop back to <a href="659B.html#65b6">Show_Game_Over_Screen_1</a> until counter is zero.</td>
+<td class="instruction">DJNZ <a href="659B.html#65b6">MainMenu_1</a></td>
+<td class="comment-1" rowspan="1">Decrease counter by one and loop back to <a href="659B.html#65b6">MainMenu_1</a> until counter is zero.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -206,8 +216,8 @@ State 0C: set <a href="5FC5.html">CurrentRoom</a> and <a href="5FA1.html">Header
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="65ca"></span>65CA</td>
-<td class="instruction">DJNZ <a href="659B.html#65b2">Show_Game_Over_Screen_0</a></td>
-<td class="comment-1" rowspan="1">Decrease counter by one and loop back to <a href="659B.html#65b2">Show_Game_Over_Screen_0</a> until counter is zero.</td>
+<td class="instruction">DJNZ <a href="659B.html#65b2">MainMenu_0</a></td>
+<td class="comment-1" rowspan="1">Decrease counter by one and loop back to <a href="659B.html#65b2">MainMenu_0</a> until counter is zero.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -248,7 +258,7 @@ State 0C: set <a href="5FC5.html">CurrentRoom</a> and <a href="5FA1.html">Header
 </table></td>
 </tr>
 <tr>
-<td class="asm-label">Show_Game_Over_Screen_2</td>
+<td class="asm-label">WaitForEnterToStart_Loop</td>
 <td class="address-2"><span id="65d4"></span>65D4</td>
 <td class="instruction">IN A,(C)</td>
 </tr>
@@ -256,12 +266,12 @@ State 0C: set <a href="5FC5.html">CurrentRoom</a> and <a href="5FA1.html">Header
 <td class="asm-label"></td>
 <td class="address-1"><span id="65d6"></span>65D6</td>
 <td class="instruction">RRCA</td>
-<td class="comment-1" rowspan="2">Jump to <a href="659B.html#65d4">Show_Game_Over_Screen_2</a> if <span class="register">DE</span> is less than 3D.</td>
+<td class="comment-1" rowspan="2">Jump to <a href="659B.html#65d4">WaitForEnterToStart_Loop</a> if "ENTER" is not being pressed.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="65d7"></span>65D7</td>
-<td class="instruction">JR C,<a href="659B.html#65d4">Show_Game_Over_Screen_2</a></td>
+<td class="instruction">JR C,<a href="659B.html#65d4">WaitForEnterToStart_Loop</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -290,7 +300,7 @@ BLUE.</td>
 <td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="5FA1.html">Header_Drawn_Flag</a>.</td>
 </tr>
 <tr>
-<td class="asm-label">Show_Game_Over_Screen_3</td>
+<td class="asm-label">MainMenu_2</td>
 <td class="address-2"><span id="65e2"></span>65E2</td>
 <td class="instruction">LD (HL),$00</td>
 <td class="comment-1" rowspan="1">Write 00 to *<span class="register">HL</span>.</td>
@@ -304,8 +314,8 @@ BLUE.</td>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="65e5"></span>65E5</td>
-<td class="instruction">DJNZ <a href="659B.html#65e2">Show_Game_Over_Screen_3</a></td>
-<td class="comment-1" rowspan="1">Decrease counter by one and loop back to <a href="659B.html#65e2">Show_Game_Over_Screen_3</a> until counter is zero.</td>
+<td class="instruction">DJNZ <a href="659B.html#65e2">MainMenu_2</a></td>
+<td class="comment-1" rowspan="1">Decrease counter by one and loop back to <a href="659B.html#65e2">MainMenu_2</a> until counter is zero.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
