@@ -1,8 +1,11 @@
-; Copyright Gremlin Graphics Software Ltd 1984, 2025 ArcadeGeek LTD.
+; Copyright 1984 Gremlin Graphics Software Ltd, 2026 Urbanscan, 2026 ArcadeGeek LTD.
 ; NOTE: Disassembly is Work-In-Progress.
 ; Label naming is loosely based on Action_ActionName_SubAction e.g. Print_HighScore_Loop.
 
 > $4000 @org=$4000
+> $4000 @expand=#DEF(#POKE #LINK:Pokes)
+> $4000 @expand=#DEF(#ANIMATE(delay,count=$50)(name=$a)*$name-1,$delay;#FOR$02,$count||x|$name-x|;||($name-animation))
+> $4000 @set-handle-unsupported-macros=1
 b $4000 Loading Screen
 D $4000 #UDGTABLE { =h Percy the Potty Pigeon Loading Screen. } { #SCR$02(loading) } UDGTABLE#
 @ $4000 label=Loading
@@ -12,11 +15,17 @@ D $4000 #UDGTABLE { =h Percy the Potty Pigeon Loading Screen. } { #SCR$02(loadin
 i $5B00
 
 g $5BFE Stack
+@ $5BFE label=Stack
+D $5BFE Top of the stack (so, pushes below this point).
+B $5BFE,$01
+
+i $5BFF
 
 c $5DC0 Game Initialise
 @ $5DC0 label=Game_Initialise
   $5DC0,$01 Disable interrupts.
   $5DC1,$01 #REGa=#N$00.
+N $5DC2 Put the stack pointer somewhere safe.
   $5DC2,$03 #REGsp=#R$5BFE.
   $5DC5,$06 Write #N$00 to; #LIST
 . { *#R$5FBC }
@@ -73,100 +82,160 @@ N $5E21 Both "SPACE" and "CAPS SHIFT" were held down, so reset the game.
   $5E21,$01 Enable interrupts.
   $5E22,$02 Jump to #R$5DC0.
 
-c $5E24 Populate Level Buffer
-@ $5E24 label=PopulateLevelBuffer
+c $5E24 Populate Room Buffer
+@ $5E24 label=PopulateRoomBuffer
+D $5E24 Fetch the current room number and set up the default tile and attribute
+. data pointers.
   $5E24,$03 #REGa=*#R$5FC5.
   $5E27,$06 Write #R$83A9 to *#R$5FC3.
   $5E2D,$06 Write #R$9BAA to *#R$5FC1.
-  $5E33,$04 Call #R$5FC6 if #REGa is not equal to #N$00.
+N $5E33 If this is not room #N$00, look up the correct room data pointer.
+  $5E33,$04 Call #R$5FC6 if this is not room #N$00.
+N $5E37 Clear the screen buffer at #R$C000.
   $5E37,$0D Clear #N$17FF bytes from #R$C000 onwards.
+N $5E44 Initialise drawing state variables.
   $5E44,$05 Write #N$FF to *#R$5FBB.
   $5E49,$06 Write #N($00FF,$04,$04) to *#R$5FB9.
   $5E4F,$03 #REGde=#N$02C1.
+N $5E52 Main room data parsing loop. Reads a command byte from the room data and
+. dispatches to the appropriate handler based on its value.
   $5E52,$03 #REGhl=*#R$5FC3.
-  $5E55,$01 #REGa=*#REGhl.
-  $5E56,$03 Jump to #R$5E6F if #REGa is zero.
-  $5E59,$04 Jump to #R$5E92 if #REGa is equal to #N$01.
-  $5E5D,$04 Jump to #R$5EAA if #REGa is equal to #N$02.
-  $5E61,$04 Jump to #R$5EDB if #REGa is equal to #N$03.
-  $5E65,$04 Jump to #R$5E72 if #REGa is equal to #N$04.
-  $5E69,$04 Jump to #R$5EC8 if #REGa is greater than or equal to #N$08.
+@ $5E55 label=PopulateRoomBuffer_ParseByte
+  $5E55,$01 Fetch the room data byte from the pointer.
+  $5E56,$03 Jump to #R$5E6F if the room data byte is #N$00.
+  $5E59,$04 Jump to #R$5E92 if the room data byte is #N$01.
+  $5E5D,$04 Jump to #R$5EAA if the room data byte is #N$02.
+  $5E61,$04 Jump to #R$5EDB if the room data byte is #N$03.
+  $5E65,$04 Jump to #R$5E72 if the room data byte is #N$04.
+  $5E69,$04 Jump to #R$5EC8 if the room data byte is #N$08 or higher.
+N $5E6D If none of the above matched, trigger an error.
+@ $5E6D label=PopulateRoomBuffer_Error
   $5E6D,$01 #HTML(Run the ERROR_1 routine:
 . <a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/0008.html">RST #N$08</a>.)
   $5E6E,$01 Increment #REGb by one.
-  $5E6F,$01 Increment #REGhl by one.
+N $5E6F Command #N$00: no-op. Skip this byte and continue parsing.
+@ $5E6F label=Command00_Skip
+  $5E6F,$01 Increment the room data pointer by one.
   $5E70,$02 Jump to #R$5E55.
 
-  $5E72,$01 Increment #REGhl by one.
-  $5E73,$01 #REGa=*#REGhl.
-  $5E74,$01 Increment #REGhl by one.
-  $5E75,$04 Jump to #R$5E88 if #REGa is equal to #N$01.
-  $5E79,$05 Jump to #R$5FE7 if #REGa is not equal to #N$02.
-  $5E7E,$01 Stash #REGhl on the stack.
+c $5E72 Command #N$04: Switch Tile Set
+@ $5E72 label=Command04_SwitchTileSet
+D $5E72 Command #N$04: Switch the tile set.
+.
+. The following byte selects which tile set to use — #N$01 for the default set
+. at #R$9BAA, #N$02 for the alternate set at #R$A36A.
+R $5E72 HL The room data pointer
+  $5E72,$01 Increment the room data pointer by one.
+  $5E73,$01 Fetch the tile set byte.
+  $5E74,$01 Increment the room data pointer by one.
+  $5E75,$04 Jump to #R$5E88 if the tile set byte is equal to #N$01.
+  $5E79,$05 Jump to #R$5FE7 if the tile set byte is not equal to #N$02.
+N $5E7E Tile set #N$02: switch to the alternate tile set.
+  $5E7E,$01 Stash the room data pointer on the stack.
   $5E7F,$06 Write #R$A36A to *#R$5FC1.
-  $5E85,$01 Restore #REGhl from the stack.
-  $5E86,$02 Jump to #R$5E55.
-
-  $5E88,$01 Stash #REGhl on the stack.
+  $5E85,$01 Restore the room data pointer from the stack.
+  $5E86,$02 Jump back to #R$5E55 to continue parsing.
+N $5E88 Tile set #N$01: switch back to the default tile set.
+@ $5E88 label=Set_DefaultTileSet
+  $5E88,$01 Stash the room data pointer on the stack.
   $5E89,$06 Write #R$9BAA to *#R$5FC1.
-  $5E8F,$01 Restore #REGhl from the stack.
-  $5E90,$02 Jump to #R$5E55.
+  $5E8F,$01 Restore the room data pointer from the stack.
+  $5E90,$02 Jump to #R$5E55 to continue parsing.
 
-  $5E92,$01 Increment #REGhl by one.
-  $5E93,$01 #REGa=*#REGhl.
-  $5E94,$01 Increment #REGhl by one.
-  $5E95,$01 #REGb=#REGa.
-  $5E96,$03 Stash #REGhl, #REGde and #REGbc on the stack.
-  $5E99,$02 #REGd=#N$01.
+c $5E92 Command #N$01: Draw Repeated Tile
+@ $5E92 label=Command01_RepeatedTile
+D $5E92 Command #N$01: Draw a repeated tile. The following byte specifies how
+. many times to repeat the current tile.
+  $5E92,$01 Increment the room data pointer by one.
+  $5E93,$01 Fetch the tile byte/ repeat counter.
+  $5E94,$01 Increment the room data pointer by one.
+  $5E95,$01 Set the repeat counter in #REGb.
+@ $5E96 label=RepeatedTile_Loop
+  $5E96,$03 Stash the room data pointer, tile counter and repeat counter on the
+. stack.
+  $5E99,$02 #REGd=#N$01 (flag: advance position only, don't draw).
   $5E9B,$03 Call #R$5F35.
-  $5E9E,$03 Restore #REGbc, #REGde and #REGhl from the stack.
+  $5E9E,$03 Restore the repeat counter, tile counter and room data pointer from
+. the stack.
   $5EA1,$01 Decrease #REGde by one.
-  $5EA2,$04 Jump back to #R$5E6D if #REGde is zero.
-  $5EA6,$02 Decrease counter by one and loop back to #R$5E96 until counter is zero.
-  $5EA8,$02 Jump to #R$5E55.
+  $5EA2,$04 Jump to #R$5E6D if #REGde is zero.
+  $5EA6,$02 Decrease the repeat counter by one and loop back to #R$5E96 until
+. all repeats are processed.
+  $5EA8,$02 Jump to #R$5E55 to continue parsing.
 
-  $5EAA,$01 Increment #REGhl by one.
-  $5EAB,$01 #REGa=*#REGhl.
-  $5EAC,$01 #REGb=#REGa.
-  $5EAD,$01 Increment #REGhl by one.
+c $5EAA Command #N$02: Tile With Attribute
+@ $5EAA label=Command02_TileWithAttribute
+D $5EAA Command #N$02: Draw a tile with an explicit attribute.
+.
+. The following two bytes specify the repeat count and the tile character to
+. draw.
+R $5EAA HL Pointer to the room data
+  $5EAA,$01 Increment the room data pointer by one.
+  $5EAB,$02 #REGb=*#REGhl.
+  $5EAD,$01 Increment the room data pointer by one.
   $5EAE,$01 #REGa=*#REGhl.
-  $5EAF,$01 Increment #REGhl by one.
-  $5EB0,$04 Stash #REGaf, #REGbc, #REGde and #REGhl on the stack.
-  $5EB4,$02 #REGd=#N$00.
+  $5EAF,$01 Increment the room data pointer by one.
+@ $5EB0 label=TileWithAttribute_Loop
+  $5EB0,$04 Stash the tile character, repeat counter, tile counter and room data
+. pointer on the stack.
+  $5EB4,$02 #REGd=#N$00 (flag: draw tile to screen buffer).
   $5EB6,$03 Call #R$5F35.
-  $5EB9,$04 Restore #REGhl, #REGde, #REGbc and #REGaf from the stack.
-  $5EBD,$01 Exchange the #REGaf register with the shadow #REGaf register.
+  $5EB9,$04 Restore the room data pointer, tile counter, repeat counter and tile
+. character from the stack.
+  $5EBD,$01 Switch to shadow #REGaf to preserve the tile character.
   $5EBE,$01 Decrease #REGde by one.
   $5EBF,$04 Jump back to #R$5E6D if #REGde is zero.
-  $5EC3,$01 Exchange the shadow #REGaf register with the #REGaf register.
-  $5EC4,$02 Decrease counter by one and loop back to #R$5EB0 until counter is zero.
-  $5EC6,$02 Jump to #R$5E55.
+  $5EC3,$01 Switch back to main #REGaf to retrieve the tile character.
+  $5EC4,$02 Decrease the repeat counter by one and loop back to #R$5EB0 until
+. all tiles are drawn.
+  $5EC6,$02 Jump to #R$5E55 to continue parsing.
 
+c $5EC8 Command #N$08 (Or Higher): Single Tile
+@ $5EC8 label=Command08+_SingleTile
+D $5EC8 Command #N$08+: draw a single tile. The command byte itself is the tile
+. character to draw.
   $5EC8,$01 #REGa=*#REGhl.
-  $5EC9,$01 Increment #REGhl by one.
-  $5ECA,$02 Stash #REGhl and #REGde on the stack.
-  $5ECC,$02 #REGd=#N$00.
+  $5EC9,$01 Increment the room data pointer by one.
+  $5ECA,$02 Stash the room data pointer and tile counter on the stack.
+  $5ECC,$02 #REGd=#N$00 (flag: draw tile to screen buffer).
   $5ECE,$03 Call #R$5F35.
-  $5ED1,$02 Restore #REGde and #REGhl from the stack.
+  $5ED1,$02 Restore the tile counter and room data pointer from the stack.
   $5ED3,$01 Decrease #REGde by one.
   $5ED4,$04 Jump back to #R$5E6D if #REGde is zero.
-  $5ED8,$03 Jump to #R$5E55.
+  $5ED8,$03 Jump to #R$5E55 to continue parsing.
 
-  $5EDB,$01 Increment #REGhl by one.
+c $5EDB Command #N$03: Fill Attribute Buffer With Single Colour
+@ $5EDB label=Command03_FillAttributes
+D $5EDB Command #N$03: fill the attribute buffer with a single colour, then
+. parse an overlay map to apply per-cell colour changes. The overlay uses a
+. simple encoding: #LIST
+. { #N$12 + count: skip N attribute cells }
+. { #N$1B + count + colour: repeat a colour N times }
+. { #N$24: end of attribute data }
+. { Any other value: set a single attribute cell directly }
+. LIST#
+  $5EDB,$01 Increment the room data pointer by one.
   $5EDC,$01 #REGc=*#REGhl.
+N $5EDD Fill #N$02C0 attribute cells at #R$D800 with the base colour.
   $5EDD,$04 #REGix=#R$D800.
   $5EE1,$03 #REGde=#N($02C0,$04,$04).
+@ $5EE4 label=PopulateRoomBuffer_FillAttributes_Loop
   $5EE4,$03 Write #REGc to *#REGix+#N$00.
   $5EE7,$02 Increment #REGix by one.
   $5EE9,$01 Decrease #REGde by one.
   $5EEA,$04 Jump back to #R$5EE4 until #REGde is zero.
+N $5EEE Now parse the attribute overlay data to apply per-cell changes on top
+. of the base fill colour.
+@ $5EEE label=PopulateRoomBuffer_AttributeOverlay
   $5EEE,$01 Increment #REGhl by one.
   $5EEF,$03 #REGde=#N($02C1,$04,$04).
   $5EF2,$04 #REGix=#R$D800.
+@ $5EF6 label=PopulateRoomBuffer_AttributeOverlay_Loop
   $5EF6,$01 #REGa=*#REGhl.
-  $5EF7,$04 Jump to #R$5F12 if #REGa is equal to #N$12.
-  $5EFB,$04 Jump to #R$5F21 if #REGa is equal to #N$1B.
-  $5EFF,$04 Jump to #R$5F74 if #REGa is equal to #N$24.
+  $5EF7,$04 Jump to #R$5F12 if #REGa is #N$12 (skip command).
+  $5EFB,$04 Jump to #R$5F21 if #REGa is #N$1B (repeat command).
+  $5EFF,$04 Jump to #R$5F74 if #REGa is #N$24 (end of attribute data).
+N $5F03 Otherwise, write this byte directly as a single attribute value.
   $5F03,$01 #REGc=*#REGhl.
   $5F04,$03 Write #REGc to *#REGix+#N$00.
   $5F07,$01 Decrease #REGde by one.
@@ -174,87 +243,114 @@ c $5E24 Populate Level Buffer
   $5F0A,$05 Jump back to #R$5E6D if #REGde is zero.
   $5F0F,$01 Increment #REGhl by one.
   $5F10,$02 Jump to #R$5EF6.
-
+N $5F12 Attribute overlay command #N$12: skip over a number of attribute cells.
+N $5F12 The following byte gives the skip count.
+@ $5F12 label=PopulateRoomBuffer_AttributeSkip
   $5F12,$01 Increment #REGhl by one.
   $5F13,$01 #REGb=*#REGhl.
+@ $5F14 label=PopulateRoomBuffer_AttributeSkip_Loop
   $5F14,$02 Increment #REGix by one.
   $5F16,$01 Decrease #REGde by one.
   $5F17,$05 Jump back to #R$5E6D if #REGde is zero.
-  $5F1C,$02 Decrease counter by one and loop back to #R$5F14 until counter is zero.
+  $5F1C,$02 Decrease the skip counter by one and loop back to #R$5F14 until done.
   $5F1E,$01 Increment #REGhl by one.
   $5F1F,$02 Jump to #R$5EF6.
-
+N $5F21 Attribute overlay command #N$1B: repeat a colour value a number of
+. times. The following two bytes give the repeat count and colour value.
+@ $5F21 label=PopulateRoomBuffer_AttributeRepeat
   $5F21,$01 Increment #REGhl by one.
   $5F22,$01 #REGb=*#REGhl.
   $5F23,$01 Increment #REGhl by one.
   $5F24,$01 #REGc=*#REGhl.
   $5F25,$01 Increment #REGhl by one.
+@ $5F26 label=PopulateRoomBuffer_AttributeRepeat_Loop
   $5F26,$03 Write #REGc to *#REGix+#N$00.
   $5F29,$02 Increment #REGix by one.
   $5F2B,$01 Decrease #REGde by one.
   $5F2C,$05 Jump back to #R$5E6D if #REGde is zero.
-  $5F31,$02 Decrease counter by one and loop back to #R$5F26 until counter is zero.
+  $5F31,$02 Decrease the repeat counter by one and loop back to #R$5F26 until
+. done.
   $5F33,$02 Jump to #R$5EF6.
 
+c $5F35 Draw Room Tile
+@ $5F35 label=DrawRoomTile
+D $5F35 Draws a single tile to the screen buffer at the current drawing
+. position stored in *#R$5FB9. The position is advanced after each call. If
+. #REGdbit 0 is set, the position is advanced but no tile is drawn (used for
+. blank/ skip tiles in command #N$01).
+R $5F35 A Tile character to draw
+R $5F35 D Bit 0: #N$01=advance position only, #N$00=draw and advance
+; Load and advance the current column/row drawing position.
   $5F35,$04 #REGbc=*#R$5FB9.
-  $5F39,$01 Increment #REGc by one.
-  $5F3A,$01 Exchange the #REGaf register with the shadow #REGaf register.
+  $5F39,$01 Increment the column in #REGc.
+  $5F3A,$01 Stash the tile character in shadow #REGaf.
+N $5F3B If the column has reached #N$20 (past the right edge), wrap to the next
+. row.
   $5F3B,$04 Jump to #R$5F41 if bit 5 of #REGc is set.
   $5F3F,$02 Jump to #R$5F44.
-
-  $5F41,$01 Increment #REGb by one.
-  $5F42,$02 #REGc=#N$00.
+@ $5F41 label=DrawRoomTile_NextRow
+  $5F41,$01 Increment the row in #REGb.
+  $5F42,$02 Reset the column to #N$00.
+@ $5F44 label=DrawRoomTile_StorePosition
   $5F44,$04 Write #REGbc to *#R$5FB9.
   $5F48,$03 Return if bit 0 of #REGd is set.
+N $5F4B Calculate the screen buffer address from the column (#REGc) and row
+. (#REGb) drawing position. This converts the character cell coordinates into a
+. pixel address within the screen buffer at #R$C000.
   $5F4B,$01 #REGl=#REGc.
   $5F4C,$01 #REGa=#REGb.
   $5F4D,$02,b$01 Keep only bits 0-2.
   $5F4F,$01 RRCA.
   $5F50,$01 RRCA.
   $5F51,$01 RRCA.
-  $5F52,$01 Set the bits from #REGl.
+  $5F52,$01 Merge in the column bits from #REGl.
   $5F53,$01 #REGl=#REGa.
   $5F54,$01 #REGa=#REGb.
   $5F55,$02,b$01 Keep only bits 3-4.
-  $5F57,$02,b$01 Set bits 6-7.
+  $5F57,$02,b$01 Set bits 6-7 for the screen buffer base at #R$C000.
   $5F59,$01 #REGh=#REGa.
-  $5F5A,$01 Stash #REGhl on the stack.
-  $5F5B,$04 #REGde=*#R$5FC1.
-  $5F5F,$01 Exchange the #REGaf register with the shadow #REGaf register.
+N $5F5A Look up the tile graphic data from the active tile set and copy all
+. #N$08 pixel rows to the screen buffer.
+  $5F5A,$01 Stash the screen buffer address on the stack.
+  $5F5B,$04 #REGde=*#R$5FC1 (active tile set base address).
+  $5F5F,$01 Retrieve the tile character from shadow #REGaf.
   $5F60,$02 #REGa-=#N$08.
-  $5F62,$01 #REGl=#REGa.
-  $5F63,$02 #REGh=#N$00.
-  $5F65,$01 #REGhl+=#REGhl.
-  $5F66,$01 #REGhl+=#REGhl.
-  $5F67,$01 #REGhl+=#REGhl.
-  $5F68,$01 #REGhl+=#REGde.
-  $5F69,$01 Exchange the #REGde and #REGhl registers.
-  $5F6A,$01 Restore #REGhl from the stack.
-  $5F6B,$02 #REGb=#N$08.
+  $5F62,$03 Transfer the tile index to #REGhl.
+  $5F65,$03 Multiply by #N$08 (bytes per tile).
+  $5F68,$01 Add the tile set base address.
+  $5F69,$01 Exchange so #REGde=tile graphic data, #REGhl=screen buffer address.
+  $5F6A,$01 Restore the screen buffer address from the stack.
+  $5F6B,$02 Set a line counter in #REGb of #N$08.
+@ $5F6D label=DrawRoomTile_CopyLoop
   $5F6D,$01 #REGa=*#REGde.
   $5F6E,$01 Write #REGa to *#REGhl.
-  $5F6F,$01 Increment #REGde by one.
-  $5F70,$01 Increment #REGh by one.
-  $5F71,$02 Decrease counter by one and loop back to #R$5F6D until counter is zero.
+  $5F6F,$01 Advance the tile graphic data pointer.
+  $5F70,$01 Move down one pixel row in the screen buffer.
+  $5F71,$02 Decrease the line counter by one and loop back to #R$5F6D until all
+. #N$08 rows are drawn.
   $5F73,$01 Return.
-
+N $5F74 Attribute overlay command #N$24: end of attribute data. Finalises the
+. room setup by resetting game flags and calculating the base address for this
+. room's colour attribute lookup table.
+@ $5F74 label=PopulateRoomBuffer_EndAttributes
   $5F74,$06 Jump to #R$5F83 if *#R$5FA9 is zero.
   $5F7A,$04 Write #N$00 to *#R$5FA9.
   $5F7E,$01 No operation.
   $5F7F,$01 No operation.
   $5F80,$03 Write #N$00 to *#R$DAE3.
-  $5F83,$03 #REGa=*#R$5FC5.
-  $5F86,$01 Decrease #REGa by one.
+N $5F83 Calculate the base address for this room's colour attributes. Each room
+. has #N$20 bytes of attribute data stored sequentially from #R$DE9E, so
+. multiply the zero-indexed room number by #N$20 and add the base.
+@ $5F83 label=PopulateRoomBuffer_SetAttributeBase
+  $5F83,$03 #REGa=*#R$5FC5 (current room number).
+  $5F86,$01 Decrease by one to make zero-indexed.
   $5F87,$03 #REGde=#R$DE9E.
-  $5F8A,$01 #REGl=#REGa.
-  $5F8B,$02 #REGh=#N$00.
-  $5F8D,$01 #REGhl+=#REGhl.
-  $5F8E,$01 #REGhl+=#REGhl.
-  $5F8F,$01 #REGhl+=#REGhl.
-  $5F90,$01 #REGhl+=#REGhl.
-  $5F91,$01 #REGhl+=#REGhl.
-  $5F92,$01 #REGhl+=#REGde.
-  $5F93,$03 Write #REGhl to *#R$5FB5.
+  $5F8A,$02 Transfer the room index to #REGhl.
+  $5F8C,$05 Multiply by #N$20.
+  $5F91,$01 Add the base address.
+  $5F92,$04 Write the result to *#R$5FB5.
+N $5F96 Wait for the next interrupt frame, then transfer the completed screen
+. buffer to the display.
   $5F96,$01 Enable interrupts.
   $5F97,$01 Halt operation (suspend CPU until the next interrupt).
   $5F98,$01 Disable interrupts.
@@ -262,63 +358,152 @@ c $5E24 Populate Level Buffer
   $5F9B,$03 #REGhl=#R$C000.
   $5F9E,$03 Jump to #R$6438.
 
-g $5FA1
-B $5FA1,$0A,$01
+g $5FA1 Header Drawn Flag
+@ $5FA1 label=Header_Drawn_Flag
+D $5FA1 #N$00=draw HUD via #R$63BB when needed; #N$01=already drawn.
+B $5FA1,$01
 
-g $5FB1
+g $5FA2
+B $5FA2,$01
+
+g $5FA3
+B $5FA3,$01
+
+g $5FA4
+B $5FA4,$01
+
+g $5FA5
+B $5FA5,$01
+
+g $5FA6
+B $5FA6,$01
+
+g $5FA7 Title Countdown?
+@ $5FA7 label=Title_Countdown
+D $5FA7 Countdown or init; read at #R$5FE9; when zero call #R$6480. Cleared at #R$655C.
+B $5FA7,$01
+
+g $5FA9 Skip Flag?
+@ $5FA9 label=Skip_Flag
+D $5FA9 When zero at #R$5F74 jump to #R$5F83. Cleared at #R$5F7A.
+B $5FA9,$01
+
+g $5FAA
+B $5FAA,$01
+
+g $5FB1 Stored Level Or Phase?
+@ $5FB1 label=Stored_Level_Or_Phase
+D $5FB1 Copied to #R$5FC5 in some paths; cleared when lives are reset.
 B $5FB1,$01
 
-g $5FB2
+g $5FB2 Aux State?
+@ $5FB2 label=Aux_State
+D $5FB2 Pointer base; used with #R$68B8.
 B $5FB2,$01
 
 g $5FB3 Player Lives
 @ $5FB3 label=Lives
+D $5FB3 Current lives count. Synced with #R$5FBE for compare/display.
 B $5FB3,$01
 
-g $5FB5
+g $5FB4 Border Colour / Rotating State
+@ $5FB4 label=Border_Colour
+D $5FB4 At #R$693B: stored border colour, written with BORDCR. At #R$65EA: rotating
+. byte; RRCA and carry pick first or second tile (not border-related there).
+B $5FB4,$01
+
+g $5FB5 Saved Pointer
+@ $5FB5 label=Saved_Pointer
+D $5FB5 Caller #REGhl stored here; read at #R$664D.
 W $5FB5,$02
 
-g $5FB9
+g $5FB9 Room Drawing Position
+@ $5FB9 label=RoomDrawPosition
+D $5FB9 The two-byte drawing position used by #R$5F35 to track where the next
+. tile should be placed.
+.
+. The low byte is the column and the high byte is the row.
+B $5FB9,$02
 
-g $5FBB
+g $5FBB Level Flag?
+@ $5FBB label=Level_Flag
+D $5FBB #N$FF when level active; read in many game loops.
+B $5FBB,$01
 
-g $5FBC
+g $5FBC Pause Flag
+@ $5FBC label=Pause_Flag
+D $5FBC #N$00=not paused, #N$FF=paused; set at #R$5DF5.
+B $5FBC,$01
 
-g $5FBD
+g $5FBD Sub-State?
+@ $5FBD label=Sub_State
+D $5FBD Written from #REGa in #R$68D1.
+B $5FBD,$01
 
-g $5FBE
+g $5FBE Lives Backup?
+@ $5FBE label=Lives_Backup
+D $5FBE Copy of #R$5FB3 for compare/display; synced at #R$654C/#R$69EC.
+B $5FBE,$03
 
-g $5FC1
+g $5FC1 Pointer: Active Tile Set
+@ $5FC1 label=Pointer_ActiveTileSet
+D $5FC1 Holds the pointer to the currently active tile set.
 W $5FC1,$02
 
-g $5FC3
+g $5FC3 Pointer: Current Room Data
+@ $5FC3 label=Pointer_CurrentRoomData
+D $5FC3 Points to the data for the current room.
 W $5FC3,$02
 
-g $5FC5
+g $5FC5 Current Room
+@ $5FC5 label=CurrentRoom
+D $5FC5 The ID of the current Room (#N$00-#N$0B).
+B $5FC5,$01
 
-c $5FC6
+c $5FC6 Set Room Data Pointer
+@ $5FC6 label=FindRoomData
+D $5FC6 Sets the room data pointer for the current room.
+.
+. The room data is stored as a series of blocks from #R$83AA, separated by
+. #N$00 terminators. This routine scans through the data to find the block
+. matching the *#R$5FC5.
   $5FC6,$04 #REGd=*#R$5FC5.
-  $5FCA,$02 #REGe=#N$01.
-  $5FCC,$02 Return if *#R$5FC5 is equal to #N$01.
-  $5FCE,$03 #REGhl=#R$83AA.
+  $5FCA,$02 #REGe=#N$01 (start searching from room #N$01).
+  $5FCC,$02 Return if the current room is #N$01 (the data pointer already
+. defaults to the first room).
+N $5FCE Scan through the room data blocks. Each block is terminated by #N$00,
+. so count terminators to find the Nth room.
+  $5FCE,$03 #REGhl=#R$83AA (start of room data).
+@ $5FD1 label=FindRoomData_ScanLoop
   $5FD1,$01 #REGa=*#REGhl.
-  $5FD2,$01 Increment #REGhl by one.
-  $5FD3,$03 Jump to #R$5FD8 if #REGa is zero.
-  $5FD6,$02 Jump to #R$5FD1.
-
-  $5FD8,$01 Increment #REGe by one.
-  $5FD9,$05 Jump to #R$5FE7 if #REGe is greater than or equal to #N$11.
-  $5FDE,$03 Jump to #R$5FE3 if #REGa is equal to #REGd.
-  $5FE1,$02 Jump to #R$5FD1.
-
+  $5FD2,$01 Advance the data pointer.
+  $5FD3,$03 Jump to #R$5FD8 if a #N$00 terminator was found.
+  $5FD6,$02 Jump to #R$5FD1 to keep scanning.
+N $5FD8 Found a block terminator — check if we've reached the target room.
+@ $5FD8 label=FindRoomData_FoundTerminator
+  $5FD8,$01 Increment the room counter in #REGe.
+  $5FD9,$05 Jump to #R$5FE7 if the room counter has exceeded #N$11 (maximum
+. number of rooms — room not found).
+  $5FDE,$03 Jump to #R$5FE3 if the room counter matches the target room number.
+  $5FE1,$02 Otherwise, jump to #R$5FD1 to keep scanning.
+N $5FE3 The target room was found — store the pointer to its data.
+@ $5FE3 label=FindRoomData_Found
   $5FE3,$03 Write #REGhl to *#R$5FC3.
   $5FE6,$01 Return.
 
-c $5FE7
+c $5FE7 Raise Table Error
+@ $5FE7 label=Raise_Table_Error
+D $5FE7 RST #N$08 then LD A,(BC). Used when table index >= #N$11 in #R$5FC6.
 
-c $5FE9
+c $5FE9 Handle Pause Input
+@ $5FE9 label=Handle_Pause_Input
+D $5FE9 Read #R$5FA7; call #R$6480 if zero. Use R for random; read keyboard
+. (#R$DAC0) and dispatch. Used by #R$5DC0.
 
-c $63BB
+c $63BB Print HUD Header
+@ $63BB label=Print_HUD_Header
+D $63BB Set header-drawn flag, open channel #N$02, print Energy/Lives/Score
+. string at #R$63E9. Then #R$63CB colours bottom rows.
   $63BB,$05 Write #N$01 to *#R$5FA1.
 N $63C0 Open channel #N$02 (upper screen).
   $63C0,$03 #HTML(Call <a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/1601.html">CHAN_OPEN</a>.)
@@ -365,7 +550,10 @@ t $63E9 Messaging: Header
   $6425,$01
   $6426,$12
 
-c $6438
+c $6438 Draw Level Rows
+@ $6438 label=Draw_Level_Rows
+D $6438 Loop B times: call #R$6456 (draw row), advance #REGhl. Then call #R$63BB
+. if header not drawn, and #R$63CB to colour bottom rows.
   $6438,$02 Stash #REGbc and #REGhl on the stack.
   $643A,$03 Call #R$6456.
   $643D,$02 Restore #REGhl and #REGbc from the stack.
@@ -403,10 +591,17 @@ c $6456 Draw Level Row
   $647D,$02 LDIR.
   $647F,$01 Return.
 
-c $6480
+c $6480 Handle Title Screen
+@ $6480 label=Handle_Title_Screen
+D $6480 #R$5FA7 countdown or init; IX+1 compare; #R$5FAB counter. Called from
+. #R$5FE9 when Z.
 
-c $653D
-  $654A,$08 Write #N$33 to; #LIST
+c $653D Initialise Lives
+@ $653D label=Initialise_Lives
+D $653D Set #R$5FB3 and #R$5FBE to #N$33, clear #R$5FB1, call #R$68F7 then
+. jump to #R$659B (game over / title).
+N $654A See #POKE#255_lives(255 Lives).
+  $654A,$08 Write ASCII #N$33 ("#CHR$33") to; #LIST
 . { *#R$5FBE }
 . { *#R$5FB3 }
 . LIST#
@@ -414,7 +609,10 @@ c $653D
   $6556,$03 Call #R$68F7.
   $6559,$03 Jump to #R$659B.
 
-c $655C
+c $655C Start Level
+@ $655C label=Start_Level
+D $655C Print at #N$50F0; set #R$5FC5=#N$06; call #R$5E24; loop #R$64CC
+. #N$60 times; set #R$DAC0 area. Clear #R$5FA7.
   $655C,$03 #REGhl=#N$50F0 (screen buffer location).
   $655F,$03 Call #R$6581.
   $6562,$05 Write #N$06 to *#R$5FC5.
@@ -456,7 +654,10 @@ N $658C Each ASCII character is #N$08 bytes of data, so this translates the
 . #N$08 lines of the UDG character have been drawn.
   $659A,$01 Return.
 
-c $659B
+c $659B Show Game Over Screen
+@ $659B label=Show_Game_Over_Screen
+D $659B State #N$0C: set #R$5FC5 and #R$5FA1, call #R$5E24, print 4×5 text
+. from #R$660D, call #R$FC1B, wait key, then jump to #R$6562.
   $659B,$08 Write #N$0C to; #LIST
 . { *#R$5FC5 }
 . { *#R$5FA1 }
@@ -498,7 +699,32 @@ c $659B
   $65E5,$02 Decrease counter by one and loop back to #R$65E2 until counter is zero.
   $65E7,$03 Jump to #R$6562.
 
-c $65EA
+c $65EA Draw In-Game Effect
+@ $65EA label=Draw_InGame_Effect
+D $65EA This is probably the nest. Will check.
+  $65EA,$03 #REGhl=#N$E08A (destination address for the three tiles).
+  $65ED,$02 Set an iteration counter in #REGb for #N$03 tiles.
+@ $65EF label=Draw_InGame_Effect_TileLoop
+  $65EF,$01 Stash the iteration counter on the stack.
+  $65F0,$01 Stash the screen position on the stack.
+  $65F1,$03 #REGhl=#R$A763 (base address of the two 8-byte tiles).
+  $65F4,$03 #REGbc=#N$0008 (bytes per tile).
+N $65F7 Use the rotating value at #R$5FB4 to choose first or second tile; RRCA
+. shifts it for next frame.
+  $65F7,$03 #REGa=*#R$5FB4.
+  $65FA,$01 Rotate #REGa right (carry holds the shifted-out bit).
+  $65FB,$03 Write #REGa to *#R$5FB4.
+  $65FE,$02 Jump to #R$6601 if carry is set (use first tile at #R$A763).
+  $6600,$01 #REGhl+=#REGbc (use second tile at #N$A76B).
+@ $6601 label=Draw_InGame_Effect_GraphicSource
+  $6601,$01 #REGde=graphic source address (#REGhl).
+  $6602,$01 Restore the screen position from the stack.
+  $6603,$01 But keep a copy on the stack for after the draw.
+  $6604,$03 Call #R$6692.
+  $6607,$02 Restore the screen position and iteration counter from the stack.
+  $6609,$01 Increment #REGl by one (next column).
+  $660A,$02 Decrease counter by one and loop back to #R$65EF until counter is zero.
+  $660C,$01 Return.
 
 t $660D Messaging: Press ENTER to Start
 @ $660D label=Messaging_PressEnterToStart
@@ -523,9 +749,11 @@ R $6621 BC The length of the text to print
 . until the whole string has been printed to the screen.
   $662A,$01 Return.
 
-c $662B
+c $662B Compute Sprite Position?
+@ $662B label=Compute_Sprite_Position
 
-c $6832
+c $6832 Update State Counters?
+@ $6832 label=Update_State_Counters
   $6832,$03 #REGhl=#R$689F.
   $6835,$04 #REGb=*#R$5FC5.
   $6839,$01 #REGa=*#REGhl.
@@ -583,11 +811,19 @@ c $6832
   $689E,$01 Return.
 
 b $689F
+  $689F,$04
+L $689F,$04,$06
   $68B7,$01 Terminator.
 
-c $68B8
+c $68B8 Handle Life Lost
+@ $68B8 label=Handle_Life_Lost
+D $68B8 Decrement #R$5FB2; when zero loop #R$693B #N$28 times (border flash),
+. set #R$5FBD and beep, then call #R$68F7.
 
-c $68F7
+c $68F7 Update Lives Display
+@ $68F7 label=Update_Lives_Display
+D $68F7 Read #R$5FB1 and #R$5FB3; increment #R$5FB1; when #R$5FB1=#N$04 give
+. extra life and print at #N$50F0.
   $68F7,$03 #REGa=*#R$5FB1.
   $68FA,$03 #REGhl=#R$5FB3.
   $68FD,$04 Jump to #R$6911 if #REGa is equal to #N$05.
@@ -618,7 +854,10 @@ c $68F7
   $6936,$04 Jump back to #R$6927 until #REGbc is zero.
   $693A,$01 Return.
 
-c $693B
+c $693B Flash Border Step
+@ $693B label=Flash_Border_Step
+D $693B Push BC/HL/DE; set border from R; write #R$5FB4 and BORDCR; BEEP.
+. Used in loop from #R$68B8.
   $693B,$03 Stash #REGbc, #REGhl and #REGde on the stack.
   $693E,$02 #REGa=#N$19.
   $6940,$03 Call #R$67B2.
@@ -692,7 +931,10 @@ M $696F,$03 Load #REGa with bits 0-2 of the current frame counter value. This
   $6990,$01 Disable interrupts.
   $6991,$01 Return.
 
-c $6992
+c $6992 Run Game Frame
+@ $6992 label=Run_Game_Frame
+D $6992 Call #R$662B, #R$6832; if #R$5FC5=#N$06 call #R$65EA; then #R$69A7
+. and #R$BB1C.
   $6992,$03 Call #R$662B.
   $6995,$03 Call #R$6832.
   $6998,$08 Call #R$65EA if *#R$5FC5 is equal to #N$06.
@@ -700,25 +942,325 @@ c $6992
   $69A3,$03 Call #R$BB1C.
   $69A6,$01 Return.
 
-c $69A7
+c $69A7 Run Main Loop Body
+@ $69A7 label=Run_Main_Loop_Body
+D $69A7 DI; clear #R$DAC7 and #R$DAEB; then call #R$69F7, #R$6DAB, #R$720F.
 
-c $69F7
+c $69F7 Load Level Data
+@ $69F7 label=Load_Level_Data
+D $69F7 If #R$5FBB set: walk level/sprite data at #R$BE00 by #R$5FC5.
+. Used by #R$69A7.
 
-c $6DAB
+c $6DAB Dispatch Game State
+@ $6DAB label=Dispatch_Game_State
+D $6DAB If #R$5FBB clear #R$7208/#R$7209. Branch on #R$5FC5 (1, 2, 9 to
+. different routines). Used by #R$69A7.
 
-c $720F
+c $720F Clear Or Update Buffer?
+@ $720F label=Clear_Or_Update_Buffer
+D $720F Optionally write #R$5FB1; if #R$5FBB clear #N$0800 bytes at #R$E800;
+. then use #R$5FB1 and #R$5FC5.
 
-c $83A9
+c $83A9 Level Table Start?
+@ $83A9 label=Level_Table_Start
+D $83A9 Maybe is the start of room #N$00 data?
 
-c $83AA
+b $83AA Table: Room Data
+@ $83AA label=Table_RoomData
+  $83AA Room #N$00.
+  $83A8,$01 Terminator.
+  $83A9 Room #N$01.
+  $84B3,$01 Terminator.
+  $84B4 Room #N$02.
+  $8756,$01 Terminator.
+  $8757 Room #N$03.
+  $897E,$01 Terminator.
+  $897F Room #N$04.
+  $8B06,$01 Terminator.
+  $8B07 Room #N$05.
+  $8C57,$01 Terminator.
+  $8C58 Room #N$06.
+  $8E0F,$01 Terminator.
+  $8E10 Room #N$07.
+  $8F62,$01 Terminator.
+  $8F63 Room #N$08.
+  $9177,$01 Terminator.
+  $9178 Room #N$09.
+  $9354,$01 Terminator.
+  $9355 Room #N$0A.
+  $9459,$01 Terminator.
+  $945A Room #N$0B.
+  $95A4,$01 Terminator.
+
+b $9BAA Graphics: Default Tile Set
+@ $9BAA label=TileSet_Default
+  $9BAA,$08 #UDG(#PC)
+L $9BAA,$08,$F8
+
+b $A36A Graphics: Alternate Tile Set?
+@ $A36A label=TileSet_Alternate
+  $A36A,$08
+
+b $A763
+  $A763,$08 #UDG(#PC)
+L $A763,$08,$14
+
+b $AB3B
+  $AB3B,$08 #UDG(#PC)
+L $AB3B,$08,$A0
 
 c $BB1C
+  $BB1C,$04 #REGix=#R$DAC0.
+  $BB20,$06 Jump to #R$BB33 if *#R$5FBE is zero.
+  $BB26,$0C Copy #N$00 across #N$02BF bytes from #R$F800 onwards.
+  $BB32,$01 Return.
 
-c $C001
+  $BB33,$04 #REGix=#R$DAC0.
+  $BB37,$05 Write #N$FF to *#R$FAC0.
+  $BB3C,$02 #REGb=#N$08.
+  $BB3E,$01 Stash #REGbc on the stack.
+  $BB3F,$07 Jump to #R$BB4A if *#REGix+#N$01 is less than #N$A1.
+  $BB46,$04 Write #N$A0 to *#REGix+#N$01.
+  $BB4A,$07 Jump to #R$BDE4 if *#REGix+#N$03 is zero.
+  $BB51,$03 Call #R$BC0E.
+  $BB54,$01 Stash #REGhl on the stack.
+  $BB55,$03 Call #R$BD5E.
+  $BB58,$01 Restore #REGhl from the stack.
+  $BB59,$03 Call #R$BC52.
+  $BB5C,$08 Increment #REGix by four.
+  $BB64,$01 Restore #REGbc from the stack.
+  $BB65,$02 Decrease counter by one and loop back to #R$BB3E until counter is zero.
+  $BB67,$02 #REGb=#N$08.
+  $BB69,$01 Stash #REGbc on the stack.
+  $BB6A,$07 Jump to #R$BB75 if *#REGix+#N$01 is less than #N$A9.
+  $BB71,$04 Write #N$A8 to *#REGix+#N$01.
+  $BB75,$06 Jump to #R$BB86 if *#REGix+#N$03 is zero.
+  $BB7B,$03 Call #R$BC0E.
+  $BB7E,$01 Stash #REGhl on the stack.
+  $BB7F,$03 Call #R$BDA6.
+  $BB82,$01 Restore #REGhl from the stack.
+  $BB83,$03 Call #R$BCF7.
+  $BB86,$08 Increment #REGix by four.
+  $BB8E,$01 Restore #REGbc from the stack.
+  $BB8F,$02 Decrease counter by one and loop back to #R$BB69 until counter is zero.
+  $BB91,$0B Copy #N($0040,$04,$04) bytes from *#R$DAC0 to #R$DB00.
+  $BB9C,$03 #REGhl=#N$F7FF.
+  $BB9F,$01 #REGa=#N$00.
+  $BBA0,$01 Increment #REGhl by one.
+  $BBA1,$04 Jump to #R$BBA0 if *#REGhl is zero.
+  $BBA5,$03 Return if #REGa is equal to #N$FF.
+  $BBA8,$01 Decrease *#REGhl by one.
+  $BBA9,$05 Jump to #R$BBBB if #REGa is equal to #N$02.
+  $BBAE,$01 Stash #REGhl on the stack.
+  $BBAF,$01 #REGa=#REGh.
+  $BBB0,$02 #REGa-=#N$20.
+  $BBB2,$01 #REGd=#REGa.
+  $BBB3,$01 #REGe=#REGl.
+  $BBB4,$01 #REGa=#REGh.
+  $BBB5,$02 #REGa-=#N$A0.
+  $BBB7,$01 #REGh=#REGa.
+  $BBB8,$01 #REGa=*#REGde.
+  $BBB9,$01 Write #REGa to *#REGhl.
+  $BBBA,$01 Restore #REGhl from the stack.
+  $BBBB,$01 Stash #REGhl on the stack.
+  $BBBC,$01 #REGa=#REGh.
+  $BBBD,$02,b$01 Keep only bits 0-1.
+  $BBBF,$03 RLCA three positions.
+  $BBC2,$02,b$01 Set bits 6-7.
+  $BBC4,$01 #REGh=#REGa.
+  $BBC5,$01 #REGb=#REGh.
+  $BBC6,$01 #REGd=#REGh.
+  $BBC7,$02 Set bit 5 of #REGb.
+  $BBC9,$02 Reset bit 7 of #REGd.
+  $BBCB,$01 #REGc=#REGl.
+  $BBCC,$01 #REGe=#REGl.
+  $BBCD,$01 #REGa=*#REGbc.
+  $BBCE,$01 Set the bits from *#REGhl.
+  $BBCF,$01 Write #REGa to *#REGde.
+  $BBD0,$02 Write #N$00 to *#REGbc.
+  $BBD2,$01 Increment #REGb by one.
+  $BBD3,$01 Increment #REGd by one.
+  $BBD4,$01 Increment #REGh by one.
+  $BBD5,$01 #REGa=*#REGbc.
+  $BBD6,$01 Set the bits from *#REGhl.
+  $BBD7,$01 Write #REGa to *#REGde.
+  $BBD8,$02 Write #N$00 to *#REGbc.
+  $BBDA,$01 Increment #REGb by one.
+  $BBDB,$01 Increment #REGd by one.
+  $BBDC,$01 Increment #REGh by one.
+  $BBDD,$01 #REGa=*#REGbc.
+  $BBDE,$01 Set the bits from *#REGhl.
+  $BBDF,$01 Write #REGa to *#REGde.
+  $BBE0,$02 Write #N$00 to *#REGbc.
+  $BBE2,$01 Increment #REGb by one.
+  $BBE3,$01 Increment #REGd by one.
+  $BBE4,$01 Increment #REGh by one.
+  $BBE5,$01 #REGa=*#REGbc.
+  $BBE6,$01 Set the bits from *#REGhl.
+  $BBE7,$01 Write #REGa to *#REGde.
+  $BBE8,$02 #N$00 to *#REGbc.
+  $BBEA,$01 Increment #REGb by one.
+  $BBEB,$01 Increment #REGd by one.
+  $BBEC,$01 Increment #REGh by one.
+  $BBED,$01 #REGa=*#REGbc.
+  $BBEE,$01 Set the bits from *#REGhl.
+  $BBEF,$01 Write #REGa to *#REGde.
+  $BBF0,$02 Write #N$00 to *#REGbc.
+  $BBF2,$01 Increment #REGb by one.
+  $BBF3,$01 Increment #REGd by one.
+  $BBF4,$01 Increment #REGh by one.
+  $BBF5,$01 #REGa=*#REGbc.
+  $BBF6,$01 Set the bits from *#REGhl.
+  $BBF7,$01 Write #REGa to *#REGde.
+  $BBF8,$02 Write #N$00 to *#REGbc.
+  $BBFA,$01 Increment #REGd by one.
+  $BBFB,$01 Increment #REGh by one.
+  $BBFC,$01 Increment #REGb by one.
+  $BBFD,$01 #REGa=*#REGbc.
+  $BBFE,$01 Set the bits from *#REGhl.
+  $BBFF,$01 Write #REGa to *#REGde.
+  $BC00,$01 #REGa=#N$00.
+  $BC01,$01 Write #REGa to *#REGbc.
+  $BC02,$01 Increment #REGb by one.
+  $BC03,$01 Increment #REGh by one.
+  $BC04,$01 Increment #REGd by one.
+  $BC05,$01 #REGa=*#REGbc.
+  $BC06,$01 Set the bits from *#REGhl.
+  $BC07,$01 Write #REGa to *#REGde.
+  $BC08,$02 Write #N$00 to *#REGbc.
+  $BC0A,$01 Restore #REGhl from the stack.
+  $BC0B,$03 Jump to #R$BBA0.
+
+c $BC0E Calculate Screen Buffer Address
+@ $BC0E label=CalculateScreenBufferAddress
+D $BC0E Converts a screen coordinate stored at #REGix into a screen buffer
+. address and pixel offset. The coordinate is stored as a two-byte value where
+. #REGix+#N$00 holds the X position and #REGix+#N$01 holds the Y position.
+. Returns with #REGhl pointing to the screen buffer address, #REGa (shadow)
+. holding the row within the character cell (bits 0-2 of Y), and #REGa holding
+. the pixel offset within the byte (bits 0-2 of X).
+R $BC0E IX Pointer to a two-byte screen coordinate (X, Y)
+R $BC0E O:HL Screen buffer address
+R $BC0E O:A Pixel X offset within the byte (bits 0-2)
+R $BC0E O:AF' Row within the character cell (bits 0-2 of Y)
+  $BC0E,$03 #REGc=*#REGix+#N$00.
+  $BC11,$03 #REGb=*#REGix+#N$01.
+  $BC14,$01 #REGa=#REGc.
+  $BC15,$02,b$01 Keep only bits 0-2.
+  $BC17,$01 Stash the pixel X offset on the stack.
+N $BC18 Calculate the low byte of the screen buffer address. This combines the
+. character column (X / 8) with the Y pixel row bits.
+  $BC18,$01 #REGa=#REGc.
+  $BC19,$03 Rotate right three positions to divide X by #N$08.
+  $BC1C,$02,b$01 Keep only bits 0-4 (character column, #N$00-#N$1F).
+  $BC1E,$01 #REGl=#REGa.
+  $BC1F,$01 #REGa=#REGb.
+  $BC20,$02 Rotate left two positions.
+  $BC22,$02,b$01 Keep only bits 5-7 (low bits of Y row).
+  $BC24,$01 Merge the column and row bits together.
+  $BC25,$01 #REGl=#REGa.
+  $BC26,$01 #REGa=#REGb.
+N $BC26 Calculate the high byte of the screen buffer address. This encodes the
+. character row and third-of-screen into the high byte, with the base address
+. of #N$E000 (bits 5-7 set).
+  $BC27,$02,b$01 Keep only bits 0-2 (pixel row within character cell).
+  $BC29,$01 #REGh=#REGa.
+  $BC2A,$01 #REGa=#REGb.
+  $BC2B,$02,b$01 Keep only bits 6-7 (screen third selector).
+  $BC2D,$03 Rotate right three positions to move bits 6-7 into bits 3-4.
+  $BC30,$01 Merge with the pixel row bits in #REGh.
+  $BC31,$02,b$01 Set bits 5-7 for the screen buffer base address (#N$E000).
+  $BC33,$01 #REGh=#REGa.
+N $BC34 Store the Y pixel row (character cell row) in shadow #REGaf and restore
+. the pixel X offset as the return value in #REGa.
+  $BC34,$01 Store the row-within-character in shadow #REGaf.
+  $BC35,$01 Restore the pixel X offset from the stack.
+  $BC36,$01 Return.
+
+c $BC37
+
+c $BC52
+
+c $BD5E Draw Sprite Column
+@ $BD5E label=DrawSpriteColumn
+R $BD5E A Shift amount (self-modified into the code)
+R $BD5E HL Screen buffer address
+R $BD5E IX Pointer to sprite data (IX+#N$03 = one-indexed frame number)
+N $BD5E Self-modify the shift loop counter at #R$BD81(#N$BD82).
+  $BD5E,$03 Write #REGa to *#R$BD81(#N$BD82).
+N $BD61 Look up the sprite frame graphic data. Each frame is #N$20 bytes, so
+. multiply the zero-indexed frame number by #N$20 and add the sprite sheet base
+. address.
+  $BD61,$01 Stash the screen buffer address on the stack.
+  $BD62,$03 #REGde=#R$AB3B (sprite sheet base address).
+  $BD65,$03 #REGl=*#REGix+#N$03 (one-indexed frame number).
+  $BD68,$01 Decrement to make it zero-indexed.
+  $BD69,$03 Create an offset in #REGhl using the frame index.
+  $BD6C,$04 Multiply #REGhl by #N$20.
+  $BD70,$01 Add the sprite sheet base address.
+  $BD71,$01 Exchange so #REGde points to the sprite graphic data.
+  $BD72,$01 Restore the screen buffer address from the stack.
+N $BD73 Draw #N$02 columns, each #N$10 pixel rows tall. #REGc holds a mask of
+. #N$07 used to detect character cell boundaries for screen address adjustment.
+  $BD73,$02 Set a column counter in #REGb of #N$02 columns.
+@ $BD75 label=DrawSpriteColumn_ColumnLoop
+  $BD75,$02 #REGc=#N$07 (pixel row mask for character cell boundary detection).
+  $BD77,$02 Stash the column counter and screen buffer address on the stack.
+  $BD79,$02 Set a row counter in #REGb of #N$10 pixel rows.
+N $BD7B For each row, read a byte of sprite data, shift it left by the
+. self-modified amount and OR the resulting two bytes across two adjacent
+. screen buffer columns.
+@ $BD7B label=DrawSpriteColumn_RowLoop
+  $BD7B,$02 Stash the sprite data pointer and screen buffer address on the stack.
+N $BD7D Read the sprite data byte and shift it into a 16-bit value in #REGhl.
+N $BD7D The shift amount at #R$BD81(#N$BD82) was self-modified on entry to
+. control the horizontal pixel alignment.
+  $BD7D,$01 #REGa=*#REGde.
+  $BD7E,$03 Transfer sprite byte to #REGhl (clearing the high byte).
+  $BD81,$02 Jump into the shift loop at #R$BD84.
+@ $BD83 label=DrawSpriteColumn_ShiftExtra
+  $BD83,$01 Shift #REGhl left one position.
+@ $BD84 label=DrawSpriteColumn_ShiftLoop
+  $BD84,$06 Shift #REGhl left a further seven positions (eight total from
+. #R$BD83, or seven from #R$BD84).
+N $BD8B OR the shifted sprite data onto the screen buffer. The high byte goes
+N $BD8B into the current column and the low byte into the adjacent column.
+  $BD8A,$01 Stash placeholder (last shift).
+  $BD8B,$02 Restore the screen buffer address into #REGde, keeping a copy on the
+. stack.
+  $BD8D,$01 Exchange so #REGhl=screen buffer address, #REGde=shifted sprite data.
+  $BD8E,$03 OR the high byte of the sprite data onto *#REGhl.
+  $BD91,$03 Move to the next column and OR the low byte of the sprite data onto
+. *#REGhl.
+  $BD95,$02 Restore the screen buffer address and sprite data pointer from the
+. stack.
+N $BD97 Move down one pixel row in the screen buffer and check for a character
+. cell boundary crossing.
+  $BD97,$01 Move down one pixel row in the screen buffer.
+  $BD98,$02 Test if we've crossed a character cell boundary (every #N$08 rows).
+  $BD9A,$03 Call #R$BC37 to adjust the screen buffer address if a character cell
+. boundary was crossed.
+N $BD9D Move to the next sprite data byte and loop.
+  $BD9D,$01 Advance the sprite data pointer.
+  $BD9E,$02 Decrease the row counter by one and loop back to #R$BD7B until all
+. #N$10 rows are drawn.
+N $BDA0 Move to the next column in the screen buffer and loop.
+  $BDA0,$01 Restore the screen buffer address from the stack.
+  $BDA1,$01 Restore the column counter from the stack.
+  $BDA2,$01 Move one byte to the right in the screen buffer.
+  $BDA3,$02 Decrease the column counter by one and loop back to #R$BD75 until
+. both columns are drawn.
+  $BDA5,$01 Return.
+
+c $BDA6
+
+g $C000 Room Buffer
+@ $C000 label=RoomBuffer
+B $C000,$1800,$20
 
 c $C1DD Game Entry Point
 @ $C1DD label=GameEntryPoint
-  $C1DD,$0B Copy #N$0176 bytes of data from #N$053F to #R$C001.
+  $C1DD,$0B Copy #N$0176 bytes of data from #N$053F to #R$C000(#N$C001).
   $C1E8,$06 #HTML(Write #R$FF58 to
 . *<a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/5C7B.html">UDG</a>.)
   $C1EE,$06 #HTML(Write <a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/3D00.html">#N$3C00</a>
@@ -730,11 +1272,22 @@ N $C200 Set the lower screen to the default #N$02 lines.
 . *<a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/5C6B.html">DF_SZ</a>.)
   $C205,$03 Jump to #R$5DC0.
 
-c $FC1B
+g $E000 Sprite Buffer
+@ $E000 label=SpriteBuffer
+B $E000,$1800,$20
+
+b $F800
+
+c $FC1B Print Pause Message
+@ $FC1B label=Print_Pause_Message
+D $FC1B If #R$5FBC (pause) zero: copy from #R$FC3D to screen (#N$50A6).
+. Used by #R$659B.
 
   $FC3C,$01 Return.
 
-c $FC3D
+c $FC3D Pause Message Data
+@ $FC3D label=Pause_Message_Data
+D $FC3D Message or data block; target of copy from #R$FC1B when not paused.
 
 b $FF58 Graphics: Custom UDGs
 @ $FF58 label=Graphics_CustomUDGs

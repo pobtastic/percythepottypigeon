@@ -20,6 +20,20 @@ and point the environment variable SKOOLKIT_HOME at it. Then:
 Disclaimer
 ----------
 
-You will need to own the original game in order to disassemble the game code.
+This source code is shared to support preservation, research, and learning, and
+to celebrate the history of the game.
+You may view, study, modify, and build the code for personal, non-commercial
+use.
 
+You may not, without prior written permission from the copyright holder:
+
+- Distribute or publish executable builds;
+- Port the code to other platforms or systems for distribution;
+- Use the code in commercial products;
+- Distribute modified or derivative versions of the code.
+
+No rights are granted to any associated names, characters, artwork, audio,
+trademarks, or other intellectual property.
+
+Current [Urbanscan](https://www.urbanscan.co.uk)
 1984 [Gremlin Graphics Software Ltd](https://en.wikipedia.org/wiki/Gremlin_Interactive)

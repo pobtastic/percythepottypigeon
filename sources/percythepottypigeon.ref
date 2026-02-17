@@ -14,7 +14,7 @@ GameDir=percythepottypigeon
 [Game]
 Game=Percy the Potty Pigeon
 Logo=#SCR$02,$00,$00,$18,$06,$4000,$5800(/images/logo)
-Copyright=&copy; 1984 Gremlin Graphics Software Ltd &copy; 2025 ArcadeGeek LTD.
+Copyright=&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.
 Repository=https://github.com/pobtastic/percythepottypigeon/
 LinkInternalOperands=1
 AddressAnchor={address#IF({base}==16)(:04x)}

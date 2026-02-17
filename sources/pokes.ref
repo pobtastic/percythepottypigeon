@@ -1,9 +1,23 @@
-; Copyright 2025 Paul Maddern (paul@arcadegeek.co.uk)
+; Copyright 2026 Paul Maddern (paul@arcadegeek.co.uk)
 
 [Poke:Infinite Lives]
 <div>
   <code>POKE #R$652F,#N$00</code>
 </div>
+
+Removes the instruction which would otherwise decrease #R$5FB3.
+<table>
+  <tbody>
+    <tr>
+      <td class="address-1">#R$652C(#N$652C)</td>
+      <td class="instruction">LD #REGhl,#R$5FB3(#N$5FB3)</td>
+    </tr>
+    <tr>
+      <td class="address-1">#R$652F(#N$652F)</td>
+      <td class="instruction">DEC (#REGhl)</td>
+    </tr>
+  </tbody>
+</table>
 
 [Poke:255 Lives]
 <div>
@@ -12,3 +26,8 @@
 <div>
   <code>POKE #R$654A(#N$654B),#N$2F</code>
 </div>
+
+This changes the code which sets the starting lives from ASCII #N$33 ("#CHR$33
+lives") to be ASCII #N$2F (which is "#CHR$30 lives" minus #N$01).
+
+So it cycles through an entire byte before reaching #N$00 again.
