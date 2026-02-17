@@ -8,7 +8,7 @@
 
 [Config]
 Expand=#INCLUDE(Expand)
-RefFiles=bases.ref;analytics.ref;changelog.ref;pokes.ref
+RefFiles=bases.ref;analytics.ref;changelog.ref;pokes.ref;rooms.ref
 GameDir=percythepottypigeon
 
 [Game]
@@ -21,6 +21,23 @@ AddressAnchor={address#IF({base}==16)(:04x)}
 
 [PageHeaders]
 GameIndex=The complete<>RAM disassembly (work in progress)
+
+[Paths]
+Rooms=graphics/rooms.html
+Sound=sound/sounds.html
+
+[Page:Rooms]
+SectionPrefix=Room
+
+[Page:Sound]
+SectionPrefix=Audio
+
+[Index:DataTables:Data Tables And Buffers]
+GameStatusBuffer
+
+[Index:Graphics:Graphics And Sounds]
+Rooms
+Sound
 
 [Expand]
 #DEF(#COLOUR(id)

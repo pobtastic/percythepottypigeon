@@ -2,12 +2,14 @@
 ; NOTE: Disassembly is Work-In-Progress.
 ; Label naming is loosely based on Action_ActionName_SubAction e.g. Print_HighScore_Loop.
 
-> $4000 @org=$4000
+> $4000 @rom
+> $4000 @start
 > $4000 @expand=#DEF(#POKE #LINK:Pokes)
 > $4000 @expand=#DEF(#ANIMATE(delay,count=$50)(name=$a)*$name-1,$delay;#FOR$02,$count||x|$name-x|;||($name-animation))
+> $4000 @expand=#DEF(#ROOM(id)#SIM(start=$5DD0,stop=$6559) #UDGTABLE { #POKES$5FC5,$id;$5FA1,$01 #SIM(start=$65A3,stop=$65A6,sp=$5BFE) #SCR$02(room-$id) } TABLE#)
 > $4000 @set-handle-unsupported-macros=1
 b $4000 Loading Screen
-D $4000 #UDGTABLE { =h Percy the Potty Pigeon Loading Screen. } { #SCR$02(loading) } UDGTABLE#
+D $4000 #UDGTABLE { =h Percy the Potty Pigeon Loading Screen. } { #SCR$02(loading) } TABLE#
 @ $4000 label=Loading
   $4000,$1800,$20 Pixels.
   $5800,$0300,$20 Attributes.
@@ -654,10 +656,10 @@ N $658C Each ASCII character is #N$08 bytes of data, so this translates the
 . #N$08 lines of the UDG character have been drawn.
   $659A,$01 Return.
 
-c $659B Show Game Over Screen
-@ $659B label=Show_Game_Over_Screen
-D $659B State #N$0C: set #R$5FC5 and #R$5FA1, call #R$5E24, print 4×5 text
-. from #R$660D, call #R$FC1B, wait key, then jump to #R$6562.
+c $659B Main Menu
+@ $659B label=MainMenu
+D $659B Displays the pre-game introduction screen.
+N $659B Room #N$0C is the.
   $659B,$08 Write #N$0C to; #LIST
 . { *#R$5FC5 }
 . { *#R$5FA1 }
@@ -690,7 +692,8 @@ D $659B State #N$0C: set #R$5FC5 and #R$5FA1, call #R$5E24, print 4×5 text
 . { =h 0 | =h 1 | =h 2 | =h 3 | =h 4 }
 . { #N$BF | ENTER | L | K | J | H }
 . TABLE#
-  $65D6,$03 Jump to #R$65D4 if #REGde is less than #N$3D.
+@ $65D4 label=WaitForEnterToStart_Loop
+  $65D6,$03 Jump to #R$65D4 if "ENTER" is not being pressed.
   $65D9,$04 Set the border to #INK$01.
   $65DD,$02 #REGb=#N$0A.
   $65DF,$03 #REGhl=#R$5FA1.
@@ -961,36 +964,72 @@ c $720F Clear Or Update Buffer?
 D $720F Optionally write #R$5FB1; if #R$5FBB clear #N$0800 bytes at #R$E800;
 . then use #R$5FB1 and #R$5FC5.
 
-c $83A9 Level Table Start?
-@ $83A9 label=Level_Table_Start
-D $83A9 Maybe is the start of room #N$00 data?
+b $83A9 Room #N$00
+@ $83A9 label=Room00
+D $83A9 #ROOM$00
+  $83A9,$01
 
-b $83AA Table: Room Data
-@ $83AA label=Table_RoomData
-  $83AA Room #N$00.
-  $83A8,$01 Terminator.
-  $83A9 Room #N$01.
+b $83AA Room #N$01
+@ $83AA label=Room01
+D $83AA #ROOM$01
   $84B3,$01 Terminator.
-  $84B4 Room #N$02.
+
+b $84B4 Room #N$02
+@ $84B4 label=Room02
+D $84B4 #ROOM$02
   $8756,$01 Terminator.
-  $8757 Room #N$03.
+
+b $8757 Room #N$03
+@ $8757 label=Room03
+D $8757 #ROOM$03
   $897E,$01 Terminator.
-  $897F Room #N$04.
+
+b $897F Room #N$04
+@ $897F label=Room04
+D $897F #ROOM$04
   $8B06,$01 Terminator.
-  $8B07 Room #N$05.
+
+b $8B07 Room #N$05
+@ $8B07 label=Room05
+D $8B07 #ROOM$05
   $8C57,$01 Terminator.
-  $8C58 Room #N$06.
+
+b $8C58 Room #N$06
+@ $8C58 label=Room06
+D $8C58 #ROOM$06
   $8E0F,$01 Terminator.
-  $8E10 Room #N$07.
+
+b $8E10 Room #N$07
+@ $8E10 label=Room07
+D $8E10 #ROOM$07
   $8F62,$01 Terminator.
-  $8F63 Room #N$08.
+
+b $8F63 Room #N$08
+@ $8F63 label=Room08
+D $8F63 #ROOM$08
   $9177,$01 Terminator.
-  $9178 Room #N$09.
+
+b $9178 Room #N$09
+@ $9178 label=Room09
+D $9178 #ROOM$09
   $9354,$01 Terminator.
-  $9355 Room #N$0A.
+
+b $9355 Room #N$0A
+@ $9355 label=Room10
+D $9355 #ROOM$0A
   $9459,$01 Terminator.
-  $945A Room #N$0B.
+
+b $945A Room #N$0B
+@ $945A label=Room11
+D $945A #ROOM$0B
   $95A4,$01 Terminator.
+
+b $95A5 Room #N$0C: Splash Screen.
+@ $95A5 label=Room12_SplashScreen
+D $95A5 #ROOM$0C
+  $9746,$01 Terminator.
+
+b $9747
 
 b $9BAA Graphics: Default Tile Set
 @ $9BAA label=TileSet_Default
@@ -1282,12 +1321,33 @@ c $FC1B Print Pause Message
 @ $FC1B label=Print_Pause_Message
 D $FC1B If #R$5FBC (pause) zero: copy from #R$FC3D to screen (#N$50A6).
 . Used by #R$659B.
+  $FC1B,$06 Jump to #R$FC52 if *#R$5FBC is non-zero.
+  $FC21,$03 #REGde=#R$FC3D.
+  $FC24,$03 #REGhl=#N$50A6 (screen buffer location).
+  $FC27,$02 #REGb=#N$15.
+  $FC29,$03 Call #R$FC2E.
+  $FC2C,$02 Jump to #R$FC89.
 
+  $FC2E,$01 #REGa=*#REGde.
+  $FC2F,$03 Stash #REGde, #REGhl and #REGbc on the stack.
+  $FC32,$03 Call #R$6581.
+  $FC35,$03 Restore #REGbc, #REGhl and #REGde from the stack.
+  $FC38,$01 Increment #REGhl by one.
+  $FC39,$01 Increment #REGde by one.
+  $FC3A,$02 Decrease counter by one and loop back to #R$FC2E until counter is zero.
   $FC3C,$01 Return.
 
-c $FC3D Pause Message Data
-@ $FC3D label=Pause_Message_Data
-D $FC3D Message or data block; target of copy from #R$FC1B when not paused.
+t $FC3D Messaging: Author Byline
+@ $FC3D label=Messaging_AuthorByline
+  $FC3D,$15 "#STR(#PC,$04,$15)".
+
+c $FC52
+
+t $FC99 Messaging: High Score
+@ $FC99 label=Messaging_HighScore
+  $FC99,$0D "#STR(#PC,$04,$0D)".
+
+b $FCA6
 
 b $FF58 Graphics: Custom UDGs
 @ $FF58 label=Graphics_CustomUDGs

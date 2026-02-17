@@ -1,0 +1,122 @@
+; Copyright 2026 Paul Maddern (paul@arcadegeek.co.uk)
+
+[Room:#N$0C]
+#HTML(
+<table>
+  <tr><th>#R$95A5</th></tr>
+  <tr>
+    <td><img src="../images/scr/room-12.png"/></td>
+  </tr>
+</table>
+)
+
+[Room:#N$01]
+#HTML(
+<table>
+  <tr><th>#R$83AA</th></tr>
+  <tr>
+    <td><img src="../images/scr/room-1.png"/></td>
+  </tr>
+</table>
+)
+
+
+[Room:#N$02]
+#HTML(
+<table>
+  <tr><th>#R$84B4</th></tr>
+  <tr>
+    <td><img src="../images/scr/room-2.png"/></td>
+  </tr>
+</table>
+)
+
+[Room:#N$03]
+#HTML(
+<table>
+  <tr><th>#R$8757</th></tr>
+  <tr>
+    <td><img src="../images/scr/room-3.png"/></td>
+  </tr>
+</table>
+)
+
+[Room:#N$04]
+#HTML(
+<table>
+  <tr><th>#R$897F</th></tr>
+  <tr>
+    <td><img src="../images/scr/room-4.png"/></td>
+  </tr>
+</table>
+)
+
+[Room:#N$05]
+#HTML(
+<table>
+  <tr><th>#R$8B07</th></tr>
+  <tr>
+    <td><img src="../images/scr/room-5.png"/></td>
+  </tr>
+</table>
+)
+
+[Room:#N$06]
+#HTML(
+<table>
+  <tr><th>#R$8C58</th></tr>
+  <tr>
+    <td><img src="../images/scr/room-6.png"/></td>
+  </tr>
+</table>
+)
+
+[Room:#N$07]
+#HTML(
+<table>
+  <tr><th>#R$8E10</th></tr>
+  <tr>
+    <td><img src="../images/scr/room-7.png"/></td>
+  </tr>
+</table>
+)
+
+[Room:#N$08]
+#HTML(
+<table>
+  <tr><th>#R$8F63</th></tr>
+  <tr>
+    <td><img src="../images/scr/room-8.png"/></td>
+  </tr>
+</table>
+)
+
+[Room:#N$09]
+#HTML(
+<table>
+  <tr><th>#R$9178</th></tr>
+  <tr>
+    <td><img src="../images/scr/room-9.png"/></td>
+  </tr>
+</table>
+)
+
+[Room:#N$0A]
+#HTML(
+<table>
+  <tr><th>#R$9355</th></tr>
+  <tr>
+    <td><img src="../images/scr/room-10.png"/></td>
+  </tr>
+</table>
+)
+
+[Room:#N$0B]
+#HTML(
+<table>
+  <tr><th>#R$945A</th></tr>
+  <tr>
+    <td><img src="../images/scr/room-11.png"/></td>
+  </tr>
+</table>
+)

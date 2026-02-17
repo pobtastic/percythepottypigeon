@@ -35,5 +35,6 @@ You may not, without prior written permission from the copyright holder:
 No rights are granted to any associated names, characters, artwork, audio,
 trademarks, or other intellectual property.
 
-Current [Urbanscan](https://www.urbanscan.co.uk)
+2026 [Urbanscan](https://www.urbanscan.co.uk)
+
 1984 [Gremlin Graphics Software Ltd](https://en.wikipedia.org/wiki/Gremlin_Interactive)
