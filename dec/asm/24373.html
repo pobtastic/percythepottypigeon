@@ -400,7 +400,7 @@ Attribute overlay command 36: end of attribute data. Finalises the room setup by
 <span id="24451"></span>
 <div class="comments">
 <div class="paragraph">
-Calculate the base address for this room's colour attributes. Each room has 32 bytes of attribute data stored sequentially from <a href="49629.html#56990">56990</a>, so multiply the zero-indexed room number by 32 and add the base.
+Calculate the base address for this room's colour attributes. Each room has 32 bytes of attribute data stored sequentially from <a href="56990.html">56990</a>, so multiply the zero-indexed room number by 32 and add the base.
 </div>
 </div>
 </td>
@@ -421,7 +421,7 @@ Calculate the base address for this room's colour attributes. Each room has 32 b
 <td class="asm-label"></td>
 <td class="address-1"><span id="24455"></span>24455</td>
 <td class="instruction">LD DE,56990</td>
-<td class="comment-1" rowspan="1"><span class="register">DE</span>=<a href="49629.html#56990">56990</a>.</td>
+<td class="comment-1" rowspan="1"><span class="register">DE</span>=<a href="56990.html">56990</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -436,14 +436,9 @@ Calculate the base address for this room's colour attributes. Each room has 32 b
 </tr>
 <tr>
 <td class="asm-label"></td>
-<td class="address-1"><span id="24460"></span>24460</td>
-<td class="instruction">NOP</td>
-<td class="comment-1" rowspan="5">Multiply by 32.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
 <td class="address-1"><span id="24461"></span>24461</td>
 <td class="instruction">ADD HL,HL</td>
+<td class="comment-1" rowspan="5">Multiply by 32.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -464,18 +459,18 @@ Calculate the base address for this room's colour attributes. Each room has 32 b
 <td class="asm-label"></td>
 <td class="address-1"><span id="24465"></span>24465</td>
 <td class="instruction">ADD HL,HL</td>
-<td class="comment-1" rowspan="1">Add the base address.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="24466"></span>24466</td>
 <td class="instruction">ADD HL,DE</td>
-<td class="comment-1" rowspan="2">Write the result to *<a href="24501.html">Saved_Pointer</a>.</td>
+<td class="comment-1" rowspan="1">Add the base address.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="24467"></span>24467</td>
 <td class="instruction">LD (24501),HL</td>
+<td class="comment-1" rowspan="1">Write the result to *<a href="24501.html">Saved_Pointer</a>.</td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
@@ -506,22 +501,32 @@ Wait for the next interrupt frame, then transfer the completed screen buffer to 
 <td class="comment-1" rowspan="1">Disable interrupts.</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="24473"></span>
+<div class="comments">
+<div class="paragraph">
+Set up printing the room to the screen buffer.
+</div>
+</div>
+</td>
+</tr>
+<tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="24473"></span>24473</td>
 <td class="instruction">LD B,22</td>
-<td class="comment-1" rowspan="1"><span class="register">B</span>=22.</td>
+<td class="comment-1" rowspan="1">Set a counter in <span class="register">B</span> for 22 rows to print.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="24475"></span>24475</td>
 <td class="instruction">LD HL,49152</td>
-<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="49152.html">RoomBuffer</a>.</td>
+<td class="comment-1" rowspan="1">Point <span class="register">HL</span> at <a href="49152.html">RoomBuffer</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="24478"></span>24478</td>
-<td class="instruction">JP <a href="25656.html">Draw_Level_Rows</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="25656.html">Draw_Level_Rows</a>.</td>
+<td class="instruction">JP <a href="25656.html">DrawRows_Room</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="25656.html">DrawRows_Room</a>.</td>
 </tr>
 </table>
 <table class="asm-navigation">

@@ -53,6 +53,10 @@ The following byte selects which tile set to use — 01 for the default set at <
 <th colspan="2">Input</th>
 </tr>
 <tr>
+<td class="register">DE</td>
+<td class="register-desc">Tile counter</td>
+</tr>
+<tr>
 <td class="register">HL</td>
 <td class="register-desc">The room data pointer</td>
 </tr>
@@ -75,7 +79,7 @@ The following byte selects which tile set to use — 01 for the default set at <
 <td class="asm-label"></td>
 <td class="address-1"><span id="5e74"></span>5E74</td>
 <td class="instruction">INC HL</td>
-<td class="comment-1" rowspan="1">Increment the room data pointer by one.</td>
+<td class="comment-1" rowspan="1">Increment the room data pointer by one to move past the command byte.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -113,7 +117,7 @@ Tile set 02: switch to the alternate tile set.
 <td class="asm-label"></td>
 <td class="address-1"><span id="5e7e"></span>5E7E</td>
 <td class="instruction">PUSH HL</td>
-<td class="comment-1" rowspan="1">Stash the room data pointer on the stack.</td>
+<td class="comment-1" rowspan="1">Stash the room data pointer on the stack temporarily.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -152,7 +156,7 @@ Tile set 01: switch back to the default tile set.
 <td class="asm-label">Set_DefaultTileSet</td>
 <td class="address-2"><span id="5e88"></span>5E88</td>
 <td class="instruction">PUSH HL</td>
-<td class="comment-1" rowspan="1">Stash the room data pointer on the stack.</td>
+<td class="comment-1" rowspan="1">Stash the room data pointer on the stack temporarily.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -175,7 +179,7 @@ Tile set 01: switch back to the default tile set.
 <td class="asm-label"></td>
 <td class="address-1"><span id="5e90"></span>5E90</td>
 <td class="instruction">JR <a href="5E24.html#5e55">PopulateRoomBuffer_ParseByte</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="5E24.html#5e55">PopulateRoomBuffer_ParseByte</a> to continue parsing.</td>
+<td class="comment-1" rowspan="1">Jump back to <a href="5E24.html#5e55">PopulateRoomBuffer_ParseByte</a> to continue parsing.</td>
 </tr>
 </table>
 <table class="asm-navigation">

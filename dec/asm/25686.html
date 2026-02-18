@@ -33,33 +33,43 @@ Next: <a href="25728.html">25728</a>
 </td>
 </tr>
 </table>
-<div class="description">25686: Draw Level Row</div>
+<div class="description">25686: Draw Room Row</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
 <div class="details">
 <div class="paragraph">
-Used by the routine at <a href="25656.html">Draw_Level_Rows</a>.
+Used by the routine at <a href="25656.html">DrawRows_Room</a>.
 </div>
 </div>
+<table class="input">
+<tr class="asm-input-header">
+<th colspan="2">Input</th>
+</tr>
+<tr>
+<td class="register">HL</td>
+<td class="register-desc">Pointer to the room buffer row</td>
+</tr>
+</table>
 </td>
 </tr>
 <tr>
-<td class="asm-label">DrawLevelRow</td>
+<td class="asm-label">DrawRow_Room</td>
 <td class="address-2"><span id="25686"></span>25686</td>
 <td class="instruction">LD B,8</td>
-<td class="comment-1" rowspan="1"><span class="register">B</span>=8.</td>
+<td class="comment-1" rowspan="1">Set a counter in <span class="register">B</span> for 8 pixel lines.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25688"></span>25688</td>
 <td class="instruction">PUSH HL</td>
-<td class="comment-1" rowspan="3">Stash <span class="register">HL</span>, <span class="register">BC</span> and <span class="register">HL</span> on the stack.</td>
+<td class="comment-1" rowspan="1">Stash the room buffer pointer on the stack.</td>
 </tr>
 <tr>
-<td class="asm-label">DrawLevelRow_0</td>
+<td class="asm-label">DrawRoomRow_PixelLoop</td>
 <td class="address-2"><span id="25689"></span>25689</td>
 <td class="instruction">PUSH BC</td>
+<td class="comment-1" rowspan="2">Stash the line counter and room buffer pointer on the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -70,37 +80,35 @@ Used by the routine at <a href="25656.html">Draw_Level_Rows</a>.
 <td class="asm-label"></td>
 <td class="address-1"><span id="25691"></span>25691</td>
 <td class="instruction">LD D,H</td>
-<td class="comment-1" rowspan="1"><span class="register">D</span>=<span class="register">H</span>.</td>
+<td class="comment-1" rowspan="2">Copy the room buffer pointer to <span class="register">DE</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25692"></span>25692</td>
 <td class="instruction">LD E,L</td>
-<td class="comment-1" rowspan="1"><span class="register">E</span>=<span class="register">L</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25693"></span>25693</td>
 <td class="instruction">RES 7,D</td>
-<td class="comment-1" rowspan="1">Reset bit 7 of <span class="register">D</span>.</td>
+<td class="comment-1" rowspan="1">Reset bit 7 of <span class="register">D</span> to convert from a room buffer address to a screen buffer address.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25695"></span>25695</td>
 <td class="instruction">LD BC,32</td>
-<td class="comment-1" rowspan="1"><span class="register">BC</span>=0032.</td>
+<td class="comment-1" rowspan="2">Copy 0032 bytes of data from the room buffer to the screen buffer.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25698"></span>25698</td>
 <td class="instruction">LDIR</td>
-<td class="comment-1" rowspan="1">LDIR.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25700"></span>25700</td>
 <td class="instruction">POP HL</td>
-<td class="comment-1" rowspan="2">Restore <span class="register">HL</span> and <span class="register">BC</span> from the stack.</td>
+<td class="comment-1" rowspan="2">Restore the room buffer pointer and line counter from the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -111,19 +119,19 @@ Used by the routine at <a href="25656.html">Draw_Level_Rows</a>.
 <td class="asm-label"></td>
 <td class="address-1"><span id="25702"></span>25702</td>
 <td class="instruction">INC H</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">H</span> by one.</td>
+<td class="comment-1" rowspan="1">Move down one pixel line in the room buffer.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25703"></span>25703</td>
-<td class="instruction">DJNZ <a href="25686.html#25689">DrawLevelRow_0</a></td>
-<td class="comment-1" rowspan="1">Decrease counter by one and loop back to <a href="25686.html#25689">DrawLevelRow_0</a> until counter is zero.</td>
+<td class="instruction">DJNZ <a href="25686.html#25689">DrawRoomRow_PixelLoop</a></td>
+<td class="comment-1" rowspan="1">Decrease the line counter by one and loop back to <a href="25686.html#25689">DrawRoomRow_PixelLoop</a> until all 8 pixel lines are copied.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25705"></span>25705</td>
 <td class="instruction">POP HL</td>
-<td class="comment-1" rowspan="1">Restore <span class="register">HL</span> from the stack.</td>
+<td class="comment-1" rowspan="1">Restore the original room buffer pointer from the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -135,7 +143,7 @@ Used by the routine at <a href="25656.html">Draw_Level_Rows</a>.
 <td class="asm-label"></td>
 <td class="address-1"><span id="25707"></span>25707</td>
 <td class="instruction">RRCA</td>
-<td class="comment-1" rowspan="3">RRCA.</td>
+<td class="comment-1" rowspan="3">Rotate right three positions to extract the character row.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -157,7 +165,7 @@ Used by the routine at <a href="25656.html">Draw_Level_Rows</a>.
 <td class="asm-label"></td>
 <td class="address-1"><span id="25712"></span>25712</td>
 <td class="instruction">OR %11011000</td>
-<td class="comment-1" rowspan="1">Set bits 3-4, 6-7.</td>
+<td class="comment-1" rowspan="1">Set bits 3-4, 6-7 to form the attribute buffer high byte.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -187,7 +195,7 @@ Used by the routine at <a href="25656.html">Draw_Level_Rows</a>.
 <td class="asm-label"></td>
 <td class="address-1"><span id="25719"></span>25719</td>
 <td class="instruction">OR %01011000</td>
-<td class="comment-1" rowspan="1">Set bits 3-4, 6.</td>
+<td class="comment-1" rowspan="1">Set bits 3-4, 6 to form the destination attribute buffer high byte.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -199,13 +207,12 @@ Used by the routine at <a href="25656.html">Draw_Level_Rows</a>.
 <td class="asm-label"></td>
 <td class="address-1"><span id="25722"></span>25722</td>
 <td class="instruction">LD BC,32</td>
-<td class="comment-1" rowspan="1"><span class="register">BC</span>=0032.</td>
+<td class="comment-1" rowspan="2">Copy 0032 bytes to the attribute buffer.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25725"></span>25725</td>
 <td class="instruction">LDIR</td>
-<td class="comment-1" rowspan="1">LDIR.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>

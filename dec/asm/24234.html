@@ -53,6 +53,10 @@ The following two bytes specify the repeat count and the tile character to draw.
 <th colspan="2">Input</th>
 </tr>
 <tr>
+<td class="register">DE</td>
+<td class="register-desc">Tile counter</td>
+</tr>
+<tr>
 <td class="register">HL</td>
 <td class="register-desc">Pointer to the room data</td>
 </tr>
@@ -69,7 +73,7 @@ The following two bytes specify the repeat count and the tile character to draw.
 <td class="asm-label"></td>
 <td class="address-1"><span id="24235"></span>24235</td>
 <td class="instruction">LD A,(HL)</td>
-<td class="comment-1" rowspan="2"><span class="register">B</span>=*<span class="register">HL</span>.</td>
+<td class="comment-1" rowspan="2">Fetch the repeat counter from *<span class="register">HL</span> and store it in <span class="register">B</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -86,13 +90,13 @@ The following two bytes specify the repeat count and the tile character to draw.
 <td class="asm-label"></td>
 <td class="address-1"><span id="24238"></span>24238</td>
 <td class="instruction">LD A,(HL)</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">HL</span>.</td>
+<td class="comment-1" rowspan="1">Fetch the tile ID from *<span class="register">HL</span> and store it in <span class="register">A</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="24239"></span>24239</td>
 <td class="instruction">INC HL</td>
-<td class="comment-1" rowspan="1">Increment the room data pointer by one.</td>
+<td class="comment-1" rowspan="1">Increment the room data pointer by one to move past the command bytes.</td>
 </tr>
 <tr>
 <td class="asm-label">TileWithAttribute_Loop</td>
@@ -158,13 +162,13 @@ The following two bytes specify the repeat count and the tile character to draw.
 <td class="asm-label"></td>
 <td class="address-1"><span id="24254"></span>24254</td>
 <td class="instruction">DEC DE</td>
-<td class="comment-1" rowspan="1">Decrease <span class="register">DE</span> by one.</td>
+<td class="comment-1" rowspan="1">Decrease the tile counter by one.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="24255"></span>24255</td>
 <td class="instruction">LD A,E</td>
-<td class="comment-1" rowspan="3">Jump back to <a href="24100.html#24173">PopulateRoomBuffer_Error</a> if <span class="register">DE</span> is zero.</td>
+<td class="comment-1" rowspan="3">Jump back to <a href="24100.html#24173">PopulateRoomBuffer_Error</a> if the tile counter is zero.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>

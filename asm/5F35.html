@@ -400,7 +400,7 @@ Attribute overlay command 24: end of attribute data. Finalises the room setup by
 <span id="5f83"></span>
 <div class="comments">
 <div class="paragraph">
-Calculate the base address for this room's colour attributes. Each room has 20 bytes of attribute data stored sequentially from <a href="C1DD.html#de9e">DE9E</a>, so multiply the zero-indexed room number by 20 and add the base.
+Calculate the base address for this room's colour attributes. Each room has 20 bytes of attribute data stored sequentially from <a href="DE9E.html">DE9E</a>, so multiply the zero-indexed room number by 20 and add the base.
 </div>
 </div>
 </td>
@@ -421,7 +421,7 @@ Calculate the base address for this room's colour attributes. Each room has 20 b
 <td class="asm-label"></td>
 <td class="address-1"><span id="5f87"></span>5F87</td>
 <td class="instruction">LD DE,$DE9E</td>
-<td class="comment-1" rowspan="1"><span class="register">DE</span>=<a href="C1DD.html#de9e">DE9E</a>.</td>
+<td class="comment-1" rowspan="1"><span class="register">DE</span>=<a href="DE9E.html">DE9E</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -436,14 +436,9 @@ Calculate the base address for this room's colour attributes. Each room has 20 b
 </tr>
 <tr>
 <td class="asm-label"></td>
-<td class="address-1"><span id="5f8c"></span>5F8C</td>
-<td class="instruction">NOP</td>
-<td class="comment-1" rowspan="5">Multiply by 20.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
 <td class="address-1"><span id="5f8d"></span>5F8D</td>
 <td class="instruction">ADD HL,HL</td>
+<td class="comment-1" rowspan="5">Multiply by 20.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -464,18 +459,18 @@ Calculate the base address for this room's colour attributes. Each room has 20 b
 <td class="asm-label"></td>
 <td class="address-1"><span id="5f91"></span>5F91</td>
 <td class="instruction">ADD HL,HL</td>
-<td class="comment-1" rowspan="1">Add the base address.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="5f92"></span>5F92</td>
 <td class="instruction">ADD HL,DE</td>
-<td class="comment-1" rowspan="2">Write the result to *<a href="5FB5.html">Saved_Pointer</a>.</td>
+<td class="comment-1" rowspan="1">Add the base address.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="5f93"></span>5F93</td>
 <td class="instruction">LD ($5FB5),HL</td>
+<td class="comment-1" rowspan="1">Write the result to *<a href="5FB5.html">Saved_Pointer</a>.</td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
@@ -506,22 +501,32 @@ Wait for the next interrupt frame, then transfer the completed screen buffer to 
 <td class="comment-1" rowspan="1">Disable interrupts.</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="5f99"></span>
+<div class="comments">
+<div class="paragraph">
+Set up printing the room to the screen buffer.
+</div>
+</div>
+</td>
+</tr>
+<tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="5f99"></span>5F99</td>
 <td class="instruction">LD B,$16</td>
-<td class="comment-1" rowspan="1"><span class="register">B</span>=16.</td>
+<td class="comment-1" rowspan="1">Set a counter in <span class="register">B</span> for 16 rows to print.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="5f9b"></span>5F9B</td>
 <td class="instruction">LD HL,$C000</td>
-<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="C000.html">RoomBuffer</a>.</td>
+<td class="comment-1" rowspan="1">Point <span class="register">HL</span> at <a href="C000.html">RoomBuffer</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="5f9e"></span>5F9E</td>
-<td class="instruction">JP <a href="6438.html">Draw_Level_Rows</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="6438.html">Draw_Level_Rows</a>.</td>
+<td class="instruction">JP <a href="6438.html">DrawRows_Room</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="6438.html">DrawRows_Room</a>.</td>
 </tr>
 </table>
 <table class="asm-navigation">

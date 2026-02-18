@@ -51,7 +51,17 @@ Fetch the current room number and set up the default tile and attribute data poi
 <td class="asm-label">PopulateRoomBuffer</td>
 <td class="address-2"><span id="24100"></span>24100</td>
 <td class="instruction">LD A,(24517)</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="24517.html">CurrentRoom</a>.</td>
+<td class="comment-1" rowspan="1">Load <span class="register">A</span> with *<a href="24517.html">CurrentRoom</a>.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="24103"></span>
+<div class="comments">
+<div class="paragraph">
+Initialise the room pointer/ default tile set.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -175,7 +185,7 @@ Initialise drawing state variables.
 <span id="24146"></span>
 <div class="comments">
 <div class="paragraph">
-Main room data parsing loop. Reads a command byte from the room data and dispatches to the appropriate handler based on its value.
+The main room data parsing loop. Reads a command byte from the room data and dispatches to the appropriate handler based on its value.
 </div>
 </div>
 </td>
@@ -184,7 +194,7 @@ Main room data parsing loop. Reads a command byte from the room data and dispatc
 <td class="asm-label"></td>
 <td class="address-1"><span id="24146"></span>24146</td>
 <td class="instruction">LD HL,(24515)</td>
-<td class="comment-1" rowspan="1"><span class="register">HL</span>=*<a href="24515.html">Pointer_CurrentRoomData</a>.</td>
+<td class="comment-1" rowspan="1">Fetch the *<a href="24515.html">Pointer_CurrentRoomData</a> and store it in <span class="register">HL</span>.</td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">

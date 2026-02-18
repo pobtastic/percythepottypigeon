@@ -33,7 +33,7 @@ Next: <a href="6456.html">6456</a>
 </td>
 </tr>
 </table>
-<div class="description">6438: Draw Level Rows</div>
+<div class="description">6438: Draw Room Rows</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
@@ -42,16 +42,29 @@ Next: <a href="6456.html">6456</a>
 Used by the routine at <a href="5F35.html">DrawRoomTile</a>.
 </div>
 <div class="paragraph">
-Loop B times: call <a href="6456.html">DrawLevelRow</a> (draw row), advance <span class="register">HL</span>. Then call <a href="63BB.html">Print_HUD_Header</a> if header not drawn, and <a href="63BB.html#63cb">Print_HUD_Header_0</a> to colour bottom rows.
+Loop B times: call <a href="6456.html">DrawRow_Room</a> (draw row), advance <span class="register">HL</span>. Then call <a href="63BB.html">Print_HUD_Header</a> if header not drawn, and <a href="63BB.html#63cb">Print_HUD_Header_0</a> to colour bottom rows.
 </div>
 </div>
+<table class="input">
+<tr class="asm-input-header">
+<th colspan="2">Input</th>
+</tr>
+<tr>
+<td class="register">B</td>
+<td class="register-desc">Number of rows to draw</td>
+</tr>
+<tr>
+<td class="register">HL</td>
+<td class="register-desc">Buffer to use</td>
+</tr>
+</table>
 </td>
 </tr>
 <tr>
-<td class="asm-label">Draw_Level_Rows</td>
+<td class="asm-label">DrawRows_Room</td>
 <td class="address-2"><span id="6438"></span>6438</td>
 <td class="instruction">PUSH BC</td>
-<td class="comment-1" rowspan="2">Stash <span class="register">BC</span> and <span class="register">HL</span> on the stack.</td>
+<td class="comment-1" rowspan="2">Stash the row counter and room buffer on the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -61,19 +74,29 @@ Loop B times: call <a href="6456.html">DrawLevelRow</a> (draw row), advance <spa
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="643a"></span>643A</td>
-<td class="instruction">CALL <a href="6456.html">DrawLevelRow</a></td>
-<td class="comment-1" rowspan="1">Call <a href="6456.html">DrawLevelRow</a>.</td>
+<td class="instruction">CALL <a href="6456.html">DrawRow_Room</a></td>
+<td class="comment-1" rowspan="1">Call <a href="6456.html">DrawRow_Room</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="643d"></span>643D</td>
 <td class="instruction">POP HL</td>
-<td class="comment-1" rowspan="2">Restore <span class="register">HL</span> and <span class="register">BC</span> from the stack.</td>
+<td class="comment-1" rowspan="2">Restore the room buffer and row countr from the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="643e"></span>643E</td>
 <td class="instruction">POP BC</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="643f"></span>
+<div class="comments">
+<div class="paragraph">
+Advance the room buffer pointer to the next character row. Each row is 20 bytes wide; if adding 20 to <span class="register">L</span> overflows, carry into <span class="register">H</span> by adding 08 (into the next screen third).
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -95,12 +118,12 @@ Loop B times: call <a href="6456.html">DrawLevelRow</a> (draw row), advance <spa
 <td class="asm-label"></td>
 <td class="address-1"><span id="6443"></span>6443</td>
 <td class="instruction">OR A</td>
-<td class="comment-1" rowspan="2">Jump to <a href="6438.html#644a">Draw_Level_Rows_0</a> if <span class="register">A</span> is non-zero.</td>
+<td class="comment-1" rowspan="2">Jump to <a href="6438.html#644a">DrawRoomRows_Next</a> if there was no overflow.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6444"></span>6444</td>
-<td class="instruction">JR NZ,<a href="6438.html#644a">Draw_Level_Rows_0</a></td>
+<td class="instruction">JR NZ,<a href="6438.html#644a">DrawRoomRows_Next</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -119,10 +142,10 @@ Loop B times: call <a href="6456.html">DrawLevelRow</a> (draw row), advance <spa
 <td class="instruction">LD H,A</td>
 </tr>
 <tr>
-<td class="asm-label">Draw_Level_Rows_0</td>
+<td class="asm-label">DrawRoomRows_Next</td>
 <td class="address-2"><span id="644a"></span>644A</td>
-<td class="instruction">DJNZ <a href="6438.html#6438">Draw_Level_Rows</a></td>
-<td class="comment-1" rowspan="1">Decrease counter by one and loop back to <a href="6438.html">Draw_Level_Rows</a> until counter is zero.</td>
+<td class="instruction">DJNZ <a href="6438.html#6438">DrawRows_Room</a></td>
+<td class="comment-1" rowspan="1">Decrease the row counter by one and loop back to <a href="6438.html">DrawRows_Room</a> until all of the rows have been drawn to the screen buffer.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
