@@ -6,7 +6,7 @@
 > $4000 @start
 > $4000 @expand=#DEF(#POKE #LINK:Pokes)
 > $4000 @expand=#DEF(#ANIMATE(delay,count=$50)(name=$a)*$name-1,$delay;#FOR$02,$count||x|$name-x|;||($name-animation))
-> $4000 @expand=#DEF(#ROOM(id)#SIM(start=$5DD0,stop=$6559) #UDGTABLE { #POKES$5FC5,$id;$5FA1,$01 #SIM(start=$65A3,stop=$65A6,sp=$5BFE) #SCR$02(room-$id) } TABLE#)
+> $4000 @expand=#DEF(#ROOM(id)#SIM(start=$5DD0,stop=$5DDD)#UDGTABLE { #POKES$5FC5,$id;$5FA1,$01#SIM(start=$65A3,stop=$65A6,sp=$5BFE)#SCR$02(room-$id) } TABLE#)
 > $4000 @set-handle-unsupported-macros=1
 b $4000 Loading Screen
 D $4000 #UDGTABLE { =h Percy the Potty Pigeon Loading Screen. } { #SCR$02(loading) } TABLE#
@@ -26,7 +26,7 @@ i $5BFF
 c $5DC0 Game Initialise
 @ $5DC0 label=Game_Initialise
   $5DC0,$01 Disable interrupts.
-  $5DC1,$01 #REGa=#N$00.
+  $5DC1,$01 Set #REGa to #N$00 for clearing the flags below.
 N $5DC2 Put the stack pointer somewhere safe.
   $5DC2,$03 #REGsp=#R$5BFE.
   $5DC5,$06 Write #N$00 to; #LIST
@@ -36,6 +36,7 @@ N $5DC2 Put the stack pointer somewhere safe.
   $5DCB,$02 Set border to: #INK$00.
 N $5DCD #HTML(Open channel #N$02 (upper screen) via <a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/1601.html">CHAN_OPEN</a>.)
   $5DCD,$03 #HTML(Call <a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/1601.html">CHAN_OPEN</a>.)
+N $5DD0 Clear the screen.
   $5DD0,$0D Clear the screen and attribute buffers by filling #N$1AFF bytes
 . from #N$5AFE downwards with #N$00.
 N $5DDD #HTML(Sets the border colour to use when calling
@@ -88,7 +89,8 @@ c $5E24 Populate Room Buffer
 @ $5E24 label=PopulateRoomBuffer
 D $5E24 Fetch the current room number and set up the default tile and attribute
 . data pointers.
-  $5E24,$03 #REGa=*#R$5FC5.
+  $5E24,$03 Load #REGa with *#R$5FC5.
+N $5E27 Initialise the room pointer/ default tile set.
   $5E27,$06 Write #R$83A9 to *#R$5FC3.
   $5E2D,$06 Write #R$9BAA to *#R$5FC1.
 N $5E33 If this is not room #N$00, look up the correct room data pointer.
@@ -99,9 +101,9 @@ N $5E44 Initialise drawing state variables.
   $5E44,$05 Write #N$FF to *#R$5FBB.
   $5E49,$06 Write #N($00FF,$04,$04) to *#R$5FB9.
   $5E4F,$03 #REGde=#N$02C1.
-N $5E52 Main room data parsing loop. Reads a command byte from the room data and
-. dispatches to the appropriate handler based on its value.
-  $5E52,$03 #REGhl=*#R$5FC3.
+N $5E52 The main room data parsing loop. Reads a command byte from the room
+. data and dispatches to the appropriate handler based on its value.
+  $5E52,$03 Fetch the *#R$5FC3 and store it in #REGhl.
 @ $5E55 label=PopulateRoomBuffer_ParseByte
   $5E55,$01 Fetch the room data byte from the pointer.
   $5E56,$03 Jump to #R$5E6F if the room data byte is #N$00.
@@ -126,31 +128,36 @@ D $5E72 Command #N$04: Switch the tile set.
 .
 . The following byte selects which tile set to use — #N$01 for the default set
 . at #R$9BAA, #N$02 for the alternate set at #R$A36A.
+R $5E72 DE Tile counter
 R $5E72 HL The room data pointer
   $5E72,$01 Increment the room data pointer by one.
   $5E73,$01 Fetch the tile set byte.
-  $5E74,$01 Increment the room data pointer by one.
+  $5E74,$01 Increment the room data pointer by one to move past the command
+. byte.
   $5E75,$04 Jump to #R$5E88 if the tile set byte is equal to #N$01.
   $5E79,$05 Jump to #R$5FE7 if the tile set byte is not equal to #N$02.
 N $5E7E Tile set #N$02: switch to the alternate tile set.
-  $5E7E,$01 Stash the room data pointer on the stack.
+  $5E7E,$01 Stash the room data pointer on the stack temporarily.
   $5E7F,$06 Write #R$A36A to *#R$5FC1.
   $5E85,$01 Restore the room data pointer from the stack.
   $5E86,$02 Jump back to #R$5E55 to continue parsing.
 N $5E88 Tile set #N$01: switch back to the default tile set.
 @ $5E88 label=Set_DefaultTileSet
-  $5E88,$01 Stash the room data pointer on the stack.
+  $5E88,$01 Stash the room data pointer on the stack temporarily.
   $5E89,$06 Write #R$9BAA to *#R$5FC1.
   $5E8F,$01 Restore the room data pointer from the stack.
-  $5E90,$02 Jump to #R$5E55 to continue parsing.
+  $5E90,$02 Jump back to #R$5E55 to continue parsing.
 
 c $5E92 Command #N$01: Draw Repeated Tile
 @ $5E92 label=Command01_RepeatedTile
 D $5E92 Command #N$01: Draw a repeated tile. The following byte specifies how
 . many times to repeat the current tile.
+R $5E92 DE Tile counter
+R $5E92 HL The room data pointer
   $5E92,$01 Increment the room data pointer by one.
   $5E93,$01 Fetch the tile byte/ repeat counter.
-  $5E94,$01 Increment the room data pointer by one.
+  $5E94,$01 Increment the room data pointer by one to move past the command
+. byte.
   $5E95,$01 Set the repeat counter in #REGb.
 @ $5E96 label=RepeatedTile_Loop
   $5E96,$03 Stash the room data pointer, tile counter and repeat counter on the
@@ -159,8 +166,8 @@ D $5E92 Command #N$01: Draw a repeated tile. The following byte specifies how
   $5E9B,$03 Call #R$5F35.
   $5E9E,$03 Restore the repeat counter, tile counter and room data pointer from
 . the stack.
-  $5EA1,$01 Decrease #REGde by one.
-  $5EA2,$04 Jump to #R$5E6D if #REGde is zero.
+  $5EA1,$01 Decrease the tile counter by one.
+  $5EA2,$04 Jump to #R$5E6D if the tile counter is zero.
   $5EA6,$02 Decrease the repeat counter by one and loop back to #R$5E96 until
 . all repeats are processed.
   $5EA8,$02 Jump to #R$5E55 to continue parsing.
@@ -171,12 +178,14 @@ D $5EAA Command #N$02: Draw a tile with an explicit attribute.
 .
 . The following two bytes specify the repeat count and the tile character to
 . draw.
+R $5EAA DE Tile counter
 R $5EAA HL Pointer to the room data
   $5EAA,$01 Increment the room data pointer by one.
-  $5EAB,$02 #REGb=*#REGhl.
+  $5EAB,$02 Fetch the repeat counter from *#REGhl and store it in #REGb.
   $5EAD,$01 Increment the room data pointer by one.
-  $5EAE,$01 #REGa=*#REGhl.
-  $5EAF,$01 Increment the room data pointer by one.
+  $5EAE,$01 Fetch the tile ID from *#REGhl and store it in #REGa.
+  $5EAF,$01 Increment the room data pointer by one to move past the command
+. bytes.
 @ $5EB0 label=TileWithAttribute_Loop
   $5EB0,$04 Stash the tile character, repeat counter, tile counter and room data
 . pointer on the stack.
@@ -185,8 +194,8 @@ R $5EAA HL Pointer to the room data
   $5EB9,$04 Restore the room data pointer, tile counter, repeat counter and tile
 . character from the stack.
   $5EBD,$01 Switch to shadow #REGaf to preserve the tile character.
-  $5EBE,$01 Decrease #REGde by one.
-  $5EBF,$04 Jump back to #R$5E6D if #REGde is zero.
+  $5EBE,$01 Decrease the tile counter by one.
+  $5EBF,$04 Jump back to #R$5E6D if the tile counter is zero.
   $5EC3,$01 Switch back to main #REGaf to retrieve the tile character.
   $5EC4,$02 Decrease the repeat counter by one and loop back to #R$5EB0 until
 . all tiles are drawn.
@@ -196,8 +205,11 @@ c $5EC8 Command #N$08 (Or Higher): Single Tile
 @ $5EC8 label=Command08+_SingleTile
 D $5EC8 Command #N$08+: draw a single tile. The command byte itself is the tile
 . character to draw.
-  $5EC8,$01 #REGa=*#REGhl.
-  $5EC9,$01 Increment the room data pointer by one.
+R $5EC8 DE Tile counter
+R $5EC8 HL Pointer to the room data
+  $5EC8,$01 Fetch the tile ID from *#REGhl and store it in #REGa.
+  $5EC9,$01 Increment the room data pointer by one to move past the command
+. byte.
   $5ECA,$02 Stash the room data pointer and tile counter on the stack.
   $5ECC,$02 #REGd=#N$00 (flag: draw tile to screen buffer).
   $5ECE,$03 Call #R$5F35.
@@ -216,6 +228,8 @@ D $5EDB Command #N$03: fill the attribute buffer with a single colour, then
 . { #N$24: end of attribute data }
 . { Any other value: set a single attribute cell directly }
 . LIST#
+R $5EDB DE Tile counter
+R $5EDB HL Pointer to the room data
   $5EDB,$01 Increment the room data pointer by one.
   $5EDC,$01 #REGc=*#REGhl.
 N $5EDD Fill #N$02C0 attribute cells at #R$D800 with the base colour.
@@ -347,17 +361,18 @@ N $5F83 Calculate the base address for this room's colour attributes. Each room
   $5F83,$03 #REGa=*#R$5FC5 (current room number).
   $5F86,$01 Decrease by one to make zero-indexed.
   $5F87,$03 #REGde=#R$DE9E.
-  $5F8A,$02 Transfer the room index to #REGhl.
-  $5F8C,$05 Multiply by #N$20.
-  $5F91,$01 Add the base address.
-  $5F92,$04 Write the result to *#R$5FB5.
+  $5F8A,$03 Transfer the room index to #REGhl.
+  $5F8D,$05 Multiply by #N$20.
+  $5F92,$01 Add the base address.
+  $5F93,$03 Write the result to *#R$5FB5.
 N $5F96 Wait for the next interrupt frame, then transfer the completed screen
 . buffer to the display.
   $5F96,$01 Enable interrupts.
   $5F97,$01 Halt operation (suspend CPU until the next interrupt).
   $5F98,$01 Disable interrupts.
-  $5F99,$02 #REGb=#N$16.
-  $5F9B,$03 #REGhl=#R$C000.
+N $5F99 Set up printing the room to the screen buffer.
+  $5F99,$02 Set a counter in #REGb for #N$16 rows to print.
+  $5F9B,$03 Point #REGhl at #R$C000.
   $5F9E,$03 Jump to #R$6438.
 
 g $5FA1 Header Drawn Flag
@@ -552,45 +567,56 @@ t $63E9 Messaging: Header
   $6425,$01
   $6426,$12
 
-c $6438 Draw Level Rows
-@ $6438 label=Draw_Level_Rows
+c $6438 Draw Room Rows
+@ $6438 label=DrawRows_Room
 D $6438 Loop B times: call #R$6456 (draw row), advance #REGhl. Then call #R$63BB
 . if header not drawn, and #R$63CB to colour bottom rows.
-  $6438,$02 Stash #REGbc and #REGhl on the stack.
+R $6438 B Number of rows to draw
+R $6438 HL Buffer to use
+  $6438,$02 Stash the row counter and room buffer on the stack.
   $643A,$03 Call #R$6456.
-  $643D,$02 Restore #REGhl and #REGbc from the stack.
+  $643D,$02 Restore the room buffer and row countr from the stack.
+N $643F Advance the room buffer pointer to the next character row. Each row is
+. #N$20 bytes wide; if adding #N$20 to #REGl overflows, carry into #REGh by
+. adding #N$08 (into the next screen third).
   $643F,$04 #REGl+=#N$20.
-  $6443,$03 Jump to #R$644A if #REGa is non-zero.
+  $6443,$03 Jump to #R$644A if there was no overflow.
   $6446,$04 #REGh+=#N$08.
-  $644A,$02 Decrease counter by one and loop back to #R$6438 until counter is zero.
+@ $644A label=DrawRoomRows_Next
+  $644A,$02 Decrease the row counter by one and loop back to #R$6438 until all
+. of the rows have been drawn to the screen buffer.
   $644C,$07 Call #R$63BB if *#R$5FA1 is zero.
   $6453,$03 Jump to #R$63CB.
 
-c $6456 Draw Level Row
-@ $6456 label=DrawLevelRow
-  $6456,$02 #REGb=#N$08.
-  $6458,$03 Stash #REGhl, #REGbc and #REGhl on the stack.
-  $645B,$01 #REGd=#REGh.
-  $645C,$01 #REGe=#REGl.
-  $645D,$02 Reset bit 7 of #REGd.
-  $645F,$03 #REGbc=#N($0020,$04,$04).
-  $6462,$02 LDIR.
-  $6464,$02 Restore #REGhl and #REGbc from the stack.
-  $6466,$01 Increment #REGh by one.
-  $6467,$02 Decrease counter by one and loop back to #R$6459 until counter is zero.
-  $6469,$01 Restore #REGhl from the stack.
+c $6456 Draw Room Row
+@ $6456 label=DrawRow_Room
+R $6456 HL Pointer to the room buffer row
+  $6456,$02 Set a counter in #REGb for #N$08 pixel lines.
+  $6458,$01 Stash the room buffer pointer on the stack.
+@ $6459 label=DrawRoomRow_PixelLoop
+  $6459,$02 Stash the line counter and room buffer pointer on the stack.
+  $645B,$02 Copy the room buffer pointer to #REGde.
+  $645D,$02 Reset bit 7 of #REGd to convert from a room buffer address to a
+. screen buffer address.
+  $645F,$05 Copy #N($0020,$04,$04) bytes of data from the room buffer to the
+. screen buffer.
+  $6464,$02 Restore the room buffer pointer and line counter from the stack.
+  $6466,$01 Move down one pixel line in the room buffer.
+  $6467,$02 Decrease the line counter by one and loop back to #R$6459 until all
+. #N$08 pixel lines are copied.
+  $6469,$01 Restore the original room buffer pointer from the stack.
   $646A,$01 #REGa=#REGh.
-  $646B,$03 RRCA.
+  $646B,$03 Rotate right three positions to extract the character row.
   $646E,$02,b$01 Keep only bits 0-1.
-  $6470,$02,b$01 Set bits 3-4, 6-7.
+  $6470,$02,b$01 Set bits 3-4, 6-7 to form the attribute buffer high byte.
   $6472,$01 #REGh=#REGa.
   $6473,$01 #REGe=#REGl.
   $6474,$01 #REGa=#REGh.
   $6475,$02,b$01 Keep only bits 0-1.
-  $6477,$02,b$01 Set bits 3-4, 6.
+  $6477,$02,b$01 Set bits 3-4, 6 to form the destination attribute buffer high
+. byte.
   $6479,$01 #REGd=#REGa.
-  $647A,$03 #REGbc=#N($0020,$04,$04).
-  $647D,$02 LDIR.
+  $647A,$05 Copy #N($0020,$04,$04) bytes to the attribute buffer.
   $647F,$01 Return.
 
 c $6480 Handle Title Screen
@@ -964,6 +990,8 @@ c $720F Clear Or Update Buffer?
 D $720F Optionally write #R$5FB1; if #R$5FBB clear #N$0800 bytes at #R$E800;
 . then use #R$5FB1 and #R$5FC5.
 
+b $7AC3
+
 b $83A9 Room #N$00
 @ $83A9 label=Room00
 D $83A9 #ROOM$00
@@ -1310,6 +1338,8 @@ N $C200 Set the lower screen to the default #N$02 lines.
   $C200,$05 #HTML(Write #N$02 to
 . *<a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/5C6B.html">DF_SZ</a>.)
   $C205,$03 Jump to #R$5DC0.
+
+b $DE9E
 
 g $E000 Sprite Buffer
 @ $E000 label=SpriteBuffer

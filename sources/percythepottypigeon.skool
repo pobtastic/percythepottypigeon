@@ -2,7 +2,7 @@
 @start
 @expand=#DEF(#POKE #LINK:Pokes)
 @expand=#DEF(#ANIMATE(delay,count=$50)(name=$a)*$name-1,$delay;#FOR$02,$count||x|$name-x|;||($name-animation))
-@expand=#DEF(#ROOM(id)#SIM(start=$5DD0,stop=$6559) #UDGTABLE { #POKES$5FC5,$id;$5FA1,$01 #SIM(start=$65A3,stop=$65A6,sp=$5BFE) #SCR$02(room-$id) } TABLE#)
+@expand=#DEF(#ROOM(id)#SIM(start=$5DD0,stop=$5DDD)#UDGTABLE { #POKES$5FC5,$id;$5FA1,$01#SIM(start=$65A3,stop=$65A6,sp=$5BFE)#SCR$02(room-$id) } TABLE#)
 @set-handle-unsupported-macros=1
 
 ; Loading Screen
@@ -244,7 +244,7 @@ i$5BFF
 ; Used by the routine at #R$C1DD.
 @label=Game_Initialise
 c$5DC0 DI              ; Disable interrupts.
- $5DC1 XOR A           ; #REGa=#N$00.
+ $5DC1 XOR A           ; Set #REGa to #N$00 for clearing the flags below.
 ; Put the stack pointer somewhere safe.
  $5DC2 LD SP,$5BFE     ; #REGsp=#R$5BFE.
  $5DC5 LD ($5FBC),A    ; {Write #N$00 to; #LIST
@@ -256,6 +256,7 @@ c$5DC0 DI              ; Disable interrupts.
 ; href="https://skoolkit.ca/disassemblies/rom/hex/asm/1601.html">CHAN_OPEN</a>.)
  $5DCD CALL $1601      ; #HTML(Call <a rel="noopener nofollow"
                        ; href="https://skoolkit.ca/disassemblies/rom/hex/asm/1601.html">CHAN_OPEN</a>.)
+; Clear the screen.
  $5DD0 LD HL,$5AFF     ; {Clear the screen and attribute buffers by filling #N$1AFF bytes
  $5DD3 LD DE,$5AFE     ; from #N$5AFE downwards with #N$00.
  $5DD6 LD (HL),$00     ;
@@ -320,7 +321,8 @@ c$5DC0 DI              ; Disable interrupts.
 ; Fetch the current room number and set up the default tile and attribute
 ; data pointers.
 @label=PopulateRoomBuffer
-c$5E24 LD A,($5FC5)  ; #REGa=*#R$5FC5.
+c$5E24 LD A,($5FC5)  ; Load #REGa with *#R$5FC5.
+; Initialise the room pointer/ default tile set.
  $5E27 LD HL,$83A9   ; {Write #R$83A9 to *#R$5FC3.
  $5E2A LD ($5FC3),HL ; }
  $5E2D LD HL,$9BAA   ; {Write #R$9BAA to *#R$5FC1.
@@ -340,9 +342,9 @@ c$5E24 LD A,($5FC5)  ; #REGa=*#R$5FC5.
  $5E49 LD HL,$00FF   ; {Write #N($00FF,$04,$04) to *#R$5FB9.
  $5E4C LD ($5FB9),HL ; }
  $5E4F LD DE,$02C1   ; #REGde=#N$02C1.
-; Main room data parsing loop. Reads a command byte from the room data and
-; dispatches to the appropriate handler based on its value.
- $5E52 LD HL,($5FC3) ; #REGhl=*#R$5FC3.
+; The main room data parsing loop. Reads a command byte from the room
+; data and dispatches to the appropriate handler based on its value.
+ $5E52 LD HL,($5FC3) ; Fetch the *#R$5FC3 and store it in #REGhl.
 ; This entry point is used by the routines at #R$5E72, #R$5E92, #R$5EAA and
 ; #R$5EC8.
 @label=PopulateRoomBuffer_ParseByte
@@ -381,28 +383,30 @@ c$5E24 LD A,($5FC5)  ; #REGa=*#R$5FC5.
 ; The following byte selects which tile set to use — #N$01 for the default set
 ; at #R$9BAA, #N$02 for the alternate set at #R$A36A.
 ;
+; DE Tile counter
 ; HL The room data pointer
 @label=Command04_SwitchTileSet
 c$5E72 INC HL        ; Increment the room data pointer by one.
  $5E73 LD A,(HL)     ; Fetch the tile set byte.
- $5E74 INC HL        ; Increment the room data pointer by one.
+ $5E74 INC HL        ; Increment the room data pointer by one to move past the command
+                     ; byte.
  $5E75 CP $01        ; {Jump to #R$5E88 if the tile set byte is equal to #N$01.
  $5E77 JR Z,$5E88    ; }
  $5E79 CP $02        ; {Jump to #R$5FE7 if the tile set byte is not equal to
  $5E7B JP NZ,$5FE7   ; #N$02.}
 ; Tile set #N$02: switch to the alternate tile set.
- $5E7E PUSH HL       ; Stash the room data pointer on the stack.
+ $5E7E PUSH HL       ; Stash the room data pointer on the stack temporarily.
  $5E7F LD HL,$A36A   ; {Write #R$A36A to *#R$5FC1.
  $5E82 LD ($5FC1),HL ; }
  $5E85 POP HL        ; Restore the room data pointer from the stack.
  $5E86 JR $5E55      ; Jump back to #R$5E55 to continue parsing.
 ; Tile set #N$01: switch back to the default tile set.
 @label=Set_DefaultTileSet
-*$5E88 PUSH HL       ; Stash the room data pointer on the stack.
+*$5E88 PUSH HL       ; Stash the room data pointer on the stack temporarily.
  $5E89 LD HL,$9BAA   ; {Write #R$9BAA to *#R$5FC1.
  $5E8C LD ($5FC1),HL ; }
  $5E8F POP HL        ; Restore the room data pointer from the stack.
- $5E90 JR $5E55      ; Jump to #R$5E55 to continue parsing.
+ $5E90 JR $5E55      ; Jump back to #R$5E55 to continue parsing.
 
 ; Command #N$01: Draw Repeated Tile
 ;
@@ -410,10 +414,14 @@ c$5E72 INC HL        ; Increment the room data pointer by one.
 ; .
 ; Command #N$01: Draw a repeated tile. The following byte specifies how
 ; many times to repeat the current tile.
+;
+; DE Tile counter
+; HL The room data pointer
 @label=Command01_RepeatedTile
 c$5E92 INC HL        ; Increment the room data pointer by one.
  $5E93 LD A,(HL)     ; Fetch the tile byte/ repeat counter.
- $5E94 INC HL        ; Increment the room data pointer by one.
+ $5E94 INC HL        ; Increment the room data pointer by one to move past the command
+                     ; byte.
  $5E95 LD B,A        ; Set the repeat counter in #REGb.
 @label=RepeatedTile_Loop
 *$5E96 PUSH HL       ; {Stash the room data pointer, tile counter and repeat counter on the
@@ -424,8 +432,8 @@ c$5E92 INC HL        ; Increment the room data pointer by one.
  $5E9E POP BC        ; {Restore the repeat counter, tile counter and room data pointer from
  $5E9F POP DE        ; the stack.
  $5EA0 POP HL        ; }
- $5EA1 DEC DE        ; Decrease #REGde by one.
- $5EA2 LD A,E        ; {Jump to #R$5E6D if #REGde is zero.
+ $5EA1 DEC DE        ; Decrease the tile counter by one.
+ $5EA2 LD A,E        ; {Jump to #R$5E6D if the tile counter is zero.
  $5EA3 OR D          ;
  $5EA4 JR Z,$5E6D    ; }
  $5EA6 DJNZ $5E96    ; Decrease the repeat counter by one and loop back to #R$5E96 until
@@ -441,14 +449,16 @@ c$5E92 INC HL        ; Increment the room data pointer by one.
 ; The following two bytes specify the repeat count and the tile character to
 ; draw.
 ;
+; DE Tile counter
 ; HL Pointer to the room data
 @label=Command02_TileWithAttribute
 c$5EAA INC HL        ; Increment the room data pointer by one.
- $5EAB LD A,(HL)     ; {#REGb=*#REGhl.
- $5EAC LD B,A        ; }
+ $5EAB LD A,(HL)     ; {Fetch the repeat counter from *#REGhl and store it in
+ $5EAC LD B,A        ; #REGb.}
  $5EAD INC HL        ; Increment the room data pointer by one.
- $5EAE LD A,(HL)     ; #REGa=*#REGhl.
- $5EAF INC HL        ; Increment the room data pointer by one.
+ $5EAE LD A,(HL)     ; Fetch the tile ID from *#REGhl and store it in #REGa.
+ $5EAF INC HL        ; Increment the room data pointer by one to move past the command
+                     ; bytes.
 @label=TileWithAttribute_Loop
 *$5EB0 PUSH AF       ; {Stash the tile character, repeat counter, tile counter and room data
  $5EB1 PUSH BC       ; pointer on the stack.
@@ -461,8 +471,8 @@ c$5EAA INC HL        ; Increment the room data pointer by one.
  $5EBB POP BC        ;
  $5EBC POP AF        ; }
  $5EBD EX AF,AF'     ; Switch to shadow #REGaf to preserve the tile character.
- $5EBE DEC DE        ; Decrease #REGde by one.
- $5EBF LD A,E        ; {Jump back to #R$5E6D if #REGde is zero.
+ $5EBE DEC DE        ; Decrease the tile counter by one.
+ $5EBF LD A,E        ; {Jump back to #R$5E6D if the tile counter is zero.
  $5EC0 OR D          ;
  $5EC1 JR Z,$5E6D    ; }
  $5EC3 EX AF,AF'     ; Switch back to main #REGaf to retrieve the tile
@@ -477,9 +487,13 @@ c$5EAA INC HL        ; Increment the room data pointer by one.
 ; .
 ; Command #N$08+: draw a single tile. The command byte itself is the tile
 ; character to draw.
+;
+; DE Tile counter
+; HL Pointer to the room data
 @label=Command08+_SingleTile
-c$5EC8 LD A,(HL)     ; #REGa=*#REGhl.
- $5EC9 INC HL        ; Increment the room data pointer by one.
+c$5EC8 LD A,(HL)     ; Fetch the tile ID from *#REGhl and store it in #REGa.
+ $5EC9 INC HL        ; Increment the room data pointer by one to move past the command
+                     ; byte.
  $5ECA PUSH HL       ; {Stash the room data pointer and tile counter on the
  $5ECB PUSH DE       ; stack.}
  $5ECC LD D,$00      ; #REGd=#N$00 (flag: draw tile to screen buffer).
@@ -504,6 +518,9 @@ c$5EC8 LD A,(HL)     ; #REGa=*#REGhl.
 ; { #N$24: end of attribute data }
 ; { Any other value: set a single attribute cell directly }
 ; LIST#
+;
+; DE Tile counter
+; HL Pointer to the room data
 @label=Command03_FillAttributes
 c$5EDB INC HL        ; Increment the room data pointer by one.
  $5EDC LD C,(HL)     ; #REGc=*#REGhl.
@@ -665,21 +682,21 @@ c$5F35 LD BC,($5FB9) ; #REGbc=*#R$5FB9.
  $5F87 LD DE,$DE9E   ; #REGde=#R$DE9E.
  $5F8A LD L,A        ; {Transfer the room index to #REGhl.
  $5F8B LD H,$00      ; }
- $5F8C NOP           ; {Multiply by #N$20.
- $5F8D ADD HL,HL     ;
+ $5F8D ADD HL,HL     ; {Multiply by #N$20.
  $5F8E ADD HL,HL     ;
  $5F8F ADD HL,HL     ;
- $5F90 ADD HL,HL     ; }
- $5F91 ADD HL,HL     ; Add the base address.
- $5F92 ADD HL,DE     ; {Write the result to *#R$5FB5.
- $5F93 LD ($5FB5),HL ; }
+ $5F90 ADD HL,HL     ;
+ $5F91 ADD HL,HL     ; }
+ $5F92 ADD HL,DE     ; Add the base address.
+ $5F93 LD ($5FB5),HL ; Write the result to *#R$5FB5.
 ; Wait for the next interrupt frame, then transfer the completed screen
 ; buffer to the display.
  $5F96 EI            ; Enable interrupts.
  $5F97 HALT          ; Halt operation (suspend CPU until the next interrupt).
  $5F98 DI            ; Disable interrupts.
- $5F99 LD B,$16      ; #REGb=#N$16.
- $5F9B LD HL,$C000   ; #REGhl=#R$C000.
+; Set up printing the room to the screen buffer.
+ $5F99 LD B,$16      ; Set a counter in #REGb for #N$16 rows to print.
+ $5F9B LD HL,$C000   ; Point #REGhl at #R$C000.
  $5F9E JP $6438      ; Jump to #R$6438.
 
 ; Header Drawn Flag
@@ -1409,66 +1426,79 @@ t$63E9 DEFM $16,$00,$00                             ; PRINT AT:
  $6425 DEFM "$"+$80
  $6426 DEFM "  3      0000000  "
 
-; Draw Level Rows
+; Draw Room Rows
 ;
 ; Used by the routine at #R$5F35.
 ; .
 ; Loop B times: call #R$6456 (draw row), advance #REGhl. Then call #R$63BB
 ; if header not drawn, and #R$63CB to colour bottom rows.
-@label=Draw_Level_Rows
-c$6438 PUSH BC       ; {Stash #REGbc and #REGhl on the stack.
+;
+; B Number of rows to draw
+; HL Buffer to use
+@label=DrawRows_Room
+c$6438 PUSH BC       ; {Stash the row counter and room buffer on the stack.
  $6439 PUSH HL       ; }
  $643A CALL $6456    ; Call #R$6456.
- $643D POP HL        ; {Restore #REGhl and #REGbc from the stack.
+ $643D POP HL        ; {Restore the room buffer and row countr from the stack.
  $643E POP BC        ; }
+; Advance the room buffer pointer to the next character row. Each row is
+; #N$20 bytes wide; if adding #N$20 to #REGl overflows, carry into #REGh by
+; adding #N$08 (into the next screen third).
  $643F LD A,$20      ; {#REGl+=#N$20.
  $6441 ADD A,L       ;
  $6442 LD L,A        ; }
- $6443 OR A          ; {Jump to #R$644A if #REGa is non-zero.
+ $6443 OR A          ; {Jump to #R$644A if there was no overflow.
  $6444 JR NZ,$644A   ; }
  $6446 LD A,$08      ; {#REGh+=#N$08.
  $6448 ADD A,H       ;
  $6449 LD H,A        ; }
-*$644A DJNZ $6438    ; Decrease counter by one and loop back to #R$6438 until
-                     ; counter is zero.
+@label=DrawRoomRows_Next
+*$644A DJNZ $6438    ; Decrease the row counter by one and loop back to #R$6438 until all
+                     ; of the rows have been drawn to the screen buffer.
  $644C LD A,($5FA1)  ; {Call #R$63BB if *#R$5FA1 is zero.
  $644F OR A          ;
  $6450 CALL Z,$63BB  ; }
  $6453 JP $63CB      ; Jump to #R$63CB.
 
-; Draw Level Row
+; Draw Room Row
 ;
 ; Used by the routine at #R$6438.
-@label=DrawLevelRow
-c$6456 LD B,$08      ; #REGb=#N$08.
- $6458 PUSH HL       ; {Stash #REGhl, #REGbc and #REGhl on the stack.
-*$6459 PUSH BC       ;
- $645A PUSH HL       ; }
- $645B LD D,H        ; #REGd=#REGh.
- $645C LD E,L        ; #REGe=#REGl.
- $645D RES 7,D       ; Reset bit 7 of #REGd.
- $645F LD BC,$0020   ; #REGbc=#N($0020,$04,$04).
- $6462 LDIR          ; LDIR.
- $6464 POP HL        ; {Restore #REGhl and #REGbc from the stack.
- $6465 POP BC        ; }
- $6466 INC H         ; Increment #REGh by one.
- $6467 DJNZ $6459    ; Decrease counter by one and loop back to #R$6459 until
-                     ; counter is zero.
- $6469 POP HL        ; Restore #REGhl from the stack.
+;
+; HL Pointer to the room buffer row
+@label=DrawRow_Room
+c$6456 LD B,$08      ; Set a counter in #REGb for #N$08 pixel lines.
+ $6458 PUSH HL       ; Stash the room buffer pointer on the stack.
+@label=DrawRoomRow_PixelLoop
+*$6459 PUSH BC       ; {Stash the line counter and room buffer pointer on the
+ $645A PUSH HL       ; stack.}
+ $645B LD D,H        ; {Copy the room buffer pointer to #REGde.
+ $645C LD E,L        ; }
+ $645D RES 7,D       ; Reset bit 7 of #REGd to convert from a room buffer address to a
+                     ; screen buffer address.
+ $645F LD BC,$0020   ; {Copy #N($0020,$04,$04) bytes of data from the room buffer to the
+ $6462 LDIR          ; screen buffer.}
+ $6464 POP HL        ; {Restore the room buffer pointer and line counter from
+ $6465 POP BC        ; the stack.}
+ $6466 INC H         ; Move down one pixel line in the room buffer.
+ $6467 DJNZ $6459    ; Decrease the line counter by one and loop back to #R$6459 until all
+                     ; #N$08 pixel lines are copied.
+ $6469 POP HL        ; Restore the original room buffer pointer from the stack.
  $646A LD A,H        ; #REGa=#REGh.
- $646B RRCA          ; {RRCA.
- $646C RRCA          ;
+ $646B RRCA          ; {Rotate right three positions to extract the character
+ $646C RRCA          ; row.
  $646D RRCA          ; }
  $646E AND %00000011 ; Keep only bits 0-1.
- $6470 OR %11011000  ; Set bits 3-4, 6-7.
+ $6470 OR %11011000  ; Set bits 3-4, 6-7 to form the attribute buffer high
+                     ; byte.
  $6472 LD H,A        ; #REGh=#REGa.
  $6473 LD E,L        ; #REGe=#REGl.
  $6474 LD A,H        ; #REGa=#REGh.
  $6475 AND %00000011 ; Keep only bits 0-1.
- $6477 OR %01011000  ; Set bits 3-4, 6.
+ $6477 OR %01011000  ; Set bits 3-4, 6 to form the destination attribute buffer high
+                     ; byte.
  $6479 LD D,A        ; #REGd=#REGa.
- $647A LD BC,$0020   ; #REGbc=#N($0020,$04,$04).
- $647D LDIR          ; LDIR.
+ $647A LD BC,$0020   ; {Copy #N($0020,$04,$04) bytes to the attribute buffer.
+ $647D LDIR          ; }
  $647F RET           ; Return.
 
 ; Handle Title Screen
@@ -4579,2165 +4609,293 @@ c$720F LD A,$00        ;
  $7ABC LD (IY+$01),A   ;
  $7ABF LD (IY+$02),A   ;
  $7AC2 RET             ;
- $7AC3 NOP             ;
- $7AC4 NOP             ;
- $7AC5 NOP             ;
- $7AC6 NOP             ;
- $7AC7 NOP             ;
- $7AC8 NOP             ;
- $7AC9 NOP             ;
- $7ACA NOP             ;
- $7ACB NOP             ;
- $7ACC NOP             ;
- $7ACD AND B           ;
- $7ACE LD C,B          ;
- $7ACF RST $28         ;
- $7AD0 NOP             ;
- $7AD1 ADC A,B         ;
- $7AD2 LD (HL),B       ;
- $7AD3 RST $28         ;
- $7AD4 NOP             ;
- $7AD5 NOP             ;
- $7AD6 NOP             ;
- $7AD7 NOP             ;
- $7AD8 NOP             ;
- $7AD9 AND B           ;
- $7ADA INC B           ;
- $7ADB RST $28         ;
- $7ADC NOP             ;
- $7ADD SUB B           ;
- $7ADE LD ($0099),A    ;
- $7AE1 AND B           ;
- $7AE2 ADD HL,SP       ;
- $7AE3 AND B           ;
- $7AE4 NOP             ;
- $7AE5 AND B           ;
- $7AE6 INC B           ;
- $7AE7 LD D,B          ;
- $7AE8 NOP             ;
- $7AE9 NOP             ;
- $7AEA NOP             ;
- $7AEB NOP             ;
- $7AEC NOP             ;
- $7AED NOP             ;
- $7AEE NOP             ;
- $7AEF NOP             ;
- $7AF0 NOP             ;
- $7AF1 LD A,B          ;
- $7AF2 LD (HL),B       ;
- $7AF3 RST $28         ;
- $7AF4 NOP             ;
- $7AF5 NOP             ;
- $7AF6 NOP             ;
- $7AF7 NOP             ;
- $7AF8 NOP             ;
- $7AF9 NOP             ;
- $7AFA NOP             ;
- $7AFB NOP             ;
- $7AFC NOP             ;
- $7AFD NOP             ;
- $7AFE NOP             ;
- $7AFF NOP             ;
- $7B00 NOP             ;
- $7B01 SUB B           ;
- $7B02 SUB B           ;
- $7B03 RST $28         ;
- $7B04 NOP             ;
- $7B05 JR C,$7B07      ;
-*$7B07 NOP             ;
- $7B08 NOP             ;
- $7B09 NOP             ;
- $7B0A NOP             ;
- $7B0B AND B           ;
- $7B0C XOR D           ;
- $7B0D NOP             ;
- $7B0E NOP             ;
- $7B0F NOP             ;
- $7B10 NOP             ;
- $7B11 NOP             ;
- $7B12 NOP             ;
- $7B13 NOP             ;
- $7B14 NOP             ;
- $7B15 NOP             ;
- $7B16 NOP             ;
- $7B17 NOP             ;
- $7B18 NOP             ;
- $7B19 NOP             ;
- $7B1A NOP             ;
- $7B1B NOP             ;
- $7B1C NOP             ;
- $7B1D NOP             ;
- $7B1E LD L,B          ;
- $7B1F LD D,B          ;
- $7B20 LD A,B          ;
- $7B21 NOP             ;
- $7B22 ADC A,B         ;
- $7B23 CP H            ;
- $7B24 RST $28         ;
- $7B25 NOP             ;
- $7B26 NOP             ;
- $7B27 NOP             ;
- $7B28 NOP             ;
- $7B29 NOP             ;
- $7B2A SBC A,B         ;
- $7B2B LD A,B          ;
- $7B2C RST $28         ;
- $7B2D NOP             ;
- $7B2E CCF             ;
- $7B2F LD (HL),D       ;
- $7B30 LD H,L          ;
- $7B31 LD (HL),D       ;
- $7B32 ADD A,(HL)      ;
- $7B33 LD (HL),D       ;
- $7B34 CP L            ;
- $7B35 LD (HL),D       ;
- $7B36 POP HL          ;
- $7B37 LD (HL),D       ;
- $7B38 LD C,$73        ;
- $7B3A LD H,A          ;
- $7B3B LD (HL),E       ;
- $7B3C AND H           ;
- $7B3D LD (HL),E       ;
- $7B3E POP HL          ;
- $7B3F LD (HL),E       ;
- $7B40 JP M,$1373      ;
- $7B43 LD (HL),H       ;
- $7B44 NOP             ;
- $7B45 NOP             ;
- $7B46 NOP             ;
- $7B47 NOP             ;
- $7B48 NOP             ;
- $7B49 NOP             ;
- $7B4A NOP             ;
- $7B4B NOP             ;
- $7B4C NOP             ;
- $7B4D NOP             ;
- $7B4E NOP             ;
- $7B4F NOP             ;
- $7B50 NOP             ;
- $7B51 NOP             ;
- $7B52 NOP             ;
- $7B53 NOP             ;
- $7B54 NOP             ;
- $7B55 NOP             ;
- $7B56 NOP             ;
- $7B57 NOP             ;
- $7B58 NOP             ;
- $7B59 NOP             ;
- $7B5A NOP             ;
- $7B5B NOP             ;
- $7B5C NOP             ;
- $7B5D NOP             ;
- $7B5E NOP             ;
- $7B5F NOP             ;
- $7B60 NOP             ;
- $7B61 NOP             ;
- $7B62 NOP             ;
- $7B63 NOP             ;
- $7B64 NOP             ;
- $7B65 NOP             ;
- $7B66 NOP             ;
- $7B67 NOP             ;
- $7B68 NOP             ;
- $7B69 NOP             ;
- $7B6A NOP             ;
- $7B6B NOP             ;
- $7B6C NOP             ;
- $7B6D NOP             ;
- $7B6E NOP             ;
- $7B6F NOP             ;
- $7B70 NOP             ;
- $7B71 NOP             ;
- $7B72 NOP             ;
- $7B73 NOP             ;
- $7B74 NOP             ;
- $7B75 NOP             ;
- $7B76 NOP             ;
- $7B77 NOP             ;
- $7B78 NOP             ;
- $7B79 NOP             ;
- $7B7A NOP             ;
- $7B7B NOP             ;
- $7B7C NOP             ;
- $7B7D NOP             ;
- $7B7E NOP             ;
- $7B7F NOP             ;
- $7B80 NOP             ;
- $7B81 NOP             ;
- $7B82 NOP             ;
- $7B83 NOP             ;
- $7B84 NOP             ;
- $7B85 NOP             ;
- $7B86 NOP             ;
- $7B87 NOP             ;
- $7B88 NOP             ;
- $7B89 NOP             ;
- $7B8A NOP             ;
- $7B8B NOP             ;
- $7B8C NOP             ;
- $7B8D NOP             ;
- $7B8E NOP             ;
- $7B8F NOP             ;
- $7B90 NOP             ;
- $7B91 NOP             ;
- $7B92 NOP             ;
- $7B93 NOP             ;
- $7B94 NOP             ;
- $7B95 NOP             ;
- $7B96 NOP             ;
- $7B97 NOP             ;
- $7B98 NOP             ;
- $7B99 NOP             ;
- $7B9A NOP             ;
- $7B9B NOP             ;
- $7B9C NOP             ;
- $7B9D NOP             ;
- $7B9E NOP             ;
- $7B9F NOP             ;
- $7BA0 NOP             ;
- $7BA1 NOP             ;
- $7BA2 NOP             ;
- $7BA3 NOP             ;
- $7BA4 NOP             ;
- $7BA5 NOP             ;
- $7BA6 NOP             ;
- $7BA7 NOP             ;
- $7BA8 NOP             ;
- $7BA9 NOP             ;
- $7BAA NOP             ;
- $7BAB NOP             ;
- $7BAC NOP             ;
- $7BAD NOP             ;
- $7BAE NOP             ;
- $7BAF NOP             ;
- $7BB0 NOP             ;
- $7BB1 NOP             ;
- $7BB2 NOP             ;
- $7BB3 NOP             ;
- $7BB4 NOP             ;
- $7BB5 NOP             ;
- $7BB6 NOP             ;
- $7BB7 NOP             ;
- $7BB8 NOP             ;
- $7BB9 NOP             ;
- $7BBA NOP             ;
- $7BBB NOP             ;
- $7BBC NOP             ;
- $7BBD NOP             ;
- $7BBE NOP             ;
- $7BBF NOP             ;
- $7BC0 NOP             ;
- $7BC1 NOP             ;
- $7BC2 NOP             ;
- $7BC3 NOP             ;
- $7BC4 NOP             ;
- $7BC5 NOP             ;
- $7BC6 NOP             ;
- $7BC7 NOP             ;
- $7BC8 NOP             ;
- $7BC9 NOP             ;
- $7BCA NOP             ;
- $7BCB NOP             ;
- $7BCC NOP             ;
- $7BCD NOP             ;
- $7BCE NOP             ;
- $7BCF NOP             ;
- $7BD0 NOP             ;
- $7BD1 NOP             ;
- $7BD2 NOP             ;
- $7BD3 NOP             ;
- $7BD4 NOP             ;
- $7BD5 NOP             ;
- $7BD6 NOP             ;
- $7BD7 NOP             ;
- $7BD8 NOP             ;
- $7BD9 NOP             ;
- $7BDA NOP             ;
- $7BDB NOP             ;
- $7BDC NOP             ;
- $7BDD NOP             ;
- $7BDE NOP             ;
- $7BDF NOP             ;
- $7BE0 NOP             ;
- $7BE1 NOP             ;
- $7BE2 NOP             ;
- $7BE3 NOP             ;
- $7BE4 NOP             ;
- $7BE5 NOP             ;
- $7BE6 NOP             ;
- $7BE7 NOP             ;
- $7BE8 NOP             ;
- $7BE9 NOP             ;
- $7BEA NOP             ;
- $7BEB NOP             ;
- $7BEC NOP             ;
- $7BED NOP             ;
- $7BEE NOP             ;
- $7BEF NOP             ;
- $7BF0 NOP             ;
- $7BF1 NOP             ;
- $7BF2 NOP             ;
- $7BF3 NOP             ;
- $7BF4 NOP             ;
- $7BF5 NOP             ;
- $7BF6 NOP             ;
- $7BF7 NOP             ;
- $7BF8 NOP             ;
- $7BF9 NOP             ;
- $7BFA NOP             ;
- $7BFB NOP             ;
- $7BFC NOP             ;
- $7BFD NOP             ;
- $7BFE NOP             ;
- $7BFF NOP             ;
- $7C00 NOP             ;
- $7C01 NOP             ;
- $7C02 NOP             ;
- $7C03 NOP             ;
- $7C04 NOP             ;
- $7C05 NOP             ;
- $7C06 NOP             ;
- $7C07 NOP             ;
- $7C08 NOP             ;
- $7C09 NOP             ;
- $7C0A NOP             ;
- $7C0B NOP             ;
- $7C0C NOP             ;
- $7C0D NOP             ;
- $7C0E NOP             ;
- $7C0F NOP             ;
- $7C10 NOP             ;
- $7C11 NOP             ;
- $7C12 NOP             ;
- $7C13 NOP             ;
- $7C14 NOP             ;
- $7C15 NOP             ;
- $7C16 NOP             ;
- $7C17 NOP             ;
- $7C18 NOP             ;
- $7C19 NOP             ;
- $7C1A NOP             ;
- $7C1B NOP             ;
- $7C1C NOP             ;
- $7C1D NOP             ;
- $7C1E NOP             ;
- $7C1F NOP             ;
- $7C20 NOP             ;
- $7C21 NOP             ;
- $7C22 NOP             ;
- $7C23 NOP             ;
- $7C24 NOP             ;
- $7C25 NOP             ;
- $7C26 NOP             ;
- $7C27 NOP             ;
- $7C28 NOP             ;
- $7C29 NOP             ;
- $7C2A NOP             ;
- $7C2B NOP             ;
- $7C2C NOP             ;
- $7C2D NOP             ;
- $7C2E NOP             ;
- $7C2F NOP             ;
- $7C30 NOP             ;
- $7C31 NOP             ;
- $7C32 NOP             ;
- $7C33 NOP             ;
- $7C34 NOP             ;
- $7C35 NOP             ;
- $7C36 NOP             ;
- $7C37 NOP             ;
- $7C38 NOP             ;
- $7C39 NOP             ;
- $7C3A NOP             ;
- $7C3B NOP             ;
- $7C3C NOP             ;
- $7C3D NOP             ;
- $7C3E NOP             ;
- $7C3F NOP             ;
- $7C40 NOP             ;
- $7C41 NOP             ;
- $7C42 NOP             ;
- $7C43 NOP             ;
- $7C44 NOP             ;
- $7C45 NOP             ;
- $7C46 NOP             ;
- $7C47 NOP             ;
- $7C48 NOP             ;
- $7C49 NOP             ;
- $7C4A NOP             ;
- $7C4B NOP             ;
- $7C4C NOP             ;
- $7C4D NOP             ;
- $7C4E NOP             ;
- $7C4F NOP             ;
- $7C50 NOP             ;
- $7C51 NOP             ;
- $7C52 NOP             ;
- $7C53 NOP             ;
- $7C54 NOP             ;
- $7C55 NOP             ;
- $7C56 NOP             ;
- $7C57 NOP             ;
- $7C58 NOP             ;
- $7C59 NOP             ;
- $7C5A NOP             ;
- $7C5B NOP             ;
- $7C5C NOP             ;
- $7C5D NOP             ;
- $7C5E NOP             ;
- $7C5F NOP             ;
- $7C60 NOP             ;
- $7C61 NOP             ;
- $7C62 NOP             ;
- $7C63 NOP             ;
- $7C64 NOP             ;
- $7C65 NOP             ;
- $7C66 NOP             ;
- $7C67 NOP             ;
- $7C68 NOP             ;
- $7C69 NOP             ;
- $7C6A NOP             ;
- $7C6B NOP             ;
- $7C6C NOP             ;
- $7C6D NOP             ;
- $7C6E NOP             ;
- $7C6F NOP             ;
- $7C70 NOP             ;
- $7C71 NOP             ;
- $7C72 NOP             ;
- $7C73 NOP             ;
- $7C74 NOP             ;
- $7C75 NOP             ;
- $7C76 NOP             ;
- $7C77 NOP             ;
- $7C78 NOP             ;
- $7C79 NOP             ;
- $7C7A NOP             ;
- $7C7B NOP             ;
- $7C7C NOP             ;
- $7C7D NOP             ;
- $7C7E NOP             ;
- $7C7F NOP             ;
- $7C80 NOP             ;
- $7C81 NOP             ;
- $7C82 NOP             ;
- $7C83 NOP             ;
- $7C84 NOP             ;
- $7C85 NOP             ;
- $7C86 NOP             ;
- $7C87 NOP             ;
- $7C88 NOP             ;
- $7C89 NOP             ;
- $7C8A NOP             ;
- $7C8B NOP             ;
- $7C8C NOP             ;
- $7C8D NOP             ;
- $7C8E NOP             ;
- $7C8F NOP             ;
- $7C90 NOP             ;
- $7C91 NOP             ;
- $7C92 NOP             ;
- $7C93 NOP             ;
- $7C94 NOP             ;
- $7C95 NOP             ;
- $7C96 NOP             ;
- $7C97 NOP             ;
- $7C98 NOP             ;
- $7C99 NOP             ;
- $7C9A NOP             ;
- $7C9B NOP             ;
- $7C9C NOP             ;
- $7C9D NOP             ;
- $7C9E NOP             ;
- $7C9F NOP             ;
- $7CA0 NOP             ;
- $7CA1 NOP             ;
- $7CA2 NOP             ;
- $7CA3 NOP             ;
- $7CA4 NOP             ;
- $7CA5 NOP             ;
- $7CA6 NOP             ;
- $7CA7 NOP             ;
- $7CA8 NOP             ;
- $7CA9 NOP             ;
- $7CAA NOP             ;
- $7CAB NOP             ;
- $7CAC NOP             ;
- $7CAD NOP             ;
- $7CAE NOP             ;
- $7CAF NOP             ;
- $7CB0 NOP             ;
- $7CB1 NOP             ;
- $7CB2 NOP             ;
- $7CB3 NOP             ;
- $7CB4 NOP             ;
- $7CB5 NOP             ;
- $7CB6 NOP             ;
- $7CB7 NOP             ;
- $7CB8 NOP             ;
- $7CB9 NOP             ;
- $7CBA NOP             ;
- $7CBB NOP             ;
- $7CBC NOP             ;
- $7CBD NOP             ;
- $7CBE NOP             ;
- $7CBF NOP             ;
- $7CC0 NOP             ;
- $7CC1 NOP             ;
- $7CC2 NOP             ;
- $7CC3 NOP             ;
- $7CC4 NOP             ;
- $7CC5 NOP             ;
- $7CC6 NOP             ;
- $7CC7 NOP             ;
- $7CC8 NOP             ;
- $7CC9 NOP             ;
- $7CCA NOP             ;
- $7CCB NOP             ;
- $7CCC NOP             ;
- $7CCD NOP             ;
- $7CCE NOP             ;
- $7CCF NOP             ;
- $7CD0 NOP             ;
- $7CD1 NOP             ;
- $7CD2 NOP             ;
- $7CD3 NOP             ;
- $7CD4 NOP             ;
- $7CD5 NOP             ;
- $7CD6 NOP             ;
- $7CD7 NOP             ;
- $7CD8 NOP             ;
- $7CD9 NOP             ;
- $7CDA NOP             ;
- $7CDB NOP             ;
- $7CDC NOP             ;
- $7CDD NOP             ;
- $7CDE NOP             ;
- $7CDF NOP             ;
- $7CE0 NOP             ;
- $7CE1 NOP             ;
- $7CE2 NOP             ;
- $7CE3 NOP             ;
- $7CE4 NOP             ;
- $7CE5 NOP             ;
- $7CE6 NOP             ;
- $7CE7 NOP             ;
- $7CE8 NOP             ;
- $7CE9 NOP             ;
- $7CEA NOP             ;
- $7CEB NOP             ;
- $7CEC NOP             ;
- $7CED NOP             ;
- $7CEE NOP             ;
- $7CEF NOP             ;
- $7CF0 NOP             ;
- $7CF1 NOP             ;
- $7CF2 NOP             ;
- $7CF3 NOP             ;
- $7CF4 NOP             ;
- $7CF5 NOP             ;
- $7CF6 NOP             ;
- $7CF7 NOP             ;
- $7CF8 NOP             ;
- $7CF9 NOP             ;
- $7CFA NOP             ;
- $7CFB NOP             ;
- $7CFC NOP             ;
- $7CFD NOP             ;
- $7CFE NOP             ;
- $7CFF NOP             ;
- $7D00 NOP             ;
- $7D01 NOP             ;
- $7D02 NOP             ;
- $7D03 NOP             ;
- $7D04 NOP             ;
- $7D05 NOP             ;
- $7D06 NOP             ;
- $7D07 NOP             ;
- $7D08 NOP             ;
- $7D09 NOP             ;
- $7D0A NOP             ;
- $7D0B NOP             ;
- $7D0C NOP             ;
- $7D0D NOP             ;
- $7D0E NOP             ;
- $7D0F NOP             ;
- $7D10 NOP             ;
- $7D11 NOP             ;
- $7D12 NOP             ;
- $7D13 NOP             ;
- $7D14 NOP             ;
- $7D15 NOP             ;
- $7D16 NOP             ;
- $7D17 NOP             ;
- $7D18 NOP             ;
- $7D19 NOP             ;
- $7D1A NOP             ;
- $7D1B NOP             ;
- $7D1C NOP             ;
- $7D1D NOP             ;
- $7D1E NOP             ;
- $7D1F NOP             ;
- $7D20 NOP             ;
- $7D21 NOP             ;
- $7D22 NOP             ;
- $7D23 NOP             ;
- $7D24 NOP             ;
- $7D25 NOP             ;
- $7D26 NOP             ;
- $7D27 NOP             ;
- $7D28 NOP             ;
- $7D29 NOP             ;
- $7D2A NOP             ;
- $7D2B NOP             ;
- $7D2C NOP             ;
- $7D2D NOP             ;
- $7D2E NOP             ;
- $7D2F NOP             ;
- $7D30 NOP             ;
- $7D31 NOP             ;
- $7D32 NOP             ;
- $7D33 NOP             ;
- $7D34 NOP             ;
- $7D35 NOP             ;
- $7D36 NOP             ;
- $7D37 NOP             ;
- $7D38 NOP             ;
- $7D39 NOP             ;
- $7D3A NOP             ;
- $7D3B NOP             ;
- $7D3C NOP             ;
- $7D3D NOP             ;
- $7D3E NOP             ;
- $7D3F NOP             ;
- $7D40 NOP             ;
- $7D41 NOP             ;
- $7D42 NOP             ;
- $7D43 NOP             ;
- $7D44 NOP             ;
- $7D45 NOP             ;
- $7D46 NOP             ;
- $7D47 NOP             ;
- $7D48 NOP             ;
- $7D49 NOP             ;
- $7D4A NOP             ;
- $7D4B NOP             ;
- $7D4C NOP             ;
- $7D4D NOP             ;
- $7D4E NOP             ;
- $7D4F NOP             ;
- $7D50 NOP             ;
- $7D51 NOP             ;
- $7D52 NOP             ;
- $7D53 NOP             ;
- $7D54 NOP             ;
- $7D55 NOP             ;
- $7D56 NOP             ;
- $7D57 NOP             ;
- $7D58 NOP             ;
- $7D59 NOP             ;
- $7D5A NOP             ;
- $7D5B NOP             ;
- $7D5C NOP             ;
- $7D5D NOP             ;
- $7D5E NOP             ;
- $7D5F NOP             ;
- $7D60 NOP             ;
- $7D61 NOP             ;
- $7D62 NOP             ;
- $7D63 NOP             ;
- $7D64 NOP             ;
- $7D65 NOP             ;
- $7D66 NOP             ;
- $7D67 NOP             ;
- $7D68 NOP             ;
- $7D69 NOP             ;
- $7D6A NOP             ;
- $7D6B NOP             ;
- $7D6C NOP             ;
- $7D6D NOP             ;
- $7D6E NOP             ;
- $7D6F NOP             ;
- $7D70 NOP             ;
- $7D71 NOP             ;
- $7D72 NOP             ;
- $7D73 NOP             ;
- $7D74 NOP             ;
- $7D75 NOP             ;
- $7D76 NOP             ;
- $7D77 NOP             ;
- $7D78 NOP             ;
- $7D79 NOP             ;
- $7D7A NOP             ;
- $7D7B NOP             ;
- $7D7C NOP             ;
- $7D7D NOP             ;
- $7D7E NOP             ;
- $7D7F NOP             ;
- $7D80 NOP             ;
- $7D81 NOP             ;
- $7D82 NOP             ;
- $7D83 NOP             ;
- $7D84 NOP             ;
- $7D85 NOP             ;
- $7D86 NOP             ;
- $7D87 NOP             ;
- $7D88 NOP             ;
- $7D89 NOP             ;
- $7D8A NOP             ;
- $7D8B NOP             ;
- $7D8C NOP             ;
- $7D8D NOP             ;
- $7D8E NOP             ;
- $7D8F NOP             ;
- $7D90 NOP             ;
- $7D91 NOP             ;
- $7D92 NOP             ;
- $7D93 NOP             ;
- $7D94 NOP             ;
- $7D95 NOP             ;
- $7D96 NOP             ;
- $7D97 NOP             ;
- $7D98 NOP             ;
- $7D99 NOP             ;
- $7D9A NOP             ;
- $7D9B NOP             ;
- $7D9C NOP             ;
- $7D9D NOP             ;
- $7D9E NOP             ;
- $7D9F NOP             ;
- $7DA0 NOP             ;
- $7DA1 NOP             ;
- $7DA2 NOP             ;
- $7DA3 NOP             ;
- $7DA4 NOP             ;
- $7DA5 NOP             ;
- $7DA6 NOP             ;
- $7DA7 NOP             ;
- $7DA8 NOP             ;
- $7DA9 NOP             ;
- $7DAA NOP             ;
- $7DAB NOP             ;
- $7DAC NOP             ;
- $7DAD NOP             ;
- $7DAE NOP             ;
- $7DAF NOP             ;
- $7DB0 NOP             ;
- $7DB1 NOP             ;
- $7DB2 NOP             ;
- $7DB3 NOP             ;
- $7DB4 NOP             ;
- $7DB5 NOP             ;
- $7DB6 NOP             ;
- $7DB7 NOP             ;
- $7DB8 NOP             ;
- $7DB9 NOP             ;
- $7DBA NOP             ;
- $7DBB NOP             ;
- $7DBC NOP             ;
- $7DBD NOP             ;
- $7DBE NOP             ;
- $7DBF NOP             ;
- $7DC0 NOP             ;
- $7DC1 NOP             ;
- $7DC2 NOP             ;
- $7DC3 NOP             ;
- $7DC4 NOP             ;
- $7DC5 NOP             ;
- $7DC6 NOP             ;
- $7DC7 NOP             ;
- $7DC8 NOP             ;
- $7DC9 NOP             ;
- $7DCA NOP             ;
- $7DCB NOP             ;
- $7DCC NOP             ;
- $7DCD NOP             ;
- $7DCE NOP             ;
- $7DCF NOP             ;
- $7DD0 NOP             ;
- $7DD1 NOP             ;
- $7DD2 NOP             ;
- $7DD3 NOP             ;
- $7DD4 NOP             ;
- $7DD5 NOP             ;
- $7DD6 NOP             ;
- $7DD7 NOP             ;
- $7DD8 NOP             ;
- $7DD9 NOP             ;
- $7DDA NOP             ;
- $7DDB NOP             ;
- $7DDC NOP             ;
- $7DDD NOP             ;
- $7DDE NOP             ;
- $7DDF NOP             ;
- $7DE0 NOP             ;
- $7DE1 NOP             ;
- $7DE2 NOP             ;
- $7DE3 NOP             ;
- $7DE4 NOP             ;
- $7DE5 NOP             ;
- $7DE6 NOP             ;
- $7DE7 NOP             ;
- $7DE8 NOP             ;
- $7DE9 NOP             ;
- $7DEA NOP             ;
- $7DEB NOP             ;
- $7DEC NOP             ;
- $7DED NOP             ;
- $7DEE NOP             ;
- $7DEF NOP             ;
- $7DF0 NOP             ;
- $7DF1 NOP             ;
- $7DF2 NOP             ;
- $7DF3 NOP             ;
- $7DF4 NOP             ;
- $7DF5 NOP             ;
- $7DF6 NOP             ;
- $7DF7 NOP             ;
- $7DF8 NOP             ;
- $7DF9 NOP             ;
- $7DFA NOP             ;
- $7DFB NOP             ;
- $7DFC NOP             ;
- $7DFD NOP             ;
- $7DFE NOP             ;
- $7DFF NOP             ;
- $7E00 NOP             ;
- $7E01 NOP             ;
- $7E02 NOP             ;
- $7E03 NOP             ;
- $7E04 NOP             ;
- $7E05 NOP             ;
- $7E06 NOP             ;
- $7E07 NOP             ;
- $7E08 NOP             ;
- $7E09 NOP             ;
- $7E0A NOP             ;
- $7E0B NOP             ;
- $7E0C NOP             ;
- $7E0D NOP             ;
- $7E0E NOP             ;
- $7E0F NOP             ;
- $7E10 NOP             ;
- $7E11 NOP             ;
- $7E12 NOP             ;
- $7E13 NOP             ;
- $7E14 NOP             ;
- $7E15 NOP             ;
- $7E16 NOP             ;
- $7E17 NOP             ;
- $7E18 NOP             ;
- $7E19 NOP             ;
- $7E1A NOP             ;
- $7E1B NOP             ;
- $7E1C NOP             ;
- $7E1D NOP             ;
- $7E1E NOP             ;
- $7E1F NOP             ;
- $7E20 NOP             ;
- $7E21 NOP             ;
- $7E22 NOP             ;
- $7E23 NOP             ;
- $7E24 NOP             ;
- $7E25 NOP             ;
- $7E26 NOP             ;
- $7E27 NOP             ;
- $7E28 NOP             ;
- $7E29 NOP             ;
- $7E2A NOP             ;
- $7E2B NOP             ;
- $7E2C NOP             ;
- $7E2D NOP             ;
- $7E2E NOP             ;
- $7E2F NOP             ;
- $7E30 NOP             ;
- $7E31 NOP             ;
- $7E32 NOP             ;
- $7E33 NOP             ;
- $7E34 NOP             ;
- $7E35 NOP             ;
- $7E36 NOP             ;
- $7E37 NOP             ;
- $7E38 NOP             ;
- $7E39 NOP             ;
- $7E3A NOP             ;
- $7E3B NOP             ;
- $7E3C NOP             ;
- $7E3D NOP             ;
- $7E3E NOP             ;
- $7E3F NOP             ;
- $7E40 NOP             ;
- $7E41 NOP             ;
- $7E42 NOP             ;
- $7E43 NOP             ;
- $7E44 NOP             ;
- $7E45 NOP             ;
- $7E46 NOP             ;
- $7E47 NOP             ;
- $7E48 NOP             ;
- $7E49 NOP             ;
- $7E4A NOP             ;
- $7E4B NOP             ;
- $7E4C NOP             ;
- $7E4D NOP             ;
- $7E4E NOP             ;
- $7E4F NOP             ;
- $7E50 NOP             ;
- $7E51 NOP             ;
- $7E52 NOP             ;
- $7E53 NOP             ;
- $7E54 NOP             ;
- $7E55 NOP             ;
- $7E56 NOP             ;
- $7E57 NOP             ;
- $7E58 NOP             ;
- $7E59 NOP             ;
- $7E5A NOP             ;
- $7E5B NOP             ;
- $7E5C NOP             ;
- $7E5D NOP             ;
- $7E5E NOP             ;
- $7E5F NOP             ;
- $7E60 NOP             ;
- $7E61 NOP             ;
- $7E62 NOP             ;
- $7E63 NOP             ;
- $7E64 NOP             ;
- $7E65 NOP             ;
- $7E66 NOP             ;
- $7E67 NOP             ;
- $7E68 NOP             ;
- $7E69 NOP             ;
- $7E6A NOP             ;
- $7E6B NOP             ;
- $7E6C NOP             ;
- $7E6D NOP             ;
- $7E6E NOP             ;
- $7E6F NOP             ;
- $7E70 NOP             ;
- $7E71 NOP             ;
- $7E72 NOP             ;
- $7E73 NOP             ;
- $7E74 NOP             ;
- $7E75 NOP             ;
- $7E76 NOP             ;
- $7E77 NOP             ;
- $7E78 NOP             ;
- $7E79 NOP             ;
- $7E7A NOP             ;
- $7E7B NOP             ;
- $7E7C NOP             ;
- $7E7D NOP             ;
- $7E7E NOP             ;
- $7E7F NOP             ;
- $7E80 NOP             ;
- $7E81 NOP             ;
- $7E82 NOP             ;
- $7E83 NOP             ;
- $7E84 NOP             ;
- $7E85 NOP             ;
- $7E86 NOP             ;
- $7E87 NOP             ;
- $7E88 NOP             ;
- $7E89 NOP             ;
- $7E8A NOP             ;
- $7E8B NOP             ;
- $7E8C NOP             ;
- $7E8D NOP             ;
- $7E8E NOP             ;
- $7E8F NOP             ;
- $7E90 NOP             ;
- $7E91 NOP             ;
- $7E92 NOP             ;
- $7E93 NOP             ;
- $7E94 NOP             ;
- $7E95 NOP             ;
- $7E96 NOP             ;
- $7E97 NOP             ;
- $7E98 NOP             ;
- $7E99 NOP             ;
- $7E9A NOP             ;
- $7E9B NOP             ;
- $7E9C NOP             ;
- $7E9D NOP             ;
- $7E9E NOP             ;
- $7E9F NOP             ;
- $7EA0 NOP             ;
- $7EA1 NOP             ;
- $7EA2 NOP             ;
- $7EA3 NOP             ;
- $7EA4 NOP             ;
- $7EA5 NOP             ;
- $7EA6 NOP             ;
- $7EA7 NOP             ;
- $7EA8 NOP             ;
- $7EA9 NOP             ;
- $7EAA NOP             ;
- $7EAB NOP             ;
- $7EAC NOP             ;
- $7EAD NOP             ;
- $7EAE NOP             ;
- $7EAF NOP             ;
- $7EB0 NOP             ;
- $7EB1 NOP             ;
- $7EB2 NOP             ;
- $7EB3 NOP             ;
- $7EB4 NOP             ;
- $7EB5 NOP             ;
- $7EB6 NOP             ;
- $7EB7 NOP             ;
- $7EB8 NOP             ;
- $7EB9 NOP             ;
- $7EBA NOP             ;
- $7EBB NOP             ;
- $7EBC NOP             ;
- $7EBD NOP             ;
- $7EBE NOP             ;
- $7EBF NOP             ;
- $7EC0 NOP             ;
- $7EC1 NOP             ;
- $7EC2 NOP             ;
- $7EC3 NOP             ;
- $7EC4 NOP             ;
- $7EC5 NOP             ;
- $7EC6 NOP             ;
- $7EC7 NOP             ;
- $7EC8 NOP             ;
- $7EC9 NOP             ;
- $7ECA NOP             ;
- $7ECB NOP             ;
- $7ECC NOP             ;
- $7ECD NOP             ;
- $7ECE NOP             ;
- $7ECF NOP             ;
- $7ED0 NOP             ;
- $7ED1 NOP             ;
- $7ED2 NOP             ;
- $7ED3 NOP             ;
- $7ED4 NOP             ;
- $7ED5 NOP             ;
- $7ED6 NOP             ;
- $7ED7 NOP             ;
- $7ED8 NOP             ;
- $7ED9 NOP             ;
- $7EDA NOP             ;
- $7EDB NOP             ;
- $7EDC NOP             ;
- $7EDD NOP             ;
- $7EDE NOP             ;
- $7EDF NOP             ;
- $7EE0 NOP             ;
- $7EE1 NOP             ;
- $7EE2 NOP             ;
- $7EE3 NOP             ;
- $7EE4 NOP             ;
- $7EE5 NOP             ;
- $7EE6 NOP             ;
- $7EE7 NOP             ;
- $7EE8 NOP             ;
- $7EE9 NOP             ;
- $7EEA NOP             ;
- $7EEB NOP             ;
- $7EEC NOP             ;
- $7EED NOP             ;
- $7EEE NOP             ;
- $7EEF NOP             ;
- $7EF0 NOP             ;
- $7EF1 NOP             ;
- $7EF2 NOP             ;
- $7EF3 NOP             ;
- $7EF4 NOP             ;
- $7EF5 NOP             ;
- $7EF6 NOP             ;
- $7EF7 NOP             ;
- $7EF8 NOP             ;
- $7EF9 NOP             ;
- $7EFA NOP             ;
- $7EFB NOP             ;
- $7EFC NOP             ;
- $7EFD NOP             ;
- $7EFE NOP             ;
- $7EFF NOP             ;
- $7F00 NOP             ;
- $7F01 NOP             ;
- $7F02 NOP             ;
- $7F03 NOP             ;
- $7F04 NOP             ;
- $7F05 NOP             ;
- $7F06 NOP             ;
- $7F07 NOP             ;
- $7F08 NOP             ;
- $7F09 NOP             ;
- $7F0A NOP             ;
- $7F0B NOP             ;
- $7F0C NOP             ;
- $7F0D NOP             ;
- $7F0E NOP             ;
- $7F0F NOP             ;
- $7F10 NOP             ;
- $7F11 NOP             ;
- $7F12 NOP             ;
- $7F13 NOP             ;
- $7F14 NOP             ;
- $7F15 NOP             ;
- $7F16 NOP             ;
- $7F17 NOP             ;
- $7F18 NOP             ;
- $7F19 NOP             ;
- $7F1A NOP             ;
- $7F1B NOP             ;
- $7F1C NOP             ;
- $7F1D NOP             ;
- $7F1E NOP             ;
- $7F1F NOP             ;
- $7F20 NOP             ;
- $7F21 NOP             ;
- $7F22 NOP             ;
- $7F23 NOP             ;
- $7F24 NOP             ;
- $7F25 NOP             ;
- $7F26 NOP             ;
- $7F27 NOP             ;
- $7F28 NOP             ;
- $7F29 NOP             ;
- $7F2A NOP             ;
- $7F2B NOP             ;
- $7F2C NOP             ;
- $7F2D NOP             ;
- $7F2E NOP             ;
- $7F2F NOP             ;
- $7F30 NOP             ;
- $7F31 NOP             ;
- $7F32 NOP             ;
- $7F33 NOP             ;
- $7F34 NOP             ;
- $7F35 NOP             ;
- $7F36 NOP             ;
- $7F37 NOP             ;
- $7F38 NOP             ;
- $7F39 NOP             ;
- $7F3A NOP             ;
- $7F3B NOP             ;
- $7F3C NOP             ;
- $7F3D NOP             ;
- $7F3E NOP             ;
- $7F3F NOP             ;
- $7F40 NOP             ;
- $7F41 NOP             ;
- $7F42 NOP             ;
- $7F43 NOP             ;
- $7F44 NOP             ;
- $7F45 NOP             ;
- $7F46 NOP             ;
- $7F47 NOP             ;
- $7F48 NOP             ;
- $7F49 NOP             ;
- $7F4A NOP             ;
- $7F4B NOP             ;
- $7F4C NOP             ;
- $7F4D NOP             ;
- $7F4E NOP             ;
- $7F4F NOP             ;
- $7F50 NOP             ;
- $7F51 NOP             ;
- $7F52 NOP             ;
- $7F53 NOP             ;
- $7F54 NOP             ;
- $7F55 NOP             ;
- $7F56 NOP             ;
- $7F57 NOP             ;
- $7F58 NOP             ;
- $7F59 NOP             ;
- $7F5A NOP             ;
- $7F5B NOP             ;
- $7F5C NOP             ;
- $7F5D NOP             ;
- $7F5E NOP             ;
- $7F5F NOP             ;
- $7F60 NOP             ;
- $7F61 NOP             ;
- $7F62 NOP             ;
- $7F63 NOP             ;
- $7F64 NOP             ;
- $7F65 NOP             ;
- $7F66 NOP             ;
- $7F67 NOP             ;
- $7F68 NOP             ;
- $7F69 NOP             ;
- $7F6A NOP             ;
- $7F6B NOP             ;
- $7F6C NOP             ;
- $7F6D NOP             ;
- $7F6E NOP             ;
- $7F6F NOP             ;
- $7F70 NOP             ;
- $7F71 NOP             ;
- $7F72 NOP             ;
- $7F73 NOP             ;
- $7F74 NOP             ;
- $7F75 NOP             ;
- $7F76 NOP             ;
- $7F77 NOP             ;
- $7F78 NOP             ;
- $7F79 NOP             ;
- $7F7A NOP             ;
- $7F7B NOP             ;
- $7F7C NOP             ;
- $7F7D NOP             ;
- $7F7E NOP             ;
- $7F7F NOP             ;
- $7F80 NOP             ;
- $7F81 NOP             ;
- $7F82 NOP             ;
- $7F83 NOP             ;
- $7F84 NOP             ;
- $7F85 NOP             ;
- $7F86 NOP             ;
- $7F87 NOP             ;
- $7F88 NOP             ;
- $7F89 NOP             ;
- $7F8A NOP             ;
- $7F8B NOP             ;
- $7F8C NOP             ;
- $7F8D NOP             ;
- $7F8E NOP             ;
- $7F8F NOP             ;
- $7F90 NOP             ;
- $7F91 NOP             ;
- $7F92 NOP             ;
- $7F93 NOP             ;
- $7F94 NOP             ;
- $7F95 NOP             ;
- $7F96 NOP             ;
- $7F97 NOP             ;
- $7F98 NOP             ;
- $7F99 NOP             ;
- $7F9A NOP             ;
- $7F9B NOP             ;
- $7F9C NOP             ;
- $7F9D NOP             ;
- $7F9E NOP             ;
- $7F9F NOP             ;
- $7FA0 NOP             ;
- $7FA1 NOP             ;
- $7FA2 NOP             ;
- $7FA3 NOP             ;
- $7FA4 NOP             ;
- $7FA5 NOP             ;
- $7FA6 NOP             ;
- $7FA7 NOP             ;
- $7FA8 NOP             ;
- $7FA9 NOP             ;
- $7FAA NOP             ;
- $7FAB NOP             ;
- $7FAC NOP             ;
- $7FAD NOP             ;
- $7FAE NOP             ;
- $7FAF NOP             ;
- $7FB0 NOP             ;
- $7FB1 NOP             ;
- $7FB2 NOP             ;
- $7FB3 NOP             ;
- $7FB4 NOP             ;
- $7FB5 NOP             ;
- $7FB6 NOP             ;
- $7FB7 NOP             ;
- $7FB8 NOP             ;
- $7FB9 NOP             ;
- $7FBA NOP             ;
- $7FBB NOP             ;
- $7FBC NOP             ;
- $7FBD NOP             ;
- $7FBE NOP             ;
- $7FBF NOP             ;
- $7FC0 NOP             ;
- $7FC1 NOP             ;
- $7FC2 NOP             ;
- $7FC3 NOP             ;
- $7FC4 NOP             ;
- $7FC5 NOP             ;
- $7FC6 NOP             ;
- $7FC7 NOP             ;
- $7FC8 NOP             ;
- $7FC9 NOP             ;
- $7FCA NOP             ;
- $7FCB NOP             ;
- $7FCC NOP             ;
- $7FCD NOP             ;
- $7FCE NOP             ;
- $7FCF NOP             ;
- $7FD0 NOP             ;
- $7FD1 NOP             ;
- $7FD2 NOP             ;
- $7FD3 NOP             ;
- $7FD4 NOP             ;
- $7FD5 NOP             ;
- $7FD6 NOP             ;
- $7FD7 NOP             ;
- $7FD8 NOP             ;
- $7FD9 NOP             ;
- $7FDA NOP             ;
- $7FDB NOP             ;
- $7FDC NOP             ;
- $7FDD NOP             ;
- $7FDE NOP             ;
- $7FDF NOP             ;
- $7FE0 NOP             ;
- $7FE1 NOP             ;
- $7FE2 NOP             ;
- $7FE3 NOP             ;
- $7FE4 NOP             ;
- $7FE5 NOP             ;
- $7FE6 NOP             ;
- $7FE7 NOP             ;
- $7FE8 NOP             ;
- $7FE9 NOP             ;
- $7FEA NOP             ;
- $7FEB NOP             ;
- $7FEC NOP             ;
- $7FED NOP             ;
- $7FEE NOP             ;
- $7FEF NOP             ;
- $7FF0 NOP             ;
- $7FF1 NOP             ;
- $7FF2 NOP             ;
- $7FF3 NOP             ;
- $7FF4 NOP             ;
- $7FF5 NOP             ;
- $7FF6 NOP             ;
- $7FF7 NOP             ;
- $7FF8 NOP             ;
- $7FF9 NOP             ;
- $7FFA NOP             ;
- $7FFB NOP             ;
- $7FFC NOP             ;
- $7FFD NOP             ;
- $7FFE NOP             ;
- $7FFF NOP             ;
- $8000 NOP             ;
- $8001 NOP             ;
- $8002 NOP             ;
- $8003 NOP             ;
- $8004 NOP             ;
- $8005 NOP             ;
- $8006 NOP             ;
- $8007 NOP             ;
- $8008 NOP             ;
-*$8009 NOP             ;
- $800A INC E           ;
- $800B RST $30         ;
- $800C ADD HL,DE       ;
- $800D JR NZ,$8009     ;
- $800F LD E,(HL)       ;
- $8010 NOP             ;
- $8011 NOP             ;
- $8012 NOP             ;
- $8013 NOP             ;
- $8014 NOP             ;
- $8015 NOP             ;
- $8016 NOP             ;
- $8017 NOP             ;
- $8018 NOP             ;
- $8019 NOP             ;
- $801A NOP             ;
- $801B LD (BC),A       ;
- $801C NOP             ;
- $801D NOP             ;
- $801E NOP             ;
- $801F INC B           ;
- $8020 NOP             ;
- $8021 NOP             ;
- $8022 NOP             ;
- $8023 NOP             ;
- $8024 NOP             ;
- $8025 NOP             ;
- $8026 NOP             ;
- $8027 INC C           ;
- $8028 NOP             ;
- $8029 NOP             ;
- $802A NOP             ;
- $802B NOP             ;
- $802C NOP             ;
- $802D NOP             ;
- $802E NOP             ;
- $802F NOP             ;
- $8030 NOP             ;
- $8031 NOP             ;
- $8032 NOP             ;
- $8033 NOP             ;
- $8034 NOP             ;
- $8035 NOP             ;
- $8036 NOP             ;
- $8037 NOP             ;
- $8038 CCF             ;
- $8039 RET M           ;
- $803A NOP             ;
- $803B JR NZ,$8040     ;
- $803D RET NZ          ;
- $803E JR NZ,$8040     ;
-*$8040 NOP             ;
- $8041 RST $38         ;
- $8042 CALL M,$F82F    ;
- $8045 CCF             ;
- $8046 DI              ;
- $8047 RET PO          ;
- $8048 LD A,(HL)       ;
- $8049 LD A,(HL)       ;
- $804A NOP             ;
- $804B NOP             ;
- $804C NOP             ;
- $804D NOP             ;
- $804E NOP             ;
- $804F NOP             ;
- $8050 NOP             ;
- $8051 NOP             ;
- $8052 NOP             ;
- $8053 NOP             ;
- $8054 NOP             ;
- $8055 NOP             ;
- $8056 NOP             ;
- $8057 NOP             ;
- $8058 INC BC          ;
- $8059 RST $38         ;
- $805A RET M           ;
- $805B INC BC          ;
- $805C RST $38         ;
- $805D RST $18         ;
- $805E NOP             ;
- $805F NOP             ;
- $8060 NOP             ;
- $8061 CCF             ;
- $8062 LD A,(HL)       ;
- $8063 DEFB $FD        ;
- $8064 RET P           ;
- $8065 RRCA            ;
- $8066 RST $00         ;
- $8067 RET PO          ;
- $8068 RRA             ;
- $8069 RET PO          ;
- $806A NOP             ;
- $806B NOP             ;
- $806C RRA             ;
- $806D SBC A,A         ;
- $806E LD A,H          ;
- $806F RRA             ;
- $8070 RST $38         ;
- $8071 LD A,A          ;
- $8072 CALL M,$FB3F    ;
- $8075 RRCA            ;
- $8076 CP $FF          ;
- $8078 NOP             ;
- $8079 ADD HL,DE       ;
- $807A JP P,$C04F      ;
- $807D NOP             ;
- $807E NOP             ;
- $807F EX AF,AF'       ;
- $8080 NOP             ;
- $8081 LD A,(HL)       ;
- $8082 NOP             ;
- $8083 NOP             ;
- $8084 NOP             ;
- $8085 RRA             ;
- $8086 ADD A,B         ;
- $8087 NOP             ;
- $8088 INC A           ;
- $8089 NOP             ;
- $808A NOP             ;
- $808B LD BC,$E7FB     ;
- $808E RET PO          ;
- $808F CALL M,$FFFE    ;
- $8092 RET P           ;
- $8093 RST $38         ;
- $8094 CP $7F          ;
- $8096 LD A,A          ;
- $8097 RET P           ;
- $8098 NOP             ;
- $8099 LD L,L          ;
- $809A RST $38         ;
- $809B CCF             ;
- $809C ADD A,B         ;
- $809D NOP             ;
- $809E EX AF,AF'       ;
- $809F NOP             ;
- $80A0 NOP             ;
- $80A1 NOP             ;
- $80A2 NOP             ;
- $80A3 NOP             ;
- $80A4 NOP             ;
- $80A5 NOP             ;
- $80A6 NOP             ;
- $80A7 NOP             ;
- $80A8 NOP             ;
- $80A9 NOP             ;
- $80AA NOP             ;
- $80AB NOP             ;
- $80AC NOP             ;
- $80AD NOP             ;
- $80AE NOP             ;
- $80AF NOP             ;
- $80B0 NOP             ;
- $80B1 RST $38         ;
- $80B2 RET NZ          ;
- $80B3 NOP             ;
- $80B4 NOP             ;
- $80B5 NOP             ;
- $80B6 NOP             ;
- $80B7 NOP             ;
- $80B8 NOP             ;
- $80B9 NOP             ;
- $80BA LD BC,$F8FF     ;
- $80BD EX AF,AF'       ;
- $80BE NOP             ;
- $80BF NOP             ;
- $80C0 NOP             ;
- $80C1 NOP             ;
- $80C2 NOP             ;
- $80C3 NOP             ;
- $80C4 NOP             ;
- $80C5 NOP             ;
- $80C6 NOP             ;
- $80C7 NOP             ;
- $80C8 NOP             ;
- $80C9 NOP             ;
- $80CA NOP             ;
- $80CB NOP             ;
- $80CC NOP             ;
- $80CD NOP             ;
- $80CE NOP             ;
- $80CF NOP             ;
- $80D0 NOP             ;
- $80D1 NOP             ;
- $80D2 NOP             ;
- $80D3 NOP             ;
- $80D4 DJNZ $80D6      ;
-*$80D6 NOP             ;
- $80D7 NOP             ;
- $80D8 NOP             ;
- $80D9 NOP             ;
- $80DA NOP             ;
- $80DB RLCA            ;
- $80DC RST $38         ;
- $80DD NOP             ;
- $80DE NOP             ;
- $80DF NOP             ;
- $80E0 NOP             ;
- $80E1 NOP             ;
- $80E2 NOP             ;
- $80E3 NOP             ;
- $80E4 NOP             ;
- $80E5 NOP             ;
- $80E6 NOP             ;
- $80E7 NOP             ;
- $80E8 NOP             ;
- $80E9 NOP             ;
- $80EA NOP             ;
- $80EB NOP             ;
- $80EC NOP             ;
- $80ED NOP             ;
- $80EE NOP             ;
- $80EF NOP             ;
- $80F0 LD BC,$FFFF     ;
- $80F3 RST $38         ;
- $80F4 RST $38         ;
- $80F5 RST $38         ;
- $80F6 CP $00          ;
- $80F8 NOP             ;
- $80F9 NOP             ;
- $80FA NOP             ;
- $80FB NOP             ;
- $80FC NOP             ;
- $80FD NOP             ;
- $80FE NOP             ;
- $80FF NOP             ;
- $8100 NOP             ;
- $8101 NOP             ;
- $8102 NOP             ;
- $8103 NOP             ;
- $8104 NOP             ;
- $8105 NOP             ;
- $8106 NOP             ;
- $8107 NOP             ;
- $8108 NOP             ;
- $8109 NOP             ;
- $810A LD (DE),A       ;
- $810B ADD A,H         ;
- $810C AND L           ;
- $810D JR NZ,$8131     ;
- $810F LD D,B          ;
- $8110 NOP             ;
- $8111 NOP             ;
- $8112 NOP             ;
- $8113 NOP             ;
- $8114 NOP             ;
- $8115 NOP             ;
- $8116 NOP             ;
- $8117 NOP             ;
- $8118 NOP             ;
- $8119 NOP             ;
- $811A NOP             ;
- $811B INC C           ;
- $811C NOP             ;
- $811D NOP             ;
- $811E NOP             ;
- $811F EX AF,AF'       ;
- $8120 NOP             ;
- $8121 NOP             ;
- $8122 NOP             ;
- $8123 NOP             ;
- $8124 NOP             ;
- $8125 NOP             ;
- $8126 LD BC,$00FC     ;
- $8129 NOP             ;
- $812A NOP             ;
- $812B NOP             ;
- $812C NOP             ;
- $812D NOP             ;
- $812E NOP             ;
- $812F NOP             ;
- $8130 NOP             ;
-*$8131 NOP             ;
- $8132 NOP             ;
- $8133 NOP             ;
- $8134 NOP             ;
- $8135 NOP             ;
- $8136 NOP             ;
- $8137 NOP             ;
- $8138 CCF             ;
- $8139 CALL M,$C000    ;
- $813C INC BC          ;
- $813D RET PO          ;
- $813E NOP             ;
- $813F NOP             ;
- $8140 NOP             ;
- $8141 RST $38         ;
- $8142 CP $33          ;
- $8144 CALL M,$F3FF    ;
- $8147 RET PO          ;
- $8148 LD A,(HL)       ;
- $8149 CP $00          ;
- $814B NOP             ;
- $814C NOP             ;
- $814D LD A,B          ;
- $814E RRA             ;
- $814F NOP             ;
- $8150 NOP             ;
- $8151 NOP             ;
- $8152 NOP             ;
- $8153 NOP             ;
- $8154 NOP             ;
- $8155 NOP             ;
- $8156 NOP             ;
- $8157 NOP             ;
- $8158 LD BC,$FEFF     ;
- $815B RRA             ;
- $815C RST $38         ;
- $815D ADC A,A         ;
- $815E NOP             ;
- $815F NOP             ;
- $8160 NOP             ;
- $8161 CCF             ;
- $8162 CALL M,$70FE    ;
- $8165 RRCA            ;
- $8166 RST $00         ;
- $8167 RET PO          ;
- $8168 RRCA            ;
- $8169 RET PO          ;
- $816A NOP             ;
- $816B NOP             ;
- $816C CCF             ;
- $816D SBC A,A         ;
- $816E LD A,H          ;
- $816F RRA             ;
- $8170 SBC A,A         ;
- $8171 LD A,A          ;
- $8172 CALL M,$3B3C    ;
- $8175 RRCA            ;
- $8176 CP $FE          ;
- $8178 NOP             ;
- $8179 RLCA            ;
- $817A LD A,C          ;
- $817B LD E,A          ;
- $817C ADD A,B         ;
- $817D NOP             ;
- $817E NOP             ;
- $817F DJNZ $8181      ;
-*$8181 LD A,H          ;
- $8182 NOP             ;
- $8183 NOP             ;
- $8184 NOP             ;
- $8185 RRA             ;
- $8186 NOP             ;
- $8187 NOP             ;
- $8188 NOP             ;
- $8189 NOP             ;
- $818A NOP             ;
- $818B INC BC          ;
- $818C RET M           ;
- $818D RLCA            ;
- $818E RET PO          ;
- $818F DEFB $FD        ;
- $8190 CP $FF          ;
- $8192 RET P           ;
- $8193 DEFB $FD        ;
- $8194 CP $7F          ;
- $8196 CCF             ;
- $8197 RET P           ;
- $8198 LD BC,$3C5C     ;
- $819B RST $38         ;
- $819C RET NZ          ;
- $819D NOP             ;
- $819E DJNZ $81A0      ;
-*$81A0 LD H,H          ;
- $81A1 CP (HL)         ;
- $81A2 SUB E           ;
- $81A3 JR C,$81A5      ;
-*$81A5 INC BC          ;
- $81A6 ADD HL,BC       ;
- $81A7 LD ($E910),A    ;
- $81AA LD ($E74C),A    ;
- $81AD JP NC,$0000     ;
- $81B0 NOP             ;
- $81B1 RST $38         ;
- $81B2 ADD A,B         ;
- $81B3 NOP             ;
- $81B4 NOP             ;
- $81B5 NOP             ;
- $81B6 NOP             ;
- $81B7 NOP             ;
- $81B8 NOP             ;
- $81B9 NOP             ;
- $81BA NOP             ;
- $81BB RST $38         ;
- $81BC RET M           ;
- $81BD NOP             ;
- $81BE NOP             ;
- $81BF NOP             ;
- $81C0 LD H,A          ;
- $81C1 ADD HL,DE       ;
- $81C2 RET             ;
- $81C3 LD (HL),E       ;
- $81C4 JR $81CD        ;
- $81C6 ADD HL,BC       ;
- $81C7 LD A,C          ;
- $81C8 ADC A,H         ;
- $81C9 CALL P,$0080    ;
- $81CC NOP             ;
-*$81CD NOP             ;
- $81CE NOP             ;
- $81CF NOP             ;
- $81D0 NOP             ;
- $81D1 NOP             ;
- $81D2 NOP             ;
- $81D3 NOP             ;
- $81D4 LD A,(HL)       ;
- $81D5 NOP             ;
- $81D6 NOP             ;
- $81D7 NOP             ;
- $81D8 NOP             ;
- $81D9 NOP             ;
- $81DA NOP             ;
- $81DB INC BC          ;
- $81DC RST $38         ;
- $81DD NOP             ;
- $81DE NOP             ;
- $81DF NOP             ;
- $81E0 LD H,E          ;
- $81E1 INC H           ;
- $81E2 RST $08         ;
- $81E3 LD (HL),E       ;
- $81E4 RET PO          ;
- $81E5 RLCA            ;
- $81E6 RRCA            ;
- $81E7 LD SP,$6392     ;
- $81EA INC H           ;
- $81EB NOP             ;
- $81EC NOP             ;
- $81ED NOP             ;
- $81EE NOP             ;
- $81EF NOP             ;
- $81F0 NOP             ;
- $81F1 RST $38         ;
- $81F2 RST $38         ;
- $81F3 RST $38         ;
- $81F4 RST $38         ;
- $81F5 RST $38         ;
- $81F6 RET P           ;
- $81F7 NOP             ;
- $81F8 NOP             ;
- $81F9 NOP             ;
- $81FA NOP             ;
- $81FB NOP             ;
- $81FC NOP             ;
- $81FD NOP             ;
- $81FE NOP             ;
- $81FF NOP             ;
- $8200 NOP             ;
- $8201 NOP             ;
- $8202 NOP             ;
- $8203 NOP             ;
- $8204 NOP             ;
- $8205 NOP             ;
- $8206 NOP             ;
- $8207 NOP             ;
- $8208 NOP             ;
- $8209 NOP             ;
- $820A LD (DE),A       ;
- $820B CALL PO,$C0A0   ;
- $820E LD ($005C),HL   ;
- $8211 NOP             ;
- $8212 NOP             ;
- $8213 NOP             ;
- $8214 NOP             ;
- $8215 NOP             ;
- $8216 NOP             ;
- $8217 NOP             ;
- $8218 NOP             ;
- $8219 NOP             ;
- $821A NOP             ;
- $821B JR NC,$821D     ;
-*$821D NOP             ;
- $821E NOP             ;
- $821F JR NC,$8221     ;
-*$8221 NOP             ;
- $8222 NOP             ;
- $8223 NOP             ;
- $8224 NOP             ;
- $8225 NOP             ;
- $8226 CCF             ;
- $8227 CALL M,$0000    ;
- $822A NOP             ;
- $822B NOP             ;
- $822C NOP             ;
- $822D NOP             ;
- $822E NOP             ;
- $822F NOP             ;
- $8230 NOP             ;
- $8231 NOP             ;
- $8232 NOP             ;
- $8233 NOP             ;
- $8234 NOP             ;
- $8235 NOP             ;
- $8236 NOP             ;
- $8237 NOP             ;
- $8238 RRA             ;
- $8239 CP $01          ;
- $823B NOP             ;
- $823C INC BC          ;
- $823D CALL M,$0000    ;
- $8240 NOP             ;
- $8241 RST $38         ;
- $8242 CP $7D          ;
- $8244 CALL M,$F7FF    ;
- $8247 RET PO          ;
- $8248 LD A,(HL)       ;
- $8249 CP $00          ;
- $824B NOP             ;
- $824C RLCA            ;
- $824D CP $3F          ;
- $824F NOP             ;
- $8250 NOP             ;
- $8251 NOP             ;
- $8252 NOP             ;
- $8253 NOP             ;
- $8254 NOP             ;
- $8255 LD BC,$3FFC     ;
- $8258 LD BC,$FFFF     ;
- $825B CCF             ;
- $825C RST $38         ;
- $825D INC BC          ;
- $825E NOP             ;
- $825F NOP             ;
- $8260 NOP             ;
- $8261 CCF             ;
- $8262 CALL M,$A0EF    ;
- $8265 RRCA            ;
- $8266 RST $00         ;
- $8267 RET NZ          ;
- $8268 RRA             ;
- $8269 RET NZ          ;
- $826A NOP             ;
- $826B NOP             ;
- $826C LD A,A          ;
- $826D SBC A,A         ;
- $826E LD A,B          ;
- $826F CCF             ;
- $8270 INC E           ;
- $8271 LD A,A          ;
- $8272 RET M           ;
- $8273 DEC SP          ;
- $8274 RST $10         ;
- $8275 RRCA            ;
- $8276 RST $38         ;
- $8277 CP $00          ;
- $8279 INC C           ;
- $827A DEFB $FD        ;
- $827B CCF             ;
- $827C NOP             ;
- $827D NOP             ;
- $827E NOP             ;
- $827F JR NZ,$8281     ;
-*$8281 LD A,H          ;
- $8282 NOP             ;
- $8283 NOP             ;
- $8284 NOP             ;
- $8285 INC C           ;
- $8286 NOP             ;
- $8287 NOP             ;
- $8288 NOP             ;
- $8289 NOP             ;
- $828A NOP             ;
- $828B INC BC          ;
- $828C RET P           ;
- $828D RRCA            ;
- $828E RET NZ          ;
- $828F RST $38         ;
- $8290 RET P           ;
- $8291 RST $38         ;
- $8292 RET PO          ;
- $8293 CP IYh          ;
- $8295 CP $3F          ;
- $8297 RET PO          ;
- $8298 NOP             ;
- $8299 LD ($FF03),A    ;
- $829C RET NZ          ;
- $829D EX AF,AF'       ;
- $829E JR NZ,$82A0     ;
-*$82A0 SUB H           ;
- $82A1 ADC A,B         ;
- $82A2 SUB H           ;
- $82A3 AND H           ;
- $82A4 NOP             ;
- $82A5 INC B           ;
- $82A6 ADD HL,BC       ;
- $82A7 LD C,D          ;
- $82A8 DJNZ $82F7      ;
- $82AA LD C,D          ;
- $82AB LD D,D          ;
- $82AC SUB C           ;
- $82AD LD (DE),A       ;
- $82AE NOP             ;
- $82AF NOP             ;
- $82B0 NOP             ;
- $82B1 LD A,A          ;
- $82B2 ADD A,B         ;
- $82B3 NOP             ;
- $82B4 NOP             ;
- $82B5 NOP             ;
- $82B6 NOP             ;
- $82B7 NOP             ;
- $82B8 NOP             ;
- $82B9 NOP             ;
- $82BA LD BC,$FC7F     ;
- $82BD NOP             ;
- $82BE NOP             ;
- $82BF NOP             ;
- $82C0 SUB H           ;
- $82C1 AND L           ;
- $82C2 ADD HL,HL       ;
- $82C3 INC H           ;
- $82C4 AND B           ;
- $82C5 INC B           ;
- $82C6 ADC A,C         ;
- $82C7 LD B,D          ;
- $82C8 DJNZ $824E      ;
- $82CA ADD A,B         ;
- $82CB NOP             ;
- $82CC NOP             ;
- $82CD NOP             ;
- $82CE NOP             ;
- $82CF NOP             ;
- $82D0 NOP             ;
- $82D1 NOP             ;
- $82D2 NOP             ;
- $82D3 NOP             ;
- $82D4 RST $38         ;
- $82D5 ADD A,B         ;
- $82D6 NOP             ;
- $82D7 NOP             ;
- $82D8 NOP             ;
- $82D9 NOP             ;
- $82DA NOP             ;
- $82DB LD BC,$00FF     ;
- $82DE NOP             ;
- $82DF NOP             ;
- $82E0 SUB H           ;
- $82E1 OR L            ;
- $82E2 JR Z,$832C      ;
- $82E4 ADD A,B         ;
- $82E5 INC B           ;
- $82E6 ADD A,C         ;
- $82E7 LD C,D          ;
- $82E8 LD D,H          ;
- $82E9 ADD A,H         ;
- $82EA OR H            ;
- $82EB NOP             ;
- $82EC NOP             ;
- $82ED NOP             ;
- $82EE NOP             ;
- $82EF NOP             ;
- $82F0 NOP             ;
- $82F1 RRCA            ;
- $82F2 RST $38         ;
- $82F3 RST $38         ;
- $82F4 RST $38         ;
- $82F5 RST $38         ;
- $82F6 NOP             ;
-*$82F7 NOP             ;
- $82F8 NOP             ;
- $82F9 NOP             ;
- $82FA NOP             ;
- $82FB NOP             ;
- $82FC NOP             ;
- $82FD NOP             ;
- $82FE NOP             ;
- $82FF NOP             ;
- $8300 NOP             ;
- $8301 NOP             ;
- $8302 NOP             ;
- $8303 NOP             ;
- $8304 NOP             ;
- $8305 NOP             ;
- $8306 NOP             ;
- $8307 NOP             ;
- $8308 NOP             ;
- $8309 NOP             ;
- $830A INC E           ;
- $830B ADD A,A         ;
- $830C JR NZ,$834E     ;
- $830E INC HL          ;
- $830F RET NC          ;
- $8310 NOP             ;
- $8311 NOP             ;
- $8312 NOP             ;
- $8313 NOP             ;
- $8314 NOP             ;
- $8315 NOP             ;
- $8316 NOP             ;
- $8317 NOP             ;
- $8318 NOP             ;
- $8319 NOP             ;
- $831A NOP             ;
- $831B RET NZ          ;
- $831C NOP             ;
- $831D NOP             ;
- $831E NOP             ;
- $831F LD B,B          ;
- $8320 NOP             ;
- $8321 NOP             ;
- $8322 NOP             ;
- $8323 NOP             ;
- $8324 NOP             ;
- $8325 NOP             ;
- $8326 CCF             ;
- $8327 CALL M,$0000    ;
- $832A NOP             ;
- $832B NOP             ;
-*$832C NOP             ;
- $832D NOP             ;
- $832E NOP             ;
- $832F NOP             ;
- $8330 NOP             ;
- $8331 NOP             ;
- $8332 NOP             ;
- $8333 NOP             ;
- $8334 NOP             ;
- $8335 NOP             ;
- $8336 NOP             ;
- $8337 NOP             ;
- $8338 RRA             ;
- $8339 RST $38         ;
- $833A NOP             ;
- $833B NOP             ;
- $833C NOP             ;
- $833D CALL M,$0000    ;
- $8340 NOP             ;
- $8341 RET M           ;
- $8342 LD A,(HL)       ;
- $8343 LD A,E          ;
- $8344 CALL M,$E7FF    ;
- $8347 RET PO          ;
- $8348 CCF             ;
- $8349 CALL M,$0000    ;
- $834C RRCA            ;
- $834D RST $38         ;
-*$834E CCF             ;
- $834F LD BC,$00F0     ;
- $8352 NOP             ;
- $8353 NOP             ;
- $8354 NOP             ;
- $8355 INC BC          ;
- $8356 CP $7F          ;
- $8358 ADD A,D         ;
- $8359 RST $38         ;
- $835A CALL M,$FEFF    ;
- $835D NOP             ;
- $835E NOP             ;
- $835F NOP             ;
- $8360 NOP             ;
- $8361 CCF             ;
- $8362 RET M           ;
- $8363 SBC A,A         ;
- $8364 RET PO          ;
- $8365 RRCA            ;
- $8366 ADD A,E         ;
- $8367 ADD A,B         ;
- $8368 RRA             ;
- $8369 RET NZ          ;
- $836A NOP             ;
- $836B NOP             ;
- $836C LD A,A          ;
- $836D LD A,$F8        ;
- $836F CCF             ;
- $8370 NOP             ;
- $8371 LD A,A          ;
- $8372 RET M           ;
- $8373 LD (HL),A       ;
- $8374 RST $28         ;
- $8375 RRA             ;
- $8376 RST $38         ;
- $8377 CALL M,$0B00    ;
- $837A CALL M,$00FE    ;
- $837D NOP             ;
- $837E NOP             ;
- $837F LD B,B          ;
- $8380 NOP             ;
- $8381 INC A           ;
- $8382 NOP             ;
- $8383 NOP             ;
- $8384 NOP             ;
- $8385 NOP             ;
- $8386 NOP             ;
- $8387 NOP             ;
- $8388 NOP             ;
- $8389 NOP             ;
- $838A NOP             ;
- $838B INC BC          ;
- $838C RET PO          ;
- $838D RRCA            ;
- $838E ADD A,B         ;
- $838F RST $38         ;
- $8390 RET P           ;
- $8391 LD A,A          ;
- $8392 RET PO          ;
- $8393 EI              ;
- $8394 CALL C,$3FFE    ;
- $8397 RET PO          ;
- $8398 NOP             ;
- $8399 SBC A,B         ;
- $839A RRCA            ;
- $839B RST $38         ;
- $839C RET PO          ;
- $839D DJNZ $83DF      ;
- $839F NOP             ;
- $83A0 SUB H           ;
- $83A1 ADC A,B         ;
- $83A2 SUB H           ;
- $83A3 AND H           ;
- $83A4 NOP             ;
- $83A5 INC BC          ;
- $83A6 ADD HL,BC       ;
- $83A7 LD C,D          ;
- $83A8 DJNZ $83AB      ;
+
+; Data block at 7AC3
+b$7AC3 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7ACB DEFB $00,$00,$A0,$48,$EF,$00,$88,$70
+ $7AD3 DEFB $EF,$00,$00,$00,$00,$00,$A0,$04
+ $7ADB DEFB $EF,$00,$90,$32,$99,$00,$A0,$39
+ $7AE3 DEFB $A0,$00,$A0,$04,$50,$00,$00,$00
+ $7AEB DEFB $00,$00,$00,$00,$00,$00,$78,$70
+ $7AF3 DEFB $EF,$00,$00,$00,$00,$00,$00,$00
+ $7AFB DEFB $00,$00,$00,$00,$00,$00,$90,$90
+ $7B03 DEFB $EF,$00,$38,$00,$00,$00,$00,$00
+ $7B0B DEFB $A0,$AA,$00,$00,$00,$00,$00,$00
+ $7B13 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7B1B DEFB $00,$00,$00,$68,$50,$78,$00,$88
+ $7B23 DEFB $BC,$EF,$00,$00,$00,$00,$00,$98
+ $7B2B DEFB $78,$EF,$00,$3F,$72,$65,$72,$86
+ $7B33 DEFB $72,$BD,$72,$E1,$72,$0E,$73,$67
+ $7B3B DEFB $73,$A4,$73,$E1,$73,$FA,$73,$13
+ $7B43 DEFB $74,$00,$00,$00,$00,$00,$00,$00
+ $7B4B DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7B53 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7B5B DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7B63 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7B6B DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7B73 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7B7B DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7B83 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7B8B DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7B93 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7B9B DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7BA3 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7BAB DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7BB3 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7BBB DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7BC3 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7BCB DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7BD3 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7BDB DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7BE3 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7BEB DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7BF3 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7BFB DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7C03 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7C0B DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7C13 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7C1B DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7C23 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7C2B DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7C33 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7C3B DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7C43 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7C4B DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7C53 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7C5B DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7C63 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7C6B DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7C73 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7C7B DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7C83 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7C8B DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7C93 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7C9B DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7CA3 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7CAB DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7CB3 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7CBB DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7CC3 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7CCB DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7CD3 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7CDB DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7CE3 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7CEB DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7CF3 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7CFB DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7D03 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7D0B DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7D13 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7D1B DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7D23 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7D2B DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7D33 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7D3B DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7D43 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7D4B DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7D53 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7D5B DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7D63 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7D6B DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7D73 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7D7B DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7D83 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7D8B DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7D93 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7D9B DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7DA3 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7DAB DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7DB3 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7DBB DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7DC3 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7DCB DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7DD3 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7DDB DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7DE3 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7DEB DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7DF3 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7DFB DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7E03 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7E0B DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7E13 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7E1B DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7E23 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7E2B DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7E33 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7E3B DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7E43 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7E4B DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7E53 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7E5B DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7E63 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7E6B DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7E73 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7E7B DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7E83 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7E8B DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7E93 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7E9B DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7EA3 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7EAB DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7EB3 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7EBB DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7EC3 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7ECB DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7ED3 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7EDB DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7EE3 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7EEB DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7EF3 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7EFB DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7F03 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7F0B DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7F13 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7F1B DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7F23 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7F2B DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7F33 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7F3B DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7F43 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7F4B DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7F53 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7F5B DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7F63 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7F6B DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7F73 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7F7B DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7F83 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7F8B DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7F93 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7F9B DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7FA3 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7FAB DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7FB3 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7FBB DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7FC3 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7FCB DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7FD3 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7FDB DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7FE3 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7FEB DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7FF3 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7FFB DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $8003 DEFB $00,$00,$00,$00,$00,$00,$00,$1C
+ $800B DEFB $F7,$19,$20,$FA,$5E,$00,$00,$00
+ $8013 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $801B DEFB $02,$00,$00,$00,$04,$00,$00,$00
+ $8023 DEFB $00,$00,$00,$00,$0C,$00,$00,$00
+ $802B DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $8033 DEFB $00,$00,$00,$00,$00,$3F,$F8,$00
+ $803B DEFB $20,$03,$C0,$20,$00,$00,$FF,$FC
+ $8043 DEFB $2F,$F8,$3F,$F3,$E0,$7E,$7E,$00
+ $804B DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $8053 DEFB $00,$00,$00,$00,$00,$03,$FF,$F8
+ $805B DEFB $03,$FF,$DF,$00,$00,$00,$3F,$7E
+ $8063 DEFB $FD,$F0,$0F,$C7,$E0,$1F,$E0,$00
+ $806B DEFB $00,$1F,$9F,$7C,$1F,$FF,$7F,$FC
+ $8073 DEFB $3F,$FB,$0F,$FE,$FF,$00,$19,$F2
+ $807B DEFB $4F,$C0,$00,$00,$08,$00,$7E,$00
+ $8083 DEFB $00,$00,$1F,$80,$00,$3C,$00,$00
+ $808B DEFB $01,$FB,$E7,$E0,$FC,$FE,$FF,$F0
+ $8093 DEFB $FF,$FE,$7F,$7F,$F0,$00,$6D,$FF
+ $809B DEFB $3F,$80,$00,$08,$00,$00,$00,$00
+ $80A3 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $80AB DEFB $00,$00,$00,$00,$00,$00,$FF,$C0
+ $80B3 DEFB $00,$00,$00,$00,$00,$00,$00,$01
+ $80BB DEFB $FF,$F8,$08,$00,$00,$00,$00,$00
+ $80C3 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $80CB DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $80D3 DEFB $00,$10,$00,$00,$00,$00,$00,$00
+ $80DB DEFB $07,$FF,$00,$00,$00,$00,$00,$00
+ $80E3 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $80EB DEFB $00,$00,$00,$00,$00,$01,$FF,$FF
+ $80F3 DEFB $FF,$FF,$FF,$FE,$00,$00,$00,$00
+ $80FB DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $8103 DEFB $00,$00,$00,$00,$00,$00,$00,$12
+ $810B DEFB $84,$A5,$20,$22,$50,$00,$00,$00
+ $8113 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $811B DEFB $0C,$00,$00,$00,$08,$00,$00,$00
+ $8123 DEFB $00,$00,$00,$01,$FC,$00,$00,$00
+ $812B DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $8133 DEFB $00,$00,$00,$00,$00,$3F,$FC,$00
+ $813B DEFB $C0,$03,$E0,$00,$00,$00,$FF,$FE
+ $8143 DEFB $33,$FC,$FF,$F3,$E0,$7E,$FE,$00
+ $814B DEFB $00,$00,$78,$1F,$00,$00,$00,$00
+ $8153 DEFB $00,$00,$00,$00,$00,$01,$FF,$FE
+ $815B DEFB $1F,$FF,$8F,$00,$00,$00,$3F,$FC
+ $8163 DEFB $FE,$70,$0F,$C7,$E0,$0F,$E0,$00
+ $816B DEFB $00,$3F,$9F,$7C,$1F,$9F,$7F,$FC
+ $8173 DEFB $3C,$3B,$0F,$FE,$FE,$00,$07,$79
+ $817B DEFB $5F,$80,$00,$00,$10,$00,$7C,$00
+ $8183 DEFB $00,$00,$1F,$00,$00,$00,$00,$00
+ $818B DEFB $03,$F8,$07,$E0,$FD,$FE,$FF,$F0
+ $8193 DEFB $FD,$FE,$7F,$3F,$F0,$01,$5C,$3C
+ $819B DEFB $FF,$C0,$00,$10,$00,$64,$BE,$93
+ $81A3 DEFB $38,$00,$03,$09,$32,$10,$E9,$32
+ $81AB DEFB $4C,$E7,$D2,$00,$00,$00,$FF,$80
+ $81B3 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $81BB DEFB $FF,$F8,$00,$00,$00,$67,$19,$C9
+ $81C3 DEFB $73,$18,$07,$09,$79,$8C,$F4,$80
+ $81CB DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $81D3 DEFB $00,$7E,$00,$00,$00,$00,$00,$00
+ $81DB DEFB $03,$FF,$00,$00,$00,$63,$24,$CF
+ $81E3 DEFB $73,$E0,$07,$0F,$31,$92,$63,$24
+ $81EB DEFB $00,$00,$00,$00,$00,$00,$FF,$FF
+ $81F3 DEFB $FF,$FF,$FF,$F0,$00,$00,$00,$00
+ $81FB DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $8203 DEFB $00,$00,$00,$00,$00,$00,$00,$12
+ $820B DEFB $E4,$A0,$C0,$22,$5C,$00,$00,$00
+ $8213 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $821B DEFB $30,$00,$00,$00,$30,$00,$00,$00
+ $8223 DEFB $00,$00,$00,$3F,$FC,$00,$00,$00
+ $822B DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $8233 DEFB $00,$00,$00,$00,$00,$1F,$FE,$01
+ $823B DEFB $00,$03,$FC,$00,$00,$00,$FF,$FE
+ $8243 DEFB $7D,$FC,$FF,$F7,$E0,$7E,$FE,$00
+ $824B DEFB $00,$07,$FE,$3F,$00,$00,$00,$00
+ $8253 DEFB $00,$00,$01,$FC,$3F,$01,$FF,$FF
+ $825B DEFB $3F,$FF,$03,$00,$00,$00,$3F,$FC
+ $8263 DEFB $EF,$A0,$0F,$C7,$C0,$1F,$C0,$00
+ $826B DEFB $00,$7F,$9F,$78,$3F,$1C,$7F,$F8
+ $8273 DEFB $3B,$D7,$0F,$FF,$FE,$00,$0C,$FD
+ $827B DEFB $3F,$00,$00,$00,$20,$00,$7C,$00
+ $8283 DEFB $00,$00,$0C,$00,$00,$00,$00,$00
+ $828B DEFB $03,$F0,$0F,$C0,$FF,$F0,$FF,$E0
+ $8293 DEFB $FD,$BC,$FE,$3F,$E0,$00,$32,$03
+ $829B DEFB $FF,$C0,$08,$20,$00,$94,$88,$94
+ $82A3 DEFB $A4,$00,$04,$09,$4A,$10,$4D,$4A
+ $82AB DEFB $52,$91,$12,$00,$00,$00,$7F,$80
+ $82B3 DEFB $00,$00,$00,$00,$00,$00,$00,$01
+ $82BB DEFB $7F,$FC,$00,$00,$00,$94,$A5,$29
+ $82C3 DEFB $24,$A0,$04,$89,$42,$10,$84,$80
+ $82CB DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $82D3 DEFB $00,$FF,$80,$00,$00,$00,$00,$00
+ $82DB DEFB $01,$FF,$00,$00,$00,$94,$B5,$28
+ $82E3 DEFB $48,$80,$04,$81,$4A,$54,$84,$B4
+ $82EB DEFB $00,$00,$00,$00,$00,$00,$0F,$FF
+ $82F3 DEFB $FF,$FF,$FF,$00,$00,$00,$00,$00
+ $82FB DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $8303 DEFB $00,$00,$00,$00,$00,$00,$00,$1C
+ $830B DEFB $87,$20,$40,$23,$D0,$00,$00,$00
+ $8313 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $831B DEFB $C0,$00,$00,$00,$40,$00,$00,$00
+ $8323 DEFB $00,$00,$00,$3F,$FC,$00,$00,$00
+ $832B DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $8333 DEFB $00,$00,$00,$00,$00,$1F,$FF,$00
+ $833B DEFB $00,$00,$FC,$00,$00,$00,$F8,$7E
+ $8343 DEFB $7B,$FC,$FF,$E7,$E0,$3F,$FC,$00
+ $834B DEFB $00,$0F,$FF,$3F,$01,$F0,$00,$00
+ $8353 DEFB $00,$00,$03,$FE,$7F,$82,$FF,$FC
+ $835B DEFB $FF,$FE,$00,$00,$00,$00,$3F,$F8
+ $8363 DEFB $9F,$E0,$0F,$83,$80,$1F,$C0,$00
+ $836B DEFB $00,$7F,$3E,$F8,$3F,$00,$7F,$F8
+ $8373 DEFB $77,$EF,$1F,$FF,$FC,$00,$0B,$FC
+ $837B DEFB $FE,$00,$00,$00,$40,$00,$3C,$00
+ $8383 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $838B DEFB $03,$E0,$0F,$80,$FF,$F0,$7F,$E0
+ $8393 DEFB $FB,$DC,$FE,$3F,$E0,$00,$98,$0F
+ $839B DEFB $FF,$E0,$10,$40,$00,$94,$88,$94
+ $83A3 DEFB $A4,$00,$03,$09,$4A,$10
 
 ; Room #N$00
 ;
@@ -9604,15 +7762,13 @@ c$BDA6 LD ($BDC5),A  ;
  $BFFF NOP           ;
 
 ; Room Buffer
-;
-; Used by the routine at #R$720F.
 @label=RoomBuffer
 g$C000 DEFB $00,$3D,$20,$FD,$A7,$04,$C8,$3E,$7F,$DB,$FE,$1F,$A9,$E6,$20,$28,$F4,$79,$2F,$4F,$E6,$07,$F6,$08,$D3,$FE,$37,$C9,$F3,$14,$15,$3E
  $C020 DEFB $0F,$D3,$FE,$21,$F7,$C0,$E5,$DB,$FE,$1F,$E6,$20,$F6,$02,$4F,$BF,$CD,$01,$C0,$30,$FB,$21,$15,$04,$10,$FE,$2B,$7C,$B5,$20,$F9,$3E
  $C040 DEFB $0A,$CD,$01,$C0,$30,$EA,$06,$C4,$3E,$16,$CD,$01,$C0,$30,$E1,$3E,$D6,$B8,$38,$F2,$06,$C4,$3E,$16,$CD,$01,$C0,$30,$D3,$3E,$DF,$B8
  $C060 DEFB $38,$E4,$26,$10,$06,$C4,$3E,$16,$CD,$01,$C0,$30,$C3,$3E,$CD,$B8,$30,$BE,$24,$20,$EF,$06,$60,$3E,$16,$CD,$01,$C0,$30,$B2,$3E,$16
  $C080 DEFB $CD,$01,$C0,$30,$AB,$3E,$AB,$B8,$30,$D8,$79,$EE,$03,$4F,$06,$B0,$2E,$02,$3E,$0B,$18,$02,$3E,$0C,$CD,$01,$C0,$D0,$78,$08,$3E,$0E
-*$C0A0 DEFB $CD,$01,$C0,$D0,$3E,$12,$3E,$C3,$B8,$CB,$15,$06,$B0,$D2,$96,$C0,$3E,$7B,$BD,$C2,$00,$00,$67,$26,$86,$26,$00,$06,$C4,$2E,$01,$3E
+ $C0A0 DEFB $CD,$01,$C0,$D0,$3E,$12,$3E,$C3,$B8,$CB,$15,$06,$B0,$D2,$96,$C0,$3E,$7B,$BD,$C2,$00,$00,$67,$26,$86,$26,$00,$06,$C4,$2E,$01,$3E
  $C0C0 DEFB $08,$18,$11,$DD,$75,$00,$DD,$23,$1B,$06,$C4,$2E,$01,$00,$3E,$06,$18,$02,$3E,$0C,$CD,$01,$C0,$D0,$78,$08,$3E,$0E,$CD,$01,$C0,$D0
  $C0E0 DEFB $3E,$12,$3E,$D7,$B8,$CB,$15,$06,$C4,$D2,$D2,$C0,$7C,$AD,$67,$7A,$B3,$20,$D0,$7C,$FE,$01,$C9,$F5,$3A,$48,$5C,$E6,$38,$0F,$0F,$0F
  $C100 DEFB $D3,$FE,$F1,$D8,$C7,$CD,$1C,$C0,$21,$00,$80,$06,$FF,$C5,$CD,$17,$C1,$73,$23,$C1,$10,$F7,$C9,$1E,$00,$4B,$06,$FF,$3E,$7F,$DB,$FE
@@ -16964,310 +15120,53 @@ c$C1DD LD DE,$C001   ; {Copy #N$0176 bytes of data from #N$053F to
  $DE9B NOP           ;
  $DE9C NOP           ;
  $DE9D NOP           ;
- $DE9E NOP           ;
- $DE9F NOP           ;
- $DEA0 ADD HL,BC     ;
- $DEA1 ADD A,D       ;
- $DEA2 NOP           ;
- $DEA3 NOP           ;
- $DEA4 INC BC        ;
- $DEA5 LD H,L        ;
- $DEA6 NOP           ;
- $DEA7 NOP           ;
- $DEA8 INC B         ;
- $DEA9 XOR H         ;
- $DEAA NOP           ;
- $DEAB NOP           ;
- $DEAC LD BC,$002E   ;
- $DEAF NOP           ;
- $DEB0 ADD HL,BC     ;
- $DEB1 RRCA          ;
- $DEB2 NOP           ;
- $DEB3 NOP           ;
- $DEB4 ADD HL,BC     ;
- $DEB5 LD (HL),L     ;
- $DEB6 NOP           ;
- $DEB7 NOP           ;
- $DEB8 ADD HL,BC     ;
- $DEB9 DEC DE        ;
- $DEBA NOP           ;
- $DEBB NOP           ;
- $DEBC LD BC,$009C   ;
- $DEBF NOP           ;
- $DEC0 INC BC        ;
- $DEC1 AND C         ;
- $DEC2 NOP           ;
- $DEC3 NOP           ;
- $DEC4 ADD HL,BC     ;
- $DEC5 LD H,$00      ;
- $DEC7 NOP           ;
- $DEC8 INC B         ;
- $DEC9 LD L,C        ;
- $DECA NOP           ;
- $DECB NOP           ;
- $DECC ADD HL,BC     ;
- $DECD DEC BC        ;
- $DECE NOP           ;
- $DECF NOP           ;
- $DED0 DEC B         ;
- $DED1 XOR A         ;
- $DED2 NOP           ;
- $DED3 NOP           ;
- $DED4 ADD HL,BC     ;
- $DED5 SUB E         ;
- $DED6 NOP           ;
- $DED7 NOP           ;
- $DED8 LD BC,$00B4   ;
- $DEDB NOP           ;
- $DEDC INC B         ;
- $DEDD SBC A,D       ;
- $DEDE NOP           ;
- $DEDF NOP           ;
- $DEE0 ADD HL,BC     ;
- $DEE1 ADD A,E       ;
- $DEE2 NOP           ;
- $DEE3 NOP           ;
- $DEE4 LD BC,$0068   ;
- $DEE7 NOP           ;
- $DEE8 ADD HL,BC     ;
- $DEE9 LD C,D        ;
- $DEEA NOP           ;
- $DEEB NOP           ;
- $DEEC DEC B         ;
- $DEED DEC BC        ;
- $DEEE NOP           ;
- $DEEF NOP           ;
- $DEF0 LD BC,$0030   ;
- $DEF3 NOP           ;
- $DEF4 INC BC        ;
- $DEF5 LD D,(HL)     ;
- $DEF6 NOP           ;
- $DEF7 NOP           ;
- $DEF8 ADD HL,BC     ;
- $DEF9 LD A,($0000)  ;
- $DEFC INC B         ;
- $DEFD LD A,L        ;
- $DEFE NOP           ;
- $DEFF NOP           ;
- $DF00 ADD HL,BC     ;
- $DF01 ADD A,C       ;
- $DF02 NOP           ;
- $DF03 NOP           ;
- $DF04 DEC B         ;
- $DF05 DEC BC        ;
- $DF06 NOP           ;
- $DF07 NOP           ;
- $DF08 INC B         ;
- $DF09 ADC A,E       ;
- $DF0A NOP           ;
- $DF0B NOP           ;
- $DF0C LD BC,$006F   ;
- $DF0F NOP           ;
- $DF10 LD (BC),A     ;
- $DF11 LD DE,$0000   ;
- $DF14 ADD HL,BC     ;
- $DF15 OR D          ;
- $DF16 NOP           ;
- $DF17 NOP           ;
- $DF18 INC B         ;
- $DF19 JR $DF1B      ;
-*$DF1B NOP           ;
- $DF1C ADD HL,BC     ;
- $DF1D LD A,E        ;
- $DF1E NOP           ;
- $DF1F NOP           ;
- $DF20 LD (BC),A     ;
- $DF21 LD H,D        ;
- $DF22 NOP           ;
- $DF23 NOP           ;
- $DF24 ADD HL,BC     ;
- $DF25 INC BC        ;
- $DF26 NOP           ;
- $DF27 NOP           ;
- $DF28 DEC B         ;
- $DF29 ADD A,(HL)    ;
- $DF2A NOP           ;
- $DF2B NOP           ;
- $DF2C ADD HL,BC     ;
- $DF2D XOR B         ;
- $DF2E NOP           ;
- $DF2F NOP           ;
- $DF30 LD BC,$00AF   ;
- $DF33 NOP           ;
- $DF34 INC BC        ;
- $DF35 OR A          ;
- $DF36 NOP           ;
- $DF37 NOP           ;
- $DF38 ADD HL,BC     ;
- $DF39 LD A,(DE)     ;
- $DF3A NOP           ;
- $DF3B NOP           ;
- $DF3C ADD HL,BC     ;
- $DF3D LD E,L        ;
- $DF3E NOP           ;
- $DF3F NOP           ;
- $DF40 DEC B         ;
- $DF41 LD B,C        ;
- $DF42 NOP           ;
- $DF43 NOP           ;
- $DF44 LD BC,$0066   ;
- $DF47 NOP           ;
- $DF48 ADD HL,BC     ;
- $DF49 XOR B         ;
- $DF4A NOP           ;
- $DF4B NOP           ;
- $DF4C INC BC        ;
- $DF4D LD C,H        ;
- $DF4E NOP           ;
- $DF4F NOP           ;
- $DF50 ADD HL,BC     ;
- $DF51 JR NC,$DF53   ;
-*$DF53 NOP           ;
- $DF54 LD BC,$0093   ;
- $DF57 NOP           ;
- $DF58 ADD HL,BC     ;
- $DF59 JR $DF5B      ;
-*$DF5B NOP           ;
- $DF5C LD BC,$007D   ;
- $DF5F NOP           ;
- $DF60 ADD HL,BC     ;
- $DF61 LD B,D        ;
- $DF62 NOP           ;
- $DF63 NOP           ;
- $DF64 LD BC,$0087   ;
- $DF67 NOP           ;
- $DF68 ADD HL,BC     ;
- $DF69 EX AF,AF'     ;
- $DF6A NOP           ;
- $DF6B NOP           ;
- $DF6C DEC B         ;
- $DF6D XOR H         ;
- $DF6E NOP           ;
- $DF6F NOP           ;
- $DF70 LD (BC),A     ;
- $DF71 SUB C         ;
- $DF72 NOP           ;
- $DF73 NOP           ;
- $DF74 ADD HL,BC     ;
- $DF75 LD D,$00      ;
- $DF77 NOP           ;
- $DF78 INC B         ;
- $DF79 LD A,($0000)  ;
- $DF7C ADD HL,BC     ;
- $DF7D SBC A,L       ;
- $DF7E NOP           ;
- $DF7F NOP           ;
- $DF80 ADD HL,BC     ;
- $DF81 LD HL,$0000   ;
- $DF84 INC BC        ;
- $DF85 ADD A,E       ;
- $DF86 NOP           ;
- $DF87 NOP           ;
- $DF88 INC B         ;
- $DF89 LD B,A        ;
- $DF8A NOP           ;
- $DF8B NOP           ;
- $DF8C LD BC,$00A8   ;
- $DF8F NOP           ;
- $DF90 ADD HL,BC     ;
- $DF91 LD L,E        ;
- $DF92 NOP           ;
- $DF93 NOP           ;
- $DF94 ADD HL,BC     ;
- $DF95 LD C,$00      ;
- $DF97 NOP           ;
- $DF98 LD (BC),A     ;
- $DF99 OR D          ;
- $DF9A NOP           ;
- $DF9B NOP           ;
- $DF9C DEC B         ;
- $DF9D SBC A,C       ;
- $DF9E NOP           ;
- $DF9F NOP           ;
- $DFA0 LD BC,$0062   ;
- $DFA3 NOP           ;
- $DFA4 INC BC        ;
- $DFA5 LD H,(HL)     ;
- $DFA6 NOP           ;
- $DFA7 NOP           ;
- $DFA8 DEC B         ;
- $DFA9 LD H,A        ;
- $DFAA NOP           ;
- $DFAB NOP           ;
- $DFAC ADD HL,BC     ;
- $DFAD RLCA          ;
- $DFAE NOP           ;
- $DFAF NOP           ;
- $DFB0 LD BC,$0091   ;
- $DFB3 NOP           ;
- $DFB4 ADD HL,BC     ;
- $DFB5 OR (HL)       ;
- $DFB6 NOP           ;
- $DFB7 NOP           ;
- $DFB8 ADD HL,BC     ;
- $DFB9 RLA           ;
- $DFBA NOP           ;
- $DFBB NOP           ;
- $DFBC INC B         ;
- $DFBD LD E,E        ;
- $DFBE NOP           ;
- $DFBF NOP           ;
- $DFC0 ADD HL,BC     ;
- $DFC1 ADD A,C       ;
- $DFC2 NOP           ;
- $DFC3 NOP           ;
- $DFC4 INC BC        ;
- $DFC5 AND (HL)      ;
- $DFC6 NOP           ;
- $DFC7 NOP           ;
- $DFC8 ADD HL,BC     ;
- $DFC9 LD A,(BC)     ;
- $DFCA NOP           ;
- $DFCB NOP           ;
- $DFCC LD BC,$0070   ;
- $DFCF NOP           ;
- $DFD0 ADD HL,BC     ;
- $DFD1 INC DE        ;
- $DFD2 NOP           ;
- $DFD3 NOP           ;
- $DFD4 INC BC        ;
- $DFD5 LD (HL),$00   ;
- $DFD7 NOP           ;
- $DFD8 DEC B         ;
- $DFD9 SBC A,E       ;
- $DFDA NOP           ;
- $DFDB NOP           ;
- $DFDC ADD HL,BC     ;
- $DFDD LD A,$00      ;
- $DFDF NOP           ;
- $DFE0 ADD HL,BC     ;
- $DFE1 LD BC,$0000   ;
- $DFE4 ADD HL,BC     ;
- $DFE5 AND H         ;
- $DFE6 NOP           ;
- $DFE7 NOP           ;
- $DFE8 LD BC,$0068   ;
- $DFEB NOP           ;
- $DFEC INC B         ;
- $DFED SUB C         ;
- $DFEE NOP           ;
- $DFEF NOP           ;
- $DFF0 ADD HL,BC     ;
- $DFF1 LD D,(HL)     ;
- $DFF2 NOP           ;
- $DFF3 NOP           ;
- $DFF4 LD (BC),A     ;
- $DFF5 SBC A,B       ;
- $DFF6 NOP           ;
- $DFF7 NOP           ;
- $DFF8 DEC B         ;
- $DFF9 LD E,L        ;
- $DFFA NOP           ;
- $DFFB NOP           ;
- $DFFC ADD HL,BC     ;
- $DFFD SBC A,(HL)    ;
- $DFFE NOP           ;
- $DFFF NOP           ;
+
+; Data block at DE9E
+b$DE9E DEFB $00,$00,$09,$82,$00,$00,$03,$65
+ $DEA6 DEFB $00,$00,$04,$AC,$00,$00,$01,$2E
+ $DEAE DEFB $00,$00,$09,$0F,$00,$00,$09,$75
+ $DEB6 DEFB $00,$00,$09,$1B,$00,$00,$01,$9C
+ $DEBE DEFB $00,$00,$03,$A1,$00,$00,$09,$26
+ $DEC6 DEFB $00,$00,$04,$69,$00,$00,$09,$0B
+ $DECE DEFB $00,$00,$05,$AF,$00,$00,$09,$93
+ $DED6 DEFB $00,$00,$01,$B4,$00,$00,$04,$9A
+ $DEDE DEFB $00,$00,$09,$83,$00,$00,$01,$68
+ $DEE6 DEFB $00,$00,$09,$4A,$00,$00,$05,$0B
+ $DEEE DEFB $00,$00,$01,$30,$00,$00,$03,$56
+ $DEF6 DEFB $00,$00,$09,$3A,$00,$00,$04,$7D
+ $DEFE DEFB $00,$00,$09,$81,$00,$00,$05,$0B
+ $DF06 DEFB $00,$00,$04,$8B,$00,$00,$01,$6F
+ $DF0E DEFB $00,$00,$02,$11,$00,$00,$09,$B2
+ $DF16 DEFB $00,$00,$04,$18,$00,$00,$09,$7B
+ $DF1E DEFB $00,$00,$02,$62,$00,$00,$09,$03
+ $DF26 DEFB $00,$00,$05,$86,$00,$00,$09,$A8
+ $DF2E DEFB $00,$00,$01,$AF,$00,$00,$03,$B7
+ $DF36 DEFB $00,$00,$09,$1A,$00,$00,$09,$5D
+ $DF3E DEFB $00,$00,$05,$41,$00,$00,$01,$66
+ $DF46 DEFB $00,$00,$09,$A8,$00,$00,$03,$4C
+ $DF4E DEFB $00,$00,$09,$30,$00,$00,$01,$93
+ $DF56 DEFB $00,$00,$09,$18,$00,$00,$01,$7D
+ $DF5E DEFB $00,$00,$09,$42,$00,$00,$01,$87
+ $DF66 DEFB $00,$00,$09,$08,$00,$00,$05,$AC
+ $DF6E DEFB $00,$00,$02,$91,$00,$00,$09,$16
+ $DF76 DEFB $00,$00,$04,$3A,$00,$00,$09,$9D
+ $DF7E DEFB $00,$00,$09,$21,$00,$00,$03,$83
+ $DF86 DEFB $00,$00,$04,$47,$00,$00,$01,$A8
+ $DF8E DEFB $00,$00,$09,$6B,$00,$00,$09,$0E
+ $DF96 DEFB $00,$00,$02,$B2,$00,$00,$05,$99
+ $DF9E DEFB $00,$00,$01,$62,$00,$00,$03,$66
+ $DFA6 DEFB $00,$00,$05,$67,$00,$00,$09,$07
+ $DFAE DEFB $00,$00,$01,$91,$00,$00,$09,$B6
+ $DFB6 DEFB $00,$00,$09,$17,$00,$00,$04,$5B
+ $DFBE DEFB $00,$00,$09,$81,$00,$00,$03,$A6
+ $DFC6 DEFB $00,$00,$09,$0A,$00,$00,$01,$70
+ $DFCE DEFB $00,$00,$09,$13,$00,$00,$03,$36
+ $DFD6 DEFB $00,$00,$05,$9B,$00,$00,$09,$3E
+ $DFDE DEFB $00,$00,$09,$01,$00,$00,$09,$A4
+ $DFE6 DEFB $00,$00,$01,$68,$00,$00,$04,$91
+ $DFEE DEFB $00,$00,$09,$56,$00,$00,$02,$98
+ $DFF6 DEFB $00,$00,$05,$5D,$00,$00,$09,$9E
+ $DFFE DEFB $00,$00
 
 ; Sprite Buffer
 @label=SpriteBuffer
