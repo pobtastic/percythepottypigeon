@@ -41,9 +41,6 @@ Next: <a href="69A7.html">69A7</a>
 <div class="paragraph">
 Used by the routines at <a href="5DC0.html">Game_Initialise</a> and <a href="6480.html">Handle_Title_Screen</a>.
 </div>
-<div class="paragraph">
-Call <a href="662B.html">Compute_Sprite_Position</a>, <a href="6832.html">Update_State_Counters</a>; if <a href="5FC5.html">CurrentRoom</a>=06 call <a href="65EA.html">Draw_InGame_Effect</a>; then <a href="69A7.html">Run_Main_Loop_Body</a> and <a href="BB1C.html">BB1C</a>.
-</div>
 </div>
 </td>
 </tr>
@@ -63,7 +60,7 @@ Call <a href="662B.html">Compute_Sprite_Position</a>, <a href="6832.html">Update
 <td class="asm-label"></td>
 <td class="address-1"><span id="6998"></span>6998</td>
 <td class="instruction">LD A,($5FC5)</td>
-<td class="comment-1" rowspan="3">Call <a href="65EA.html">Draw_InGame_Effect</a> if *<a href="5FC5.html">CurrentRoom</a> is equal to 06.</td>
+<td class="comment-1" rowspan="3">Call <a href="65EA.html">DrawNestChicks</a> if *<a href="5FC5.html">CurrentRoom</a> is equal to 06.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -73,7 +70,7 @@ Call <a href="662B.html">Compute_Sprite_Position</a>, <a href="6832.html">Update
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="699d"></span>699D</td>
-<td class="instruction">CALL Z,<a href="65EA.html">Draw_InGame_Effect</a></td>
+<td class="instruction">CALL Z,<a href="65EA.html">DrawNestChicks</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>

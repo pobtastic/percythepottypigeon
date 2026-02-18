@@ -171,11 +171,8 @@ Current lives count. Synced with <a href="../asm/24510.html">Lives_Backup</a> fo
 <td class="map-g"><span id="24500"></span><a href="../asm/24500.html">24500</a></td>
 <td class="map-length">1</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24500.html">Border Colour / Rotating State</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24500.html">Chick Animation States</a></div>
 <div class="map-entry-desc">
-<div class="paragraph">
-At <a href="../asm/26939.html">Flash_Border_Step</a>: stored border colour, written with BORDCR. At <a href="../asm/26090.html">Draw_InGame_Effect</a>: rotating byte; RRCA and carry pick first or second tile (not border-related there).
-</div>
 </div>
 </td>
 </tr>
@@ -292,9 +289,57 @@ The ID of the current Room (0-11).
 </tr>
 <tr>
 <td class="map-g"><span id="26661"></span><a href="../asm/26661.html">26661</a></td>
-<td class="map-length">13</td>
+<td class="map-length">7</td>
 <td class="map-g-desc">
 <div class="map-entry-title-11"><a class="map-entry-title" href="../asm/26661.html">Current Score</a></div>
+<div class="map-entry-desc">
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="26668"></span><a href="../asm/26668.html">26668</a></td>
+<td class="map-length">6</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/26668.html">Score Buffer</a></div>
+<div class="map-entry-desc">
+<div class="paragraph">
+Workspace for scoring calculations.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="29960"></span><a href="../asm/29960.html">29960</a></td>
+<td class="map-length">10</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/29960.html">Game status buffer entry at 7508</a></div>
+<div class="map-entry-desc">
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="30329"></span><a href="../asm/30329.html">30329</a></td>
+<td class="map-length">7</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/30329.html">Game status buffer entry at 7679</a></div>
+<div class="map-entry-desc">
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="31012"></span><a href="../asm/31012.html">31012</a></td>
+<td class="map-length">12</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/31012.html">Game status buffer entry at 7924</a></div>
+<div class="map-entry-desc">
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="31185"></span><a href="../asm/31185.html">31185</a></td>
+<td class="map-length">1</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/31185.html">Game status buffer entry at 79D1</a></div>
 <div class="map-entry-desc">
 </div>
 </td>
@@ -313,6 +358,96 @@ The ID of the current Room (0-11).
 <td class="map-length">477</td>
 <td class="map-g-desc">
 <div class="map-entry-title-11"><a class="map-entry-title" href="../asm/49152.html">Room Buffer</a></div>
+<div class="map-entry-desc">
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="55562"></span><a href="../asm/55562.html">55562</a></td>
+<td class="map-length">438</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/55562.html">Game status buffer entry at D90A</a></div>
+<div class="map-entry-desc">
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="56000"></span><a href="../asm/56000.html">56000</a></td>
+<td class="map-length">8</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/56000.html">Game status buffer entry at DAC0</a></div>
+<div class="map-entry-desc">
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="56008"></span><a href="../asm/56008.html">56008</a></td>
+<td class="map-length">4</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/56008.html">Spider States</a></div>
+<div class="map-entry-desc">
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="56012"></span><a href="../asm/56012.html">56012</a></td>
+<td class="map-length">4</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/56012.html">Game status buffer entry at DACC</a></div>
+<div class="map-entry-desc">
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="56016"></span><a href="../asm/56016.html">56016</a></td>
+<td class="map-length">4</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/56016.html">Game status buffer entry at DAD0</a></div>
+<div class="map-entry-desc">
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="56020"></span><a href="../asm/56020.html">56020</a></td>
+<td class="map-length">4</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/56020.html">Game status buffer entry at DAD4</a></div>
+<div class="map-entry-desc">
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="56024"></span><a href="../asm/56024.html">56024</a></td>
+<td class="map-length">4</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/56024.html">Game status buffer entry at DAD8</a></div>
+<div class="map-entry-desc">
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="56028"></span><a href="../asm/56028.html">56028</a></td>
+<td class="map-length">7</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/56028.html">Game status buffer entry at DADC</a></div>
+<div class="map-entry-desc">
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="56035"></span><a href="../asm/56035.html">56035</a></td>
+<td class="map-length">29</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/56035.html">Game status buffer entry at DAE3</a></div>
+<div class="map-entry-desc">
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="56064"></span><a href="../asm/56064.html">56064</a></td>
+<td class="map-length">926</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/56064.html">Game status buffer entry at DB00</a></div>
 <div class="map-entry-desc">
 </div>
 </td>

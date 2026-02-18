@@ -33,7 +33,7 @@ Next: <a href="26125.html">26125</a>
 </td>
 </tr>
 </table>
-<div class="description">26090: Draw In-Game Effect</div>
+<div class="description">26090: Draw Chicks In The Nest</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
@@ -41,29 +41,26 @@ Next: <a href="26125.html">26125</a>
 <div class="paragraph">
 Used by the routine at <a href="27026.html">Run_Game_Frame</a>.
 </div>
-<div class="paragraph">
-This is probably the nest. Will check.
-</div>
 </div>
 </td>
 </tr>
 <tr>
-<td class="asm-label">Draw_InGame_Effect</td>
+<td class="asm-label">DrawNestChicks</td>
 <td class="address-2"><span id="26090"></span>26090</td>
 <td class="instruction">LD HL,57482</td>
-<td class="comment-1" rowspan="1"><span class="register">HL</span>=57482 (destination address for the three tiles).</td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="57344.html">57482</a> (sprite buffer position for the first chick).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26093"></span>26093</td>
 <td class="instruction">LD B,3</td>
-<td class="comment-1" rowspan="1">Set an iteration counter in <span class="register">B</span> for 3 tiles.</td>
+<td class="comment-1" rowspan="1">Set a chick counter in <span class="register">B</span> for 3 chicks.</td>
 </tr>
 <tr>
-<td class="asm-label">Draw_InGame_Effect_TileLoop</td>
+<td class="asm-label">DrawNestChicks_Loop</td>
 <td class="address-2"><span id="26095"></span>26095</td>
 <td class="instruction">PUSH BC</td>
-<td class="comment-1" rowspan="1">Stash the iteration counter on the stack.</td>
+<td class="comment-1" rowspan="1">Stash the chick counter on the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -75,20 +72,20 @@ This is probably the nest. Will check.
 <td class="asm-label"></td>
 <td class="address-1"><span id="26097"></span>26097</td>
 <td class="instruction">LD HL,42851</td>
-<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="42851.html">42851</a> (base address of the two 8-byte tiles).</td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="42851.html">Graphics_ChickFrame_01</a> (base address of the chick animation frames).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26100"></span>26100</td>
 <td class="instruction">LD BC,8</td>
-<td class="comment-1" rowspan="1"><span class="register">BC</span>=8 (bytes per tile).</td>
+<td class="comment-1" rowspan="1"><span class="register">BC</span>=8 (bytes per frame).</td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
 <span id="26103"></span>
 <div class="comments">
 <div class="paragraph">
-Use the rotating value at <a href="24500.html">Border_Colour</a> to choose first or second tile; RRCA shifts it for next frame.
+Use the rotating bit pattern at <a href="24500.html">ChickAnimationStates</a> to select which animation frame to use for this chick. The pattern is rotated each time, so each chick picks up a different bit and animates independently.
 </div>
 </div>
 </td>
@@ -97,37 +94,35 @@ Use the rotating value at <a href="24500.html">Border_Colour</a> to choose first
 <td class="asm-label"></td>
 <td class="address-1"><span id="26103"></span>26103</td>
 <td class="instruction">LD A,(24500)</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="24500.html">Border_Colour</a>.</td>
+<td class="comment-1" rowspan="3">Update *<a href="24500.html">ChickAnimationStates</a> by rotating the frame selection bits.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26106"></span>26106</td>
 <td class="instruction">RRCA</td>
-<td class="comment-1" rowspan="1">Rotate <span class="register">A</span> right (carry holds the shifted-out bit).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26107"></span>26107</td>
 <td class="instruction">LD (24500),A</td>
-<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<a href="24500.html">Border_Colour</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26110"></span>26110</td>
-<td class="instruction">JR C,<a href="26090.html#26113">Draw_InGame_Effect_GraphicSource</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="26090.html#26113">Draw_InGame_Effect_GraphicSource</a> if carry is set (use first tile at <a href="42851.html">42851</a>).</td>
+<td class="instruction">JR C,<a href="26090.html#26113">DrawNestChicks_DrawFrame</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="26090.html#26113">DrawNestChicks_DrawFrame</a> if carry is set (use first frame at <a href="42851.html">Graphics_ChickFrame_01</a>).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26112"></span>26112</td>
 <td class="instruction">ADD HL,BC</td>
-<td class="comment-1" rowspan="1"><span class="register">HL</span>+=<span class="register">BC</span> (use second tile at 42859).</td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>+=<span class="register">BC</span> (use second frame at <a href="42851.html#42859">Graphics_ChickFrame_02</a>).</td>
 </tr>
 <tr>
-<td class="asm-label">Draw_InGame_Effect_GraphicSource</td>
+<td class="asm-label">DrawNestChicks_DrawFrame</td>
 <td class="address-2"><span id="26113"></span>26113</td>
 <td class="instruction">EX DE,HL</td>
-<td class="comment-1" rowspan="1"><span class="register">DE</span>=graphic source address (<span class="register">HL</span>).</td>
+<td class="comment-1" rowspan="1">Transfer the frame graphic address to <span class="register">DE</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -139,19 +134,19 @@ Use the rotating value at <a href="24500.html">Border_Colour</a> to choose first
 <td class="asm-label"></td>
 <td class="address-1"><span id="26115"></span>26115</td>
 <td class="instruction">PUSH HL</td>
-<td class="comment-1" rowspan="1">But keep a copy on the stack for after the draw.</td>
+<td class="comment-1" rowspan="1">Keep a copy of the screen position on the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26116"></span>26116</td>
 <td class="instruction">CALL <a href="26155.html#26258">Compute_Sprite_Position_8</a></td>
-<td class="comment-1" rowspan="1">Call <a href="26155.html#26258">Compute_Sprite_Position_8</a>.</td>
+<td class="comment-1" rowspan="1">Call <a href="26155.html#26258">Compute_Sprite_Position_8</a> to draw the chick frame to the screen.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26119"></span>26119</td>
 <td class="instruction">POP HL</td>
-<td class="comment-1" rowspan="2">Restore the screen position and iteration counter from the stack.</td>
+<td class="comment-1" rowspan="2">Restore the screen position and chick counter from the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -162,13 +157,13 @@ Use the rotating value at <a href="24500.html">Border_Colour</a> to choose first
 <td class="asm-label"></td>
 <td class="address-1"><span id="26121"></span>26121</td>
 <td class="instruction">INC L</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">L</span> by one (next column).</td>
+<td class="comment-1" rowspan="1">Move one character column to the right for the next chick.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26122"></span>26122</td>
-<td class="instruction">DJNZ <a href="26090.html#26095">Draw_InGame_Effect_TileLoop</a></td>
-<td class="comment-1" rowspan="1">Decrease counter by one and loop back to <a href="26090.html#26095">Draw_InGame_Effect_TileLoop</a> until counter is zero.</td>
+<td class="instruction">DJNZ <a href="26090.html#26095">DrawNestChicks_Loop</a></td>
+<td class="comment-1" rowspan="1">Decrease the chick counter by one and loop back to <a href="26090.html#26095">DrawNestChicks_Loop</a> until all 3 chicks are drawn.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>

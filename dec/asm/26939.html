@@ -42,7 +42,7 @@ Next: <a href="26977.html">26977</a>
 Used by the routine at <a href="26808.html">Handle_Life_Lost</a>.
 </div>
 <div class="paragraph">
-Push BC/HL/DE; set border from R; write <a href="24500.html">Border_Colour</a> and BORDCR; BEEP. Used in loop from <a href="26808.html">Handle_Life_Lost</a>.
+Push BC/HL/DE; set border from R; write <a href="24500.html">ChickAnimationStates</a> and BORDCR; BEEP. Used in loop from <a href="26808.html">Handle_Life_Lost</a>.
 </div>
 </div>
 </td>
@@ -72,8 +72,8 @@ Push BC/HL/DE; set border from R; write <a href="24500.html">Border_Colour</a> a
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26944"></span>26944</td>
-<td class="instruction">CALL <a href="26155.html#26546">Compute_Sprite_Position_27</a></td>
-<td class="comment-1" rowspan="1">Call <a href="26155.html#26546">Compute_Sprite_Position_27</a>.</td>
+<td class="instruction">CALL <a href="26546.html">AddToScore</a></td>
+<td class="comment-1" rowspan="1">Call <a href="26546.html">AddToScore</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -103,7 +103,7 @@ Push BC/HL/DE; set border from R; write <a href="24500.html">Border_Colour</a> a
 <td class="asm-label"></td>
 <td class="address-1"><span id="26953"></span>26953</td>
 <td class="instruction">LD (24500),A</td>
-<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<a href="24500.html">Border_Colour</a>.</td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<a href="24500.html">ChickAnimationStates</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>

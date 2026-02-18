@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Percy the Potty Pigeon: Routine at 794A</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-dark.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-wide.css" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-75RERFCHBG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-75RERFCHBG');
+</script>
+</head>
+<body class="Asm-c">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html"><img alt="logo" src="../images/logo.png" /></a></td>
+<td class="page-header">Routines</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="7930.html">7930</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#794a">Map</a></td>
+<td class="next">
+Next: <a href="79D1.html">79D1</a>
+</td>
+</tr>
+</table>
+<div class="description">794A: Handler: Spider</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="5">
+<div class="details">
+<div class="paragraph">
+Used by the routine at <a href="730E.html">Handler_Room06</a>.
+</div>
+</div>
+<table class="input">
+<tr class="asm-input-header">
+<th colspan="2">Input</th>
+</tr>
+<tr>
+<td class="register">IX</td>
+<td class="register-desc">Pointer to the spider object state</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Handler_Spider</td>
+<td class="address-2"><span id="794a"></span>794A</td>
+<td class="instruction">LD A,($5FBB)</td>
+<td class="comment-1" rowspan="3">Call <a href="794A.html#79c0">Handler_Spider_6</a> if *<a href="5FBB.html">Level_Flag</a> is non-zero.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="794d"></span>794D</td>
+<td class="instruction">OR A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="794e"></span>794E</td>
+<td class="instruction">CALL NZ,<a href="794A.html#79c0">Handler_Spider_6</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7951"></span>7951</td>
+<td class="instruction">LD HL,$D90A</td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="D90A.html">D90A</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7954"></span>7954</td>
+<td class="instruction">LD BC,$0020</td>
+<td class="comment-1" rowspan="1"><span class="register">BC</span>=20 (one attribute row width).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7957"></span>7957</td>
+<td class="instruction">LD A,$68</td>
+<td class="comment-1" rowspan="2">Write 68 to the first row.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7959"></span>7959</td>
+<td class="instruction">LD (HL),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="795a"></span>795A</td>
+<td class="instruction">ADD HL,BC</td>
+<td class="comment-1" rowspan="2">Write <span class="register">A</span> to the second row.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="795b"></span>795B</td>
+<td class="instruction">LD (HL),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="795c"></span>795C</td>
+<td class="instruction">ADD HL,BC</td>
+<td class="comment-1" rowspan="2">Write <span class="register">A</span> to the third row.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="795d"></span>795D</td>
+<td class="instruction">LD (HL),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="795e"></span>795E</td>
+<td class="instruction">LD HL,$480A</td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>=480A (screen buffer address).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7961"></span>7961</td>
+<td class="instruction">LD D,H</td>
+<td class="comment-1" rowspan="1"><span class="register">D</span>=<span class="register">H</span> (save the screen third base).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7962"></span>7962</td>
+<td class="instruction">LD C,$3F</td>
+<td class="comment-1" rowspan="1"><span class="register">C</span>=3F (base Y position of the thread).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7964"></span>7964</td>
+<td class="instruction">LD B,(IX+$01)</td>
+<td class="comment-1" rowspan="1"><span class="register">B</span>=*<span class="register">IX</span>+01 (current height).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7967"></span>7967</td>
+<td class="instruction">LD A,B</td>
+<td class="comment-1" rowspan="2">Subtract the base position to get the number of rows to draw.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7968"></span>7968</td>
+<td class="instruction">SUB C</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7969"></span>7969</td>
+<td class="instruction">LD B,A</td>
+<td class="comment-1" rowspan="1"><span class="register">B</span>=<span class="register">A</span>.</td>
+</tr>
+<tr>
+<td class="asm-label">Handler_Spider_0</td>
+<td class="address-2"><span id="796a"></span>796A</td>
+<td class="instruction">SET 7,(HL)</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="796c"></span>796C</td>
+<td class="instruction">PUSH HL</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="796d"></span>796D</td>
+<td class="instruction">SET 7,H</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="796f"></span>796F</td>
+<td class="instruction">SET 5,H</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7971"></span>7971</td>
+<td class="instruction">SET 7,(HL)</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7973"></span>7973</td>
+<td class="instruction">POP HL</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7974"></span>7974</td>
+<td class="instruction">INC H</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7975"></span>7975</td>
+<td class="instruction">LD A,H</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7976"></span>7976</td>
+<td class="instruction">AND $07</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7978"></span>7978</td>
+<td class="instruction">JR NZ,<a href="794A.html#797f">Handler_Spider_1</a></td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="797a"></span>797A</td>
+<td class="instruction">LD A,L</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="797b"></span>797B</td>
+<td class="instruction">ADD A,$20</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="797d"></span>797D</td>
+<td class="instruction">LD L,A</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="797e"></span>797E</td>
+<td class="instruction">LD H,D</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label">Handler_Spider_1</td>
+<td class="address-2"><span id="797f"></span>797F</td>
+<td class="instruction">DJNZ <a href="794A.html#796a">Handler_Spider_0</a></td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7981"></span>7981</td>
+<td class="instruction">LD A,($79D1)</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7984"></span>7984</td>
+<td class="instruction">OR A</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7985"></span>7985</td>
+<td class="instruction">JR NZ,<a href="794A.html#7994">Handler_Spider_2</a></td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7987"></span>7987</td>
+<td class="instruction">LD A,(IX+$01)</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="798a"></span>798A</td>
+<td class="instruction">INC A</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="798b"></span>798B</td>
+<td class="instruction">CP $60</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="798d"></span>798D</td>
+<td class="instruction">JR NC,<a href="794A.html#79a1">Handler_Spider_3</a></td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="798f"></span>798F</td>
+<td class="instruction">LD (IX+$01),A</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7992"></span>7992</td>
+<td class="instruction">JR <a href="794A.html#79ac">Handler_Spider_5</a></td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label">Handler_Spider_2</td>
+<td class="address-2"><span id="7994"></span>7994</td>
+<td class="instruction">LD A,(IX+$01)</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7997"></span>7997</td>
+<td class="instruction">DEC A</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7998"></span>7998</td>
+<td class="instruction">CP $43</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="799a"></span>799A</td>
+<td class="instruction">JR C,<a href="794A.html#79a8">Handler_Spider_4</a></td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="799c"></span>799C</td>
+<td class="instruction">LD (IX+$01),A</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="799f"></span>799F</td>
+<td class="instruction">JR <a href="794A.html#79ac">Handler_Spider_5</a></td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label">Handler_Spider_3</td>
+<td class="address-2"><span id="79a1"></span>79A1</td>
+<td class="instruction">LD A,$FF</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="79a3"></span>79A3</td>
+<td class="instruction">LD ($79D1),A</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="79a6"></span>79A6</td>
+<td class="instruction">JR <a href="794A.html#79ac">Handler_Spider_5</a></td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label">Handler_Spider_4</td>
+<td class="address-2"><span id="79a8"></span>79A8</td>
+<td class="instruction">XOR A</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="79a9"></span>79A9</td>
+<td class="instruction">LD ($79D1),A</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label">Handler_Spider_5</td>
+<td class="address-2"><span id="79ac"></span>79AC</td>
+<td class="instruction">LD A,R</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="79ae"></span>79AE</td>
+<td class="instruction">AND $01</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="79b0"></span>79B0</td>
+<td class="instruction">ADD A,$5F</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="79b2"></span>79B2</td>
+<td class="instruction">LD (IX+$03),A</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="79b5"></span>79B5</td>
+<td class="instruction">LD IY,$DAC0</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="79b9"></span>79B9</td>
+<td class="instruction">CALL <a href="6C53.html">$6C53</a></td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="79bc"></span>79BC</td>
+<td class="instruction">RET C</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="79bd"></span>79BD</td>
+<td class="instruction">JP <a href="74D6.html#74e3">$74E3</a></td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label">Handler_Spider_6</td>
+<td class="address-2"><span id="79c0"></span>79C0</td>
+<td class="instruction">LD (IX+$01),$46</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="79c4"></span>79C4</td>
+<td class="instruction">LD (IX+$00),$48</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="79c8"></span>79C8</td>
+<td class="instruction">LD (IX+$02),$00</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="79cc"></span>79CC</td>
+<td class="instruction">XOR A</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="79cd"></span>79CD</td>
+<td class="instruction">LD ($79D1),A</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="79d0"></span>79D0</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="7930.html">7930</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#794a">Map</a></td>
+<td class="next">
+Next: <a href="79D1.html">79D1</a>
+</td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
+<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
+<div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
+<div><a href="../dec/asm/31050.html">Switch to decimal</a>.</div>
+</footer>
+</body>
+</html>

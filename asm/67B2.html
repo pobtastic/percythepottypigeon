@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Percy the Potty Pigeon: Routine at 67B2</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-dark.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-wide.css" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-75RERFCHBG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-75RERFCHBG');
+</script>
+</head>
+<body class="Asm-c">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html"><img alt="logo" src="../images/logo.png" /></a></td>
+<td class="page-header">Routines</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="679C.html">679C</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#67b2">Map</a></td>
+<td class="next">
+Next: <a href="6811.html">6811</a>
+</td>
+</tr>
+</table>
+<div class="description">67B2: Add To Score</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="5">
+<div class="details">
+<div class="paragraph">
+Used by the routines at <a href="662B.html">Compute_Sprite_Position</a>, <a href="693B.html">Flash_Border_Step</a>, <a href="69F7.html">Load_Level_Data</a>, <a href="6CDD.html">6CDD</a>, <a href="6E5D.html">6E5D</a> and <a href="74D6.html">74D6</a>.
+</div>
+<div class="paragraph">
+Converts a binary score value in <span class="register">A</span> into three decimal digits and adds them to the current score. The digits are stored in the score buffer at <a href="6825.html">CurrentScore</a>. The updated score is then printed to the screen.
+</div>
+</div>
+<table class="input">
+<tr class="asm-input-header">
+<th colspan="2">Input</th>
+</tr>
+<tr>
+<td class="register">A</td>
+<td class="register-desc">Score value to add</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="67b2"></span>
+<div class="comments">
+<div class="paragraph">
+Convert the binary value in <span class="register">A</span> into three decimal digits (hundreds, tens, units) stored at 682B-6831.
+</div>
+<div class="paragraph">
+Extract the hundreds digit.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">AddToScore</td>
+<td class="address-2"><span id="67b2"></span>67B2</td>
+<td class="instruction">LD HL,$6831</td>
+<td class="comment-1" rowspan="1">Point <span class="register">HL</span> at <a href="682C.html">6831</a> (the end of <a href="682C.html">ScoreBuffer</a>).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="67b5"></span>67B5</td>
+<td class="instruction">LD E,$00</td>
+<td class="comment-1" rowspan="1">Initialise <span class="register">E</span> to 00 to count "hundreds".</td>
+</tr>
+<tr>
+<td class="asm-label">AddToScore_Hundreds_Loop</td>
+<td class="address-2"><span id="67b7"></span>67B7</td>
+<td class="instruction">CP $64</td>
+<td class="comment-1" rowspan="1">Jump to <a href="67B2.html#67c0">AddToScore_Tens</a> if the score to add is less than a hundred.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="67b9"></span>67B9</td>
+<td class="instruction">JR C,<a href="67B2.html#67c0">AddToScore_Tens</a></td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="67bb"></span>67BB</td>
+<td class="instruction">SUB $64</td>
+<td class="comment-1" rowspan="1">Subtract one hundred from the score to add.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="67bd"></span>67BD</td>
+<td class="instruction">INC E</td>
+<td class="comment-1" rowspan="1">Increment the hundreds digit.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="67be"></span>67BE</td>
+<td class="instruction">JR <a href="67B2.html#67b7">AddToScore_Hundreds_Loop</a></td>
+<td class="comment-1" rowspan="1">Jump back to <a href="67B2.html#67b7">AddToScore_Hundreds_Loop</a>.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="67c0"></span>
+<div class="comments">
+<div class="paragraph">
+Store the hundreds digit and extract the tens digit.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">AddToScore_Tens</td>
+<td class="address-2"><span id="67c0"></span>67C0</td>
+<td class="instruction">LD (HL),E</td>
+<td class="comment-1" rowspan="1">Write the hundreds digit to the hundreds digit of the score buffer.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="67c1"></span>67C1</td>
+<td class="instruction">LD E,$00</td>
+<td class="comment-1" rowspan="1">Reset <span class="register">E</span> back to 00 to now count "tens".</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="67c3"></span>67C3</td>
+<td class="instruction">DEC HL</td>
+<td class="comment-1" rowspan="1">Move to the tens digit position.</td>
+</tr>
+<tr>
+<td class="asm-label">AddToScore_Tens_Loop</td>
+<td class="address-2"><span id="67c4"></span>67C4</td>
+<td class="instruction">CP $0A</td>
+<td class="comment-1" rowspan="1">Jump to <a href="67B2.html#67cd">AddToScore_Units</a> if the score to add is less than ten.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="67c6"></span>67C6</td>
+<td class="instruction">JR C,<a href="67B2.html#67cd">AddToScore_Units</a></td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="67c8"></span>67C8</td>
+<td class="instruction">SUB $0A</td>
+<td class="comment-1" rowspan="1">Subtract ten from the score to add.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="67ca"></span>67CA</td>
+<td class="instruction">INC E</td>
+<td class="comment-1" rowspan="1">Increment the tens digit.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="67cb"></span>67CB</td>
+<td class="instruction">JR <a href="67B2.html#67c4">AddToScore_Tens_Loop</a></td>
+<td class="comment-1" rowspan="1">Jump back to <a href="67B2.html#67c4">AddToScore_Tens_Loop</a>.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="67cd"></span>
+<div class="comments">
+<div class="paragraph">
+Store the tens digit and extract the units digit.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">AddToScore_Units</td>
+<td class="address-2"><span id="67cd"></span>67CD</td>
+<td class="instruction">LD (HL),E</td>
+<td class="comment-1" rowspan="1">Write the tens digit to the tens digit of the score buffer.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="67ce"></span>67CE</td>
+<td class="instruction">LD E,$00</td>
+<td class="comment-1" rowspan="1">Reset <span class="register">E</span> back to 00 to now count "units".</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="67d0"></span>67D0</td>
+<td class="instruction">DEC HL</td>
+<td class="comment-1" rowspan="1">Move to the units digit position.</td>
+</tr>
+<tr>
+<td class="asm-label">AddToScore_Units_Loop</td>
+<td class="address-2"><span id="67d1"></span>67D1</td>
+<td class="instruction">OR A</td>
+<td class="comment-1" rowspan="2">Jump to <a href="67B2.html#67d8">AddToScore_StoreUnits</a> if the score to add is now zero.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="67d2"></span>67D2</td>
+<td class="instruction">JR Z,<a href="67B2.html#67d8">AddToScore_StoreUnits</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="67d4"></span>67D4</td>
+<td class="instruction">INC E</td>
+<td class="comment-1" rowspan="1">Increment the units digit.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="67d5"></span>67D5</td>
+<td class="instruction">DEC A</td>
+<td class="comment-1" rowspan="1">Decrement the score to add by one.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="67d6"></span>67D6</td>
+<td class="instruction">JR <a href="67B2.html#67d1">AddToScore_Units_Loop</a></td>
+<td class="comment-1" rowspan="1">Jump back to <a href="67B2.html#67d1">AddToScore_Units_Loop</a>.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="67d8"></span>
+<div class="comments">
+<div class="paragraph">
+Store the units digit.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">AddToScore_StoreUnits</td>
+<td class="address-2"><span id="67d8"></span>67D8</td>
+<td class="instruction">LD (HL),E</td>
+<td class="comment-1" rowspan="1">Write the units digit to *<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="67d9"></span>
+<div class="comments">
+<div class="paragraph">
+Add the three expanded digits to the current score stored at <a href="6825.html">CurrentScore</a>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="67d9"></span>67D9</td>
+<td class="instruction">LD DE,$6825</td>
+<td class="comment-1" rowspan="1"><span class="register">DE</span>=<a href="6825.html">CurrentScore</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="67dc"></span>67DC</td>
+<td class="instruction">LD B,$03</td>
+<td class="comment-1" rowspan="1">Set a counter in <span class="register">B</span> for 03 digits to add.</td>
+</tr>
+<tr>
+<td class="asm-label">AddToScore_AddLoop</td>
+<td class="address-2"><span id="67de"></span>67DE</td>
+<td class="instruction">LD A,(DE)</td>
+<td class="comment-1" rowspan="1">Fetch the current score digit.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="67df"></span>67DF</td>
+<td class="instruction">ADD A,(HL)</td>
+<td class="comment-1" rowspan="1">Add the converted digit from *<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="67e0"></span>67E0</td>
+<td class="instruction">CP $0A</td>
+<td class="comment-1" rowspan="1">Is the result 0A or greater/ is there any decimal carry?</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="67e2"></span>67E2</td>
+<td class="instruction">PUSH DE</td>
+<td class="comment-1" rowspan="2">Stash the score and conversion pointers on the stack.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="67e3"></span>67E3</td>
+<td class="instruction">PUSH HL</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="67e4"></span>67E4</td>
+<td class="instruction">JR NC,<a href="67B2.html#67ef">AddToScore_Carry</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="67B2.html#67ef">AddToScore_Carry</a> if a decimal carry is needed.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="67e6"></span>
+<div class="comments">
+<div class="paragraph">
+There is no carry so store the result and move to the next digit.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="67e6"></span>67E6</td>
+<td class="instruction">POP HL</td>
+<td class="comment-1" rowspan="2">Restore the score and conversion pointers from the stack.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="67e7"></span>67E7</td>
+<td class="instruction">POP DE</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="67e8"></span>67E8</td>
+<td class="instruction">LD (DE),A</td>
+<td class="comment-1" rowspan="1">Write the updated digit back to the current score.</td>
+</tr>
+<tr>
+<td class="asm-label">AddToScore_NextDigit</td>
+<td class="address-2"><span id="67e9"></span>67E9</td>
+<td class="instruction">INC DE</td>
+<td class="comment-1" rowspan="2">Advance both pointers to the next digit.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="67ea"></span>67EA</td>
+<td class="instruction">INC HL</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="67eb"></span>67EB</td>
+<td class="instruction">DJNZ <a href="67B2.html#67de">AddToScore_AddLoop</a></td>
+<td class="comment-1" rowspan="1">Decrease the counter by one and loop back to <a href="67B2.html#67de">AddToScore_AddLoop</a> until all 03 digits are added.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="67ed"></span>67ED</td>
+<td class="instruction">JR <a href="67B2.html#6802">AddToScore_Print</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="67B2.html#6802">AddToScore_Print</a>.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="67ef"></span>
+<div class="comments">
+<div class="paragraph">
+Handle decimal carry — subtract 0A from the current digit and propagate the carry to higher digits.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">AddToScore_Carry</td>
+<td class="address-2"><span id="67ef"></span>67EF</td>
+<td class="instruction">EX DE,HL</td>
+<td class="comment-1" rowspan="1">Exchange <span class="register">DE</span> and <span class="register">HL</span> so <span class="register">HL</span> points to the score digit.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="67f0"></span>67F0</td>
+<td class="instruction">SUB $0A</td>
+<td class="comment-1" rowspan="1">Subtract 0A from the digit.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="67f2"></span>67F2</td>
+<td class="instruction">LD (HL),A</td>
+<td class="comment-1" rowspan="1">Store the wrapped digit.</td>
+</tr>
+<tr>
+<td class="asm-label">AddToScore_CarryPropagate</td>
+<td class="address-2"><span id="67f3"></span>67F3</td>
+<td class="instruction">INC HL</td>
+<td class="comment-1" rowspan="1">Move to the next higher score digit.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="67f4"></span>67F4</td>
+<td class="instruction">INC (HL)</td>
+<td class="comment-1" rowspan="1">Increment it by one.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="67f5"></span>67F5</td>
+<td class="instruction">LD A,(HL)</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=the incremented digit.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="67f6"></span>67F6</td>
+<td class="instruction">CP $0A</td>
+<td class="comment-1" rowspan="1">Has this digit also reached 0A?</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="67f8"></span>67F8</td>
+<td class="instruction">JR NZ,<a href="67B2.html#67fe">AddToScore_CarryDone</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="67B2.html#67fe">AddToScore_CarryDone</a> if no further carry is needed.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="67fa"></span>
+<div class="comments">
+<div class="paragraph">
+This digit also overflowed — wrap it to 00 and continue propagating.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="67fa"></span>67FA</td>
+<td class="instruction">LD (HL),$00</td>
+<td class="comment-1" rowspan="1">Write 00 to *<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="67fc"></span>67FC</td>
+<td class="instruction">JR <a href="67B2.html#67f3">AddToScore_CarryPropagate</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="67B2.html#67f3">AddToScore_CarryPropagate</a> to propagate carry to the next digit.</td>
+</tr>
+<tr>
+<td class="asm-label">AddToScore_CarryDone</td>
+<td class="address-2"><span id="67fe"></span>67FE</td>
+<td class="instruction">POP HL</td>
+<td class="comment-1" rowspan="2">Restore the conversion and score pointers from the stack.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="67ff"></span>67FF</td>
+<td class="instruction">POP DE</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6800"></span>6800</td>
+<td class="instruction">JR <a href="67B2.html#67e9">AddToScore_NextDigit</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="67B2.html#67e9">AddToScore_NextDigit</a> to continue with the next digit.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="6802"></span>
+<div class="comments">
+<div class="paragraph">
+Print the updated score to the screen.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">AddToScore_Print</td>
+<td class="address-2"><span id="6802"></span>6802</td>
+<td class="instruction">LD HL,$50FD</td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>=50FD (screen buffer location).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6805"></span>6805</td>
+<td class="instruction">PUSH IX</td>
+<td class="comment-1" rowspan="1">Stash <span class="register">IX</span> on the stack temporarily.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6807"></span>6807</td>
+<td class="instruction">LD IX,$6825</td>
+<td class="comment-1" rowspan="1"><span class="register">IX</span>=<a href="6825.html">CurrentScore</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="680b"></span>680B</td>
+<td class="instruction">CALL <a href="6811.html">PrintScore</a></td>
+<td class="comment-1" rowspan="1">Call <a href="6811.html">PrintScore</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="680e"></span>680E</td>
+<td class="instruction">POP IX</td>
+<td class="comment-1" rowspan="1">Restore <span class="register">IX</span> from the stack.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6810"></span>6810</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="679C.html">679C</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#67b2">Map</a></td>
+<td class="next">
+Next: <a href="6811.html">6811</a>
+</td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
+<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
+<div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
+<div><a href="../dec/asm/26546.html">Switch to decimal</a>.</div>
+</footer>
+</body>
+</html>

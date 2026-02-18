@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Percy the Potty Pigeon: Routine at 26524</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-dark.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-wide.css" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-75RERFCHBG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-75RERFCHBG');
+</script>
+</head>
+<body class="Asm-c">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html"><img alt="logo" src="../images/logo.png" /></a></td>
+<td class="page-header">Routines</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="26155.html">26155</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#26524">Map</a></td>
+<td class="next">
+Next: <a href="26546.html">26546</a>
+</td>
+</tr>
+</table>
+<div class="description">26524: Collect Item?</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="5">
+<div class="details">
+<div class="paragraph">
+Used by the routines at <a href="24553.html">Handle_Pause_Input</a>, <a href="26155.html">Compute_Sprite_Position</a> and <a href="27127.html">Load_Level_Data</a>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">CollectItem</td>
+<td class="address-2"><span id="26524"></span>26524</td>
+<td class="instruction">LD BC,352</td>
+<td class="comment-1" rowspan="1"><span class="register">BC</span>=352 (number of attribute cells to search).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26527"></span>26527</td>
+<td class="instruction">LD HL,56990</td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="56990.html">56990</a>.</td>
+</tr>
+<tr>
+<td class="asm-label">CollectItem_SearchLoop</td>
+<td class="address-2"><span id="26530"></span>26530</td>
+<td class="instruction">LD A,30</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=30 (collectible item attribute).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26532"></span>26532</td>
+<td class="instruction">CP (HL)</td>
+<td class="comment-1" rowspan="2">Jump to <a href="26524.html#26542">CollectItem_Found</a> if *<span class="register">HL</span> matches.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26533"></span>26533</td>
+<td class="instruction">JR Z,<a href="26524.html#26542">CollectItem_Found</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26535"></span>26535</td>
+<td class="instruction">INC HL</td>
+<td class="comment-1" rowspan="1">Advance to the next attribute cell.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26536"></span>26536</td>
+<td class="instruction">DEC BC</td>
+<td class="comment-1" rowspan="1">Decrease the search counter.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26537"></span>26537</td>
+<td class="instruction">LD A,C</td>
+<td class="comment-1" rowspan="2">Jump to <a href="26524.html#26530">CollectItem_SearchLoop</a> if there are more cells to search.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26538"></span>26538</td>
+<td class="instruction">OR B</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26539"></span>26539</td>
+<td class="instruction">JR NZ,<a href="26524.html#26530">CollectItem_SearchLoop</a></td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26541"></span>26541</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return (no collectible found).</td>
+</tr>
+<tr>
+<td class="asm-label">CollectItem_Found</td>
+<td class="address-2"><span id="26542"></span>26542</td>
+<td class="instruction">LD (HL),0</td>
+<td class="comment-1" rowspan="1">Write 0 to *<span class="register">HL</span> to remove the collectible.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26544"></span>26544</td>
+<td class="instruction">JR <a href="26155.html#26513">Compute_Sprite_Position_23</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="26155.html#26513">Compute_Sprite_Position_23</a>.</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="26155.html">26155</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#26524">Map</a></td>
+<td class="next">
+Next: <a href="26546.html">26546</a>
+</td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
+<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
+<div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
+<div><a href="../../asm/679C.html">Switch to hexadecimal</a>.</div>
+</footer>
+</body>
+</html>
