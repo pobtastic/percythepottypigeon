@@ -423,10 +423,8 @@ g $5FB3 Player Lives
 D $5FB3 Current lives count. Synced with #R$5FBE for compare/display.
 B $5FB3,$01
 
-g $5FB4 Border Colour / Rotating State
-@ $5FB4 label=Border_Colour
-D $5FB4 At #R$693B: stored border colour, written with BORDCR. At #R$65EA: rotating
-. byte; RRCA and carry pick first or second tile (not border-related there).
+g $5FB4 Chick Animation States
+@ $5FB4 label=ChickAnimationStates
 B $5FB4,$01
 
 g $5FB5 Saved Pointer
@@ -649,8 +647,8 @@ D $655C Print at #N$50F0; set #R$5FC5=#N$06; call #R$5E24; loop #R$64CC
   $656C,$03 Call #R$64CC.
   $656F,$02 Decrease counter by one and loop back to #R$656C until counter is zero.
   $6571,$05 Write #N$38 to *#R$DAC0.
-  $6576,$03 Write #N$9E to *#R$DAC1.
-  $6579,$03 Write #N$07 to *#R$DAC2.
+  $6576,$03 Write #N$9E to *#R$DAC0(#N$DAC1).
+  $6579,$03 Write #N$07 to *#R$DAC0(#N$DAC2).
   $657C,$04 Write #N$00 to *#R$5FA7.
   $6580,$01 Return.
 
@@ -728,31 +726,31 @@ N $659B Room #N$0C is the title page.
   $65E5,$02 Decrease counter by one and loop back to #R$65E2 until counter is zero.
   $65E7,$03 Jump to #R$6562.
 
-c $65EA Draw In-Game Effect
-@ $65EA label=Draw_InGame_Effect
-D $65EA This is probably the nest. Will check.
-  $65EA,$03 #REGhl=#N$E08A (destination address for the three tiles).
-  $65ED,$02 Set an iteration counter in #REGb for #N$03 tiles.
-@ $65EF label=Draw_InGame_Effect_TileLoop
-  $65EF,$01 Stash the iteration counter on the stack.
+c $65EA Draw Chicks In The Nest
+@ $65EA label=DrawNestChicks
+  $65EA,$03 #REGhl=#R$E000(#N$E08A) (sprite buffer position for the first
+. chick).
+  $65ED,$02 Set a chick counter in #REGb for #N$03 chicks.
+@ $65EF label=DrawNestChicks_Loop
+  $65EF,$01 Stash the chick counter on the stack.
   $65F0,$01 Stash the screen position on the stack.
-  $65F1,$03 #REGhl=#R$A763 (base address of the two 8-byte tiles).
-  $65F4,$03 #REGbc=#N$0008 (bytes per tile).
-N $65F7 Use the rotating value at #R$5FB4 to choose first or second tile; RRCA
-. shifts it for next frame.
-  $65F7,$03 #REGa=*#R$5FB4.
-  $65FA,$01 Rotate #REGa right (carry holds the shifted-out bit).
-  $65FB,$03 Write #REGa to *#R$5FB4.
-  $65FE,$02 Jump to #R$6601 if carry is set (use first tile at #R$A763).
-  $6600,$01 #REGhl+=#REGbc (use second tile at #N$A76B).
-@ $6601 label=Draw_InGame_Effect_GraphicSource
-  $6601,$01 #REGde=graphic source address (#REGhl).
+  $65F1,$03 #REGhl=#R$A763 (base address of the chick animation frames).
+  $65F4,$03 #REGbc=#N$0008 (bytes per frame).
+N $65F7 Use the rotating bit pattern at #R$5FB4 to select which animation frame
+. to use for this chick. The pattern is rotated each time, so each chick picks
+. up a different bit and animates independently.
+  $65F7,$07 Update *#R$5FB4 by rotating the frame selection bits.
+  $65FE,$02 Jump to #R$6601 if carry is set (use first frame at #R$A763).
+  $6600,$01 #REGhl+=#REGbc (use second frame at #R$A76B).
+@ $6601 label=DrawNestChicks_DrawFrame
+  $6601,$01 Transfer the frame graphic address to #REGde.
   $6602,$01 Restore the screen position from the stack.
-  $6603,$01 But keep a copy on the stack for after the draw.
-  $6604,$03 Call #R$6692.
-  $6607,$02 Restore the screen position and iteration counter from the stack.
-  $6609,$01 Increment #REGl by one (next column).
-  $660A,$02 Decrease counter by one and loop back to #R$65EF until counter is zero.
+  $6603,$01 Keep a copy of the screen position on the stack.
+  $6604,$03 Call #R$6692 to draw the chick frame to the screen.
+  $6607,$02 Restore the screen position and chick counter from the stack.
+  $6609,$01 Move one character column to the right for the next chick.
+  $660A,$02 Decrease the chick counter by one and loop back to #R$65EF until all
+. #N$03 chicks are drawn.
   $660C,$01 Return.
 
 t $660D Messaging: Press ENTER to Start
@@ -781,9 +779,131 @@ R $6621 BC The length of the text to print
 c $662B Compute Sprite Position?
 @ $662B label=Compute_Sprite_Position
 
+c $679C Collect Item?
+@ $679C label=CollectItem
+  $679C,$03 #REGbc=#N$0160 (number of attribute cells to search).
+  $679F,$03 #REGhl=#R$DE9E.
+@ $67A2 label=CollectItem_SearchLoop
+  $67A2,$02 #REGa=#N$1E (collectible item attribute).
+  $67A4,$03 Jump to #R$67AE if *#REGhl matches.
+  $67A7,$01 Advance to the next attribute cell.
+  $67A8,$01 Decrease the search counter.
+  $67A9,$02 Jump to #R$67A2 if there are more cells to search.
+  $67AD,$01 Return (no collectible found).
+@ $67AE label=CollectItem_Found
+  $67AE,$02 Write #N$00 to *#REGhl to remove the collectible.
+  $67B0,$02 Jump to #R$6791.
+
+c $67B2 Add To Score
+@ $67B2 label=AddToScore
+D $67B2 Converts a binary score value in #REGa into three decimal digits and
+. adds them to the current score. The digits are stored in the score buffer at
+. #R$6825. The updated score is then printed to the screen.
+R $67B2 A Score value to add
+N $67B2 Convert the binary value in #REGa into three decimal digits (hundreds,
+. tens, units) stored at #N$682B-#N$6831.
+N $67B2 Extract the hundreds digit.
+  $67B2,$03 Point #REGhl at #R$682C(#N$6831) (the end of #R$682C).
+  $67B5,$02 Initialise #REGe to #N$00 to count "hundreds".
+@ $67B7 label=AddToScore_Hundreds_Loop
+  $67B7,$02 Jump to #R$67C0 if the score to add is less than a hundred.
+  $67BB,$02 Subtract one hundred from the score to add.
+  $67BD,$01 Increment the hundreds digit.
+  $67BE,$02 Jump back to #R$67B7.
+N $67C0 Store the hundreds digit and extract the tens digit.
+@ $67C0 label=AddToScore_Tens
+  $67C0,$01 Write the hundreds digit to the hundreds digit of the score buffer.
+  $67C1,$02 Reset #REGe back to #N$00 to now count "tens".
+  $67C3,$01 Move to the tens digit position.
+@ $67C4 label=AddToScore_Tens_Loop
+  $67C4,$02 Jump to #R$67CD if the score to add is less than ten.
+  $67C8,$02 Subtract ten from the score to add.
+  $67CA,$01 Increment the tens digit.
+  $67CB,$02 Jump back to #R$67C4.
+N $67CD Store the tens digit and extract the units digit.
+@ $67CD label=AddToScore_Units
+  $67CD,$01 Write the tens digit to the tens digit of the score buffer.
+  $67CE,$02 Reset #REGe back to #N$00 to now count "units".
+  $67D0,$01 Move to the units digit position.
+@ $67D1 label=AddToScore_Units_Loop
+  $67D1,$03 Jump to #R$67D8 if the score to add is now zero.
+  $67D4,$01 Increment the units digit.
+  $67D5,$01 Decrement the score to add by one.
+  $67D6,$02 Jump back to #R$67D1.
+N $67D8 Store the units digit.
+@ $67D8 label=AddToScore_StoreUnits
+  $67D8,$01 Write the units digit to *#REGhl.
+N $67D9 Add the three expanded digits to the current score stored at #R$6825.
+  $67D9,$03 #REGde=#R$6825.
+  $67DC,$02 Set a counter in #REGb for #N$03 digits to add.
+@ $67DE label=AddToScore_AddLoop
+  $67DE,$01 Fetch the current score digit.
+  $67DF,$01 Add the converted digit from *#REGhl.
+  $67E0,$02 Is the result #N$0A or greater/ is there any decimal carry?
+  $67E2,$02 Stash the score and conversion pointers on the stack.
+  $67E4,$02 Jump to #R$67EF if a decimal carry is needed.
+N $67E6 There is no carry so store the result and move to the next digit.
+  $67E6,$02 Restore the score and conversion pointers from the stack.
+  $67E8,$01 Write the updated digit back to the current score.
+@ $67E9 label=AddToScore_NextDigit
+  $67E9,$02 Advance both pointers to the next digit.
+  $67EB,$02 Decrease the counter by one and loop back to #R$67DE until all
+. #N$03 digits are added.
+  $67ED,$02 Jump to #R$6802.
+N $67EF Handle decimal carry — subtract #N$0A from the current digit and
+. propagate the carry to higher digits.
+@ $67EF label=AddToScore_Carry
+  $67EF,$01 Exchange #REGde and #REGhl so #REGhl points to the score digit.
+  $67F0,$02 Subtract #N$0A from the digit.
+  $67F2,$01 Store the wrapped digit.
+@ $67F3 label=AddToScore_CarryPropagate
+  $67F3,$01 Move to the next higher score digit.
+  $67F4,$01 Increment it by one.
+  $67F5,$01 #REGa=the incremented digit.
+  $67F6,$02 Has this digit also reached #N$0A?
+  $67F8,$02 Jump to #R$67FE if no further carry is needed.
+N $67FA This digit also overflowed — wrap it to #N$00 and continue propagating.
+  $67FA,$02 Write #N$00 to *#REGhl.
+  $67FC,$02 Jump to #R$67F3 to propagate carry to the next digit.
+@ $67FE label=AddToScore_CarryDone
+  $67FE,$02 Restore the conversion and score pointers from the stack.
+  $6800,$02 Jump to #R$67E9 to continue with the next digit.
+N $6802 Print the updated score to the screen.
+@ $6802 label=AddToScore_Print
+  $6802,$03 #REGhl=#N$50FD (screen buffer location).
+  $6805,$02 Stash #REGix on the stack temporarily.
+  $6807,$04 #REGix=#R$6825.
+  $680B,$03 Call #R$6811.
+  $680E,$02 Restore #REGix from the stack.
+  $6810,$01 Return.
+
+c $6811 Print Score
+@ $6811 label=PrintScore
+D $6811 Prints the current score to the screen buffer. Each digit is stored as
+. a value #N$00-#N$09 and is converted to an ASCII character by adding #N$30.
+R $6811 HL Screen buffer target location
+R $6811 IX Pointer to the current score
+  $6811,$02 Set a digit counter in #REGb of #N$07 digits.
+@ $6813 label=PrintScore_Loop
+  $6813,$02 Stash the screen buffer pointer and digit counter on the stack.
+  $6815,$03 Fetch the current score digit value and store it in #REGa.
+  $6818,$02 Add #N$30 to convert it to an ASCII character.
+  $681A,$03 Call #R$6581.
+  $681D,$02 Restore the digit counter and screen buffer pointer from the stack.
+  $681F,$02 Advance to the next current score digit.
+  $6821,$01 Move one character to the left in the screen buffer.
+  $6822,$02 Decrease the digit counter by one and loop back to #R$6813 until all
+. #N$07 digits have been printed.
+  $6824,$01 Return.
+
 g $6825 Current Score
 @ $6825 label=CurrentScore
-B $6825,$08
+B $6825,$07
+
+g $682C Score Buffer
+@ $682C label=ScoreBuffer
+D $682C Workspace for scoring calculations.
+B $682C,$06
 
 c $6832 Update State Counters?
 @ $6832 label=Update_State_Counters
@@ -966,8 +1086,6 @@ M $696F,$03 Load #REGa with bits 0-2 of the current frame counter value. This
 
 c $6992 Run Game Frame
 @ $6992 label=Run_Game_Frame
-D $6992 Call #R$662B, #R$6832; if #R$5FC5=#N$06 call #R$65EA; then #R$69A7
-. and #R$BB1C.
   $6992,$03 Call #R$662B.
   $6995,$03 Call #R$6832.
   $6998,$08 Call #R$65EA if *#R$5FC5 is equal to #N$06.
@@ -977,12 +1095,9 @@ D $6992 Call #R$662B, #R$6832; if #R$5FC5=#N$06 call #R$65EA; then #R$69A7
 
 c $69A7 Run Main Loop Body
 @ $69A7 label=Run_Main_Loop_Body
-D $69A7 DI; clear #R$DAC7 and #R$DAEB; then call #R$69F7, #R$6DAB, #R$720F.
 
 c $69F7 Load Level Data
 @ $69F7 label=Load_Level_Data
-D $69F7 If #R$5FBB set: walk level/sprite data at #R$BE00 by #R$5FC5.
-. Used by #R$69A7.
 
 c $6AF6
 
@@ -1037,6 +1152,27 @@ N $722A Look up the handler address for the current room from the jump table at
 
 c $723F Handler: Room #N$01
 @ $723F label=Handler_Room01
+D $723F Handles room #N$01 logic. The phase counter in #REGb controls which
+. objects are initialised or updated on each pass.
+R $723F B Room phase counter (from *#R$5FB1)
+  $723F,$01 #REGa=#REGb.
+  $7240,$02 Return if the phase counter is #N$01.
+N $7243 Set up the first object.
+  $7243,$04 #REGix=#R$DAD8.
+  $7247,$04 #REGiy=#R$7508.
+  $724B,$01 Stash the phase counter on the stack.
+  $724C,$03 Call #R$7439.
+  $724F,$01 Restore the phase counter from the stack.
+N $7250 Set up the second object — only processed during phase #N$03.
+  $7250,$04 #REGix=#R$DADC.
+  $7254,$04 #REGiy=#R$750D.
+  $7258,$02 Is the phase counter equal to #N$03?
+  $725A,$01 Stash the phase counter on the stack.
+  $725B,$03 Call #R$743D if the phase counter is #N$03.
+  $725E,$01 Restore the phase counter from the stack.
+N $725F From phase #N$04 onwards, call #R$77B9.
+  $725F,$05 Call #R$77B9 if the phase counter is #N$04 or greater.
+  $7264,$01 Return.
 
 c $7265 Handler: Room #N$02
 @ $7265 label=Handler_Room02
@@ -1052,6 +1188,52 @@ c $72E1 Handler: Room #N$05
 
 c $730E Handler: Room #N$06
 @ $730E label=Handler_Room06
+D $730E Handles room #N$06 logic (the starting screen). The phase counter in
+. #REGb controls which objects are initialised or activated on each pass,
+. progressively setting up more objects as the phase increases.
+R $730E B Room phase counter (from *#R$5FB1)
+  $730E,$01 #REGa=#REGb.
+N $730F First object — initialised during phases #N$01, #N$03 and #N$04.
+  $730F,$04 #REGix=#R$DAC8.
+  $7313,$01 Stash the phase counter on the stack.
+  $7314,$0F Call #R$794A if the phase counter is #N$01#RAW(,) #N$03 or #N$04.
+  $7323,$01 Restore the phase counter from the stack.
+N $7324 Second object — return early if still in phase #N$01.
+  $7324,$04 #REGix=#R$DACC.
+  $7328,$02 Return if the phase counter is #N$01.
+  $732B,$01 Stash the phase counter on the stack.
+  $732C,$03 Call #R$7512.
+  $732F,$01 Restore the phase counter from the stack.
+N $7330 Third object — initialised during phase #N$02, then handled every phase
+. after.
+  $7330,$04 #REGix=#R$DAD0.
+  $7334,$02 Is the phase counter #N$02?
+  $7336,$01 Stash the phase counter on the stack.
+  $7337,$03 Call #R$759A if the phase counter is #N$02.
+  $733A,$01 Restore the phase counter from the stack.
+  $733B,$01 Return if the phase counter was #N$02.
+  $733C,$01 Stash the phase counter on the stack.
+  $733D,$03 Call #R$7439.
+  $7340,$01 Restore the phase counter from the stack.
+  $7341,$02 Return if the phase counter is #N$03.
+  $7343,$01 Return.
+N $7344 Fourth object — initialised during phase #N$04.
+  $7344,$04 #REGix=#R$DAD4.
+  $7348,$01 Stash the phase counter on the stack.
+  $7349,$04 #REGiy=#R$750D.
+  $734D,$05 Call #R$743D if the phase counter is #N$04.
+  $7352,$01 Restore the phase counter from the stack.
+  $7353,$02 Return if the phase counter is #N$04.
+  $7355,$01 Return.
+N $7356 Fifth object — active from phase #N$05 onwards.
+  $7356,$04 #REGix=#R$DAD8.
+  $735A,$01 Stash the phase counter on the stack.
+  $735B,$03 Call #R$7893.
+  $735E,$01 Restore the phase counter from the stack.
+N $735F Update the fourth object.
+  $735F,$04 #REGix=#R$DAD4.
+  $7363,$03 Call #R$7680.
+  $7366,$01 Return.
 
 c $7367 Handler: Room #N$07
 @ $7367 label=Handler_Room07
@@ -1071,6 +1253,49 @@ c $7413 Handler: Room #N$0B
 c $7439
 
 c $74A7
+
+c $74B9
+
+c $74D6
+
+g $7508
+B $7508,$0A,$01
+
+c $7512
+
+g $7679
+B $7679,$07
+
+c $7680
+
+c $7893
+
+g $7924
+
+c $7930
+
+c $794A Handler: Spider
+@ $794A label=Handler_Spider
+R $794A IX Pointer to the spider object state
+  $794A,$07 Call #R$79C0 if *#R$5FBB is non-zero.
+  $7951,$03 #REGhl=#R$D90A.
+  $7954,$03 #REGbc=#N$0020 (one attribute row width).
+  $7957,$03 Write #N$68 to the first row.
+  $795A,$02 Write #REGa to the second row.
+  $795C,$02 Write #REGa to the third row.
+  $795E,$03 #REGhl=#N$480A (screen buffer address).
+  $7961,$01 #REGd=#REGh (save the screen third base).
+  $7962,$02 #REGc=#N$3F (base Y position of the thread).
+  $7964,$03 #REGb=*#REGix+#N$01 (current height).
+  $7967,$02 Subtract the base position to get the number of rows to draw.
+  $7969,$01 #REGb=#REGa.
+
+  $79D0,$01 Return.
+
+g $79D1
+B $79D1,$01
+
+c $79D2
 
 b $7AC3
 
@@ -1157,9 +1382,15 @@ b $A36A Graphics: Alternate Tile Set?
 @ $A36A label=TileSet_Alternate
   $A36A,$08
 
-b $A763
+b $A763 Graphics: Chick Frames
+@ $A763 label=Graphics_ChickFrame_01
+@ $A76B label=Graphics_ChickFrame_02
   $A763,$08 #UDG(#PC)
-L $A763,$08,$14
+L $A763,$08,$02
+
+b $A773
+  $A773,$08 #UDG(#PC)
+L $A773,$08,$12
 
 b $AB3B
   $AB3B,$08 #UDG(#PC)
@@ -1427,6 +1658,32 @@ N $C200 Set the lower screen to the default #N$02 lines.
   $C200,$05 #HTML(Write #N$02 to
 . *<a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/5C6B.html">DF_SZ</a>.)
   $C205,$03 Jump to #R$5DC0.
+
+g $D90A
+
+g $DAC0
+
+g $DAC8 Spider States
+@ $DAC8 label=Spider_X_Position
+B $DAC8,$01 Spider X position.
+@ $DAC9 label=Spider_Y_Position
+B $DAC9,$01 Spider Y position.
+@ $DAC8 label=Spider_Colour
+B $DACA,$01 Spider INK colour.
+
+g $DACC
+
+g $DAD0
+
+g $DAD4
+
+g $DAD8
+
+g $DADC
+
+g $DAE3
+
+g $DB00
 
 b $DE9E
 
