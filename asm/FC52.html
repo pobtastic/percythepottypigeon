@@ -39,7 +39,7 @@ Next: <a href="FC99.html">FC99</a>
 <td class="routine-comment" colspan="5">
 <div class="details">
 <div class="paragraph">
-Used by the routines at <a href="FAC1.html">FAC1</a> and <a href="FC1B.html">Print_AuthorByline</a>.
+Used by the routine at <a href="FC1B.html">Print_AuthorByline</a>.
 </div>
 <div class="paragraph">
 Checks if the current score is a new high score, and if so, copies it to the high score storage. Then prints the high score label and value to the screen.
@@ -64,34 +64,14 @@ Compare the current score with the stored high score, byte by byte (most signifi
 <td class="comment-1" rowspan="1">Point <span class="register">HL</span> at <a href="6825.html">682C</a> (the last digit of the current score).</td>
 </tr>
 <tr>
-<td class="routine-comment" colspan="5">
-<span id="fc55"></span>
-<div class="comments">
-<div class="paragraph">
-This entry point is used by the routine at <a href="FAC1.html">FAC1</a>.
-</div>
-</div>
-</td>
-</tr>
-<tr>
 <td class="asm-label">PrintHighScore_Compare</td>
-<td class="address-2"><span id="fc55"></span>FC55</td>
+<td class="address-1"><span id="fc55"></span>FC55</td>
 <td class="instruction">LD B,$07</td>
 <td class="comment-1" rowspan="1">Set a counter in <span class="register">B</span> for 07 digits to compare.</td>
 </tr>
 <tr>
-<td class="routine-comment" colspan="5">
-<span id="fc57"></span>
-<div class="comments">
-<div class="paragraph">
-This entry point is used by the routine at <a href="FAC1.html">FAC1</a>.
-</div>
-</div>
-</td>
-</tr>
-<tr>
 <td class="asm-label">PrintHighScore_ComparePointer</td>
-<td class="address-2"><span id="fc57"></span>FC57</td>
+<td class="address-1"><span id="fc57"></span>FC57</td>
 <td class="instruction">LD DE,$FCAD</td>
 <td class="comment-1" rowspan="1">Point <span class="register">DE</span> at <a href="FCA6.html">FCAD</a> (the last digit of the stored high score).</td>
 </tr>
@@ -102,18 +82,8 @@ This entry point is used by the routine at <a href="FAC1.html">FAC1</a>.
 <td class="comment-1" rowspan="1">Fetch a digit from the stored high score.</td>
 </tr>
 <tr>
-<td class="routine-comment" colspan="5">
-<span id="fc5b"></span>
-<div class="comments">
-<div class="paragraph">
-This entry point is used by the routine at <a href="FAC1.html">FAC1</a>.
-</div>
-</div>
-</td>
-</tr>
-<tr>
 <td class="asm-label">PrintHighScore_CompareDigit</td>
-<td class="address-2"><span id="fc5b"></span>FC5B</td>
+<td class="address-1"><span id="fc5b"></span>FC5B</td>
 <td class="instruction">CP (HL)</td>
 <td class="comment-1" rowspan="2">Jump to <a href="FC52.html#fc62">PrintHighScore_NextDigit</a> if the high score digit is equal to the same digit of the current score.</td>
 </tr>
@@ -141,18 +111,8 @@ This entry point is used by the routine at <a href="FAC1.html">FAC1</a>.
 <td class="comment-1" rowspan="1">Move to the next digit in the current score.</td>
 </tr>
 <tr>
-<td class="routine-comment" colspan="5">
-<span id="fc63"></span>
-<div class="comments">
-<div class="paragraph">
-This entry point is used by the routine at <a href="FAC1.html">FAC1</a>.
-</div>
-</div>
-</td>
-</tr>
-<tr>
 <td class="asm-label">PrintHighScore_NextScoreDigit</td>
-<td class="address-2"><span id="fc63"></span>FC63</td>
+<td class="address-1"><span id="fc63"></span>FC63</td>
 <td class="instruction">DEC DE</td>
 <td class="comment-1" rowspan="1">Move to the next digit in the high score.</td>
 </tr>

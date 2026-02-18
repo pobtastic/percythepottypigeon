@@ -39,7 +39,7 @@ Next: <a href="64665.html">64665</a>
 <td class="routine-comment" colspan="5">
 <div class="details">
 <div class="paragraph">
-Used by the routines at <a href="64193.html">64193</a> and <a href="64539.html">Print_AuthorByline</a>.
+Used by the routine at <a href="64539.html">Print_AuthorByline</a>.
 </div>
 <div class="paragraph">
 Checks if the current score is a new high score, and if so, copies it to the high score storage. Then prints the high score label and value to the screen.
@@ -64,34 +64,14 @@ Compare the current score with the stored high score, byte by byte (most signifi
 <td class="comment-1" rowspan="1">Point <span class="register">HL</span> at <a href="26661.html">26668</a> (the last digit of the current score).</td>
 </tr>
 <tr>
-<td class="routine-comment" colspan="5">
-<span id="64597"></span>
-<div class="comments">
-<div class="paragraph">
-This entry point is used by the routine at <a href="64193.html">64193</a>.
-</div>
-</div>
-</td>
-</tr>
-<tr>
 <td class="asm-label">PrintHighScore_Compare</td>
-<td class="address-2"><span id="64597"></span>64597</td>
+<td class="address-1"><span id="64597"></span>64597</td>
 <td class="instruction">LD B,7</td>
 <td class="comment-1" rowspan="1">Set a counter in <span class="register">B</span> for 7 digits to compare.</td>
 </tr>
 <tr>
-<td class="routine-comment" colspan="5">
-<span id="64599"></span>
-<div class="comments">
-<div class="paragraph">
-This entry point is used by the routine at <a href="64193.html">64193</a>.
-</div>
-</div>
-</td>
-</tr>
-<tr>
 <td class="asm-label">PrintHighScore_ComparePointer</td>
-<td class="address-2"><span id="64599"></span>64599</td>
+<td class="address-1"><span id="64599"></span>64599</td>
 <td class="instruction">LD DE,64685</td>
 <td class="comment-1" rowspan="1">Point <span class="register">DE</span> at <a href="64678.html">64685</a> (the last digit of the stored high score).</td>
 </tr>
@@ -102,18 +82,8 @@ This entry point is used by the routine at <a href="64193.html">64193</a>.
 <td class="comment-1" rowspan="1">Fetch a digit from the stored high score.</td>
 </tr>
 <tr>
-<td class="routine-comment" colspan="5">
-<span id="64603"></span>
-<div class="comments">
-<div class="paragraph">
-This entry point is used by the routine at <a href="64193.html">64193</a>.
-</div>
-</div>
-</td>
-</tr>
-<tr>
 <td class="asm-label">PrintHighScore_CompareDigit</td>
-<td class="address-2"><span id="64603"></span>64603</td>
+<td class="address-1"><span id="64603"></span>64603</td>
 <td class="instruction">CP (HL)</td>
 <td class="comment-1" rowspan="2">Jump to <a href="64594.html#64610">PrintHighScore_NextDigit</a> if the high score digit is equal to the same digit of the current score.</td>
 </tr>
@@ -141,18 +111,8 @@ This entry point is used by the routine at <a href="64193.html">64193</a>.
 <td class="comment-1" rowspan="1">Move to the next digit in the current score.</td>
 </tr>
 <tr>
-<td class="routine-comment" colspan="5">
-<span id="64611"></span>
-<div class="comments">
-<div class="paragraph">
-This entry point is used by the routine at <a href="64193.html">64193</a>.
-</div>
-</div>
-</td>
-</tr>
-<tr>
 <td class="asm-label">PrintHighScore_NextScoreDigit</td>
-<td class="address-2"><span id="64611"></span>64611</td>
+<td class="address-1"><span id="64611"></span>64611</td>
 <td class="instruction">DEC DE</td>
 <td class="comment-1" rowspan="1">Move to the next digit in the high score.</td>
 </tr>
