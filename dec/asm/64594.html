@@ -33,176 +33,283 @@ Next: <a href="64665.html">64665</a>
 </td>
 </tr>
 </table>
-<div class="description">64594: Routine at FC52</div>
+<div class="description">64594: Print High Score</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
 <div class="details">
 <div class="paragraph">
-Used by the routine at <a href="64539.html">Print_Pause_Message</a>.
+Used by the routines at <a href="64193.html">64193</a> and <a href="64539.html">Print_AuthorByline</a>.
+</div>
+<div class="paragraph">
+Checks if the current score is a new high score, and if so, copies it to the high score storage. Then prints the high score label and value to the screen.
 </div>
 </div>
 </td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="64594"></span>
+<div class="comments">
+<div class="paragraph">
+Compare the current score with the stored high score, byte by byte (most significant digit first).
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Print_HighScore</td>
 <td class="address-2"><span id="64594"></span>64594</td>
 <td class="instruction">LD HL,26668</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Point <span class="register">HL</span> at <a href="26661.html">26668</a> (the last digit of the current score).</td>
 </tr>
 <tr>
-<td class="address-1"><span id="64597"></span>64597</td>
+<td class="routine-comment" colspan="5">
+<span id="64597"></span>
+<div class="comments">
+<div class="paragraph">
+This entry point is used by the routine at <a href="64193.html">64193</a>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">PrintHighScore_Compare</td>
+<td class="address-2"><span id="64597"></span>64597</td>
 <td class="instruction">LD B,7</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Set a counter in <span class="register">B</span> for 7 digits to compare.</td>
 </tr>
 <tr>
-<td class="address-1"><span id="64599"></span>64599</td>
+<td class="routine-comment" colspan="5">
+<span id="64599"></span>
+<div class="comments">
+<div class="paragraph">
+This entry point is used by the routine at <a href="64193.html">64193</a>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">PrintHighScore_ComparePointer</td>
+<td class="address-2"><span id="64599"></span>64599</td>
 <td class="instruction">LD DE,64685</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Point <span class="register">DE</span> at <a href="64678.html">64685</a> (the last digit of the stored high score).</td>
 </tr>
 <tr>
+<td class="asm-label">PrintHighScore_CompareLoop</td>
 <td class="address-2"><span id="64602"></span>64602</td>
 <td class="instruction">LD A,(DE)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Fetch a digit from the stored high score.</td>
 </tr>
 <tr>
-<td class="address-1"><span id="64603"></span>64603</td>
+<td class="routine-comment" colspan="5">
+<span id="64603"></span>
+<div class="comments">
+<div class="paragraph">
+This entry point is used by the routine at <a href="64193.html">64193</a>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">PrintHighScore_CompareDigit</td>
+<td class="address-2"><span id="64603"></span>64603</td>
 <td class="instruction">CP (HL)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Jump to <a href="64594.html#64610">PrintHighScore_NextDigit</a> if the high score digit is equal to the same digit of the current score.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="64604"></span>64604</td>
-<td class="instruction">JR Z,<a href="64594.html#64610">64610</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR Z,<a href="64594.html#64610">PrintHighScore_NextDigit</a></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="64606"></span>64606</td>
-<td class="instruction">JR NC,<a href="64594.html#64627">64627</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR NC,<a href="64594.html#64627">PrintHighScore_Display</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="64594.html#64627">PrintHighScore_Display</a> if the high score digit is greater than or equal to the same digit of the current score.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="64608"></span>64608</td>
-<td class="instruction">JR C,<a href="64594.html#64616">64616</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR C,<a href="64594.html#64616">PrintHighScore_NewHighScore</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="64594.html#64616">PrintHighScore_NewHighScore</a> if the high score digit is less than the same digit of the current score.</td>
 </tr>
 <tr>
+<td class="asm-label">PrintHighScore_NextDigit</td>
 <td class="address-2"><span id="64610"></span>64610</td>
 <td class="instruction">DEC HL</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Move to the next digit in the current score.</td>
 </tr>
 <tr>
-<td class="address-1"><span id="64611"></span>64611</td>
+<td class="routine-comment" colspan="5">
+<span id="64611"></span>
+<div class="comments">
+<div class="paragraph">
+This entry point is used by the routine at <a href="64193.html">64193</a>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">PrintHighScore_NextScoreDigit</td>
+<td class="address-2"><span id="64611"></span>64611</td>
 <td class="instruction">DEC DE</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Move to the next digit in the high score.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="64612"></span>64612</td>
-<td class="instruction">DJNZ <a href="64594.html#64602">64602</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">DJNZ <a href="64594.html#64602">PrintHighScore_CompareLoop</a></td>
+<td class="comment-1" rowspan="1">Decrease the digit counter by one and loop back to <a href="64594.html#64602">PrintHighScore_CompareLoop</a> until all 7 digits have been compared.</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="64614"></span>
+<div class="comments">
+<div class="paragraph">
+All digits matched — scores are equal, so no update needed.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="64614"></span>64614</td>
-<td class="instruction">JR <a href="64594.html#64627">64627</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR <a href="64594.html#64627">PrintHighScore_Display</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="64594.html#64627">PrintHighScore_Display</a>.</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="64616"></span>
+<div class="comments">
+<div class="paragraph">
+New high score — copy the current score over the stored high score.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">PrintHighScore_NewHighScore</td>
 <td class="address-2"><span id="64616"></span>64616</td>
 <td class="instruction">LD HL,26661</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="4">Copy 0007 bytes of data from *<a href="26661.html">CurrentScore</a> to *<a href="64678.html">HighScore</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="64619"></span>64619</td>
 <td class="instruction">LD DE,64678</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="64622"></span>64622</td>
 <td class="instruction">LD BC,7</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="64625"></span>64625</td>
 <td class="instruction">LDIR</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="64627"></span>
+<div class="comments">
+<div class="paragraph">
+Print the high score label and value to the screen buffer.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">PrintHighScore_Display</td>
 <td class="address-2"><span id="64627"></span>64627</td>
 <td class="instruction">LD HL,20647</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>=20647 (screen buffer location).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="64630"></span>64630</td>
 <td class="instruction">LD B,12</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Set a counter in <span class="register">B</span> for 12 characters to print to the screen buffer.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="64632"></span>64632</td>
 <td class="instruction">LD DE,64665</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">DE</span>=<a href="64665.html">Messaging_HighScore</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="64635"></span>64635</td>
-<td class="instruction">CALL <a href="64539.html#64558">Print_Pause_Message_0</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">CALL <a href="64558.html">PrintMessage_Loop</a></td>
+<td class="comment-1" rowspan="1">Call <a href="64558.html">PrintMessage_Loop</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="64638"></span>64638</td>
 <td class="instruction">LD IX,64678</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">IX</span>=<a href="64678.html">HighScore</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="64642"></span>64642</td>
 <td class="instruction">LD BC,7</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2"><span class="register">HL</span>+=0007.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="64645"></span>64645</td>
 <td class="instruction">ADD HL,BC</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="64646"></span>64646</td>
 <td class="instruction">CALL <a href="26155.html#26641">Compute_Sprite_Position_40</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Call <a href="26155.html#26641">Compute_Sprite_Position_40</a>.</td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
 <span id="64649"></span>
 <div class="comments">
 <div class="paragraph">
-This entry point is used by the routine at <a href="64539.html">Print_Pause_Message</a>.
+This entry point is used by the routine at <a href="64539.html">Print_AuthorByline</a>.
+</div>
+<div class="paragraph">
+Reset the current score to zero and return to the game flow.
 </div>
 </div>
 </td>
 </tr>
 <tr>
+<td class="asm-label">PrintHighScore_ResetScore</td>
 <td class="address-2"><span id="64649"></span>64649</td>
 <td class="instruction">LD HL,26661</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="5">Clear 0010 bytes of data from *<a href="26661.html">CurrentScore</a> onwards.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="64652"></span>64652</td>
 <td class="instruction">LD (HL),0</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="64654"></span>64654</td>
 <td class="instruction">LD DE,26662</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="64657"></span>64657</td>
 <td class="instruction">LD BC,10</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="64660"></span>64660</td>
 <td class="instruction">LDIR</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="64662"></span>64662</td>
-<td class="instruction">JP 64193</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JP <a href="64193.html">64193</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="64193.html">64193</a>.</td>
 </tr>
 </table>
 <table class="asm-navigation">

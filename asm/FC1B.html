@@ -25,15 +25,15 @@ gtag('config', 'G-75RERFCHBG');
 <table class="asm-navigation">
 <tr>
 <td class="prev">
-Prev: <a href="F800.html">F800</a>
+Prev: <a href="FAC1.html">FAC1</a>
 </td>
 <td class="up">Up: <a href="../maps/all.html#fc1b">Map</a></td>
 <td class="next">
-Next: <a href="FC3D.html">FC3D</a>
+Next: <a href="FC2E.html">FC2E</a>
 </td>
 </tr>
 </table>
-<div class="description">FC1B: Print Pause Message</div>
+<div class="description">FC1B: Print Author Byline</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
@@ -42,16 +42,16 @@ Next: <a href="FC3D.html">FC3D</a>
 Used by the routine at <a href="659B.html">MainMenu</a>.
 </div>
 <div class="paragraph">
-If <a href="5FBC.html">Pause_Flag</a> (pause) zero: copy from <a href="FC3D.html">Messaging_AuthorByline</a> to screen (50A6). Used by <a href="659B.html">MainMenu</a>.
+Prints the Author Byline messaging to the screen buffer.
 </div>
 </div>
 </td>
 </tr>
 <tr>
-<td class="asm-label">Print_Pause_Message</td>
+<td class="asm-label">Print_AuthorByline</td>
 <td class="address-2"><span id="fc1b"></span>FC1B</td>
 <td class="instruction">LD A,($5FBC)</td>
-<td class="comment-1" rowspan="3">Jump to <a href="FC52.html">FC52</a> if *<a href="5FBC.html">Pause_Flag</a> is non-zero.</td>
+<td class="comment-1" rowspan="2">Check if *<a href="5FBC.html">Pause_Flag</a> is non-zero.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -59,127 +59,60 @@ If <a href="5FBC.html">Pause_Flag</a> (pause) zero: copy from <a href="FC3D.html
 <td class="instruction">OR A</td>
 </tr>
 <tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="fc1f"></span>FC1F</td>
-<td class="instruction">JR NZ,<a href="FC52.html">$FC52</a></td>
+<td class="routine-comment" colspan="5">
+<span id="fc1f"></span>
+<div class="comments">
+<div class="paragraph">
+This entry point is used by the routine at <a href="FAC1.html">FAC1</a>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Print_AuthorByline_0</td>
+<td class="address-2"><span id="fc1f"></span>FC1F</td>
+<td class="instruction">JR NZ,<a href="FC52.html">Print_HighScore</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="FC52.html">Print_HighScore</a> if *<a href="5FBC.html">Pause_Flag</a> is non-zero.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="fc21"></span>FC21</td>
 <td class="instruction">LD DE,$FC3D</td>
-<td class="comment-1" rowspan="1"><span class="register">DE</span>=<a href="FC3D.html">Messaging_AuthorByline</a>.</td>
+<td class="comment-1" rowspan="1">Point <span class="register">DE</span> at <a href="FC3D.html">Messaging_AuthorByline</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="fc24"></span>FC24</td>
 <td class="instruction">LD HL,$50A6</td>
-<td class="comment-1" rowspan="1"><span class="register">HL</span>=50A6 (screen buffer location).</td>
+<td class="comment-1" rowspan="1">Load <span class="register">HL</span> with 50A6 (screen buffer location to print).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="fc27"></span>FC27</td>
 <td class="instruction">LD B,$15</td>
-<td class="comment-1" rowspan="1"><span class="register">B</span>=15.</td>
+<td class="comment-1" rowspan="1">Set a counter in <span class="register">B</span> for 15 characters to print to the screen buffer.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="fc29"></span>FC29</td>
-<td class="instruction">CALL <a href="FC1B.html#fc2e">Print_Pause_Message_0</a></td>
-<td class="comment-1" rowspan="1">Call <a href="FC1B.html#fc2e">Print_Pause_Message_0</a>.</td>
+<td class="instruction">CALL <a href="FC2E.html">PrintMessage_Loop</a></td>
+<td class="comment-1" rowspan="1">Call <a href="FC2E.html">PrintMessage_Loop</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="fc2c"></span>FC2C</td>
-<td class="instruction">JR <a href="FC52.html#fc89">$FC89</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="FC52.html#fc89">FC89</a>.</td>
-</tr>
-<tr>
-<td class="routine-comment" colspan="5">
-<span id="fc2e"></span>
-<div class="comments">
-<div class="paragraph">
-This entry point is used by the routine at <a href="FC52.html">FC52</a>.
-</div>
-</div>
-</td>
-</tr>
-<tr>
-<td class="asm-label">Print_Pause_Message_0</td>
-<td class="address-2"><span id="fc2e"></span>FC2E</td>
-<td class="instruction">LD A,(DE)</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">DE</span>.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="fc2f"></span>FC2F</td>
-<td class="instruction">PUSH DE</td>
-<td class="comment-1" rowspan="3">Stash <span class="register">DE</span>, <span class="register">HL</span> and <span class="register">BC</span> on the stack.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="fc30"></span>FC30</td>
-<td class="instruction">PUSH HL</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="fc31"></span>FC31</td>
-<td class="instruction">PUSH BC</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="fc32"></span>FC32</td>
-<td class="instruction">CALL <a href="6581.html">PrintCharacter</a></td>
-<td class="comment-1" rowspan="1">Call <a href="6581.html">PrintCharacter</a>.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="fc35"></span>FC35</td>
-<td class="instruction">POP BC</td>
-<td class="comment-1" rowspan="3">Restore <span class="register">BC</span>, <span class="register">HL</span> and <span class="register">DE</span> from the stack.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="fc36"></span>FC36</td>
-<td class="instruction">POP HL</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="fc37"></span>FC37</td>
-<td class="instruction">POP DE</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="fc38"></span>FC38</td>
-<td class="instruction">INC HL</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="fc39"></span>FC39</td>
-<td class="instruction">INC DE</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">DE</span> by one.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="fc3a"></span>FC3A</td>
-<td class="instruction">DJNZ <a href="FC1B.html#fc2e">Print_Pause_Message_0</a></td>
-<td class="comment-1" rowspan="1">Decrease counter by one and loop back to <a href="FC1B.html#fc2e">Print_Pause_Message_0</a> until counter is zero.</td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="fc3c"></span>FC3C</td>
-<td class="instruction">RET</td>
-<td class="comment-1" rowspan="1">Return.</td>
+<td class="instruction">JR <a href="FC52.html#fc89">PrintHighScore_ResetScore</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="FC52.html#fc89">PrintHighScore_ResetScore</a>.</td>
 </tr>
 </table>
 <table class="asm-navigation">
 <tr>
 <td class="prev">
-Prev: <a href="F800.html">F800</a>
+Prev: <a href="FAC1.html">FAC1</a>
 </td>
 <td class="up">Up: <a href="../maps/all.html#fc1b">Map</a></td>
 <td class="next">
-Next: <a href="FC3D.html">FC3D</a>
+Next: <a href="FC2E.html">FC2E</a>
 </td>
 </tr>
 </table>

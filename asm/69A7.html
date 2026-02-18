@@ -42,7 +42,7 @@ Next: <a href="69F7.html">69F7</a>
 Used by the routine at <a href="6992.html">Run_Game_Frame</a>.
 </div>
 <div class="paragraph">
-DI; clear <a href="C1DD.html#dac7">DAC7</a> and <a href="C1DD.html#daeb">DAEB</a>; then call <a href="69F7.html">Load_Level_Data</a>, <a href="6DAB.html">Dispatch_Game_State</a>, <a href="720F.html">Clear_Or_Update_Buffer</a>.
+DI; clear <a href="C1DD.html#dac7">DAC7</a> and <a href="C1DD.html#daeb">DAEB</a>; then call <a href="69F7.html">Load_Level_Data</a>, <a href="6DAB.html">Dispatch_Game_State</a>, <a href="720F.html">RoomHandlerDispatch</a>.
 </div>
 </div>
 </td>
@@ -182,7 +182,7 @@ DI; clear <a href="C1DD.html#dac7">DAC7</a> and <a href="C1DD.html#daeb">DAEB</a
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="69ca"></span>69CA</td>
-<td class="instruction">CALL NZ,<a href="69F7.html#6ca5">Load_Level_Data_42</a></td>
+<td class="instruction">CALL NZ,<a href="6CA5.html">$6CA5</a></td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
@@ -200,7 +200,7 @@ DI; clear <a href="C1DD.html#dac7">DAC7</a> and <a href="C1DD.html#daeb">DAEB</a
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="69d3"></span>69D3</td>
-<td class="instruction">CALL <a href="720F.html">Clear_Or_Update_Buffer</a></td>
+<td class="instruction">CALL <a href="720F.html">RoomHandlerDispatch</a></td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
@@ -218,7 +218,7 @@ DI; clear <a href="C1DD.html#dac7">DAC7</a> and <a href="C1DD.html#daeb">DAEB</a
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="69db"></span>69DB</td>
-<td class="instruction">CALL Z,<a href="6DAB.html#7082">Dispatch_Game_State_37</a></td>
+<td class="instruction">CALL Z,<a href="6E5D.html#7082">$7082</a></td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>

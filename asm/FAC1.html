@@ -1,0 +1,1347 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Percy the Potty Pigeon: Routine at FAC1</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-dark.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-wide.css" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-75RERFCHBG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-75RERFCHBG');
+</script>
+</head>
+<body class="Asm-c">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html"><img alt="logo" src="../images/logo.png" /></a></td>
+<td class="page-header">Routines</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="F800.html">F800</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#fac1">Map</a></td>
+<td class="next">
+Next: <a href="FC1B.html">FC1B</a>
+</td>
+</tr>
+</table>
+<div class="description">FAC1: Routine at FAC1</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="5">
+<div class="details">
+<div class="paragraph">
+Used by the routine at <a href="FC52.html">Print_HighScore</a>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="address-2"><span id="fac1"></span>FAC1</td>
+<td class="instruction">LD HL,$FAF9</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="fac4"></span>
+<div class="comments">
+<div class="paragraph">
+This entry point is used by the routine at <a href="68B8.html">Handle_Life_Lost</a>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="address-2"><span id="fac4"></span>FAC4</td>
+<td class="instruction">NOP</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-2"><span id="fac5"></span>FAC5</td>
+<td class="instruction">LD A,(HL)</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fac6"></span>FAC6</td>
+<td class="instruction">CP $FF</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fac8"></span>FAC8</td>
+<td class="instruction">RET Z</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fac9"></span>FAC9</td>
+<td class="instruction">OR A</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="faca"></span>FACA</td>
+<td class="instruction">JR Z,<a href="FAC1.html#faea">$FAEA</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="facc"></span>FACC</td>
+<td class="instruction">XOR A</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="facd"></span>FACD</td>
+<td class="instruction">OUT ($FE),A</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="facf"></span>FACF</td>
+<td class="instruction">LD E,(HL)</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fad0"></span>FAD0</td>
+<td class="instruction">LD D,E</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fad1"></span>FAD1</td>
+<td class="instruction">INC HL</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fad2"></span>FAD2</td>
+<td class="instruction">LD C,(HL)</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-2"><span id="fad3"></span>FAD3</td>
+<td class="instruction">OUT ($FE),A</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fad5"></span>FAD5</td>
+<td class="instruction">DEC D</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fad6"></span>FAD6</td>
+<td class="instruction">JR NZ,<a href="FAC1.html#fadb">$FADB</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fad8"></span>FAD8</td>
+<td class="instruction">LD D,E</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fad9"></span>FAD9</td>
+<td class="instruction">XOR $18</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-2"><span id="fadb"></span>FADB</td>
+<td class="instruction">DJNZ <a href="FAC1.html#fad3">$FAD3</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fadd"></span>FADD</td>
+<td class="instruction">DEC C</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fade"></span>FADE</td>
+<td class="instruction">JR NZ,<a href="FAC1.html#fad3">$FAD3</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fae0"></span>FAE0</td>
+<td class="instruction">INC HL</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fae1"></span>FAE1</td>
+<td class="instruction">LD A,$BF</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fae3"></span>FAE3</td>
+<td class="instruction">IN A,($FE)</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fae5"></span>FAE5</td>
+<td class="instruction">AND $01</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fae7"></span>FAE7</td>
+<td class="instruction">RET Z</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fae8"></span>FAE8</td>
+<td class="instruction">JR <a href="FAC1.html#fac5">$FAC5</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-2"><span id="faea"></span>FAEA</td>
+<td class="instruction">INC HL</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="faeb"></span>FAEB</td>
+<td class="instruction">LD C,(HL)</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-2"><span id="faec"></span>FAEC</td>
+<td class="instruction">NOP</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-2"><span id="faed"></span>FAED</td>
+<td class="instruction">NOP</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="faee"></span>FAEE</td>
+<td class="instruction">NOP</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="faef"></span>FAEF</td>
+<td class="instruction">NOP</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="faf0"></span>FAF0</td>
+<td class="instruction">NOP</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="faf1"></span>FAF1</td>
+<td class="instruction">DJNZ <a href="FAC1.html#faed">$FAED</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="faf3"></span>FAF3</td>
+<td class="instruction">DEC C</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="faf4"></span>FAF4</td>
+<td class="instruction">JR NZ,<a href="FAC1.html#faec">$FAEC</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="faf6"></span>FAF6</td>
+<td class="instruction">INC HL</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="faf7"></span>FAF7</td>
+<td class="instruction">JR <a href="FAC1.html#fac5">$FAC5</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="faf9"></span>FAF9</td>
+<td class="instruction">OR D</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fafa"></span>FAFA</td>
+<td class="instruction">JR NC,$FAC3</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-2"><span id="fafc"></span>FAFC</td>
+<td class="instruction">LD B,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fafd"></span>FAFD</td>
+<td class="instruction">OUT ($20),A</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="faff"></span>FAFF</td>
+<td class="instruction">RST $00</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb00"></span>FB00</td>
+<td class="instruction">LD B,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb01"></span>FB01</td>
+<td class="instruction">AND A</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb02"></span>FB02</td>
+<td class="instruction">AND B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb03"></span>FB03</td>
+<td class="instruction">NOP</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb04"></span>FB04</td>
+<td class="instruction">LD H,H</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb05"></span>FB05</td>
+<td class="instruction">SUB L</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb06"></span>FB06</td>
+<td class="instruction">JR NC,$FAAF</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb08"></span>FB08</td>
+<td class="instruction">LD B,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb09"></span>FB09</td>
+<td class="instruction">OR D</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb0a"></span>FB0A</td>
+<td class="instruction">JR NZ,$FAB3</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb0c"></span>FB0C</td>
+<td class="instruction">LD B,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb0d"></span>FB0D</td>
+<td class="instruction">ADD A,H</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb0e"></span>FB0E</td>
+<td class="instruction">ADD A,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb0f"></span>FB0F</td>
+<td class="instruction">NOP</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb10"></span>FB10</td>
+<td class="instruction">LD H,H</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb11"></span>FB11</td>
+<td class="instruction">LD A,L</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb12"></span>FB12</td>
+<td class="instruction">JR NC,$FA98</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-2"><span id="fb14"></span>FB14</td>
+<td class="instruction">JR NC,$FAA2</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb16"></span>FB16</td>
+<td class="instruction">JR NC,$FA9C</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb18"></span>FB18</td>
+<td class="instruction">LD B,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb19"></span>FB19</td>
+<td class="instruction">LD E,C</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb1a"></span>FB1A</td>
+<td class="instruction">JR NC,$FB7F</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb1c"></span>FB1C</td>
+<td class="instruction">JR NC,<a href="FAC1.html#fb87">$FB87</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-2"><span id="fb1e"></span>FB1E</td>
+<td class="instruction">JR NC,<a href="FAC1.html#fb83">$FB83</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb20"></span>FB20</td>
+<td class="instruction">JR NC,<a href="FAC1.html#fb7b">$FB7B</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-2"><span id="fb22"></span>FB22</td>
+<td class="instruction">JR NC,<a href="FAC1.html#fb87">$FB87</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb24"></span>FB24</td>
+<td class="instruction">JR NC,$FB8F</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb26"></span>FB26</td>
+<td class="instruction">JR NC,$FB8B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-2"><span id="fb28"></span>FB28</td>
+<td class="instruction">JR NC,<a href="FAC1.html#fb7e">$FB7E</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb2a"></span>FB2A</td>
+<td class="instruction">ADD A,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb2b"></span>FB2B</td>
+<td class="instruction">NOP</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb2c"></span>FB2C</td>
+<td class="instruction">LD B,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-2"><span id="fb2d"></span>FB2D</td>
+<td class="instruction">LD H,E</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb2e"></span>FB2E</td>
+<td class="instruction">LD H,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb2f"></span>FB2F</td>
+<td class="instruction">LD D,H</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb30"></span>FB30</td>
+<td class="instruction">LD D,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb31"></span>FB31</td>
+<td class="instruction">LD E,C</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb32"></span>FB32</td>
+<td class="instruction">LD B,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb33"></span>FB33</td>
+<td class="instruction">NOP</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb34"></span>FB34</td>
+<td class="instruction">JR NZ,$FB99</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-2"><span id="fb36"></span>FB36</td>
+<td class="instruction">LD B,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb37"></span>FB37</td>
+<td class="instruction">NOP</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb38"></span>FB38</td>
+<td class="instruction">JR NZ,<a href="FAC1.html#fbaa">$FBAA</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-2"><span id="fb3a"></span>FB3A</td>
+<td class="instruction">LD D,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb3b"></span>FB3B</td>
+<td class="instruction">NOP</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb3c"></span>FB3C</td>
+<td class="instruction">JR NZ,$FBA1</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb3e"></span>FB3E</td>
+<td class="instruction">LD B,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb3f"></span>FB3F</td>
+<td class="instruction">NOP</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-2"><span id="fb40"></span>FB40</td>
+<td class="instruction">JR NZ,<a href="FAC1.html#fb9b">$FB9B</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb42"></span>FB42</td>
+<td class="instruction">LD B,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb43"></span>FB43</td>
+<td class="instruction">NOP</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb44"></span>FB44</td>
+<td class="instruction">JR NZ,<a href="FAC1.html#fba9">$FBA9</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb46"></span>FB46</td>
+<td class="instruction">LD B,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb47"></span>FB47</td>
+<td class="instruction">NOP</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb48"></span>FB48</td>
+<td class="instruction">JR NZ,<a href="FAC1.html#fbba">$FBBA</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb4a"></span>FB4A</td>
+<td class="instruction">LD D,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb4b"></span>FB4B</td>
+<td class="instruction">NOP</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb4c"></span>FB4C</td>
+<td class="instruction">JR NZ,$FBB1</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb4e"></span>FB4E</td>
+<td class="instruction">LD B,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-2"><span id="fb4f"></span>FB4F</td>
+<td class="instruction">NOP</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb50"></span>FB50</td>
+<td class="instruction">JR NZ,<a href="FAC1.html#fbab">$FBAB</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb52"></span>FB52</td>
+<td class="instruction">LD B,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb53"></span>FB53</td>
+<td class="instruction">NOP</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb54"></span>FB54</td>
+<td class="instruction">JR NZ,$FBB9</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb56"></span>FB56</td>
+<td class="instruction">LD B,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb57"></span>FB57</td>
+<td class="instruction">NOP</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb58"></span>FB58</td>
+<td class="instruction">JR NZ,$FBCA</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb5a"></span>FB5A</td>
+<td class="instruction">LD D,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb5b"></span>FB5B</td>
+<td class="instruction">NOP</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb5c"></span>FB5C</td>
+<td class="instruction">JR NZ,<a href="FAC1.html#fbd4">$FBD4</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb5e"></span>FB5E</td>
+<td class="instruction">LD B,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb5f"></span>FB5F</td>
+<td class="instruction">NOP</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb60"></span>FB60</td>
+<td class="instruction">JR NZ,$FAE6</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb62"></span>FB62</td>
+<td class="instruction">ADD A,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb63"></span>FB63</td>
+<td class="instruction">NOP</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-2"><span id="fb64"></span>FB64</td>
+<td class="instruction">LD B,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb65"></span>FB65</td>
+<td class="instruction">ADD A,H</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb66"></span>FB66</td>
+<td class="instruction">JR NC,<a href="FAC1.html#fbe5">$FBE5</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-2"><span id="fb68"></span>FB68</td>
+<td class="instruction">JR NC,<a href="FAC1.html#fbda">$FBDA</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb6a"></span>FB6A</td>
+<td class="instruction">LD B,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb6b"></span>FB6B</td>
+<td class="instruction">NOP</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb6c"></span>FB6C</td>
+<td class="instruction">JR NZ,<a href="FAC1.html#fbde">$FBDE</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-2"><span id="fb6e"></span>FB6E</td>
+<td class="instruction">LD B,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb6f"></span>FB6F</td>
+<td class="instruction">NOP</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb70"></span>FB70</td>
+<td class="instruction">JR NZ,<a href="FAC1.html#fbd5">$FBD5</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb72"></span>FB72</td>
+<td class="instruction">JR NZ,<a href="FAC1.html#fbe4">$FBE4</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb74"></span>FB74</td>
+<td class="instruction">LD B,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb75"></span>FB75</td>
+<td class="instruction">LD A,L</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb76"></span>FB76</td>
+<td class="instruction">JR NZ,<a href="FAC1.html#fafc">$FAFC</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb78"></span>FB78</td>
+<td class="instruction">LD B,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb79"></span>FB79</td>
+<td class="instruction">SUB L</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb7a"></span>FB7A</td>
+<td class="instruction">ADD A,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-2"><span id="fb7b"></span>FB7B</td>
+<td class="instruction">NOP</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb7c"></span>FB7C</td>
+<td class="instruction">LD B,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb7d"></span>FB7D</td>
+<td class="instruction">ADD A,H</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-2"><span id="fb7e"></span>FB7E</td>
+<td class="instruction">JR NC,$FBFD</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb80"></span>FB80</td>
+<td class="instruction">JR NC,<a href="FAC1.html#fbf2">$FBF2</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb82"></span>FB82</td>
+<td class="instruction">LD B,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-2"><span id="fb83"></span>FB83</td>
+<td class="instruction">NOP</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb84"></span>FB84</td>
+<td class="instruction">JR NZ,<a href="FAC1.html#fbf6">$FBF6</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb86"></span>FB86</td>
+<td class="instruction">LD B,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-2"><span id="fb87"></span>FB87</td>
+<td class="instruction">NOP</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb88"></span>FB88</td>
+<td class="instruction">JR NZ,$FBED</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb8a"></span>FB8A</td>
+<td class="instruction">JR NZ,<a href="FAC1.html#fbfc">$FBFC</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-2"><span id="fb8c"></span>FB8C</td>
+<td class="instruction">LD B,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb8d"></span>FB8D</td>
+<td class="instruction">LD A,L</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb8e"></span>FB8E</td>
+<td class="instruction">JR NZ,<a href="FAC1.html#fb14">$FB14</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb90"></span>FB90</td>
+<td class="instruction">LD B,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb91"></span>FB91</td>
+<td class="instruction">SUB L</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb92"></span>FB92</td>
+<td class="instruction">ADD A,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb93"></span>FB93</td>
+<td class="instruction">NOP</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb94"></span>FB94</td>
+<td class="instruction">LD B,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb95"></span>FB95</td>
+<td class="instruction">AND A</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb96"></span>FB96</td>
+<td class="instruction">JR NC,<a href="FAC1.html#fb2d">$FB2D</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb98"></span>FB98</td>
+<td class="instruction">JR NC,<a href="FAC1.html#fb1e">$FB1E</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb9a"></span>FB9A</td>
+<td class="instruction">LD B,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-2"><span id="fb9b"></span>FB9B</td>
+<td class="instruction">NOP</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb9c"></span>FB9C</td>
+<td class="instruction">JR NZ,<a href="FAC1.html#fb22">$FB22</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb9e"></span>FB9E</td>
+<td class="instruction">LD B,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fb9f"></span>FB9F</td>
+<td class="instruction">NOP</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fba0"></span>FBA0</td>
+<td class="instruction">JR NZ,<a href="FC1B.html#fc1f">Print_AuthorByline_0</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fba2"></span>FBA2</td>
+<td class="instruction">JR NZ,<a href="FAC1.html#fb28">$FB28</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fba4"></span>FBA4</td>
+<td class="instruction">LD B,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fba5"></span>FBA5</td>
+<td class="instruction">SUB L</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fba6"></span>FBA6</td>
+<td class="instruction">JR NZ,<a href="FAC1.html#fb4f">$FB4F</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fba8"></span>FBA8</td>
+<td class="instruction">LD B,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-2"><span id="fba9"></span>FBA9</td>
+<td class="instruction">OR D</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-2"><span id="fbaa"></span>FBAA</td>
+<td class="instruction">ADD A,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-2"><span id="fbab"></span>FBAB</td>
+<td class="instruction">NOP</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fbac"></span>FBAC</td>
+<td class="instruction">LD B,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fbad"></span>FBAD</td>
+<td class="instruction">AND A</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fbae"></span>FBAE</td>
+<td class="instruction">JR NC,$FB45</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fbb0"></span>FBB0</td>
+<td class="instruction">JR NC,<a href="FAC1.html#fb36">$FB36</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fbb2"></span>FBB2</td>
+<td class="instruction">LD B,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fbb3"></span>FBB3</td>
+<td class="instruction">NOP</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fbb4"></span>FBB4</td>
+<td class="instruction">JR NZ,<a href="FAC1.html#fb3a">$FB3A</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fbb6"></span>FBB6</td>
+<td class="instruction">LD B,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-2"><span id="fbb7"></span>FBB7</td>
+<td class="instruction">NOP</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fbb8"></span>FBB8</td>
+<td class="instruction">JR NZ,<a href="FC2E.html#fc37">PrintMessage_Loop_0</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-2"><span id="fbba"></span>FBBA</td>
+<td class="instruction">JR NZ,<a href="FAC1.html#fb40">$FB40</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fbbc"></span>FBBC</td>
+<td class="instruction">LD B,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fbbd"></span>FBBD</td>
+<td class="instruction">SUB L</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fbbe"></span>FBBE</td>
+<td class="instruction">JR NZ,$FB67</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fbc0"></span>FBC0</td>
+<td class="instruction">LD B,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fbc1"></span>FBC1</td>
+<td class="instruction">OR D</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fbc2"></span>FBC2</td>
+<td class="instruction">ADD A,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fbc3"></span>FBC3</td>
+<td class="instruction">NOP</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fbc4"></span>FBC4</td>
+<td class="instruction">LD B,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fbc5"></span>FBC5</td>
+<td class="instruction">OR D</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fbc6"></span>FBC6</td>
+<td class="instruction">JR NC,$FB8F</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fbc8"></span>FBC8</td>
+<td class="instruction">LD B,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fbc9"></span>FBC9</td>
+<td class="instruction">OUT ($20),A</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fbcb"></span>FBCB</td>
+<td class="instruction">RST $00</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fbcc"></span>FBCC</td>
+<td class="instruction">LD B,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fbcd"></span>FBCD</td>
+<td class="instruction">AND A</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fbce"></span>FBCE</td>
+<td class="instruction">AND B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fbcf"></span>FBCF</td>
+<td class="instruction">NOP</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fbd0"></span>FBD0</td>
+<td class="instruction">LD B,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fbd1"></span>FBD1</td>
+<td class="instruction">SUB L</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fbd2"></span>FBD2</td>
+<td class="instruction">JR NC,<a href="FAC1.html#fb7b">$FB7B</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-2"><span id="fbd4"></span>FBD4</td>
+<td class="instruction">LD B,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-2"><span id="fbd5"></span>FBD5</td>
+<td class="instruction">OR D</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fbd6"></span>FBD6</td>
+<td class="instruction">JR NZ,$FB7F</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fbd8"></span>FBD8</td>
+<td class="instruction">LD B,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fbd9"></span>FBD9</td>
+<td class="instruction">ADD A,H</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-2"><span id="fbda"></span>FBDA</td>
+<td class="instruction">ADD A,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fbdb"></span>FBDB</td>
+<td class="instruction">NOP</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fbdc"></span>FBDC</td>
+<td class="instruction">LD B,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fbdd"></span>FBDD</td>
+<td class="instruction">LD A,L</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-2"><span id="fbde"></span>FBDE</td>
+<td class="instruction">JR NC,<a href="FAC1.html#fb64">$FB64</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fbe0"></span>FBE0</td>
+<td class="instruction">JR NC,<a href="FAC1.html#fb6e">$FB6E</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fbe2"></span>FBE2</td>
+<td class="instruction">JR NC,<a href="FAC1.html#fb68">$FB68</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-2"><span id="fbe4"></span>FBE4</td>
+<td class="instruction">LD B,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-2"><span id="fbe5"></span>FBE5</td>
+<td class="instruction">LD E,C</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fbe6"></span>FBE6</td>
+<td class="instruction">JR NC,$FC4B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fbe8"></span>FBE8</td>
+<td class="instruction">JR NC,$FC53</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fbea"></span>FBEA</td>
+<td class="instruction">JR NC,$FC4F</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fbec"></span>FBEC</td>
+<td class="instruction">JR NC,$FC47</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fbee"></span>FBEE</td>
+<td class="instruction">JR NC,$FC53</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fbf0"></span>FBF0</td>
+<td class="instruction">JR NC,<a href="FC52.html#fc5b">PrintHighScore_CompareDigit</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-2"><span id="fbf2"></span>FBF2</td>
+<td class="instruction">JR NC,<a href="FC52.html#fc57">PrintHighScore_ComparePointer</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fbf4"></span>FBF4</td>
+<td class="instruction">JR NC,$FC4A</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-2"><span id="fbf6"></span>FBF6</td>
+<td class="instruction">ADD A,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fbf7"></span>FBF7</td>
+<td class="instruction">NOP</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fbf8"></span>FBF8</td>
+<td class="instruction">LD B,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fbf9"></span>FBF9</td>
+<td class="instruction">LD H,E</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fbfa"></span>FBFA</td>
+<td class="instruction">JR NC,<a href="FC52.html#fc55">PrintHighScore_Compare</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-2"><span id="fbfc"></span>FBFC</td>
+<td class="instruction">JR NC,<a href="FC52.html">Print_HighScore</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fbfe"></span>FBFE</td>
+<td class="instruction">JR NC,<a href="FC52.html#fc63">PrintHighScore_NextScoreDigit</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fc00"></span>FC00</td>
+<td class="instruction">JR NC,<a href="FC52.html#fc5b">PrintHighScore_CompareDigit</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fc02"></span>FC02</td>
+<td class="instruction">JR NC,$FC6D</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fc04"></span>FC04</td>
+<td class="instruction">JR NC,$FC69</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fc06"></span>FC06</td>
+<td class="instruction">JR NC,<a href="FAC1.html#fb8c">$FB8C</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fc08"></span>FC08</td>
+<td class="instruction">JR NC,$FC87</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fc0a"></span>FC0A</td>
+<td class="instruction">LD B,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fc0b"></span>FC0B</td>
+<td class="instruction">SUB L</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fc0c"></span>FC0C</td>
+<td class="instruction">LD B,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fc0d"></span>FC0D</td>
+<td class="instruction">NOP</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fc0e"></span>FC0E</td>
+<td class="instruction">JR NZ,<a href="FAC1.html#fbb7">$FBB7</a></td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fc10"></span>FC10</td>
+<td class="instruction">AND B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fc11"></span>FC11</td>
+<td class="instruction">NOP</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fc12"></span>FC12</td>
+<td class="instruction">LD B,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fc13"></span>FC13</td>
+<td class="instruction">XOR A</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fc14"></span>FC14</td>
+<td class="instruction">RET P</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fc15"></span>FC15</td>
+<td class="instruction">NOP</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fc16"></span>FC16</td>
+<td class="instruction">LD B,B</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fc17"></span>FC17</td>
+<td class="instruction">RST $00</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fc18"></span>FC18</td>
+<td class="instruction">RET P</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fc19"></span>FC19</td>
+<td class="instruction">RST $38</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="address-1"><span id="fc1a"></span>FC1A</td>
+<td class="instruction">RST $38</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="F800.html">F800</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#fac1">Map</a></td>
+<td class="next">
+Next: <a href="FC1B.html">FC1B</a>
+</td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
+<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
+<div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
+<div><a href="../dec/asm/64193.html">Switch to decimal</a>.</div>
+</footer>
+</body>
+</html>
