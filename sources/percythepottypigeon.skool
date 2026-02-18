@@ -871,9 +871,6 @@ c$5FE7 RST $08       ;
 ; Handle Pause Input
 ;
 ; Used by the routine at #R$5DC0.
-; .
-; Read #R$5FA7; call #R$6480 if zero. Use R for random; read keyboard
-; (#R$DAC0) and dispatch. Used by #R$5DC0.
 @label=Handle_Pause_Input
 c$5FE9 LD A,($5FA7)    ;
  $5FEC OR A            ;
@@ -1508,116 +1505,129 @@ c$6456 LD B,$08      ; Set a counter in #REGb for #N$08 pixel lines.
 ; #R$5FA7 countdown or init; IX+1 compare; #R$5FAB counter. Called from
 ; #R$5FE9 when Z.
 @label=Handle_Title_Screen
-c$6480 LD HL,$52EC   ;
- $6483 LD A,($5FA7)  ;
- $6486 OR A          ;
- $6487 JR Z,$648E    ;
- $6489 DEC A         ;
- $648A LD ($5FA7),A  ;
- $648D RET           ;
-*$648E LD A,(IX+$01) ;
- $6491 CP $90        ;
- $6493 JR NC,$64BE   ;
- $6495 LD A,($5FAB)  ;
- $6498 INC A         ;
- $6499 LD ($5FAB),A  ;
- $649C CP $07        ;
- $649E RET NZ        ;
- $649F XOR A         ;
- $64A0 LD ($5FAB),A  ;
- $64A3 LD A,($5FAD)  ;
+c$6480 LD HL,$52EC   ; #REGhl=#N$52EC (screen buffer location).
+ $6483 LD A,($5FA7)  ; #REGa=*#R$5FA7.
+ $6486 OR A          ; {Jump to #R$648E if #REGa is zero.
+ $6487 JR Z,$648E    ; }
+ $6489 DEC A         ; Decrease #REGa by one.
+ $648A LD ($5FA7),A  ; Write #REGa to *#R$5FA7.
+ $648D RET           ; Return.
+*$648E LD A,(IX+$01) ; {Jump to #R$64BE if *#REGix+#N$01 is greater than or
+ $6491 CP $90        ; equal to #N$90.
+ $6493 JR NC,$64BE   ; }
+ $6495 LD A,($5FAB)  ; #REGa=*#R$5FAB.
+ $6498 INC A         ; Increment #REGa by one.
+ $6499 LD ($5FAB),A  ; Write #REGa to *#R$5FAB.
+ $649C CP $07        ; {Return if #REGa is not equal to #N$07.
+ $649E RET NZ        ; }
+ $649F XOR A         ; {Write #N$00 to *#R$5FAB.
+ $64A0 LD ($5FAB),A  ; }
+ $64A3 LD A,($5FAD)  ; {Return if *#R$5FAD is non-zero.
  $64A6 OR A          ;
- $64A7 RET NZ        ;
-*$64A8 LD A,(HL)     ;
+ $64A7 RET NZ        ; }
+*$64A8 LD A,(HL)     ; {Jump to #R$64B6 if *#REGhl is zero.
  $64A9 OR A          ;
- $64AA JR Z,$64B6    ;
- $64AC SLA (HL)      ;
-*$64AE LD A,(HL)     ;
- $64AF INC H         ;
- $64B0 LD (HL),A     ;
- $64B1 INC H         ;
- $64B2 LD (HL),A     ;
- $64B3 INC H         ;
- $64B4 LD (HL),A     ;
- $64B5 RET           ;
-*$64B6 DEC L         ;
- $64B7 LD A,L        ;
+ $64AA JR Z,$64B6    ; }
+ $64AC SLA (HL)      ; Shift *#REGhl left (with carry).
+*$64AE LD A,(HL)     ; #REGa=*#REGhl.
+ $64AF INC H         ; Increment #REGh by one.
+ $64B0 LD (HL),A     ; Write #REGa to *#REGhl.
+ $64B1 INC H         ; Increment #REGh by one.
+ $64B2 LD (HL),A     ; Write #REGa to *#REGhl.
+ $64B3 INC H         ; Increment #REGh by one.
+ $64B4 LD (HL),A     ; Write #REGa to *#REGhl.
+ $64B5 RET           ; Return.
+*$64B6 DEC L         ; Decrease #REGl by one.
+ $64B7 LD A,L        ; {Jump to #R$64E1 if #REGl is equal to #N$E0.
  $64B8 CP $E0        ;
- $64BA JR Z,$64E1    ;
- $64BC JR $64A8      ;
+ $64BA JR Z,$64E1    ; }
+ $64BC JR $64A8      ; Jump to #R$64A8.
 ; This entry point is used by the routine at #R$69A7.
-*$64BE LD A,($5FAB)  ;
- $64C1 INC A         ;
- $64C2 LD ($5FAB),A  ;
- $64C5 CP $03        ;
- $64C7 RET C         ;
- $64C8 XOR A         ;
- $64C9 LD ($5FAB),A  ;
+*$64BE LD A,($5FAB)  ; #REGa=*#R$5FAB.
+ $64C1 INC A         ; Increment #REGa by one.
+ $64C2 LD ($5FAB),A  ; Write #REGa to *#R$5FAB.
+ $64C5 CP $03        ; {Return if #REGa is less than #N$03.
+ $64C7 RET C         ; }
+ $64C8 XOR A         ; {Write #N$00 to *#R$5FAB.
+ $64C9 LD ($5FAB),A  ; }
 ; This entry point is used by the routines at #R$655C and #R$6CDD.
-*$64CC LD HL,$52E1   ;
-*$64CF LD A,(HL)     ;
+*$64CC LD HL,$52E1   ; #REGhl=#N$52E1 (screen buffer location).
+*$64CF LD A,(HL)     ; {Jump to #R$64DA if *#REGhl is equal to #N$FF.
  $64D0 CP $FF        ;
- $64D2 JR Z,$64DA    ;
- $64D4 SRL (HL)      ;
- $64D6 SET 7,(HL)    ;
- $64D8 JR $64AE      ;
-*$64DA INC L         ;
- $64DB LD A,L        ;
+ $64D2 JR Z,$64DA    ; }
+ $64D4 SRL (HL)      ; Shift *#REGhl right.
+ $64D6 SET 7,(HL)    ; Set bit 7 of *#REGhl.
+ $64D8 JR $64AE      ; Jump to #R$64AE.
+*$64DA INC L         ; Increment #REGl by one.
+ $64DB LD A,L        ; {Return if #REGl is equal to #N$ED.
  $64DC CP $ED        ;
- $64DE RET Z         ;
- $64DF JR $64CF      ;
-*$64E1 LD A,$FF      ;
- $64E3 LD ($5FA7),A  ;
- $64E6 RET           ;
-; This entry point is used by the routine at #R$5FE9.
-*$64E7 LD HL,$DAC1   ;
- $64EA LD (HL),$90   ;
- $64EC INC HL        ;
+ $64DE RET Z         ; }
+ $64DF JR $64CF      ; Jump to #R$64CF.
+*$64E1 LD A,$FF      ; {Write #N$FF to *#R$5FA7.
+ $64E3 LD ($5FA7),A  ; }
+ $64E6 RET           ; Return.
+
+; Lose Life
+;
+; Used by the routine at #R$5FE9.
+@label=LoseLife
+c$64E7 LD HL,$DAC1   ; {Write #N$90 to *#R$DAC1.
+ $64EA LD (HL),$90   ; }
+ $64EC INC HL        ; {Write #N$11 to *#R$DAC3.
  $64ED INC HL        ;
- $64EE LD (HL),$11   ;
- $64F0 PUSH IX       ;
- $64F2 CALL $6992    ;
- $64F5 LD HL,$0000   ;
- $64F8 LD A,$01      ;
- $64FA LD B,$00      ;
-*$64FC PUSH BC       ;
- $64FD LD D,B        ;
- $64FE RR B          ;
-*$6500 OUT ($FE),A   ;
- $6502 NOP           ;
- $6503 NOP           ;
- $6504 NOP           ;
- $6505 NOP           ;
- $6506 DJNZ $6500    ;
- $6508 POP BC        ;
- $6509 XOR $18       ;
- $650B OR D          ;
- $650C AND (HL)      ;
- $650D AND $F8       ;
- $650F OR $01        ;
- $6511 INC HL        ;
- $6512 DJNZ $64FC    ;
- $6514 POP IX        ;
- $6516 LD HL,$DE9E   ;
- $6519 LD BC,$0160   ;
-*$651C LD A,(HL)     ;
+ $64EE LD (HL),$11   ; }
+ $64F0 PUSH IX       ; Stash #REGix on the stack.
+ $64F2 CALL $6992    ; Call #R$6992.
+; Play the "lose a life" sound effect.
+; .
+; #HTML(#AUDIO(lose-life.wav)(#INCLUDE(LoseLife)))
+ $64F5 LD HL,$0000   ; #REGhl=#N($0000,$04,$04).
+ $64F8 LD A,$01      ; #REGa=#N$01.
+ $64FA LD B,$00      ; #REGb=#N$00.
+*$64FC PUSH BC       ; Stash #REGbc on the stack.
+ $64FD LD D,B        ; #REGd=#REGb.
+ $64FE RR B          ; Rotate #REGb right.
+*$6500 OUT ($FE),A   ; Send to the speaker.
+ $6502 NOP           ; No operation.
+ $6503 NOP           ; No operation.
+ $6504 NOP           ; No operation.
+ $6505 NOP           ; No operation.
+ $6506 DJNZ $6500    ; Decrease counter by one and loop back to #R$6500 until
+                     ; counter is zero.
+ $6508 POP BC        ; Restore #REGbc from the stack.
+ $6509 XOR %00011000 ; Flip bits 3-4.
+ $650B OR D          ; Set the bits from #REGd.
+ $650C AND (HL)      ; Merge the bits from *#REGhl.
+ $650D AND %11111000 ; Keep only bits 3-7.
+ $650F OR %00000001  ; Set bit 0.
+ $6511 INC HL        ; Increment #REGhl by one.
+ $6512 DJNZ $64FC    ; Decrease counter by one and loop back to #R$64FC until
+                     ; counter is zero.
+ $6514 POP IX        ; Restore #REGix from the stack.
+ $6516 LD HL,$DE9E   ; #REGhl=#R$DE9E.
+ $6519 LD BC,$0160   ; #REGbc=#N($0160,$04,$04).
+*$651C LD A,(HL)     ; {Jump to #R$6523 if *#REGhl is not equal to #N$1E.
  $651D CP $1E        ;
- $651F JR NZ,$6523   ;
- $6521 LD (HL),$00   ;
-*$6523 DEC BC        ;
- $6524 INC HL        ;
- $6525 LD A,B        ;
+ $651F JR NZ,$6523   ; }
+ $6521 LD (HL),$00   ; Write #N$00 to *#REGhl.
+*$6523 DEC BC        ; Decrease #REGbc by one.
+ $6524 INC HL        ; Increment #REGhl by one.
+ $6525 LD A,B        ; {Jump to #R$651C until #REGbc is zero.
  $6526 OR C          ;
- $6527 JR NZ,$651C   ;
- $6529 CALL $6791    ;
- $652C LD HL,$5FB3   ;
- $652F DEC (HL)      ;
- $6530 LD A,(HL)     ;
- $6531 CP $30        ;
- $6533 JR NZ,$655C   ;
- $6535 LD A,$30      ;
- $6537 LD HL,$50F0   ;
- $653A CALL $6581    ;
+ $6527 JR NZ,$651C   ; }
+ $6529 CALL $6791    ; Call #R$6791.
+; See #POKE#infinite_lives(Infinite Lives).
+; .
+; Decrease the lives counter by one.
+ $652C LD HL,$5FB3   ; #REGhl=#R$5FB3.
+ $652F DEC (HL)      ; Decrease *#REGhl by one.
+ $6530 LD A,(HL)     ; {Jump to #R$655C if *#R$5FB3 is not yet equal to ASCII #N$30
+ $6531 CP $30        ; ("#CHR$30").
+ $6533 JR NZ,$655C   ; }
+ $6535 LD A,$30      ; #REGa=#N$30.
+ $6537 LD HL,$50F0   ; #REGhl=#N$50F0 (screen buffer location).
+ $653A CALL $6581    ; Call #R$6581.
+; Continue on to #R$653D.
 
 ; Initialise Lives
 ;
@@ -1651,14 +1661,12 @@ c$653D NOP           ;
 
 ; Start Level
 ;
-; Used by the routine at #R$6480.
-; .
-; Print at #N$50F0; set #R$5FC5=#N$06; call #R$5E24; loop #R$64CC
-; #N$60 times; set #R$DAC0 area. Clear #R$5FA7.
+; Used by the routine at #R$64E7.
 @label=Start_Level
 c$655C LD HL,$50F0   ; #REGhl=#N$50F0 (screen buffer location).
  $655F CALL $6581    ; Call #R$6581.
 ; This entry point is used by the routines at #R$659B and #R$68B8.
+@label=SetUpNewLevel
 *$6562 LD A,$06      ; {Write #N$06 to *#R$5FC5.
  $6564 LD ($5FC5),A  ; }
  $6567 CALL $5E24    ; Call #R$5E24.
@@ -1668,9 +1676,9 @@ c$655C LD HL,$50F0   ; #REGhl=#N$50F0 (screen buffer location).
                      ; counter is zero.
  $6571 LD HL,$DAC0   ; {Write #N$38 to *#R$DAC0.
  $6574 LD (HL),$38   ; }
- $6576 INC HL        ; {Write #N$9E to *#R$DAC0(#N$DAC1).
+ $6576 INC HL        ; {Write #N$9E to *#R$DAC1.
  $6577 LD (HL),$9E   ; }
- $6579 INC HL        ; {Write #N$07 to *#R$DAC0(#N$DAC2).
+ $6579 INC HL        ; {Write #INK$07 to *#R$DAC2.
  $657A LD (HL),$07   ; }
  $657C XOR A         ; {Write #N$00 to *#R$5FA7.
  $657D LD ($5FA7),A  ; }
@@ -1678,7 +1686,7 @@ c$655C LD HL,$50F0   ; #REGhl=#N$50F0 (screen buffer location).
 
 ; Print Character
 ;
-; Used by the routines at #R$6480, #R$655C, #R$659B, #R$6811, #R$68F7 and
+; Used by the routines at #R$64E7, #R$655C, #R$659B, #R$6811, #R$68F7 and
 ; #R$FC2E.
 ;
 ; A ASCII character
@@ -2046,7 +2054,7 @@ c$662B LD IX,$DAC0    ;
  $678B INC E          ;
  $678C JR NZ,$677C    ;
  $678E CALL $68B8     ;
-; This entry point is used by the routines at #R$6480 and #R$679C.
+; This entry point is used by the routines at #R$64E7 and #R$679C.
 *$6791 XOR A          ;
  $6792 LD ($5FAA),A   ;
  $6795 LD ($5FAC),A   ;
@@ -2303,37 +2311,36 @@ b$689F DEFB $08,$02,$C5,$E8
 ; Handle Life Lost
 ;
 ; Used by the routine at #R$662B.
-; .
-; Decrement #R$5FB2; when zero loop #R$693B #N$28 times (border flash),
-; set #R$5FBD and beep, then call #R$68F7.
 @label=Handle_Life_Lost
-c$68B8 LD HL,$5FB2   ;
- $68BB DEC (HL)      ;
- $68BC RET NZ        ;
- $68BD PUSH IX       ;
- $68BF LD B,$28      ;
- $68C1 LD HL,$0320   ;
- $68C4 LD DE,$0008   ;
-*$68C7 CALL $693B    ;
- $68CA DJNZ $68C7    ;
- $68CC LD A,$0F      ;
- $68CE LD ($5C48),A  ;
- $68D1 LD ($5FBD),A  ;
- $68D4 LD A,$01      ;
- $68D6 OUT ($FE),A   ;
- $68D8 POP IX        ;
- $68DA CALL $68F7    ;
- $68DD LD A,($5FB1)  ;
- $68E0 ADD A,$0B     ;
- $68E2 LD ($5FC5),A  ;
- $68E5 CALL $5E24    ;
- $68E8 LD HL,$FBF9   ;
- $68EB CALL $FAC4    ;
- $68EE DI            ;
- $68EF CALL $6562    ;
- $68F2 XOR A         ;
- $68F3 LD ($5FA5),A  ;
- $68F6 RET           ;
+c$68B8 LD HL,$5FB2   ; {Decrease *#R$5FB2 by one.
+ $68BB DEC (HL)      ; }
+ $68BC RET NZ        ; Return if *#REGhl is not equal to #N$00.
+ $68BD PUSH IX       ; Stash #REGix on the stack.
+ $68BF LD B,$28      ; #REGb=#N$28.
+ $68C1 LD HL,$0320   ; #REGhl=#N$0320.
+ $68C4 LD DE,$0008   ; #REGde=#N($0008,$04,$04).
+*$68C7 CALL $693B    ; Call #R$693B.
+ $68CA DJNZ $68C7    ; Decrease counter by one and loop back to #R$68C7 until
+                     ; counter is zero.
+ $68CC LD A,$0F      ; {#HTML(Write #N$0F to; #LIST
+ $68CE LD ($5C48),A  ; { *<a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/5C48.html">BORDCR</a> }
+ $68D1 LD ($5FBD),A  ; { *#R$5FBD }
+                     ; LIST#)}
+ $68D4 LD A,$01      ; {Set border to #INK$01.
+ $68D6 OUT ($FE),A   ; }
+ $68D8 POP IX        ; Restore #REGix from the stack.
+ $68DA CALL $68F7    ; Call #R$68F7.
+ $68DD LD A,($5FB1)  ; #REGa=*#R$5FB1.
+ $68E0 ADD A,$0B     ; #REGa+=#N$0B.
+ $68E2 LD ($5FC5),A  ; Write #REGa to *#R$5FC5.
+ $68E5 CALL $5E24    ; Call #R$5E24.
+ $68E8 LD HL,$FBF9   ; #REGhl=#R$FBF9.
+ $68EB CALL $FAC4    ; Call #R$FAC4.
+ $68EE DI            ; Disable interrupts.
+ $68EF CALL $6562    ; Call #R$6562.
+ $68F2 XOR A         ; {Write #N$00 to *#R$5FA5.
+ $68F3 LD ($5FA5),A  ; }
+ $68F6 RET           ; Return.
 
 ; Update Lives Display
 ;
@@ -2473,7 +2480,7 @@ c$6966 EI            ; Enable interrupts.
 
 ; Run Game Frame
 ;
-; Used by the routines at #R$5DC0 and #R$6480.
+; Used by the routines at #R$5DC0 and #R$64E7.
 @label=Run_Game_Frame
 c$6992 CALL $662B    ; Call #R$662B.
  $6995 CALL $6832    ; Call #R$6832.
@@ -13913,20 +13920,29 @@ g$D90A DEFB $00,$00,$00,$00,$00,$00,$00,$00
  $DAB2 DEFB $00,$00,$00,$00,$00,$00,$00,$00
  $DABA DEFB $00,$00,$00,$00,$00,$00
 
-; Game status buffer entry at DAC0
-g$DAC0 DEFB $00,$00,$00,$00,$00,$00,$00
+; Percy States
+@label=Percy_X_Position
+g$DAC0 DEFB $00         ; Percy X position.
+@label=Percy_Y_Position
+ $DAC1 DEFB $00         ; Percy Y position.
+@label=Percy_Colour
+ $DAC2 DEFB $00         ; Percy INK colour.
+@label=Percy_Frame_ID
+ $DAC3 DEFB $00         ; Percy frame ID.
+ $DAC4 DEFB $00,$00,$00
 
 ; Game status buffer entry at DAC7
 g$DAC7 DEFB $00
 
 ; Spider States
 @label=Spider_X_Position
-@label=Spider_Colour
 g$DAC8 DEFB $00      ; Spider X position.
 @label=Spider_Y_Position
  $DAC9 DEFB $00      ; Spider Y position.
+@label=Spider_Colour
  $DACA DEFB $00      ; Spider INK colour.
- $DACB DEFB $00
+@label=Spider_Frame_ID
+ $DACB DEFB $00      ; Spider frame ID.
 
 ; Game status buffer entry at DACC
 g$DACC DEFB $00,$00,$00,$00
@@ -14398,11 +14414,17 @@ b$F800 DEFB $00,$00,$00,$00,$00,$00,$00,$00
  $FAA8 DEFB $00,$00,$00,$00,$00,$00,$00,$00
  $FAB0 DEFB $00,$00,$00,$00,$00,$00,$00,$00
  $FAB8 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $FAC0 DEFB $FF
+
+; Game status buffer entry at FAC0
+g$FAC0 DEFB $FF
 
 ; Routine at FAC1
 ;
 ; Used by the routine at #R$FC52.
+;
+; .
+;
+; #HTML(#AUDIO(next-level.wav)(#INCLUDE(NextLevel)))
 c$FAC1 LD HL,$FAF9   ; #REGhl=#R$FAF9.
 ; This entry point is used by the routine at #R$68B8.
 *$FAC4 NOP           ; No operation.
@@ -14450,7 +14472,8 @@ c$FAC1 LD HL,$FAF9   ; #REGhl=#R$FAF9.
  $FAF6 INC HL        ; Increment #REGhl by one.
  $FAF7 JR $FAC5      ; Jump to #R$FAC5.
 
-; Data block at FAF9
+; Audio: Next Level Jingle
+@label=Audio_NextLevelJingle
 b$FAF9 DEFB $B2,$30,$C7,$40,$D3,$20,$C7,$40
  $FB01 DEFB $A7,$A0,$00,$64,$95,$30,$A7,$40
  $FB09 DEFB $B2,$20,$A7,$40,$84,$80,$00,$64
@@ -14483,11 +14506,12 @@ b$FAF9 DEFB $B2,$30,$C7,$40,$D3,$20,$C7,$40
  $FBE1 DEFB $8C,$30,$84,$40,$59,$30,$63,$30
  $FBE9 DEFB $69,$30,$63,$30,$59,$30,$63,$30
  $FBF1 DEFB $69,$30,$63,$30,$54,$80,$00,$40
+@label=Audio_LoseLifeJingle
  $FBF9 DEFB $63,$30,$59,$30,$54,$30,$63,$30
  $FC01 DEFB $59,$30,$69,$30,$63,$30,$84,$30
  $FC09 DEFB $7D,$40,$95,$40,$00,$20,$A7,$A0
  $FC11 DEFB $00,$40,$AF,$F0,$00,$40,$C7,$F0
- $FC19 DEFB $FF,$FF
+ $FC19 DEFB $FF,$FF                         ; Terminator.
 
 ; Print Author Byline
 ;

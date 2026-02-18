@@ -1,4 +1,4 @@
 GAME=percythepottypigeon
 SRCFILES=$(echo percythepottypigeon.skool {percythepottypigeon,analytics,bases,changelog,data,pokes,rooms,sound}.ref {dark,wide}.css)
 SKOOL2BINOPTS="-i 49629"
-WAVCONVERT=""
+WAVCONVERT="lose-life.wav menu.wav next-level.wav"

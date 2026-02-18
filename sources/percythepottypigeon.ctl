@@ -514,8 +514,99 @@ D $5FE7 RST #N$08 then LD A,(BC). Used when table index >= #N$11 in #R$5FC6.
 
 c $5FE9 Handle Pause Input
 @ $5FE9 label=Handle_Pause_Input
-D $5FE9 Read #R$5FA7; call #R$6480 if zero. Use R for random; read keyboard
-. (#R$DAC0) and dispatch. Used by #R$5DC0.
+  $6480,$03 #REGhl=#N$52EC (screen buffer location).
+  $6483,$03 #REGa=*#R$5FA7.
+  $6486,$03 Jump to #R$648E if #REGa is zero.
+  $6489,$01 Decrease #REGa by one.
+  $648A,$03 Write #REGa to *#R$5FA7.
+  $648D,$01 Return.
+
+  $648E,$07 Jump to #R$64BE if *#REGix+#N$01 is greater than or equal to #N$90.
+  $6495,$03 #REGa=*#R$5FAB.
+  $6498,$01 Increment #REGa by one.
+  $6499,$03 Write #REGa to *#R$5FAB.
+  $649C,$03 Return if #REGa is not equal to #N$07.
+  $649F,$04 Write #N$00 to *#R$5FAB.
+  $64A3,$05 Return if *#R$5FAD is non-zero.
+  $64A8,$04 Jump to #R$64B6 if *#REGhl is zero.
+  $64AC,$02 Shift *#REGhl left (with carry).
+  $64AE,$01 #REGa=*#REGhl.
+  $64AF,$01 Increment #REGh by one.
+  $64B0,$01 Write #REGa to *#REGhl.
+  $64B1,$01 Increment #REGh by one.
+  $64B2,$01 Write #REGa to *#REGhl.
+  $64B3,$01 Increment #REGh by one.
+  $64B4,$01 Write #REGa to *#REGhl.
+  $64B5,$01 Return.
+
+  $64B6,$01 Decrease #REGl by one.
+  $64B7,$05 Jump to #R$64E1 if #REGl is equal to #N$E0.
+  $64BC,$02 Jump to #R$64A8.
+
+  $64BE,$03 #REGa=*#R$5FAB.
+  $64C1,$01 Increment #REGa by one.
+  $64C2,$03 Write #REGa to *#R$5FAB.
+  $64C5,$03 Return if #REGa is less than #N$03.
+  $64C8,$04 Write #N$00 to *#R$5FAB.
+  $64CC,$03 #REGhl=#N$52E1 (screen buffer location).
+  $64CF,$05 Jump to #R$64DA if *#REGhl is equal to #N$FF.
+  $64D4,$02 Shift *#REGhl right.
+  $64D6,$02 Set bit 7 of *#REGhl.
+  $64D8,$02 Jump to #R$64AE.
+
+  $64DA,$01 Increment #REGl by one.
+  $64DB,$04 Return if #REGl is equal to #N$ED.
+  $64DF,$02 Jump to #R$64CF.
+  $64E1,$05 Write #N$FF to *#R$5FA7.
+  $64E6,$01 Return.
+
+c $64E7 Lose Life
+@ $64E7 label=LoseLife
+E $64E7 Continue on to #R$653D.
+  $64E7,$05 Write #N$90 to *#R$DAC1.
+  $64EC,$04 Write #N$11 to *#R$DAC3.
+  $64F0,$02 Stash #REGix on the stack.
+  $64F2,$03 Call #R$6992.
+N $64F5 Play the "lose a life" sound effect.
+N $64F5 #HTML(#AUDIO(lose-life.wav)(#INCLUDE(LoseLife)))
+  $64F5,$03 #REGhl=#N($0000,$04,$04).
+  $64F8,$02 #REGa=#N$01.
+  $64FA,$02 #REGb=#N$00.
+  $64FC,$01 Stash #REGbc on the stack.
+  $64FD,$01 #REGd=#REGb.
+  $64FE,$02 Rotate #REGb right.
+  $6500,$02 Send to the speaker.
+  $6502,$01 No operation.
+  $6503,$01 No operation.
+  $6504,$01 No operation.
+  $6505,$01 No operation.
+  $6506,$02 Decrease counter by one and loop back to #R$6500 until counter is zero.
+  $6508,$01 Restore #REGbc from the stack.
+  $6509,$02,b$01 Flip bits 3-4.
+  $650B,$01 Set the bits from #REGd.
+  $650C,$01 Merge the bits from *#REGhl.
+  $650D,$02,b$01 Keep only bits 3-7.
+  $650F,$02,b$01 Set bit 0.
+  $6511,$01 Increment #REGhl by one.
+  $6512,$02 Decrease counter by one and loop back to #R$64FC until counter is zero.
+  $6514,$02 Restore #REGix from the stack.
+  $6516,$03 #REGhl=#R$DE9E.
+  $6519,$03 #REGbc=#N($0160,$04,$04).
+  $651C,$05 Jump to #R$6523 if *#REGhl is not equal to #N$1E.
+  $6521,$02 Write #N$00 to *#REGhl.
+  $6523,$01 Decrease #REGbc by one.
+  $6524,$01 Increment #REGhl by one.
+  $6525,$04 Jump to #R$651C until #REGbc is zero.
+  $6529,$03 Call #R$6791.
+N $652C See #POKE#infinite_lives(Infinite Lives).
+N $652C Decrease the lives counter by one.
+  $652C,$03 #REGhl=#R$5FB3.
+  $652F,$01 Decrease *#REGhl by one.
+  $6530,$05 Jump to #R$655C if *#R$5FB3 is not yet equal to ASCII #N$30
+. ("#CHR$30").
+  $6535,$02 #REGa=#N$30.
+  $6537,$03 #REGhl=#N$50F0 (screen buffer location).
+  $653A,$03 Call #R$6581.
 
 c $63BB Print HUD Header
 @ $63BB label=Print_HUD_Header
@@ -639,18 +730,17 @@ N $654A See #POKE#255_lives(255 Lives).
 
 c $655C Start Level
 @ $655C label=Start_Level
-D $655C Print at #N$50F0; set #R$5FC5=#N$06; call #R$5E24; loop #R$64CC
-. #N$60 times; set #R$DAC0 area. Clear #R$5FA7.
   $655C,$03 #REGhl=#N$50F0 (screen buffer location).
   $655F,$03 Call #R$6581.
+@ $6562 label=SetUpNewLevel
   $6562,$05 Write #N$06 to *#R$5FC5.
   $6567,$03 Call #R$5E24.
   $656A,$02 #REGb=#N$60.
   $656C,$03 Call #R$64CC.
   $656F,$02 Decrease counter by one and loop back to #R$656C until counter is zero.
   $6571,$05 Write #N$38 to *#R$DAC0.
-  $6576,$03 Write #N$9E to *#R$DAC0(#N$DAC1).
-  $6579,$03 Write #N$07 to *#R$DAC0(#N$DAC2).
+  $6576,$03 Write #N$9E to *#R$DAC1.
+  $6579,$03 Write #INK$07 to *#R$DAC2.
   $657C,$04 Write #N$00 to *#R$5FA7.
   $6580,$01 Return.
 
@@ -972,8 +1062,31 @@ L $689F,$04,$06
 
 c $68B8 Handle Life Lost
 @ $68B8 label=Handle_Life_Lost
-D $68B8 Decrement #R$5FB2; when zero loop #R$693B #N$28 times (border flash),
-. set #R$5FBD and beep, then call #R$68F7.
+  $68B8,$04 Decrease *#R$5FB2 by one.
+  $68BC,$01 Return if *#REGhl is not equal to #N$00.
+  $68BD,$02 Stash #REGix on the stack.
+  $68BF,$02 #REGb=#N$28.
+  $68C1,$03 #REGhl=#N$0320.
+  $68C4,$03 #REGde=#N($0008,$04,$04).
+  $68C7,$03 Call #R$693B.
+  $68CA,$02 Decrease counter by one and loop back to #R$68C7 until counter is zero.
+  $68CC,$08 #HTML(Write #N$0F to; #LIST
+. { *<a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/5C48.html">BORDCR</a> }
+. { *#R$5FBD }
+. LIST#)
+  $68D4,$04 Set border to #INK$01.
+  $68D8,$02 Restore #REGix from the stack.
+  $68DA,$03 Call #R$68F7.
+  $68DD,$03 #REGa=*#R$5FB1.
+  $68E0,$02 #REGa+=#N$0B.
+  $68E2,$03 Write #REGa to *#R$5FC5.
+  $68E5,$03 Call #R$5E24.
+  $68E8,$03 #REGhl=#R$FBF9.
+  $68EB,$03 Call #R$FAC4.
+  $68EE,$01 Disable interrupts.
+  $68EF,$03 Call #R$6562.
+  $68F2,$04 Write #N$00 to *#R$5FA5.
+  $68F6,$01 Return.
 
 c $68F7 Update Lives Display
 @ $68F7 label=Update_Lives_Display
@@ -1690,7 +1803,15 @@ N $C200 Set the lower screen to the default #N$02 lines.
 
 g $D90A
 
-g $DAC0
+g $DAC0 Percy States
+@ $DAC0 label=Percy_X_Position
+B $DAC0,$01 Percy X position.
+@ $DAC1 label=Percy_Y_Position
+B $DAC1,$01 Percy Y position.
+@ $DAC2 label=Percy_Colour
+B $DAC2,$01 Percy INK colour.
+@ $DAC3 label=Percy_Frame_ID
+B $DAC3,$01 Percy frame ID.
 
 g $DAC7
 
@@ -1699,8 +1820,10 @@ g $DAC8 Spider States
 B $DAC8,$01 Spider X position.
 @ $DAC9 label=Spider_Y_Position
 B $DAC9,$01 Spider Y position.
-@ $DAC8 label=Spider_Colour
+@ $DACA label=Spider_Colour
 B $DACA,$01 Spider INK colour.
+@ $DACB label=Spider_Frame_ID
+B $DACB,$01 Spider frame ID.
 
 g $DACC
 
@@ -1724,7 +1847,11 @@ B $E000,$1800,$20
 
 b $F800
 
+g $FAC0
+B $FAC0,$01
+
 c $FAC1
+N $FAC1 #HTML(#AUDIO(next-level.wav)(#INCLUDE(NextLevel)))
   $FAC1,$03 #REGhl=#R$FAF9.
   $FAC4,$01 No operation.
   $FAC5,$01 #REGa=*#REGhl.
@@ -1766,7 +1893,11 @@ M $FAE5,$03 Return if "ENTER" has been pressed.
   $FAF6,$01 Increment #REGhl by one.
   $FAF7,$02 Jump to #R$FAC5.
 
-b $FAF9
+b $FAF9 Audio: Next Level Jingle
+@ $FAF9 label=Audio_NextLevelJingle
+@ $FBF9 label=Audio_LoseLifeJingle
+  $FAF9,$0120
+  $FC19,$02 Terminator.
 
 c $FC1B Print Author Byline
 @ $FC1B label=Print_AuthorByline

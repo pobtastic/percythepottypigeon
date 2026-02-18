@@ -3,3 +3,11 @@
 [Audio:menu:Menu]
 
 #AUDIO(menu.wav)(#INCLUDE(Menu))
+
+[Audio:lose-life:Lose Life]
+
+#AUDIO(lose-life.wav)(#INCLUDE(LoseLife))
+
+[Audio:next-level:Next Level]
+
+#AUDIO(next-level.wav)(#INCLUDE(NextLevel))
