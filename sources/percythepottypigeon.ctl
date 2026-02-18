@@ -684,8 +684,8 @@ N $658C Each ASCII character is #N$08 bytes of data, so this translates the
 
 c $659B Main Menu
 @ $659B label=MainMenu
-D $659B Displays the pre-game introduction screen.
-N $659B Room #N$0C is the.
+D $659B Displays the pre-game title screen.
+N $659B Room #N$0C is the title page.
   $659B,$08 Write #N$0C to; #LIST
 . { *#R$5FC5 }
 . { *#R$5FA1 }
@@ -780,6 +780,10 @@ R $6621 BC The length of the text to print
 
 c $662B Compute Sprite Position?
 @ $662B label=Compute_Sprite_Position
+
+g $6825 Current Score
+@ $6825 label=CurrentScore
+B $6825,$08
 
 c $6832 Update State Counters?
 @ $6832 label=Update_State_Counters
@@ -980,17 +984,102 @@ c $69F7 Load Level Data
 D $69F7 If #R$5FBB set: walk level/sprite data at #R$BE00 by #R$5FC5.
 . Used by #R$69A7.
 
+c $6AF6
+
+c $6C39
+
+c $6C53
+
+c $6C85
+
+c $6CA5
+
+b $6CB2
+
+c $6CDD
+
 c $6DAB Dispatch Game State
 @ $6DAB label=Dispatch_Game_State
-D $6DAB If #R$5FBB clear #R$7208/#R$7209. Branch on #R$5FC5 (1, 2, 9 to
-. different routines). Used by #R$69A7.
 
-c $720F Clear Or Update Buffer?
-@ $720F label=Clear_Or_Update_Buffer
-D $720F Optionally write #R$5FB1; if #R$5FBB clear #N$0800 bytes at #R$E800;
-. then use #R$5FB1 and #R$5FC5.
+c $6E2F
+
+c $6E5D
+
+b $71E9
+
+c $720F Room Handler Dispatch
+@ $720F label=RoomHandlerDispatch
+N $720F This is a self-modified instruction — the immediate value is patched at
+. runtime. If it is non-zero, store it in *#R$5FB1.
+  $720F,$02 #REGa=#N$00.
+  $7211,$03 Jump to #R$7217 if #REGa is zero.
+  $7214,$03 Write #REGa to *#R$5FB1.
+N $7217 If *#R$5FBB is non-zero, clear #N$07FF bytes of the sprite attribute
+. buffer at #R$E800.
+@ $7217 label=RoomHandlerDispatch_TestSpriteAttributes
+  $7217,$03 #REGa=*#R$5FBB.
+  $721A,$03 Jump to #R$722A if #REGa is zero.
+  $721D,$0D Clear #N$07FF bytes from #R$E800 onwards.
+N $722A Look up the handler address for the current room from the jump table at
+. #R$7B2E. Each entry is a two-byte address; the room number (one-indexed) is
+. decremented to form a zero-based index.
+@ $722A label=RoomHandlerDispatch_Lookup
+  $722A,$04 #REGb=*#R$5FB1.
+  $722E,$03 #REGa=*#R$5FC5.
+  $7231,$01 Decrement to make the room ID zero-indexed.
+  $7232,$03 #REGde=#R$7B2E.
+  $7235,$03 Transfer the room index to #REGhl.
+  $7238,$01 Multiply by #N$02 (two bytes per table entry).
+  $7239,$01 Add the jump table base address.
+  $723A,$03 Read the two-byte handler address from the table into #REGde.
+  $723D,$01 Transfer the handler address to #REGhl. 
+  $723E,$01 Jump to the room handler.
+
+c $723F Handler: Room #N$01
+@ $723F label=Handler_Room01
+
+c $7265 Handler: Room #N$02
+@ $7265 label=Handler_Room02
+
+c $7286 Handler: Room #N$03
+@ $7286 label=Handler_Room03
+
+c $72BD Handler: Room #N$04
+@ $72BD label=Handler_Room04
+
+c $72E1 Handler: Room #N$05
+@ $72E1 label=Handler_Room05
+
+c $730E Handler: Room #N$06
+@ $730E label=Handler_Room06
+
+c $7367 Handler: Room #N$07
+@ $7367 label=Handler_Room07
+
+c $73A4 Handler: Room #N$08
+@ $73A4 label=Handler_Room08
+
+c $73E1 Handler: Room #N$09
+@ $73E1 label=Handler_Room09
+
+c $73FA Handler: Room #N$0A
+@ $73FA label=Handler_Room10
+
+c $7413 Handler: Room #N$0B
+@ $7413 label=Handler_Room11
+
+c $7439
+
+c $74A7
 
 b $7AC3
+
+g $7B2E Jump Table: Room Handlers
+@ $7B2E label=JumpTable_RoomHandler
+W $7B2E,$02 Handler for room #N($01+(#PC-$7B2E)/$02).
+L $7B2E,$02,$0B
+
+b $7B44
 
 b $83A9 Room #N$00
 @ $83A9 label=Room00
@@ -1052,8 +1141,8 @@ b $945A Room #N$0B
 D $945A #ROOM$0B
   $95A4,$01 Terminator.
 
-b $95A5 Room #N$0C: Splash Screen.
-@ $95A5 label=Room12_SplashScreen
+b $95A5 Room #N$0C: Title Screen.
+@ $95A5 label=Room12_TitleScreen
 D $95A5 #ROOM$0C
   $9746,$01 Terminator.
 
@@ -1347,37 +1436,99 @@ B $E000,$1800,$20
 
 b $F800
 
-c $FC1B Print Pause Message
-@ $FC1B label=Print_Pause_Message
-D $FC1B If #R$5FBC (pause) zero: copy from #R$FC3D to screen (#N$50A6).
-. Used by #R$659B.
-  $FC1B,$06 Jump to #R$FC52 if *#R$5FBC is non-zero.
-  $FC21,$03 #REGde=#R$FC3D.
-  $FC24,$03 #REGhl=#N$50A6 (screen buffer location).
-  $FC27,$02 #REGb=#N$15.
+c $FAC1
+
+
+c $FC1B Print Author Byline
+@ $FC1B label=Print_AuthorByline
+D $FC1B Prints the Author Byline messaging to the screen buffer.
+  $FC1B,$04 Check if *#R$5FBC is non-zero.
+  $FC1F,$02 Jump to #R$FC52 if *#R$5FBC is non-zero.
+  $FC21,$03 Point #REGde at #R$FC3D.
+  $FC24,$03 Load #REGhl with #N$50A6 (screen buffer location to print).
+  $FC27,$02 Set a counter in #REGb for #N$15 characters to print to the screen
+. buffer.
   $FC29,$03 Call #R$FC2E.
   $FC2C,$02 Jump to #R$FC89.
 
-  $FC2E,$01 #REGa=*#REGde.
-  $FC2F,$03 Stash #REGde, #REGhl and #REGbc on the stack.
+c $FC2E Print Message
+@ $FC2E label=PrintMessage_Loop
+R $FC2E B Number of characters to print
+R $FC2E DE Pointer to message string
+R $FC2E HL Screen buffer target address for printing
+  $FC2E,$01 Fetch the character to print from *#REGde.
+  $FC2F,$03 Stash the message pointer, screen buffer location and character
+. counter on the stack.
   $FC32,$03 Call #R$6581.
-  $FC35,$03 Restore #REGbc, #REGhl and #REGde from the stack.
-  $FC38,$01 Increment #REGhl by one.
-  $FC39,$01 Increment #REGde by one.
-  $FC3A,$02 Decrease counter by one and loop back to #R$FC2E until counter is zero.
+  $FC35,$02 Restore the character counter and screen buffer location from the
+. stack.
+  $FC37,$01 Restore the message pointer from the stack.
+  $FC38,$01 Move to the next position in the screen buffer.
+  $FC39,$01 Move to the next character in the message.
+  $FC3A,$02 Decrease the character counter by one and loop back to #R$FC2E
+. until the entire message has been printed to the screen buffer.
   $FC3C,$01 Return.
 
 t $FC3D Messaging: Author Byline
 @ $FC3D label=Messaging_AuthorByline
   $FC3D,$15 "#STR(#PC,$04,$15)".
 
-c $FC52
+c $FC52 Print High Score
+@ $FC52 label=Print_HighScore
+D $FC52 Checks if the current score is a new high score, and if so, copies it
+. to the high score storage.
+. Then prints the high score label and value to the screen.
+N $FC52 Compare the current score with the stored high score, byte by byte
+. (most significant digit first).
+  $FC52,$03 Point #REGhl at #R$6825(#N$682C) (the last digit of the current
+. score).
+@ $FC55 label=PrintHighScore_Compare
+  $FC55,$02 Set a counter in #REGb for #N$07 digits to compare.
+@ $FC57 label=PrintHighScore_ComparePointer
+  $FC57,$03 Point #REGde at #R$FCA6(#N$FCAD) (the last digit of the stored high
+. score).
+@ $FC5A label=PrintHighScore_CompareLoop
+  $FC5A,$01 Fetch a digit from the stored high score.
+@ $FC5B label=PrintHighScore_CompareDigit
+  $FC5B,$03 Jump to #R$FC62 if the high score digit is equal to the same digit
+. of the current score.
+  $FC5E,$02 Jump to #R$FC73 if the high score digit is greater than or equal to
+. the same digit of the current score.
+  $FC60,$02 Jump to #R$FC68 if the high score digit is less than the same digit
+. of the current score.
+@ $FC62 label=PrintHighScore_NextDigit
+  $FC62,$01 Move to the next digit in the current score.
+@ $FC63 label=PrintHighScore_NextScoreDigit
+  $FC63,$01 Move to the next digit in the high score.
+  $FC64,$02 Decrease the digit counter by one and loop back to #R$FC5A until
+. all #N$07 digits have been compared.
+N $FC66 All digits matched — scores are equal, so no update needed.
+  $FC66,$02 Jump to #R$FC73.
+N $FC68 New high score — copy the current score over the stored high score.
+@ $FC68 label=PrintHighScore_NewHighScore
+  $FC68,$0B Copy #N($0007,$04,$04) bytes of data from *#R$6825 to *#R$FCA6.
+N $FC73 Print the high score label and value to the screen buffer.
+@ $FC73 label=PrintHighScore_Display
+  $FC73,$03 #REGhl=#N$50A7 (screen buffer location).
+  $FC76,$02 Set a counter in #REGb for #N$0C characters to print to the screen
+. buffer.
+  $FC78,$03 #REGde=#R$FC99.
+  $FC7B,$03 Call #R$FC2E.
+  $FC7E,$04 #REGix=#R$FCA6.
+  $FC82,$04 #REGhl+=#N($0007,$04,$04).
+  $FC86,$03 Call #R$6811.
+N $FC89 Reset the current score to zero and return to the game flow.
+@ $FC89 label=PrintHighScore_ResetScore
+  $FC89,$0D Clear #N($000A,$04,$04) bytes of data from *#R$6825 onwards.
+  $FC96,$03 Jump to #R$FAC1.
 
 t $FC99 Messaging: High Score
 @ $FC99 label=Messaging_HighScore
   $FC99,$0D "#STR(#PC,$04,$0D)".
 
-b $FCA6
+g $FCA6 High Score
+@ $FCA6 label=HighScore
+B $FCA6,$08
 
 b $FF58 Graphics: Custom UDGs
 @ $FF58 label=Graphics_CustomUDGs
