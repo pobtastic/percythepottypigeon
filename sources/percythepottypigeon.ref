@@ -8,7 +8,7 @@
 
 [Config]
 Expand=#INCLUDE(Expand)
-RefFiles=bases.ref;analytics.ref;changelog.ref;pokes.ref;rooms.ref
+RefFiles=bases.ref;analytics.ref;changelog.ref;data.ref;pokes.ref;rooms.ref;sound.ref
 GameDir=percythepottypigeon
 
 [Game]

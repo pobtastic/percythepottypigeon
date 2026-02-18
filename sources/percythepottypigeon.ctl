@@ -408,6 +408,8 @@ B $5FA9,$01
 g $5FAA
 B $5FAA,$01
 
+g $5FAD
+
 g $5FB1 Stored Level Or Phase?
 @ $5FB1 label=Stored_Level_Or_Phase
 D $5FB1 Copied to #R$5FC5 in some paths; cleared when lives are reset.
@@ -1088,6 +1090,7 @@ c $6992 Run Game Frame
 @ $6992 label=Run_Game_Frame
   $6992,$03 Call #R$662B.
   $6995,$03 Call #R$6832.
+N $6998 Handle room #N$06 special case; the chicks in the nest.
   $6998,$08 Call #R$65EA if *#R$5FC5 is equal to #N$06.
   $69A0,$03 Call #R$69A7.
   $69A3,$03 Call #R$BB1C.
@@ -1095,6 +1098,31 @@ c $6992 Run Game Frame
 
 c $69A7 Run Main Loop Body
 @ $69A7 label=Run_Main_Loop_Body
+  $69A7,$01 Disable interrupts.
+  $69A8,$04 Stash #REGix and #REGiy on the stack.
+  $69AC,$02 #REGb=#N$07.
+  $69AE,$03 #REGhl=#R$DAC7.
+  $69B1,$02 #REGc=#N$00.
+  $69B3,$01 Write #REGc to *#REGhl.
+  $69B4,$04 Increment #REGhl by four.
+  $69B8,$02 Decrease counter by one and loop back to #R$69B3 until counter is zero.
+  $69BA,$03 #REGhl=#R$DAEB.
+  $69BD,$02 #REGb=#N$06.
+  $69BF,$01 Write #REGc to *#REGhl.
+  $69C0,$04 Increment #REGhl by four.
+  $69C4,$02 Decrease counter by one and loop back to #R$69BF until counter is zero.
+  $69C6,$07 Call #R$6CA5 if *#R$5FBE is non-zero.
+  $69CD,$03 Call #R$69F7.
+  $69D0,$03 Call #R$6DAB.
+  $69D3,$03 Call #R$720F.
+  $69D6,$08 Call #R$7082 if *#R$5FC5 is equal to #N$04.
+  $69DE,$07 Call #R$64BE if *#R$5FAD is non-zero.
+  $69E5,$06 Write *#R$5FB3 to *#R$6CC3.
+  $69EB,$04 Write #N$00 to *#R$5FBE.
+  $69EF,$01 Increment #REGa by one.
+  $69F0,$02 Set border to the colour held by #REGa.
+  $69F2,$04 Restore #REGiy and #REGix from the stack.
+  $69F6,$01 Return.
 
 c $69F7 Load Level Data
 @ $69F7 label=Load_Level_Data
@@ -1110,6 +1138,7 @@ c $6C85
 c $6CA5
 
 b $6CB2
+  $6CC3
 
 c $6CDD
 
@@ -1663,6 +1692,8 @@ g $D90A
 
 g $DAC0
 
+g $DAC7
+
 g $DAC8 Spider States
 @ $DAC8 label=Spider_X_Position
 B $DAC8,$01 Spider X position.
@@ -1694,7 +1725,48 @@ B $E000,$1800,$20
 b $F800
 
 c $FAC1
+  $FAC1,$03 #REGhl=#R$FAF9.
+  $FAC4,$01 No operation.
+  $FAC5,$01 #REGa=*#REGhl.
+  $FAC6,$03 Return if #REGa is equal to #N$FF.
+  $FAC9,$03 Jump to #R$FAEA if #REGa is zero.
+  $FACC,$03 Set border to #INK$00.
+  $FACF,$02 #REGd=*#REGhl.
+  $FAD1,$01 Increment #REGhl by one.
+  $FAD2,$01 #REGc=*#REGhl.
+  $FAD3,$02 Send to the speaker.
+  $FAD5,$01 Decrease #REGd by one.
+  $FAD6,$02 Jump to #R$FADB if #REGd is not equal to #REGa.
+  $FAD8,$01 #REGd=#REGe.
+  $FAD9,$02,b$01 Flip bits 3-4.
+  $FADB,$02 Decrease counter by one and loop back to #R$FAD3 until counter is zero.
+  $FADD,$01 Decrease #REGc by one.
+  $FADE,$02 Jump to #R$FAD3 if #REGc is not equal to #REGa.
+  $FAE0,$01 Increment #REGhl by one.
+  $FAE1,$04 Read from the keyboard;
+. #TABLE(default,centre,centre,centre,centre,centre,centre)
+. { =h,r2 Port Number | =h,c5 Bit }
+. { =h 0 | =h 1 | =h 2 | =h 3 | =h 4 }
+. { #N$BF | ENTER | L | K | J | H }
+. TABLE#
+  $FAE5,$02,b$01 Keep only bit 0.
+  $FAE7,$01 Return if the result is zero.
+M $FAE5,$03 Return if "ENTER" has been pressed.
+  $FAE8,$02 Jump back to #R$FAC5.
+  $FAEA,$01 Increment #REGhl by one.
+  $FAEB,$01 #REGc=*#REGhl.
+  $FAEC,$01 No operation.
+  $FAED,$01 No operation.
+  $FAEE,$01 No operation.
+  $FAEF,$01 No operation.
+  $FAF0,$01 No operation.
+  $FAF1,$02 Decrease counter by one and loop back to #R$FAED until counter is zero.
+  $FAF3,$01 Decrease #REGc by one.
+  $FAF4,$02 Jump back to #R$FAEC until #REGc is zero.
+  $FAF6,$01 Increment #REGhl by one.
+  $FAF7,$02 Jump to #R$FAC5.
 
+b $FAF9
 
 c $FC1B Print Author Byline
 @ $FC1B label=Print_AuthorByline

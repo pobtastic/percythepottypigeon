@@ -736,7 +736,10 @@ g$5FA9 DEFB $00
 
 ; Game status buffer entry at 5FAA
 g$5FAA DEFB $00
- $5FAB DEFB $00,$00,$00,$01,$01,$01
+ $5FAB DEFB $00,$00
+
+; Game status buffer entry at 5FAD
+g$5FAD DEFB $00,$01,$01,$01
 
 ; Stored Level Or Phase?
 ;
@@ -2474,6 +2477,7 @@ c$6966 EI            ; Enable interrupts.
 @label=Run_Game_Frame
 c$6992 CALL $662B    ; Call #R$662B.
  $6995 CALL $6832    ; Call #R$6832.
+; Handle room #N$06 special case; the chicks in the nest.
  $6998 LD A,($5FC5)  ; {Call #R$65EA if *#R$5FC5 is equal to #N$06.
  $699B CP $06        ;
  $699D CALL Z,$65EA  ; }
@@ -2485,47 +2489,49 @@ c$6992 CALL $662B    ; Call #R$662B.
 ;
 ; Used by the routine at #R$6992.
 @label=Run_Main_Loop_Body
-c$69A7 DI            ;
- $69A8 PUSH IX       ;
- $69AA PUSH IY       ;
- $69AC LD B,$07      ;
- $69AE LD HL,$DAC7   ;
- $69B1 LD C,$00      ;
-*$69B3 LD (HL),C     ;
- $69B4 INC HL        ;
+c$69A7 DI            ; Disable interrupts.
+ $69A8 PUSH IX       ; {Stash #REGix and #REGiy on the stack.
+ $69AA PUSH IY       ; }
+ $69AC LD B,$07      ; #REGb=#N$07.
+ $69AE LD HL,$DAC7   ; #REGhl=#R$DAC7.
+ $69B1 LD C,$00      ; #REGc=#N$00.
+*$69B3 LD (HL),C     ; Write #REGc to *#REGhl.
+ $69B4 INC HL        ; {Increment #REGhl by four.
  $69B5 INC HL        ;
  $69B6 INC HL        ;
- $69B7 INC HL        ;
- $69B8 DJNZ $69B3    ;
- $69BA LD HL,$DAEB   ;
- $69BD LD B,$06      ;
-*$69BF LD (HL),C     ;
- $69C0 INC HL        ;
+ $69B7 INC HL        ; }
+ $69B8 DJNZ $69B3    ; Decrease counter by one and loop back to #R$69B3 until
+                     ; counter is zero.
+ $69BA LD HL,$DAEB   ; #REGhl=#R$DAEB.
+ $69BD LD B,$06      ; #REGb=#N$06.
+*$69BF LD (HL),C     ; Write #REGc to *#REGhl.
+ $69C0 INC HL        ; {Increment #REGhl by four.
  $69C1 INC HL        ;
  $69C2 INC HL        ;
- $69C3 INC HL        ;
- $69C4 DJNZ $69BF    ;
- $69C6 LD A,($5FBE)  ;
+ $69C3 INC HL        ; }
+ $69C4 DJNZ $69BF    ; Decrease counter by one and loop back to #R$69BF until
+                     ; counter is zero.
+ $69C6 LD A,($5FBE)  ; {Call #R$6CA5 if *#R$5FBE is non-zero.
  $69C9 OR A          ;
- $69CA CALL NZ,$6CA5 ;
- $69CD CALL $69F7    ;
- $69D0 CALL $6DAB    ;
- $69D3 CALL $720F    ;
- $69D6 LD A,($5FC5)  ;
+ $69CA CALL NZ,$6CA5 ; }
+ $69CD CALL $69F7    ; Call #R$69F7.
+ $69D0 CALL $6DAB    ; Call #R$6DAB.
+ $69D3 CALL $720F    ; Call #R$720F.
+ $69D6 LD A,($5FC5)  ; {Call #R$7082 if *#R$5FC5 is equal to #N$04.
  $69D9 CP $04        ;
- $69DB CALL Z,$7082  ;
- $69DE LD A,($5FAD)  ;
+ $69DB CALL Z,$7082  ; }
+ $69DE LD A,($5FAD)  ; {Call #R$64BE if *#R$5FAD is non-zero.
  $69E1 OR A          ;
- $69E2 CALL NZ,$64BE ;
- $69E5 LD A,($5FB3)  ;
- $69E8 LD ($6CC3),A  ;
- $69EB XOR A         ;
- $69EC LD ($5FBE),A  ;
- $69EF INC A         ;
- $69F0 OUT ($FE),A   ;
- $69F2 POP IY        ;
- $69F4 POP IX        ;
- $69F6 RET           ;
+ $69E2 CALL NZ,$64BE ; }
+ $69E5 LD A,($5FB3)  ; {Write *#R$5FB3 to *#R$6CC3.
+ $69E8 LD ($6CC3),A  ; }
+ $69EB XOR A         ; {Write #N$00 to *#R$5FBE.
+ $69EC LD ($5FBE),A  ; }
+ $69EF INC A         ; Increment #REGa by one.
+ $69F0 OUT ($FE),A   ; Set border to the colour held by #REGa.
+ $69F2 POP IY        ; {Restore #REGiy and #REGix from the stack.
+ $69F4 POP IX        ; }
+ $69F6 RET           ; Return.
 
 ; Load Level Data
 ;
@@ -2941,10 +2947,11 @@ c$6CA5 LD HL,$6CB3   ;
 ; Data block at 6CB2
 b$6CB2 DEFB $00,$00,$00,$00,$00,$00,$00,$00
  $6CBA DEFB $00,$00,$00,$00,$02,$02,$03,$04
- $6CC2 DEFB $04,$00,$00,$03,$02,$01,$07,$01
- $6CCA DEFB $09,$01,$04,$02,$0B,$02,$03,$03
- $6CD2 DEFB $0A,$03,$05,$04,$07,$04,$08,$05
- $6CDA DEFB $FF,$FF,$00
+ $6CC2 DEFB $04
+ $6CC3 DEFB $00,$00,$03,$02,$01,$07,$01,$09
+ $6CCB DEFB $01,$04,$02,$0B,$02,$03,$03,$0A
+ $6CD3 DEFB $03,$05,$04,$07,$04,$08,$05,$FF
+ $6CDB DEFB $FF,$00
 
 ; Routine at 6CDD
 c$6CDD LD BC,$DD00     ;
@@ -13907,7 +13914,10 @@ g$D90A DEFB $00,$00,$00,$00,$00,$00,$00,$00
  $DABA DEFB $00,$00,$00,$00,$00,$00
 
 ; Game status buffer entry at DAC0
-g$DAC0 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+g$DAC0 DEFB $00,$00,$00,$00,$00,$00,$00
+
+; Game status buffer entry at DAC7
+g$DAC7 DEFB $00
 
 ; Spider States
 @label=Spider_X_Position
@@ -14383,7 +14393,7 @@ b$F800 DEFB $00,$00,$00,$00,$00,$00,$00,$00
  $FA80 DEFB $00,$00,$00,$00,$00,$00,$00,$00
  $FA88 DEFB $00,$00,$00,$00,$00,$00,$00,$00
  $FA90 DEFB $00,$00,$00,$00,$00,$00,$00,$00
-*$FA98 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $FA98 DEFB $00,$00,$00,$00,$00,$00,$00,$00
  $FAA0 DEFB $00,$00,$00,$00,$00,$00,$00,$00
  $FAA8 DEFB $00,$00,$00,$00,$00,$00,$00,$00
  $FAB0 DEFB $00,$00,$00,$00,$00,$00,$00,$00
@@ -14393,261 +14403,91 @@ b$F800 DEFB $00,$00,$00,$00,$00,$00,$00,$00
 ; Routine at FAC1
 ;
 ; Used by the routine at #R$FC52.
-c$FAC1 LD HL,$FAF9   ;
+c$FAC1 LD HL,$FAF9   ; #REGhl=#R$FAF9.
 ; This entry point is used by the routine at #R$68B8.
-*$FAC4 NOP           ;
-*$FAC5 LD A,(HL)     ;
- $FAC6 CP $FF        ;
- $FAC8 RET Z         ;
- $FAC9 OR A          ;
- $FACA JR Z,$FAEA    ;
- $FACC XOR A         ;
- $FACD OUT ($FE),A   ;
- $FACF LD E,(HL)     ;
- $FAD0 LD D,E        ;
- $FAD1 INC HL        ;
- $FAD2 LD C,(HL)     ;
-*$FAD3 OUT ($FE),A   ;
- $FAD5 DEC D         ;
- $FAD6 JR NZ,$FADB   ;
- $FAD8 LD D,E        ;
- $FAD9 XOR $18       ;
-*$FADB DJNZ $FAD3    ;
- $FADD DEC C         ;
- $FADE JR NZ,$FAD3   ;
- $FAE0 INC HL        ;
- $FAE1 LD A,$BF      ;
- $FAE3 IN A,($FE)    ;
- $FAE5 AND $01       ;
- $FAE7 RET Z         ;
- $FAE8 JR $FAC5      ;
-*$FAEA INC HL        ;
- $FAEB LD C,(HL)     ;
-*$FAEC NOP           ;
-*$FAED NOP           ;
- $FAEE NOP           ;
- $FAEF NOP           ;
- $FAF0 NOP           ;
- $FAF1 DJNZ $FAED    ;
- $FAF3 DEC C         ;
- $FAF4 JR NZ,$FAEC   ;
- $FAF6 INC HL        ;
- $FAF7 JR $FAC5      ;
- $FAF9 OR D          ;
- $FAFA JR NC,$FAC3   ;
-*$FAFC LD B,B        ;
- $FAFD OUT ($20),A   ;
- $FAFF RST $00       ;
- $FB00 LD B,B        ;
- $FB01 AND A         ;
- $FB02 AND B         ;
- $FB03 NOP           ;
- $FB04 LD H,H        ;
- $FB05 SUB L         ;
- $FB06 JR NC,$FAAF   ;
- $FB08 LD B,B        ;
- $FB09 OR D          ;
- $FB0A JR NZ,$FAB3   ;
- $FB0C LD B,B        ;
- $FB0D ADD A,H       ;
- $FB0E ADD A,B       ;
- $FB0F NOP           ;
- $FB10 LD H,H        ;
- $FB11 LD A,L        ;
- $FB12 JR NC,$FA98   ;
-*$FB14 JR NC,$FAA2   ;
- $FB16 JR NC,$FA9C   ;
- $FB18 LD B,B        ;
- $FB19 LD E,C        ;
- $FB1A JR NC,$FB7F   ;
- $FB1C JR NC,$FB87   ;
-*$FB1E JR NC,$FB83   ;
- $FB20 JR NC,$FB7B   ;
-*$FB22 JR NC,$FB87   ;
- $FB24 JR NC,$FB8F   ;
- $FB26 JR NC,$FB8B   ;
-*$FB28 JR NC,$FB7E   ;
- $FB2A ADD A,B       ;
- $FB2B NOP           ;
- $FB2C LD B,B        ;
-*$FB2D LD H,E        ;
- $FB2E LD H,B        ;
- $FB2F LD D,H        ;
- $FB30 LD D,B        ;
- $FB31 LD E,C        ;
- $FB32 LD B,B        ;
- $FB33 NOP           ;
- $FB34 JR NZ,$FB99   ;
-*$FB36 LD B,B        ;
- $FB37 NOP           ;
- $FB38 JR NZ,$FBAA   ;
-*$FB3A LD D,B        ;
- $FB3B NOP           ;
- $FB3C JR NZ,$FBA1   ;
- $FB3E LD B,B        ;
- $FB3F NOP           ;
-*$FB40 JR NZ,$FB9B   ;
- $FB42 LD B,B        ;
- $FB43 NOP           ;
- $FB44 JR NZ,$FBA9   ;
- $FB46 LD B,B        ;
- $FB47 NOP           ;
- $FB48 JR NZ,$FBBA   ;
- $FB4A LD D,B        ;
- $FB4B NOP           ;
- $FB4C JR NZ,$FBB1   ;
- $FB4E LD B,B        ;
-*$FB4F NOP           ;
- $FB50 JR NZ,$FBAB   ;
- $FB52 LD B,B        ;
- $FB53 NOP           ;
- $FB54 JR NZ,$FBB9   ;
- $FB56 LD B,B        ;
- $FB57 NOP           ;
- $FB58 JR NZ,$FBCA   ;
- $FB5A LD D,B        ;
- $FB5B NOP           ;
- $FB5C JR NZ,$FBD4   ;
- $FB5E LD B,B        ;
- $FB5F NOP           ;
- $FB60 JR NZ,$FAE6   ;
- $FB62 ADD A,B       ;
- $FB63 NOP           ;
-*$FB64 LD B,B        ;
- $FB65 ADD A,H       ;
- $FB66 JR NC,$FBE5   ;
-*$FB68 JR NC,$FBDA   ;
- $FB6A LD B,B        ;
- $FB6B NOP           ;
- $FB6C JR NZ,$FBDE   ;
-*$FB6E LD B,B        ;
- $FB6F NOP           ;
- $FB70 JR NZ,$FBD5   ;
- $FB72 JR NZ,$FBE4   ;
- $FB74 LD B,B        ;
- $FB75 LD A,L        ;
- $FB76 JR NZ,$FAFC   ;
- $FB78 LD B,B        ;
- $FB79 SUB L         ;
- $FB7A ADD A,B       ;
-*$FB7B NOP           ;
- $FB7C LD B,B        ;
- $FB7D ADD A,H       ;
-*$FB7E JR NC,$FBFD   ;
- $FB80 JR NC,$FBF2   ;
- $FB82 LD B,B        ;
-*$FB83 NOP           ;
- $FB84 JR NZ,$FBF6   ;
- $FB86 LD B,B        ;
-*$FB87 NOP           ;
- $FB88 JR NZ,$FBED   ;
- $FB8A JR NZ,$FBFC   ;
-*$FB8C LD B,B        ;
- $FB8D LD A,L        ;
- $FB8E JR NZ,$FB14   ;
- $FB90 LD B,B        ;
- $FB91 SUB L         ;
- $FB92 ADD A,B       ;
- $FB93 NOP           ;
- $FB94 LD B,B        ;
- $FB95 AND A         ;
- $FB96 JR NC,$FB2D   ;
- $FB98 JR NC,$FB1E   ;
- $FB9A LD B,B        ;
-*$FB9B NOP           ;
- $FB9C JR NZ,$FB22   ;
- $FB9E LD B,B        ;
- $FB9F NOP           ;
- $FBA0 JR NZ,$FC1F   ;
- $FBA2 JR NZ,$FB28   ;
- $FBA4 LD B,B        ;
- $FBA5 SUB L         ;
- $FBA6 JR NZ,$FB4F   ;
- $FBA8 LD B,B        ;
-*$FBA9 OR D          ;
-*$FBAA ADD A,B       ;
-*$FBAB NOP           ;
- $FBAC LD B,B        ;
- $FBAD AND A         ;
- $FBAE JR NC,$FB45   ;
- $FBB0 JR NC,$FB36   ;
- $FBB2 LD B,B        ;
- $FBB3 NOP           ;
- $FBB4 JR NZ,$FB3A   ;
- $FBB6 LD B,B        ;
-*$FBB7 NOP           ;
- $FBB8 JR NZ,$FC37   ;
-*$FBBA JR NZ,$FB40   ;
- $FBBC LD B,B        ;
- $FBBD SUB L         ;
- $FBBE JR NZ,$FB67   ;
- $FBC0 LD B,B        ;
- $FBC1 OR D          ;
- $FBC2 ADD A,B       ;
- $FBC3 NOP           ;
- $FBC4 LD B,B        ;
- $FBC5 OR D          ;
- $FBC6 JR NC,$FB8F   ;
- $FBC8 LD B,B        ;
- $FBC9 OUT ($20),A   ;
- $FBCB RST $00       ;
- $FBCC LD B,B        ;
- $FBCD AND A         ;
- $FBCE AND B         ;
- $FBCF NOP           ;
- $FBD0 LD B,B        ;
- $FBD1 SUB L         ;
- $FBD2 JR NC,$FB7B   ;
-*$FBD4 LD B,B        ;
-*$FBD5 OR D          ;
- $FBD6 JR NZ,$FB7F   ;
- $FBD8 LD B,B        ;
- $FBD9 ADD A,H       ;
-*$FBDA ADD A,B       ;
- $FBDB NOP           ;
- $FBDC LD B,B        ;
- $FBDD LD A,L        ;
-*$FBDE JR NC,$FB64   ;
- $FBE0 JR NC,$FB6E   ;
- $FBE2 JR NC,$FB68   ;
-*$FBE4 LD B,B        ;
-*$FBE5 LD E,C        ;
- $FBE6 JR NC,$FC4B   ;
- $FBE8 JR NC,$FC53   ;
- $FBEA JR NC,$FC4F   ;
- $FBEC JR NC,$FC47   ;
- $FBEE JR NC,$FC53   ;
- $FBF0 JR NC,$FC5B   ;
-*$FBF2 JR NC,$FC57   ;
- $FBF4 JR NC,$FC4A   ;
-*$FBF6 ADD A,B       ;
- $FBF7 NOP           ;
- $FBF8 LD B,B        ;
- $FBF9 LD H,E        ;
- $FBFA JR NC,$FC55   ;
-*$FBFC JR NC,$FC52   ;
- $FBFE JR NC,$FC63   ;
- $FC00 JR NC,$FC5B   ;
- $FC02 JR NC,$FC6D   ;
- $FC04 JR NC,$FC69   ;
- $FC06 JR NC,$FB8C   ;
- $FC08 JR NC,$FC87   ;
- $FC0A LD B,B        ;
- $FC0B SUB L         ;
- $FC0C LD B,B        ;
- $FC0D NOP           ;
- $FC0E JR NZ,$FBB7   ;
- $FC10 AND B         ;
- $FC11 NOP           ;
- $FC12 LD B,B        ;
- $FC13 XOR A         ;
- $FC14 RET P         ;
- $FC15 NOP           ;
- $FC16 LD B,B        ;
- $FC17 RST $00       ;
- $FC18 RET P         ;
- $FC19 RST $38       ;
- $FC1A RST $38       ;
+*$FAC4 NOP           ; No operation.
+*$FAC5 LD A,(HL)     ; #REGa=*#REGhl.
+ $FAC6 CP $FF        ; {Return if #REGa is equal to #N$FF.
+ $FAC8 RET Z         ; }
+ $FAC9 OR A          ; {Jump to #R$FAEA if #REGa is zero.
+ $FACA JR Z,$FAEA    ; }
+ $FACC XOR A         ; {Set border to #INK$00.
+ $FACD OUT ($FE),A   ; }
+ $FACF LD E,(HL)     ; {#REGd=*#REGhl.
+ $FAD0 LD D,E        ; }
+ $FAD1 INC HL        ; Increment #REGhl by one.
+ $FAD2 LD C,(HL)     ; #REGc=*#REGhl.
+*$FAD3 OUT ($FE),A   ; Send to the speaker.
+ $FAD5 DEC D         ; Decrease #REGd by one.
+ $FAD6 JR NZ,$FADB   ; Jump to #R$FADB if #REGd is not equal to #REGa.
+ $FAD8 LD D,E        ; #REGd=#REGe.
+ $FAD9 XOR %00011000 ; Flip bits 3-4.
+*$FADB DJNZ $FAD3    ; Decrease counter by one and loop back to #R$FAD3 until
+                     ; counter is zero.
+ $FADD DEC C         ; Decrease #REGc by one.
+ $FADE JR NZ,$FAD3   ; Jump to #R$FAD3 if #REGc is not equal to #REGa.
+ $FAE0 INC HL        ; Increment #REGhl by one.
+ $FAE1 LD A,$BF      ; {Read from the keyboard;
+ $FAE3 IN A,($FE)    ; #TABLE(default,centre,centre,centre,centre,centre,centre)
+                     ; { =h,r2 Port Number | =h,c5 Bit }
+                     ; { =h 0 | =h 1 | =h 2 | =h 3 | =h 4 }
+                     ; { #N$BF | ENTER | L | K | J | H }
+                     ; TABLE#}
+ $FAE5 AND %00000001 ; {Return if "ENTER" has been pressed.
+ $FAE7 RET Z         ; }
+ $FAE8 JR $FAC5      ; Jump back to #R$FAC5.
+*$FAEA INC HL        ; Increment #REGhl by one.
+ $FAEB LD C,(HL)     ; #REGc=*#REGhl.
+*$FAEC NOP           ; No operation.
+*$FAED NOP           ; No operation.
+ $FAEE NOP           ; No operation.
+ $FAEF NOP           ; No operation.
+ $FAF0 NOP           ; No operation.
+ $FAF1 DJNZ $FAED    ; Decrease counter by one and loop back to #R$FAED until
+                     ; counter is zero.
+ $FAF3 DEC C         ; Decrease #REGc by one.
+ $FAF4 JR NZ,$FAEC   ; Jump back to #R$FAEC until #REGc is zero.
+ $FAF6 INC HL        ; Increment #REGhl by one.
+ $FAF7 JR $FAC5      ; Jump to #R$FAC5.
+
+; Data block at FAF9
+b$FAF9 DEFB $B2,$30,$C7,$40,$D3,$20,$C7,$40
+ $FB01 DEFB $A7,$A0,$00,$64,$95,$30,$A7,$40
+ $FB09 DEFB $B2,$20,$A7,$40,$84,$80,$00,$64
+ $FB11 DEFB $7D,$30,$84,$30,$8C,$30,$84,$40
+ $FB19 DEFB $59,$30,$63,$30,$69,$30,$63,$30
+ $FB21 DEFB $59,$30,$63,$30,$69,$30,$63,$30
+ $FB29 DEFB $54,$80,$00,$40,$63,$60,$54,$50
+ $FB31 DEFB $59,$40,$00,$20,$63,$40,$00,$20
+ $FB39 DEFB $70,$50,$00,$20,$63,$40,$00,$20
+ $FB41 DEFB $59,$40,$00,$20,$63,$40,$00,$20
+ $FB49 DEFB $70,$50,$00,$20,$63,$40,$00,$20
+ $FB51 DEFB $59,$40,$00,$20,$63,$40,$00,$20
+ $FB59 DEFB $70,$50,$00,$20,$76,$40,$00,$20
+ $FB61 DEFB $84,$80,$00,$40,$84,$30,$7D,$30
+ $FB69 DEFB $70,$40,$00,$20,$70,$40,$00,$20
+ $FB71 DEFB $63,$20,$70,$40,$7D,$20,$84,$40
+ $FB79 DEFB $95,$80,$00,$40,$84,$30,$7D,$30
+ $FB81 DEFB $70,$40,$00,$20,$70,$40,$00,$20
+ $FB89 DEFB $63,$20,$70,$40,$7D,$20,$84,$40
+ $FB91 DEFB $95,$80,$00,$40,$A7,$30,$95,$30
+ $FB99 DEFB $84,$40,$00,$20,$84,$40,$00,$20
+ $FBA1 DEFB $7D,$20,$84,$40,$95,$20,$A7,$40
+ $FBA9 DEFB $B2,$80,$00,$40,$A7,$30,$95,$30
+ $FBB1 DEFB $84,$40,$00,$20,$84,$40,$00,$20
+ $FBB9 DEFB $7D,$20,$84,$40,$95,$20,$A7,$40
+ $FBC1 DEFB $B2,$80,$00,$40,$B2,$30,$C7,$40
+ $FBC9 DEFB $D3,$20,$C7,$40,$A7,$A0,$00,$40
+ $FBD1 DEFB $95,$30,$A7,$40,$B2,$20,$A7,$40
+ $FBD9 DEFB $84,$80,$00,$40,$7D,$30,$84,$30
+ $FBE1 DEFB $8C,$30,$84,$40,$59,$30,$63,$30
+ $FBE9 DEFB $69,$30,$63,$30,$59,$30,$63,$30
+ $FBF1 DEFB $69,$30,$63,$30,$54,$80,$00,$40
+ $FBF9 DEFB $63,$30,$59,$30,$54,$30,$63,$30
+ $FC01 DEFB $59,$30,$69,$30,$63,$30,$84,$30
+ $FC09 DEFB $7D,$40,$95,$40,$00,$20,$A7,$A0
+ $FC11 DEFB $00,$40,$AF,$F0,$00,$40,$C7,$F0
+ $FC19 DEFB $FF,$FF
 
 ; Print Author Byline
 ;
@@ -14657,8 +14497,7 @@ c$FAC1 LD HL,$FAF9   ;
 @label=Print_AuthorByline
 c$FC1B LD A,($5FBC)  ; {Check if *#R$5FBC is non-zero.
  $FC1E OR A          ; }
-; This entry point is used by the routine at #R$FAC1.
-*$FC1F JR NZ,$FC52   ; Jump to #R$FC52 if *#R$5FBC is non-zero.
+ $FC1F JR NZ,$FC52   ; Jump to #R$FC52 if *#R$5FBC is non-zero.
  $FC21 LD DE,$FC3D   ; Point #REGde at #R$FC3D.
  $FC24 LD HL,$50A6   ; Load #REGhl with #N$50A6 (screen buffer location to
                      ; print).
@@ -14682,8 +14521,7 @@ c$FC2E LD A,(DE)     ; Fetch the character to print from *#REGde.
  $FC32 CALL $6581    ; Call #R$6581.
  $FC35 POP BC        ; {Restore the character counter and screen buffer location from the
  $FC36 POP HL        ; stack.}
-; This entry point is used by the routine at #R$FAC1.
-*$FC37 POP DE        ; Restore the message pointer from the stack.
+ $FC37 POP DE        ; Restore the message pointer from the stack.
  $FC38 INC HL        ; Move to the next position in the screen buffer.
  $FC39 INC DE        ; Move to the next character in the message.
  $FC3A DJNZ $FC2E    ; Decrease the character counter by one and loop back to #R$FC2E
@@ -14696,7 +14534,7 @@ t$FC3D DEFM "By Shaun Hollingworth" ; "#STR(#PC,$04,$15)".
 
 ; Print High Score
 ;
-; Used by the routines at #R$FAC1 and #R$FC1B.
+; Used by the routine at #R$FC1B.
 ; .
 ; Checks if the current score is a new high score, and if so, copies it
 ; to the high score storage.
@@ -14709,18 +14547,15 @@ t$FC3D DEFM "By Shaun Hollingworth" ; "#STR(#PC,$04,$15)".
 @label=Print_HighScore
 c$FC52 LD HL,$682C   ; Point #REGhl at #R$6825(#N$682C) (the last digit of the current
                      ; score).
-; This entry point is used by the routine at #R$FAC1.
 @label=PrintHighScore_Compare
-*$FC55 LD B,$07      ; Set a counter in #REGb for #N$07 digits to compare.
-; This entry point is used by the routine at #R$FAC1.
+ $FC55 LD B,$07      ; Set a counter in #REGb for #N$07 digits to compare.
 @label=PrintHighScore_ComparePointer
-*$FC57 LD DE,$FCAD   ; Point #REGde at #R$FCA6(#N$FCAD) (the last digit of the stored high
+ $FC57 LD DE,$FCAD   ; Point #REGde at #R$FCA6(#N$FCAD) (the last digit of the stored high
                      ; score).
 @label=PrintHighScore_CompareLoop
 *$FC5A LD A,(DE)     ; Fetch a digit from the stored high score.
-; This entry point is used by the routine at #R$FAC1.
 @label=PrintHighScore_CompareDigit
-*$FC5B CP (HL)       ; {Jump to #R$FC62 if the high score digit is equal to the same digit
+ $FC5B CP (HL)       ; {Jump to #R$FC62 if the high score digit is equal to the same digit
  $FC5C JR Z,$FC62    ; of the current score.}
  $FC5E JR NC,$FC73   ; Jump to #R$FC73 if the high score digit is greater than or equal to
                      ; the same digit of the current score.
@@ -14728,9 +14563,8 @@ c$FC52 LD HL,$682C   ; Point #REGhl at #R$6825(#N$682C) (the last digit of the c
                      ; of the current score.
 @label=PrintHighScore_NextDigit
 *$FC62 DEC HL        ; Move to the next digit in the current score.
-; This entry point is used by the routine at #R$FAC1.
 @label=PrintHighScore_NextScoreDigit
-*$FC63 DEC DE        ; Move to the next digit in the high score.
+ $FC63 DEC DE        ; Move to the next digit in the high score.
  $FC64 DJNZ $FC5A    ; Decrease the digit counter by one and loop back to #R$FC5A until
                      ; all #N$07 digits have been compared.
 ; All digits matched — scores are equal, so no update needed.
