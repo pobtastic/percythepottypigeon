@@ -33,7 +33,7 @@ Next: <a href="56007.html">56007</a>
 </td>
 </tr>
 </table>
-<div class="description">56000: Game status buffer entry at DAC0</div>
+<div class="description">56000: Percy States</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
@@ -42,9 +42,34 @@ Next: <a href="56007.html">56007</a>
 </td>
 </tr>
 <tr>
+<td class="asm-label">Percy_X_Position</td>
 <td class="address-1"><span id="56000"></span>56000</td>
-<td class="instruction">DEFB 0,0,0,0,0,0,0</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">DEFB 0</td>
+<td class="comment-1" rowspan="1">Percy X position.</td>
+</tr>
+<tr>
+<td class="asm-label">Percy_Y_Position</td>
+<td class="address-1"><span id="56001"></span>56001</td>
+<td class="instruction">DEFB 0</td>
+<td class="comment-1" rowspan="1">Percy Y position.</td>
+</tr>
+<tr>
+<td class="asm-label">Percy_Colour</td>
+<td class="address-1"><span id="56002"></span>56002</td>
+<td class="instruction">DEFB 0</td>
+<td class="comment-1" rowspan="1">Percy INK colour.</td>
+</tr>
+<tr>
+<td class="asm-label">Percy_Frame_ID</td>
+<td class="address-1"><span id="56003"></span>56003</td>
+<td class="instruction">DEFB 0</td>
+<td class="comment-1" rowspan="1">Percy frame ID.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="56004"></span>56004</td>
+<td class="instruction">DEFB 0,0,0</td>
+<td class="comment-1" rowspan="1"></td>
 </tr>
 </table>
 <table class="asm-navigation">

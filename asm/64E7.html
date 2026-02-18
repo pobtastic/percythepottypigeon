@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Percy the Potty Pigeon: Routine at 64E7</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-dark.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-wide.css" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-75RERFCHBG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-75RERFCHBG');
+</script>
+</head>
+<body class="Asm-c">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html"><img alt="logo" src="../images/logo.png" /></a></td>
+<td class="page-header">Routines</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="6480.html">6480</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#64e7">Map</a></td>
+<td class="next">
+Next: <a href="653D.html">653D</a>
+</td>
+</tr>
+</table>
+<div class="description">64E7: Lose Life</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="5">
+<div class="details">
+<div class="paragraph">
+Used by the routine at <a href="5FE9.html">Handle_Pause_Input</a>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">LoseLife</td>
+<td class="address-2"><span id="64e7"></span>64E7</td>
+<td class="instruction">LD HL,$DAC1</td>
+<td class="comment-1" rowspan="2">Write 90 to *<a href="DAC0.html#dac1">Percy_Y_Position</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="64ea"></span>64EA</td>
+<td class="instruction">LD (HL),$90</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="64ec"></span>64EC</td>
+<td class="instruction">INC HL</td>
+<td class="comment-1" rowspan="3">Write 11 to *<a href="DAC0.html#dac3">Percy_Frame_ID</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="64ed"></span>64ED</td>
+<td class="instruction">INC HL</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="64ee"></span>64EE</td>
+<td class="instruction">LD (HL),$11</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="64f0"></span>64F0</td>
+<td class="instruction">PUSH IX</td>
+<td class="comment-1" rowspan="1">Stash <span class="register">IX</span> on the stack.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="64f2"></span>64F2</td>
+<td class="instruction">CALL <a href="6992.html">Run_Game_Frame</a></td>
+<td class="comment-1" rowspan="1">Call <a href="6992.html">Run_Game_Frame</a>.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="64f5"></span>
+<div class="comments">
+<div class="paragraph">
+Play the "lose a life" sound effect.
+</div>
+<div class="paragraph">
+<audio controls="" src="../audio/lose-life.wav">
+<p>Your browser doesn't support HTML5 audio. Here is a <a href="../audio/lose-life.wav">link to the audio</a> instead.</p>
+</audio>
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="64f5"></span>64F5</td>
+<td class="instruction">LD HL,$0000</td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>=0000.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="64f8"></span>64F8</td>
+<td class="instruction">LD A,$01</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=01.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="64fa"></span>64FA</td>
+<td class="instruction">LD B,$00</td>
+<td class="comment-1" rowspan="1"><span class="register">B</span>=00.</td>
+</tr>
+<tr>
+<td class="asm-label">LoseLife_0</td>
+<td class="address-2"><span id="64fc"></span>64FC</td>
+<td class="instruction">PUSH BC</td>
+<td class="comment-1" rowspan="1">Stash <span class="register">BC</span> on the stack.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="64fd"></span>64FD</td>
+<td class="instruction">LD D,B</td>
+<td class="comment-1" rowspan="1"><span class="register">D</span>=<span class="register">B</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="64fe"></span>64FE</td>
+<td class="instruction">RR B</td>
+<td class="comment-1" rowspan="1">Rotate <span class="register">B</span> right.</td>
+</tr>
+<tr>
+<td class="asm-label">LoseLife_1</td>
+<td class="address-2"><span id="6500"></span>6500</td>
+<td class="instruction">OUT ($FE),A</td>
+<td class="comment-1" rowspan="1">Send to the speaker.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6502"></span>6502</td>
+<td class="instruction">NOP</td>
+<td class="comment-1" rowspan="1">No operation.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6503"></span>6503</td>
+<td class="instruction">NOP</td>
+<td class="comment-1" rowspan="1">No operation.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6504"></span>6504</td>
+<td class="instruction">NOP</td>
+<td class="comment-1" rowspan="1">No operation.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6505"></span>6505</td>
+<td class="instruction">NOP</td>
+<td class="comment-1" rowspan="1">No operation.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6506"></span>6506</td>
+<td class="instruction">DJNZ <a href="64E7.html#6500">LoseLife_1</a></td>
+<td class="comment-1" rowspan="1">Decrease counter by one and loop back to <a href="64E7.html#6500">LoseLife_1</a> until counter is zero.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6508"></span>6508</td>
+<td class="instruction">POP BC</td>
+<td class="comment-1" rowspan="1">Restore <span class="register">BC</span> from the stack.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6509"></span>6509</td>
+<td class="instruction">XOR %00011000</td>
+<td class="comment-1" rowspan="1">Flip bits 3-4.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="650b"></span>650B</td>
+<td class="instruction">OR D</td>
+<td class="comment-1" rowspan="1">Set the bits from <span class="register">D</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="650c"></span>650C</td>
+<td class="instruction">AND (HL)</td>
+<td class="comment-1" rowspan="1">Merge the bits from *<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="650d"></span>650D</td>
+<td class="instruction">AND %11111000</td>
+<td class="comment-1" rowspan="1">Keep only bits 3-7.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="650f"></span>650F</td>
+<td class="instruction">OR %00000001</td>
+<td class="comment-1" rowspan="1">Set bit 0.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6511"></span>6511</td>
+<td class="instruction">INC HL</td>
+<td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6512"></span>6512</td>
+<td class="instruction">DJNZ <a href="64E7.html#64fc">LoseLife_0</a></td>
+<td class="comment-1" rowspan="1">Decrease counter by one and loop back to <a href="64E7.html#64fc">LoseLife_0</a> until counter is zero.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6514"></span>6514</td>
+<td class="instruction">POP IX</td>
+<td class="comment-1" rowspan="1">Restore <span class="register">IX</span> from the stack.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6516"></span>6516</td>
+<td class="instruction">LD HL,$DE9E</td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="DE9E.html">DE9E</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6519"></span>6519</td>
+<td class="instruction">LD BC,$0160</td>
+<td class="comment-1" rowspan="1"><span class="register">BC</span>=0160.</td>
+</tr>
+<tr>
+<td class="asm-label">LoseLife_2</td>
+<td class="address-2"><span id="651c"></span>651C</td>
+<td class="instruction">LD A,(HL)</td>
+<td class="comment-1" rowspan="3">Jump to <a href="64E7.html#6523">LoseLife_3</a> if *<span class="register">HL</span> is not equal to 1E.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="651d"></span>651D</td>
+<td class="instruction">CP $1E</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="651f"></span>651F</td>
+<td class="instruction">JR NZ,<a href="64E7.html#6523">LoseLife_3</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6521"></span>6521</td>
+<td class="instruction">LD (HL),$00</td>
+<td class="comment-1" rowspan="1">Write 00 to *<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label">LoseLife_3</td>
+<td class="address-2"><span id="6523"></span>6523</td>
+<td class="instruction">DEC BC</td>
+<td class="comment-1" rowspan="1">Decrease <span class="register">BC</span> by one.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6524"></span>6524</td>
+<td class="instruction">INC HL</td>
+<td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6525"></span>6525</td>
+<td class="instruction">LD A,B</td>
+<td class="comment-1" rowspan="3">Jump to <a href="64E7.html#651c">LoseLife_2</a> until <span class="register">BC</span> is zero.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6526"></span>6526</td>
+<td class="instruction">OR C</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6527"></span>6527</td>
+<td class="instruction">JR NZ,<a href="64E7.html#651c">LoseLife_2</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6529"></span>6529</td>
+<td class="instruction">CALL <a href="662B.html#6791">Compute_Sprite_Position_23</a></td>
+<td class="comment-1" rowspan="1">Call <a href="662B.html#6791">Compute_Sprite_Position_23</a>.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="652c"></span>
+<div class="comments">
+<div class="paragraph">
+See <a href="../reference/pokes.html#infinite_lives">Infinite Lives</a>.
+</div>
+<div class="paragraph">
+Decrease the lives counter by one.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="652c"></span>652C</td>
+<td class="instruction">LD HL,$5FB3</td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="5FB3.html">Lives</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="652f"></span>652F</td>
+<td class="instruction">DEC (HL)</td>
+<td class="comment-1" rowspan="1">Decrease *<span class="register">HL</span> by one.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6530"></span>6530</td>
+<td class="instruction">LD A,(HL)</td>
+<td class="comment-1" rowspan="3">Jump to <a href="655C.html">Start_Level</a> if *<a href="5FB3.html">Lives</a> is not yet equal to ASCII 30 ("&#48;").</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6531"></span>6531</td>
+<td class="instruction">CP $30</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6533"></span>6533</td>
+<td class="instruction">JR NZ,<a href="655C.html">Start_Level</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6535"></span>6535</td>
+<td class="instruction">LD A,$30</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=30.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6537"></span>6537</td>
+<td class="instruction">LD HL,$50F0</td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>=50F0 (screen buffer location).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="653a"></span>653A</td>
+<td class="instruction">CALL <a href="6581.html">PrintCharacter</a></td>
+<td class="comment-1" rowspan="1">Call <a href="6581.html">PrintCharacter</a>.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<div class="comments">
+<div class="paragraph">
+Continue on to <a href="653D.html">Initialise_Lives</a>.
+</div>
+</div>
+</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="6480.html">6480</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#64e7">Map</a></td>
+<td class="next">
+Next: <a href="653D.html">653D</a>
+</td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
+<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
+<div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
+<div><a href="../dec/asm/25831.html">Switch to decimal</a>.</div>
+</footer>
+</body>
+</html>

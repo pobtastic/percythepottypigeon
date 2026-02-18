@@ -39,10 +39,7 @@ Next: <a href="6581.html">6581</a>
 <td class="routine-comment" colspan="5">
 <div class="details">
 <div class="paragraph">
-Used by the routine at <a href="6480.html">Handle_Title_Screen</a>.
-</div>
-<div class="paragraph">
-Print at 50F0; set <a href="5FC5.html">CurrentRoom</a>=06; call <a href="5E24.html">PopulateRoomBuffer</a>; loop <a href="6480.html#64cc">Handle_Title_Screen_5</a> 60 times; set <a href="DAC0.html">DAC0</a> area. Clear <a href="5FA7.html">Title_Countdown</a>.
+Used by the routine at <a href="64E7.html">LoseLife</a>.
 </div>
 </div>
 </td>
@@ -70,7 +67,7 @@ This entry point is used by the routines at <a href="659B.html">MainMenu</a> and
 </td>
 </tr>
 <tr>
-<td class="asm-label">Start_Level_0</td>
+<td class="asm-label">SetUpNewLevel</td>
 <td class="address-2"><span id="6562"></span>6562</td>
 <td class="instruction">LD A,$06</td>
 <td class="comment-1" rowspan="2">Write 06 to *<a href="5FC5.html">CurrentRoom</a>.</td>
@@ -93,7 +90,7 @@ This entry point is used by the routines at <a href="659B.html">MainMenu</a> and
 <td class="comment-1" rowspan="1"><span class="register">B</span>=60.</td>
 </tr>
 <tr>
-<td class="asm-label">Start_Level_1</td>
+<td class="asm-label">Start_Level_0</td>
 <td class="address-2"><span id="656c"></span>656C</td>
 <td class="instruction">CALL <a href="6480.html#64cc">Handle_Title_Screen_5</a></td>
 <td class="comment-1" rowspan="1">Call <a href="6480.html#64cc">Handle_Title_Screen_5</a>.</td>
@@ -101,14 +98,14 @@ This entry point is used by the routines at <a href="659B.html">MainMenu</a> and
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="656f"></span>656F</td>
-<td class="instruction">DJNZ <a href="655C.html#656c">Start_Level_1</a></td>
-<td class="comment-1" rowspan="1">Decrease counter by one and loop back to <a href="655C.html#656c">Start_Level_1</a> until counter is zero.</td>
+<td class="instruction">DJNZ <a href="655C.html#656c">Start_Level_0</a></td>
+<td class="comment-1" rowspan="1">Decrease counter by one and loop back to <a href="655C.html#656c">Start_Level_0</a> until counter is zero.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6571"></span>6571</td>
 <td class="instruction">LD HL,$DAC0</td>
-<td class="comment-1" rowspan="2">Write 38 to *<a href="DAC0.html">DAC0</a>.</td>
+<td class="comment-1" rowspan="2">Write 38 to *<a href="DAC0.html">Percy_X_Position</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -119,7 +116,7 @@ This entry point is used by the routines at <a href="659B.html">MainMenu</a> and
 <td class="asm-label"></td>
 <td class="address-1"><span id="6576"></span>6576</td>
 <td class="instruction">INC HL</td>
-<td class="comment-1" rowspan="2">Write 9E to *<a href="DAC0.html">DAC1</a>.</td>
+<td class="comment-1" rowspan="2">Write 9E to *<a href="DAC0.html#dac1">Percy_Y_Position</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -130,7 +127,10 @@ This entry point is used by the routines at <a href="659B.html">MainMenu</a> and
 <td class="asm-label"></td>
 <td class="address-1"><span id="6579"></span>6579</td>
 <td class="instruction">INC HL</td>
-<td class="comment-1" rowspan="2">Write 07 to *<a href="DAC0.html">DAC2</a>.</td>
+<td class="comment-1" rowspan="2">Write 
+
+
+WHITE to *<a href="DAC0.html#dac2">Percy_Colour</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>

@@ -41,9 +41,6 @@ Next: <a href="68F7.html">68F7</a>
 <div class="paragraph">
 Used by the routine at <a href="662B.html">Compute_Sprite_Position</a>.
 </div>
-<div class="paragraph">
-Decrement <a href="5FB2.html">Aux_State</a>; when zero loop <a href="693B.html">Flash_Border_Step</a> 28 times (border flash), set <a href="5FBD.html">Sub_State</a> and beep, then call <a href="68F7.html">Update_Lives_Display</a>.
-</div>
 </div>
 </td>
 </tr>
@@ -51,163 +48,164 @@ Decrement <a href="5FB2.html">Aux_State</a>; when zero loop <a href="693B.html">
 <td class="asm-label">Handle_Life_Lost</td>
 <td class="address-2"><span id="68b8"></span>68B8</td>
 <td class="instruction">LD HL,$5FB2</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Decrease *<a href="5FB2.html">Aux_State</a> by one.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="68bb"></span>68BB</td>
 <td class="instruction">DEC (HL)</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="68bc"></span>68BC</td>
 <td class="instruction">RET NZ</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Return if *<span class="register">HL</span> is not equal to 00.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="68bd"></span>68BD</td>
 <td class="instruction">PUSH IX</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Stash <span class="register">IX</span> on the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="68bf"></span>68BF</td>
 <td class="instruction">LD B,$28</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">B</span>=28.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="68c1"></span>68C1</td>
 <td class="instruction">LD HL,$0320</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>=0320.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="68c4"></span>68C4</td>
 <td class="instruction">LD DE,$0008</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">DE</span>=0008.</td>
 </tr>
 <tr>
 <td class="asm-label">Handle_Life_Lost_0</td>
 <td class="address-2"><span id="68c7"></span>68C7</td>
 <td class="instruction">CALL <a href="693B.html">Flash_Border_Step</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Call <a href="693B.html">Flash_Border_Step</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="68ca"></span>68CA</td>
 <td class="instruction">DJNZ <a href="68B8.html#68c7">Handle_Life_Lost_0</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Decrease counter by one and loop back to <a href="68B8.html#68c7">Handle_Life_Lost_0</a> until counter is zero.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="68cc"></span>68CC</td>
 <td class="instruction">LD A,$0F</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Write 0F to; <ul class="">
+<li>*<a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/5C48.html">BORDCR</a></li>
+<li>*<a href="5FBD.html">Sub_State</a></li>
+</ul></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="68ce"></span>68CE</td>
 <td class="instruction">LD ($5C48),A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="68d1"></span>68D1</td>
 <td class="instruction">LD ($5FBD),A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="68d4"></span>68D4</td>
 <td class="instruction">LD A,$01</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Set border to 
+
+
+BLUE.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="68d6"></span>68D6</td>
 <td class="instruction">OUT ($FE),A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="68d8"></span>68D8</td>
 <td class="instruction">POP IX</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Restore <span class="register">IX</span> from the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="68da"></span>68DA</td>
 <td class="instruction">CALL <a href="68F7.html">Update_Lives_Display</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Call <a href="68F7.html">Update_Lives_Display</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="68dd"></span>68DD</td>
 <td class="instruction">LD A,($5FB1)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="5FB1.html">Stored_Level_Or_Phase</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="68e0"></span>68E0</td>
 <td class="instruction">ADD A,$0B</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>+=0B.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="68e2"></span>68E2</td>
 <td class="instruction">LD ($5FC5),A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<a href="5FC5.html">CurrentRoom</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="68e5"></span>68E5</td>
 <td class="instruction">CALL <a href="5E24.html">PopulateRoomBuffer</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Call <a href="5E24.html">PopulateRoomBuffer</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="68e8"></span>68E8</td>
 <td class="instruction">LD HL,$FBF9</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="FAF9.html#fbf9">Audio_LoseLifeJingle</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="68eb"></span>68EB</td>
 <td class="instruction">CALL <a href="FAC1.html#fac4">$FAC4</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Call <a href="FAC1.html#fac4">FAC4</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="68ee"></span>68EE</td>
 <td class="instruction">DI</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Disable interrupts.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="68ef"></span>68EF</td>
-<td class="instruction">CALL <a href="655C.html#6562">Start_Level_0</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">CALL <a href="655C.html#6562">SetUpNewLevel</a></td>
+<td class="comment-1" rowspan="1">Call <a href="655C.html#6562">SetUpNewLevel</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="68f2"></span>68F2</td>
 <td class="instruction">XOR A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Write 00 to *<a href="5FA5.html">5FA5</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="68f3"></span>68F3</td>
 <td class="instruction">LD ($5FA5),A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="68f6"></span>68F6</td>
 <td class="instruction">RET</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Return.</td>
 </tr>
 </table>
 <table class="asm-navigation">
