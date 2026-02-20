@@ -39,10 +39,10 @@ Next: <a href="25831.html">25831</a>
 <td class="routine-comment" colspan="5">
 <div class="details">
 <div class="paragraph">
-Used by the routine at <a href="24553.html">Handle_Pause_Input</a>.
+Used by the routine at <a href="24553.html">MainGameLoop</a>.
 </div>
 <div class="paragraph">
-<a href="24487.html">Title_Countdown</a> countdown or init; IX+1 compare; <a href="24490.html#24491">24491</a> counter. Called from <a href="24553.html">Handle_Pause_Input</a> when Z.
+<a href="24487.html">FallingState</a> countdown or init; IX+1 compare; <a href="24490.html#24491">24491</a> counter. Called from <a href="24553.html">MainGameLoop</a> when Z.
 </div>
 </div>
 </td>
@@ -57,7 +57,7 @@ Used by the routine at <a href="24553.html">Handle_Pause_Input</a>.
 <td class="asm-label"></td>
 <td class="address-1"><span id="25731"></span>25731</td>
 <td class="instruction">LD A,(24487)</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="24487.html">Title_Countdown</a>.</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="24487.html">FallingState</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -80,7 +80,7 @@ Used by the routine at <a href="24553.html">Handle_Pause_Input</a>.
 <td class="asm-label"></td>
 <td class="address-1"><span id="25738"></span>25738</td>
 <td class="instruction">LD (24487),A</td>
-<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<a href="24487.html">Title_Countdown</a>.</td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<a href="24487.html">FallingState</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -148,7 +148,7 @@ Used by the routine at <a href="24553.html">Handle_Pause_Input</a>.
 <td class="asm-label"></td>
 <td class="address-1"><span id="25763"></span>25763</td>
 <td class="instruction">LD A,(24493)</td>
-<td class="comment-1" rowspan="3">Return if *<a href="24493.html">24493</a> is non-zero.</td>
+<td class="comment-1" rowspan="3">Return if *<a href="24493.html">LandedOnPlatformFlag</a> is non-zero.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -390,7 +390,7 @@ This entry point is used by the routines at <a href="25948.html">Start_Level</a>
 <td class="asm-label">Handle_Title_Screen_8</td>
 <td class="address-2"><span id="25825"></span>25825</td>
 <td class="instruction">LD A,255</td>
-<td class="comment-1" rowspan="2">Write 255 to *<a href="24487.html">Title_Countdown</a>.</td>
+<td class="comment-1" rowspan="2">Write 255 to *<a href="24487.html">FallingState</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>

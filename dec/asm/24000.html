@@ -78,7 +78,7 @@ Put the stack pointer somewhere safe.
 <td class="instruction">LD (24508),A</td>
 <td class="comment-1" rowspan="2">Write 0 to; <ul class="">
 <li>*<a href="24508.html">Pause_Flag</a></li>
-<li>*<a href="24490.html">24490</a></li>
+<li>*<a href="24490.html">GameModeFlag</a></li>
 </ul></td>
 </tr>
 <tr>
@@ -187,7 +187,10 @@ WHITE to *<a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom
 <td class="asm-label"></td>
 <td class="address-1"><span id="24042"></span>24042</td>
 <td class="instruction">LD (IX+2),7</td>
-<td class="comment-1" rowspan="1">Write 7 to *<span class="register">IX</span>+2.</td>
+<td class="comment-1" rowspan="1">Write 
+
+
+WHITE to *<span class="register">IX</span>+2 (<a href="56000.html#56002">Percy_Colour</a>).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -225,8 +228,8 @@ Game pause input loop.
 <tr>
 <td class="asm-label">Pause_InputLoop</td>
 <td class="address-2"><span id="24058"></span>24058</td>
-<td class="instruction">CALL <a href="24553.html">Handle_Pause_Input</a></td>
-<td class="comment-1" rowspan="1">Call <a href="24553.html">Handle_Pause_Input</a>.</td>
+<td class="instruction">CALL <a href="24553.html">MainGameLoop</a></td>
+<td class="comment-1" rowspan="1">Call <a href="24553.html">MainGameLoop</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -293,8 +296,8 @@ Game pause input loop.
 <td class="address-1"><span id="24075"></span>24075</td>
 <td class="instruction">XOR A</td>
 <td class="comment-1" rowspan="3">Write 0 to; <ul class="">
-<li>*<a href="24507.html">Level_Flag</a></li>
-<li>*<a href="24509.html">Sub_State</a></li>
+<li>*<a href="24507.html">RoomBufferFlag</a></li>
+<li>*<a href="24509.html">BorderColour</a></li>
 </ul></td>
 </tr>
 <tr>

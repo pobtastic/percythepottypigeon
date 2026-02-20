@@ -42,33 +42,33 @@ Next: <a href="693B.html">693B</a>
 Used by the routines at <a href="653D.html">Initialise_Lives</a> and <a href="68B8.html">Handle_Life_Lost</a>.
 </div>
 <div class="paragraph">
-Read <a href="5FB1.html">Stored_Level_Or_Phase</a> and <a href="5FB3.html">Lives</a>; increment <a href="5FB1.html">Stored_Level_Or_Phase</a>; when <a href="5FB1.html">Stored_Level_Or_Phase</a>=04 give extra life and print at 50F0.
+Updates the lives display after losing a life.
 </div>
 </div>
 </td>
 </tr>
 <tr>
-<td class="asm-label">Update_Lives_Display</td>
+<td class="asm-label">UpdateLivesDisplay</td>
 <td class="address-2"><span id="68f7"></span>68F7</td>
 <td class="instruction">LD A,($5FB1)</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="5FB1.html">Stored_Level_Or_Phase</a>.</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="5FB1.html">CurrentLevel</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="68fa"></span>68FA</td>
 <td class="instruction">LD HL,$5FB3</td>
-<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="5FB3.html">Lives</a>.</td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="5FB3.html">LivesDisplayCharacter</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="68fd"></span>68FD</td>
 <td class="instruction">CP $05</td>
-<td class="comment-1" rowspan="2">Jump to <a href="68F7.html#6911">Update_Lives_Display_0</a> if <span class="register">A</span> is equal to 05.</td>
+<td class="comment-1" rowspan="2">Jump to <a href="68F7.html#6911">UpdateLivesDisplay_0</a> if *<a href="5FB1.html">CurrentLevel</a> is equal to 05.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="68ff"></span>68FF</td>
-<td class="instruction">JR Z,<a href="68F7.html#6911">Update_Lives_Display_0</a></td>
+<td class="instruction">JR Z,<a href="68F7.html#6911">UpdateLivesDisplay_0</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -80,18 +80,18 @@ Read <a href="5FB1.html">Stored_Level_Or_Phase</a> and <a href="5FB3.html">Lives
 <td class="asm-label"></td>
 <td class="address-1"><span id="6902"></span>6902</td>
 <td class="instruction">LD ($5FB1),A</td>
-<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<a href="5FB1.html">Stored_Level_Or_Phase</a>.</td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<a href="5FB1.html">CurrentLevel</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6905"></span>6905</td>
 <td class="instruction">CP $04</td>
-<td class="comment-1" rowspan="2">Jump to <a href="68F7.html#6911">Update_Lives_Display_0</a> if <span class="register">A</span> is not equal to 04.</td>
+<td class="comment-1" rowspan="2">Jump to <a href="68F7.html#6911">UpdateLivesDisplay_0</a> if <span class="register">A</span> is not equal to 04.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6907"></span>6907</td>
-<td class="instruction">JR NZ,<a href="68F7.html#6911">Update_Lives_Display_0</a></td>
+<td class="instruction">JR NZ,<a href="68F7.html#6911">UpdateLivesDisplay_0</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -118,10 +118,10 @@ Read <a href="5FB1.html">Stored_Level_Or_Phase</a> and <a href="5FB3.html">Lives
 <td class="comment-1" rowspan="1">Call <a href="6581.html">PrintCharacter</a>.</td>
 </tr>
 <tr>
-<td class="asm-label">Update_Lives_Display_0</td>
+<td class="asm-label">UpdateLivesDisplay_0</td>
 <td class="address-2"><span id="6911"></span>6911</td>
 <td class="instruction">LD A,($5FB1)</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="5FB1.html">Stored_Level_Or_Phase</a>.</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="5FB1.html">CurrentLevel</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -163,7 +163,7 @@ Read <a href="5FB1.html">Stored_Level_Or_Phase</a> and <a href="5FB3.html">Lives
 <td class="asm-label"></td>
 <td class="address-1"><span id="691d"></span>691D</td>
 <td class="instruction">LD HL,$5FB2</td>
-<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="5FB2.html">Aux_State</a>.</td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="5FB2.html">LivesRemaining</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -184,10 +184,10 @@ Read <a href="5FB1.html">Stored_Level_Or_Phase</a> and <a href="5FB3.html">Lives
 <td class="comment-1" rowspan="1"><span class="register">BC</span>=0160.</td>
 </tr>
 <tr>
-<td class="asm-label">Update_Lives_Display_1</td>
+<td class="asm-label">UpdateLivesDisplay_1</td>
 <td class="address-2"><span id="6927"></span>6927</td>
 <td class="instruction">LD A,(HL)</td>
-<td class="comment-1" rowspan="3">Jump to <a href="68F7.html#692e">Update_Lives_Display_2</a> if *<span class="register">HL</span> is not equal to 1F.</td>
+<td class="comment-1" rowspan="3">Jump to <a href="68F7.html#692e">UpdateLivesDisplay_2</a> if *<span class="register">HL</span> is not equal to 1F.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -197,7 +197,7 @@ Read <a href="5FB1.html">Stored_Level_Or_Phase</a> and <a href="5FB3.html">Lives
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="692a"></span>692A</td>
-<td class="instruction">JR NZ,<a href="68F7.html#692e">Update_Lives_Display_2</a></td>
+<td class="instruction">JR NZ,<a href="68F7.html#692e">UpdateLivesDisplay_2</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -206,15 +206,15 @@ Read <a href="5FB1.html">Stored_Level_Or_Phase</a> and <a href="5FB3.html">Lives
 <td class="comment-1" rowspan="1">Write 00 to *<span class="register">HL</span>.</td>
 </tr>
 <tr>
-<td class="asm-label">Update_Lives_Display_2</td>
+<td class="asm-label">UpdateLivesDisplay_2</td>
 <td class="address-2"><span id="692e"></span>692E</td>
 <td class="instruction">CP $1E</td>
-<td class="comment-1" rowspan="2">Jump to <a href="68F7.html#6934">Update_Lives_Display_3</a> if <span class="register">A</span> is not equal to 1E.</td>
+<td class="comment-1" rowspan="2">Jump to <a href="68F7.html#6934">UpdateLivesDisplay_3</a> if <span class="register">A</span> is not equal to 1E.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6930"></span>6930</td>
-<td class="instruction">JR NZ,<a href="68F7.html#6934">Update_Lives_Display_3</a></td>
+<td class="instruction">JR NZ,<a href="68F7.html#6934">UpdateLivesDisplay_3</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -223,7 +223,7 @@ Read <a href="5FB1.html">Stored_Level_Or_Phase</a> and <a href="5FB3.html">Lives
 <td class="comment-1" rowspan="1">Write 00 to *<span class="register">HL</span>.</td>
 </tr>
 <tr>
-<td class="asm-label">Update_Lives_Display_3</td>
+<td class="asm-label">UpdateLivesDisplay_3</td>
 <td class="address-2"><span id="6934"></span>6934</td>
 <td class="instruction">INC HL</td>
 <td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
@@ -238,7 +238,7 @@ Read <a href="5FB1.html">Stored_Level_Or_Phase</a> and <a href="5FB3.html">Lives
 <td class="asm-label"></td>
 <td class="address-1"><span id="6936"></span>6936</td>
 <td class="instruction">LD A,C</td>
-<td class="comment-1" rowspan="3">Jump back to <a href="68F7.html#6927">Update_Lives_Display_1</a> until <span class="register">BC</span> is zero.</td>
+<td class="comment-1" rowspan="3">Jump back to <a href="68F7.html#6927">UpdateLivesDisplay_1</a> until <span class="register">BC</span> is zero.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -248,7 +248,7 @@ Read <a href="5FB1.html">Stored_Level_Or_Phase</a> and <a href="5FB3.html">Lives
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6938"></span>6938</td>
-<td class="instruction">JR NZ,<a href="68F7.html#6927">Update_Lives_Display_1</a></td>
+<td class="instruction">JR NZ,<a href="68F7.html#6927">UpdateLivesDisplay_1</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>

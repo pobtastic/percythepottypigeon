@@ -29,20 +29,55 @@ Prev: <a href="5FA1.html">5FA1</a>
 </td>
 <td class="up">Up: <a href="../maps/all.html#5fa2">Map</a></td>
 <td class="next">
-Next: <a href="5FA3.html">5FA3</a>
+Next: <a href="5FA4.html">5FA4</a>
 </td>
 </tr>
 </table>
-<div class="description">5FA2: Game status buffer entry at 5FA2</div>
+<div class="description">5FA2: Input State</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
 <div class="details">
+<div class="paragraph">
+Bitmask representing the current directional input. 1F means no input. Each bit represents a direction when reset: <table class="default">
+<tr>
+<th colspan="1" rowspan="1">Bit</th>
+<th colspan="1" rowspan="1">State</th>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">0</td>
+<td class="centre" colspan="1" rowspan="1">Fire</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">1</td>
+<td class="centre" colspan="1" rowspan="1">Up</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">2</td>
+<td class="centre" colspan="1" rowspan="1">Down</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">3</td>
+<td class="centre" colspan="1" rowspan="1">Right</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">4</td>
+<td class="centre" colspan="1" rowspan="1">Left</td>
+</tr>
+</table>
+</div>
 </div>
 </td>
 </tr>
 <tr>
+<td class="asm-label">InputState</td>
 <td class="address-1"><span id="5fa2"></span>5FA2</td>
+<td class="instruction">DEFB $00</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="5fa3"></span>5FA3</td>
 <td class="instruction">DEFB $00</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
@@ -54,7 +89,7 @@ Prev: <a href="5FA1.html">5FA1</a>
 </td>
 <td class="up">Up: <a href="../maps/all.html#5fa2">Map</a></td>
 <td class="next">
-Next: <a href="5FA3.html">5FA3</a>
+Next: <a href="5FA4.html">5FA4</a>
 </td>
 </tr>
 </table>

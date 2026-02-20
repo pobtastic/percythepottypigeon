@@ -128,7 +128,7 @@ Scan through the room data blocks. Each block is terminated by 00 so count termi
 <span id="5fd8"></span>
 <div class="comments">
 <div class="paragraph">
-Found a block terminator — check if we've reached the target room.
+Found a block terminator so check if we've reached the target room.
 </div>
 </div>
 </td>
@@ -143,7 +143,7 @@ Found a block terminator — check if we've reached the target room.
 <td class="asm-label"></td>
 <td class="address-1"><span id="5fd9"></span>5FD9</td>
 <td class="instruction">LD A,E</td>
-<td class="comment-1" rowspan="3">Jump to <a href="5FE7.html">Raise_Table_Error</a> if the room counter has exceeded 11 (maximum number of rooms — room not found).</td>
+<td class="comment-1" rowspan="3">Jump to <a href="5FE7.html">Raise_Table_Error</a> if the room counter has exceeded 11 (maximum number of rooms/room not found).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -177,7 +177,7 @@ Found a block terminator — check if we've reached the target room.
 <span id="5fe3"></span>
 <div class="comments">
 <div class="paragraph">
-The target room was found — store the pointer to its data.
+The target room was found so store the pointer to its data.
 </div>
 </div>
 </td>
@@ -186,7 +186,7 @@ The target room was found — store the pointer to its data.
 <td class="asm-label">FindRoomData_Found</td>
 <td class="address-2"><span id="5fe3"></span>5FE3</td>
 <td class="instruction">LD ($5FC3),HL</td>
-<td class="comment-1" rowspan="1">Write <span class="register">HL</span> to *<a href="5FC3.html">Pointer_CurrentRoomData</a>.</td>
+<td class="comment-1" rowspan="1">Write <span class="register">HL</span> to *<a href="5FC3.html">PointerRoomData</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>

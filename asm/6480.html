@@ -39,10 +39,10 @@ Next: <a href="64E7.html">64E7</a>
 <td class="routine-comment" colspan="5">
 <div class="details">
 <div class="paragraph">
-Used by the routine at <a href="5FE9.html">Handle_Pause_Input</a>.
+Used by the routine at <a href="5FE9.html">MainGameLoop</a>.
 </div>
 <div class="paragraph">
-<a href="5FA7.html">Title_Countdown</a> countdown or init; IX+1 compare; <a href="5FAA.html#5fab">5FAB</a> counter. Called from <a href="5FE9.html">Handle_Pause_Input</a> when Z.
+<a href="5FA7.html">FallingState</a> countdown or init; IX+1 compare; <a href="5FAA.html#5fab">5FAB</a> counter. Called from <a href="5FE9.html">MainGameLoop</a> when Z.
 </div>
 </div>
 </td>
@@ -57,7 +57,7 @@ Used by the routine at <a href="5FE9.html">Handle_Pause_Input</a>.
 <td class="asm-label"></td>
 <td class="address-1"><span id="6483"></span>6483</td>
 <td class="instruction">LD A,($5FA7)</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="5FA7.html">Title_Countdown</a>.</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="5FA7.html">FallingState</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -80,7 +80,7 @@ Used by the routine at <a href="5FE9.html">Handle_Pause_Input</a>.
 <td class="asm-label"></td>
 <td class="address-1"><span id="648a"></span>648A</td>
 <td class="instruction">LD ($5FA7),A</td>
-<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<a href="5FA7.html">Title_Countdown</a>.</td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<a href="5FA7.html">FallingState</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -148,7 +148,7 @@ Used by the routine at <a href="5FE9.html">Handle_Pause_Input</a>.
 <td class="asm-label"></td>
 <td class="address-1"><span id="64a3"></span>64A3</td>
 <td class="instruction">LD A,($5FAD)</td>
-<td class="comment-1" rowspan="3">Return if *<a href="5FAD.html">5FAD</a> is non-zero.</td>
+<td class="comment-1" rowspan="3">Return if *<a href="5FAD.html">LandedOnPlatformFlag</a> is non-zero.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -390,7 +390,7 @@ This entry point is used by the routines at <a href="655C.html">Start_Level</a> 
 <td class="asm-label">Handle_Title_Screen_8</td>
 <td class="address-2"><span id="64e1"></span>64E1</td>
 <td class="instruction">LD A,$FF</td>
-<td class="comment-1" rowspan="2">Write FF to *<a href="5FA7.html">Title_Countdown</a>.</td>
+<td class="comment-1" rowspan="2">Write FF to *<a href="5FA7.html">FallingState</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>

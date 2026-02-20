@@ -29,30 +29,41 @@ Prev: <a href="24486.html">24486</a>
 </td>
 <td class="up">Up: <a href="../maps/all.html#24487">Map</a></td>
 <td class="next">
-Next: <a href="24489.html">24489</a>
+Next: <a href="24488.html">24488</a>
 </td>
 </tr>
 </table>
-<div class="description">24487: Title Countdown?</div>
+<div class="description">24487: Falling State</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
 <div class="details">
 <div class="paragraph">
-Countdown or init; read at <a href="24553.html">Handle_Pause_Input</a>; when zero call <a href="25728.html">Handle_Title_Screen</a>. Cleared at <a href="25948.html">Start_Level</a>.
+Tracks whether Percy is falling: <table class="default">
+<tr>
+<th colspan="1" rowspan="1">Byte</th>
+<th colspan="1" rowspan="1">State</th>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">0</td>
+<td class="centre" colspan="1" rowspan="1">Not falling</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">254</td>
+<td class="centre" colspan="1" rowspan="1">Falling (active)</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">255</td>
+<td class="centre" colspan="1" rowspan="1">Falling (impact)</td>
+</tr>
+</table>
 </div>
 </div>
 </td>
 </tr>
 <tr>
-<td class="asm-label">Title_Countdown</td>
+<td class="asm-label">FallingState</td>
 <td class="address-1"><span id="24487"></span>24487</td>
-<td class="instruction">DEFB 0</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="24488"></span>24488</td>
 <td class="instruction">DEFB 0</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
@@ -64,7 +75,7 @@ Prev: <a href="24486.html">24486</a>
 </td>
 <td class="up">Up: <a href="../maps/all.html#24487">Map</a></td>
 <td class="next">
-Next: <a href="24489.html">24489</a>
+Next: <a href="24488.html">24488</a>
 </td>
 </tr>
 </table>

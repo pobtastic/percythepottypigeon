@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Percy the Potty Pigeon: Routine at 25216</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-dark.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-wide.css" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-75RERFCHBG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-75RERFCHBG');
+</script>
+</head>
+<body class="Asm-c">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html"><img alt="logo" src="../images/logo.png" /></a></td>
+<td class="page-header">Routines</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="24553.html">24553</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#25216">Map</a></td>
+<td class="next">
+Next: <a href="25250.html">25250</a>
+</td>
+</tr>
+</table>
+<div class="description">25216: Move Percy Left</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="5">
+<div class="details">
+<div class="paragraph">
+Used by the routine at <a href="24553.html">MainGameLoop</a>.
+</div>
+<div class="paragraph">
+Move Percy left. Checks screen boundary and handles room transitions.
+</div>
+</div>
+<table class="input">
+<tr class="asm-input-header">
+<th colspan="2">Input</th>
+</tr>
+<tr>
+<td class="register">IX</td>
+<td class="register-desc">Pointer to Percys state data</td>
+</tr>
+<tr>
+<td class="register">D</td>
+<td class="register-desc">Number of pixels to move</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td class="asm-label">MovePercyLeft</td>
+<td class="address-2"><span id="25216"></span>25216</td>
+<td class="instruction">LD A,1</td>
+<td class="comment-1" rowspan="2">Write 1 to *<a href="24485.html">PercyFacingDirection</a> (Percy is facing left).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25218"></span>25218</td>
+<td class="instruction">LD (24485),A</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="25221"></span>
+<div class="comments">
+<div class="paragraph">
+If *<a href="24490.html">GameModeFlag</a> is non-zero, apply an extra boundary check.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25221"></span>25221</td>
+<td class="instruction">LD A,(24490)</td>
+<td class="comment-1" rowspan="3">Jump to <a href="25216.html#25239">MovePercyLeft_Apply</a> if *<a href="24490.html">GameModeFlag</a> is set.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25224"></span>25224</td>
+<td class="instruction">OR A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25225"></span>25225</td>
+<td class="instruction">JR Z,<a href="25216.html#25239">MovePercyLeft_Apply</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25227"></span>25227</td>
+<td class="instruction">LD A,(IX+0)</td>
+<td class="comment-1" rowspan="1">Load <span class="register">A</span> with Percy's X position (*<span class="register">IX</span>+0) - 5.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25230"></span>25230</td>
+<td class="instruction">SUB 5</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="25232"></span>
+<div class="comments">
+<div class="paragraph">
+If Percy has gone past the left edge transition into the previous room.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25232"></span>25232</td>
+<td class="instruction">JP C,<a href="25375.html">TransitionRoomLeft</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="25375.html">TransitionRoomLeft</a> if Percy's new position is less than 0 (transition to the previous room).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25235"></span>25235</td>
+<td class="instruction">SUB D</td>
+<td class="comment-1" rowspan="1">Subtract the movement speed from Percy's X position.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25236"></span>25236</td>
+<td class="instruction">JP C,<a href="25375.html">TransitionRoomLeft</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="25375.html">TransitionRoomLeft</a> if Percy's new position is less than 0 (transition to the previous room).</td>
+</tr>
+<tr>
+<td class="asm-label">MovePercyLeft_Apply</td>
+<td class="address-2"><span id="25239"></span>25239</td>
+<td class="instruction">LD A,(IX+0)</td>
+<td class="comment-1" rowspan="2">Load <span class="register">A</span> with Percy's X position (*<span class="register">IX</span>+0) - the number of pixels to move (from <span class="register">D</span>).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25242"></span>25242</td>
+<td class="instruction">SUB D</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="25243"></span>
+<div class="comments">
+<div class="paragraph">
+If Percy has gone past the left edge transition into the previous room.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25243"></span>25243</td>
+<td class="instruction">JP C,<a href="25375.html">TransitionRoomLeft</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="25375.html">TransitionRoomLeft</a> if Percy's new position is less than 0 (transition to the previous room).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25246"></span>25246</td>
+<td class="instruction">LD (IX+0),A</td>
+<td class="comment-1" rowspan="1">Write Percy's updated X screen position back to *<span class="register">IX</span>+0.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25249"></span>25249</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="24553.html">24553</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#25216">Map</a></td>
+<td class="next">
+Next: <a href="25250.html">25250</a>
+</td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
+<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
+<div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
+<div><a href="../../asm/6280.html">Switch to hexadecimal</a>.</div>
+</footer>
+</body>
+</html>

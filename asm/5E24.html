@@ -39,7 +39,7 @@ Next: <a href="5E72.html">5E72</a>
 <td class="routine-comment" colspan="5">
 <div class="details">
 <div class="paragraph">
-Used by the routines at <a href="5FE9.html">Handle_Pause_Input</a>, <a href="655C.html">Start_Level</a>, <a href="659B.html">MainMenu</a> and <a href="68B8.html">Handle_Life_Lost</a>.
+Used by the routines at <a href="6307.html">TransitionRoomRight</a>, <a href="631F.html">TransitionRoomLeft</a>, <a href="655C.html">Start_Level</a>, <a href="659B.html">MainMenu</a> and <a href="68B8.html">Handle_Life_Lost</a>.
 </div>
 <div class="paragraph">
 Fetch the current room number and set up the default tile and attribute data pointers.
@@ -67,7 +67,7 @@ Initialise the room pointer/ default tile set.
 <td class="asm-label"></td>
 <td class="address-1"><span id="5e27"></span>5E27</td>
 <td class="instruction">LD HL,$83A9</td>
-<td class="comment-1" rowspan="2">Write <a href="83A9.html">Room00</a> to *<a href="5FC3.html">Pointer_CurrentRoomData</a>.</td>
+<td class="comment-1" rowspan="2">Write <a href="83A9.html">Room00</a> to *<a href="5FC3.html">PointerRoomData</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -78,7 +78,7 @@ Initialise the room pointer/ default tile set.
 <td class="asm-label"></td>
 <td class="address-1"><span id="5e2d"></span>5E2D</td>
 <td class="instruction">LD HL,$9BAA</td>
-<td class="comment-1" rowspan="2">Write <a href="9BAA.html">TileSet_Default</a> to *<a href="5FC1.html">Pointer_ActiveTileSet</a>.</td>
+<td class="comment-1" rowspan="2">Write <a href="9BAA.html">TileSet_Default</a> to *<a href="5FC1.html">PointerActiveTileSet</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -156,7 +156,7 @@ Initialise drawing state variables.
 <td class="asm-label"></td>
 <td class="address-1"><span id="5e44"></span>5E44</td>
 <td class="instruction">LD A,$FF</td>
-<td class="comment-1" rowspan="2">Write FF to *<a href="5FBB.html">Level_Flag</a>.</td>
+<td class="comment-1" rowspan="2">Write FF to *<a href="5FBB.html">RoomBufferFlag</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -194,14 +194,14 @@ The main room data parsing loop. Reads a command byte from the room data and dis
 <td class="asm-label"></td>
 <td class="address-1"><span id="5e52"></span>5E52</td>
 <td class="instruction">LD HL,($5FC3)</td>
-<td class="comment-1" rowspan="1">Fetch the *<a href="5FC3.html">Pointer_CurrentRoomData</a> and store it in <span class="register">HL</span>.</td>
+<td class="comment-1" rowspan="1">Fetch the *<a href="5FC3.html">PointerRoomData</a> and store it in <span class="register">HL</span>.</td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
 <span id="5e55"></span>
 <div class="comments">
 <div class="paragraph">
-This entry point is used by the routines at <a href="5E72.html">Command04_SwitchTileSet</a>, <a href="5E92.html">Command01_RepeatedTile</a>, <a href="5EAA.html">Command02_TileWithAttribute</a> and <a href="5EC8.html">Command08+_SingleTile</a>.
+This entry point is used by the routines at <a href="5E72.html">Command04_SwitchTileSet</a>, <a href="5E92.html">Command01_SkipTiles</a>, <a href="5EAA.html">Command02_RepeatedTile</a> and <a href="5EC8.html">Command08Plus_SingleTile</a>.
 </div>
 </div>
 </td>
@@ -227,23 +227,23 @@ This entry point is used by the routines at <a href="5E72.html">Command04_Switch
 <td class="asm-label"></td>
 <td class="address-1"><span id="5e59"></span>5E59</td>
 <td class="instruction">CP $01</td>
-<td class="comment-1" rowspan="2">Jump to <a href="5E92.html">Command01_RepeatedTile</a> if the room data byte is 01.</td>
+<td class="comment-1" rowspan="2">Jump to <a href="5E92.html">Command01_SkipTiles</a> if the room data byte is 01.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="5e5b"></span>5E5B</td>
-<td class="instruction">JR Z,<a href="5E92.html">Command01_RepeatedTile</a></td>
+<td class="instruction">JR Z,<a href="5E92.html">Command01_SkipTiles</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="5e5d"></span>5E5D</td>
 <td class="instruction">CP $02</td>
-<td class="comment-1" rowspan="2">Jump to <a href="5EAA.html">Command02_TileWithAttribute</a> if the room data byte is 02.</td>
+<td class="comment-1" rowspan="2">Jump to <a href="5EAA.html">Command02_RepeatedTile</a> if the room data byte is 02.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="5e5f"></span>5E5F</td>
-<td class="instruction">JR Z,<a href="5EAA.html">Command02_TileWithAttribute</a></td>
+<td class="instruction">JR Z,<a href="5EAA.html">Command02_RepeatedTile</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -271,22 +271,22 @@ This entry point is used by the routines at <a href="5E72.html">Command04_Switch
 <td class="asm-label"></td>
 <td class="address-1"><span id="5e69"></span>5E69</td>
 <td class="instruction">CP $08</td>
-<td class="comment-1" rowspan="2">Jump to <a href="5EC8.html">Command08+_SingleTile</a> if the room data byte is 08 or higher.</td>
+<td class="comment-1" rowspan="2">Jump to <a href="5EC8.html">Command08Plus_SingleTile</a> if the room data byte is 08 or higher.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="5e6b"></span>5E6B</td>
-<td class="instruction">JR NC,<a href="5EC8.html">Command08+_SingleTile</a></td>
+<td class="instruction">JR NC,<a href="5EC8.html">Command08Plus_SingleTile</a></td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
 <span id="5e6d"></span>
 <div class="comments">
 <div class="paragraph">
-This entry point is used by the routines at <a href="5E92.html">Command01_RepeatedTile</a>, <a href="5EAA.html">Command02_TileWithAttribute</a>, <a href="5EC8.html">Command08+_SingleTile</a> and <a href="5EDB.html">Command03_FillAttributes</a>.
+This entry point is used by the routines at <a href="5E92.html">Command01_SkipTiles</a>, <a href="5EAA.html">Command02_RepeatedTile</a>, <a href="5EC8.html">Command08Plus_SingleTile</a> and <a href="5EDB.html">Command03_FillAttributes</a>.
 </div>
 <div class="paragraph">
-If none of the above matched, trigger an error.
+If none of the above matched, trigger an error (with an arbitary error code).
 </div>
 </div>
 </td>
@@ -300,8 +300,8 @@ If none of the above matched, trigger an error.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="5e6e"></span>5E6E</td>
-<td class="instruction">INC B</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">B</span> by one.</td>
+<td class="instruction">DEFB $04</td>
+<td class="comment-1" rowspan="1">Error code: 04 ("Out of memory").</td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">

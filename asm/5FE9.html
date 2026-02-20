@@ -29,11 +29,11 @@ Prev: <a href="5FE7.html">5FE7</a>
 </td>
 <td class="up">Up: <a href="../maps/all.html#5fe9">Map</a></td>
 <td class="next">
-Next: <a href="63BB.html">63BB</a>
+Next: <a href="6280.html">6280</a>
 </td>
 </tr>
 </table>
-<div class="description">5FE9: Handle Pause Input</div>
+<div class="description">5FE9: Main Game Loop</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
@@ -41,2900 +41,2521 @@ Next: <a href="63BB.html">63BB</a>
 <div class="paragraph">
 Used by the routine at <a href="5DC0.html">Game_Initialise</a>.
 </div>
+<div class="paragraph">
+Main game loop handler. Reads player input (either from Kempston joystick or keyboard), moves Percy, checks for collisions with the room scenery, handles room transitions, item collection and updates Percy's animation frame.
+</div>
 </div>
 </td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Pause_Input</td>
+<td class="asm-label">MainGameLoop</td>
 <td class="address-2"><span id="5fe9"></span>5FE9</td>
 <td class="instruction">LD A,($5FA7)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">If *<a href="5FA7.html">FallingState</a> is unset, call <a href="653D.html">Initialise_Lives</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="5fec"></span>5FEC</td>
 <td class="instruction">OR A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="5fed"></span>5FED</td>
 <td class="instruction">CALL Z,<a href="6480.html">Handle_Title_Screen</a></td>
-<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="5ff0"></span>
+<div class="comments">
+<div class="paragraph">
+Seed the chick animation states and introduce a short random delay using the Memory Refresh Register.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="5ff0"></span>5FF0</td>
 <td class="instruction">LD A,R</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2"><span class="register">L</span>=the contents of the Memory Refresh Register.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="5ff2"></span>5FF2</td>
 <td class="instruction">LD L,A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="5ff3"></span>5FF3</td>
 <td class="instruction">LD H,$00</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Set the low byte in <span class="register">H</span> to 00 so only low memory is accessed.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="5ff5"></span>5FF5</td>
 <td class="instruction">LD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Fetch a byte from low memory and write it to *<a href="5FB4.html">ChickAnimationStates</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="5ff6"></span>5FF6</td>
 <td class="instruction">LD ($5FB4),A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="5ff9"></span>5FF9</td>
-<td class="instruction">AND $07</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">AND %00000111</td>
+<td class="comment-1" rowspan="1">Keep only bits 0-2.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="5ffb"></span>5FFB</td>
 <td class="instruction">LD B,A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Set the same byte value as a delay counter in <span class="register">B</span>.</td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Pause_Input_0</td>
+<td class="asm-label">MainGameLoop_RandomDelay</td>
 <td class="address-2"><span id="5ffc"></span>5FFC</td>
 <td class="instruction">NOP</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">No operation.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="5ffd"></span>5FFD</td>
-<td class="instruction">DJNZ <a href="5FE9.html#5ffc">Handle_Pause_Input_0</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">DJNZ <a href="5FE9.html#5ffc">MainGameLoop_RandomDelay</a></td>
+<td class="comment-1" rowspan="1">Decrease the delay counter by one and loop back to <a href="5FE9.html#5ffc">MainGameLoop_RandomDelay</a> until done.</td>
 </tr>
 <tr>
-<td class="asm-label"></td>
+<td class="routine-comment" colspan="5">
+<span id="5fff"></span>
+<div class="comments">
+<div class="paragraph">
+Read the Kempston joystick port to check for input.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">MainGameLoop_ReadInput</td>
 <td class="address-1"><span id="5fff"></span>5FFF</td>
 <td class="instruction">LD BC,$EFFE</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">BC</span>=EFFE.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6002"></span>6002</td>
 <td class="instruction">LD IX,$DAC0</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">IX</span>=<a href="DAC0.html">Percy_X_Position</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6006"></span>6006</td>
 <td class="instruction">LD A,$1F</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Write 1F to *<a href="5FA2.html">InputState</a> (default: no direction pressed).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6008"></span>6008</td>
 <td class="instruction">LD ($5FA2),A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="600b"></span>600B</td>
 <td class="instruction">IN A,(C)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Read from the Kempston joystick port.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="600d"></span>600D</td>
-<td class="instruction">AND $1F</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">AND %00011111</td>
+<td class="comment-1" rowspan="1">Keep only bits 0-4.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="600f"></span>600F</td>
 <td class="instruction">CP $1F</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Jump to <a href="5FE9.html#6015">MainGameLoop_JoystickInput</a> if any joystick direction was detected.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6011"></span>6011</td>
-<td class="instruction">JR NZ,<a href="5FE9.html#6015">Handle_Pause_Input_1</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR NZ,<a href="5FE9.html#6015">MainGameLoop_JoystickInput</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6013"></span>6013</td>
-<td class="instruction">JR <a href="5FE9.html#601b">Handle_Pause_Input_2</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR <a href="5FE9.html#601b">MainGameLoop_CheckInputMode</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="5FE9.html#601b">MainGameLoop_CheckInputMode</a>.</td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Pause_Input_1</td>
+<td class="asm-label">MainGameLoop_JoystickInput</td>
 <td class="address-2"><span id="6015"></span>6015</td>
 <td class="instruction">LD ($5FA2),A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<a href="5FA2.html">InputState</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6018"></span>6018</td>
-<td class="instruction">JP <a href="5FE9.html#60a8">Handle_Pause_Input_17</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JP <a href="5FE9.html#60a8">MainGameLoop_HandleItemCollection</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="5FE9.html#60a8">MainGameLoop_HandleItemCollection</a>.</td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Pause_Input_2</td>
+<td class="routine-comment" colspan="5">
+<span id="601b"></span>
+<div class="comments">
+<div class="paragraph">
+Check whether to read from Kempston joystick or keyboard. Bit 7 of *<a href="5FA6.html">InputMode</a> indicates keyboard mode.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">MainGameLoop_CheckInputMode</td>
 <td class="address-2"><span id="601b"></span>601B</td>
 <td class="instruction">LD A,($5FA6)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="5FA6.html">InputMode</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="601e"></span>601E</td>
 <td class="instruction">BIT 7,A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Jump to <a href="5FE9.html#606b">MainGameLoop_ReadKeyboard</a> if keyboard mode is active (bit 7 is set).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6020"></span>6020</td>
-<td class="instruction">JR NZ,<a href="5FE9.html#606b">Handle_Pause_Input_11</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR NZ,<a href="5FE9.html#606b">MainGameLoop_ReadKeyboard</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6022"></span>6022</td>
 <td class="instruction">LD BC,$001F</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">BC</span>=001F.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6025"></span>6025</td>
 <td class="instruction">OR A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Jump to <a href="5FE9.html#6043">MainGameLoop_ReadJoystick</a> if <span class="register">A</span> is non-zero.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6026"></span>6026</td>
-<td class="instruction">JR NZ,<a href="5FE9.html#6043">Handle_Pause_Input_5</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR NZ,<a href="5FE9.html#6043">MainGameLoop_ReadJoystick</a></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="6028"></span>
+<div class="comments">
+<div class="paragraph">
+Auto-detect input method. Poll the joystick port repeatedly and if any input is detected, switch to joystick mode; otherwise switch to keyboard.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6028"></span>6028</td>
 <td class="instruction">LD E,$F0</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">E</span>=F0 (poll retry counter).</td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Pause_Input_3</td>
+<td class="asm-label">MainGameLoop_AutoDetect_Loop</td>
 <td class="address-2"><span id="602a"></span>602A</td>
 <td class="instruction">IN A,(C)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Read from the joystick port.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="602c"></span>602C</td>
-<td class="instruction">AND $1F</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">AND %00011111</td>
+<td class="comment-1" rowspan="1">Keep only bits 0-4.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="602e"></span>602E</td>
 <td class="instruction">CP $1F</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Jump to <a href="5FE9.html#603c">MainGameLoop_SetKeyboardMode</a> if no joystick was input detected.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6030"></span>6030</td>
-<td class="instruction">JR Z,<a href="5FE9.html#603c">Handle_Pause_Input_4</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR Z,<a href="5FE9.html#603c">MainGameLoop_SetKeyboardMode</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6032"></span>6032</td>
 <td class="instruction">DEC E</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Decrease the retry counter.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6033"></span>6033</td>
-<td class="instruction">JR NZ,<a href="5FE9.html#602a">Handle_Pause_Input_3</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR NZ,<a href="5FE9.html#602a">MainGameLoop_AutoDetect_Loop</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="5FE9.html#602a">MainGameLoop_AutoDetect_Loop</a> until all the retries have been used.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="6035"></span>
+<div class="comments">
+<div class="paragraph">
+Joystick input was detected so set joystick mode.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6035"></span>6035</td>
 <td class="instruction">LD A,$1F</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Write 1F to *<a href="5FA6.html">InputMode</a> (joystick mode).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6037"></span>6037</td>
 <td class="instruction">LD ($5FA6),A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="603a"></span>603A</td>
-<td class="instruction">JR <a href="5FE9.html#6043">Handle_Pause_Input_5</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR <a href="5FE9.html#6043">MainGameLoop_ReadJoystick</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="5FE9.html#6043">MainGameLoop_ReadJoystick</a>.</td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Pause_Input_4</td>
+<td class="routine-comment" colspan="5">
+<span id="603c"></span>
+<div class="comments">
+<div class="paragraph">
+No joystick was detected so set keyboard mode.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">MainGameLoop_SetKeyboardMode</td>
 <td class="address-2"><span id="603c"></span>603C</td>
 <td class="instruction">LD A,$80</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Write 80 to *<a href="5FA6.html">InputMode</a> (keyboard mode).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="603e"></span>603E</td>
 <td class="instruction">LD ($5FA6),A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6041"></span>6041</td>
-<td class="instruction">JR <a href="5FE9.html#606b">Handle_Pause_Input_11</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR <a href="5FE9.html#606b">MainGameLoop_ReadKeyboard</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="5FE9.html#606b">MainGameLoop_ReadKeyboard</a>.</td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Pause_Input_5</td>
+<td class="routine-comment" colspan="5">
+<span id="6043"></span>
+<div class="comments">
+<div class="paragraph">
+Read the Kempston joystick and remap the direction bits into the game's internal input format stored in *<a href="5FA2.html">InputState</a>.
+</div>
+<div class="paragraph">
+<table class="default">
+<tr>
+<th colspan="1" rowspan="1">Joystick Bit</th>
+<th colspan="1" rowspan="1">Direction</th>
+<th colspan="1" rowspan="1">Game Bit</th>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">4</td>
+<td class="centre" colspan="1" rowspan="1">Fire</td>
+<td class="centre" colspan="1" rowspan="1">0</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">0</td>
+<td class="centre" colspan="1" rowspan="1">Right</td>
+<td class="centre" colspan="1" rowspan="1">3</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">1</td>
+<td class="centre" colspan="1" rowspan="1">Left</td>
+<td class="centre" colspan="1" rowspan="1">4</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">2</td>
+<td class="centre" colspan="1" rowspan="1">Down</td>
+<td class="centre" colspan="1" rowspan="1">2</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">3</td>
+<td class="centre" colspan="1" rowspan="1">Up</td>
+<td class="centre" colspan="1" rowspan="1">1</td>
+</tr>
+</table>
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">MainGameLoop_ReadJoystick</td>
 <td class="address-2"><span id="6043"></span>6043</td>
 <td class="instruction">IN A,(C)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Read from the joystick port.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6045"></span>6045</td>
 <td class="instruction">LD E,$1F</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">E</span>=1F (all directions inactive).</td>
 </tr>
 <tr>
-<td class="asm-label"></td>
+<td class="asm-label">MainGameLoop_Joystick_TestFire</td>
 <td class="address-1"><span id="6047"></span>6047</td>
 <td class="instruction">BIT 4,A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Jump to <a href="5FE9.html#604d">MainGameLoop_Joystick_TestRight</a> if fire is not being pressed.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6049"></span>6049</td>
-<td class="instruction">JR Z,<a href="5FE9.html#604d">Handle_Pause_Input_6</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR Z,<a href="5FE9.html#604d">MainGameLoop_Joystick_TestRight</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="604b"></span>604B</td>
 <td class="instruction">RES 0,E</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Reset bit 0 of <span class="register">E</span> (fire active).</td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Pause_Input_6</td>
+<td class="asm-label">MainGameLoop_Joystick_TestRight</td>
 <td class="address-2"><span id="604d"></span>604D</td>
 <td class="instruction">BIT 0,A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Jump to <a href="5FE9.html#6053">MainGameLoop_Joystick_TestLeft</a> if right is not being pressed.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="604f"></span>604F</td>
-<td class="instruction">JR Z,<a href="5FE9.html#6053">Handle_Pause_Input_7</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR Z,<a href="5FE9.html#6053">MainGameLoop_Joystick_TestLeft</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6051"></span>6051</td>
 <td class="instruction">RES 3,E</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Reset bit 3 of <span class="register">E</span> (right active).</td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Pause_Input_7</td>
+<td class="asm-label">MainGameLoop_Joystick_TestLeft</td>
 <td class="address-2"><span id="6053"></span>6053</td>
 <td class="instruction">BIT 1,A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Jump to <a href="5FE9.html#6059">MainGameLoop_Joystick_TestDown</a> if left is not being pressed.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6055"></span>6055</td>
-<td class="instruction">JR Z,<a href="5FE9.html#6059">Handle_Pause_Input_8</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR Z,<a href="5FE9.html#6059">MainGameLoop_Joystick_TestDown</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6057"></span>6057</td>
 <td class="instruction">RES 4,E</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Reset bit 4 of <span class="register">E</span> (left active).</td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Pause_Input_8</td>
+<td class="asm-label">MainGameLoop_Joystick_TestDown</td>
 <td class="address-2"><span id="6059"></span>6059</td>
 <td class="instruction">BIT 2,A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Jump to <a href="5FE9.html#605f">MainGameLoop_Joystick_TestUp</a> if down is not being pressed.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="605b"></span>605B</td>
-<td class="instruction">JR Z,<a href="5FE9.html#605f">Handle_Pause_Input_9</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR Z,<a href="5FE9.html#605f">MainGameLoop_Joystick_TestUp</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="605d"></span>605D</td>
 <td class="instruction">RES 2,E</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Reset bit 2 of <span class="register">E</span> (down active).</td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Pause_Input_9</td>
+<td class="asm-label">MainGameLoop_Joystick_TestUp</td>
 <td class="address-2"><span id="605f"></span>605F</td>
 <td class="instruction">BIT 3,A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Jump to <a href="5FE9.html#6065">MainGameLoop_Joystick_Store</a> if up is not being pressed.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6061"></span>6061</td>
-<td class="instruction">JR Z,<a href="5FE9.html#6065">Handle_Pause_Input_10</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR Z,<a href="5FE9.html#6065">MainGameLoop_Joystick_Store</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6063"></span>6063</td>
 <td class="instruction">RES 1,E</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Reset bit 1 of <span class="register">E</span> (up active).</td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Pause_Input_10</td>
+<td class="asm-label">MainGameLoop_Joystick_Store</td>
 <td class="address-2"><span id="6065"></span>6065</td>
 <td class="instruction">LD A,E</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Write <span class="register">E</span> to *<a href="5FA2.html">InputState</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6066"></span>6066</td>
 <td class="instruction">LD ($5FA2),A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6069"></span>6069</td>
-<td class="instruction">JR <a href="5FE9.html#60a8">Handle_Pause_Input_17</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR <a href="5FE9.html#60a8">MainGameLoop_HandleItemCollection</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="5FE9.html#60a8">MainGameLoop_HandleItemCollection</a>.</td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Pause_Input_11</td>
+<td class="routine-comment" colspan="5">
+<span id="606b"></span>
+<div class="comments">
+<div class="paragraph">
+Read keyboard input. Scans multiple keyboard half-rows and maps them into the same internal input format.
+</div>
+<div class="paragraph">
+<table class="default">
+<tr>
+<th colspan="1" rowspan="1">Port</th>
+<th colspan="1" rowspan="1">Keys</th>
+<th colspan="1" rowspan="1">Game Bit</th>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">7FFE</td>
+<td class="centre" colspan="1" rowspan="1">SPACE..B</td>
+<td class="centre" colspan="1" rowspan="1">0 (fire)</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">BFFE</td>
+<td class="centre" colspan="1" rowspan="1">ENTER..H</td>
+<td class="centre" colspan="1" rowspan="1">2 (down)</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">DFFE</td>
+<td class="centre" colspan="1" rowspan="1">P..Y</td>
+<td class="centre" colspan="1" rowspan="1">1 (up)</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">FBFE</td>
+<td class="centre" colspan="1" rowspan="1">Q (bit 0)</td>
+<td class="centre" colspan="1" rowspan="1">4 (left)</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">FBFE</td>
+<td class="centre" colspan="1" rowspan="1">W (bit 1)</td>
+<td class="centre" colspan="1" rowspan="1">3 (right)</td>
+</tr>
+</table>
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">MainGameLoop_ReadKeyboard</td>
 <td class="address-2"><span id="606b"></span>606B</td>
 <td class="instruction">LD BC,$7FFE</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">BC</span>=7FFE.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="606e"></span>606E</td>
 <td class="instruction">LD E,$1F</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">E</span>=1F (all directions inactive).</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="6070"></span>
+<div class="comments">
+<div class="paragraph">
+Read SPACE-B row for fire.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6070"></span>6070</td>
 <td class="instruction">IN A,(C)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Read from the keyboard port.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6072"></span>6072</td>
-<td class="instruction">AND $1F</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">AND %00011111</td>
+<td class="comment-1" rowspan="1">Keep only bits 0-4.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6074"></span>6074</td>
 <td class="instruction">CP $1F</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Jump to <a href="5FE9.html#607a">MainGameLoop_Keyboard_TestDown</a> if no key was being pressed.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6076"></span>6076</td>
-<td class="instruction">JR Z,<a href="5FE9.html#607a">Handle_Pause_Input_12</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR Z,<a href="5FE9.html#607a">MainGameLoop_Keyboard_TestDown</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6078"></span>6078</td>
 <td class="instruction">RES 0,E</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Reset bit 0 of <span class="register">E</span> (fire active).</td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Pause_Input_12</td>
+<td class="routine-comment" colspan="5">
+<span id="607a"></span>
+<div class="comments">
+<div class="paragraph">
+Read ENTER-H row for down.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">MainGameLoop_Keyboard_TestDown</td>
 <td class="address-2"><span id="607a"></span>607A</td>
 <td class="instruction">LD B,$BF</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">B</span>=BF.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="607c"></span>607C</td>
 <td class="instruction">IN A,(C)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Read from the keyboard port.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="607e"></span>607E</td>
-<td class="instruction">AND $1F</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">AND %00011111</td>
+<td class="comment-1" rowspan="3">Jump to <a href="5FE9.html#6086">MainGameLoop_Keyboard_TestUp</a> if no key was being pressed.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6080"></span>6080</td>
 <td class="instruction">CP $1F</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6082"></span>6082</td>
-<td class="instruction">JR Z,<a href="5FE9.html#6086">Handle_Pause_Input_13</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR Z,<a href="5FE9.html#6086">MainGameLoop_Keyboard_TestUp</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6084"></span>6084</td>
 <td class="instruction">RES 2,E</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Reset bit 2 of <span class="register">E</span> (down active).</td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Pause_Input_13</td>
+<td class="routine-comment" colspan="5">
+<span id="6086"></span>
+<div class="comments">
+<div class="paragraph">
+Read P-Y row for up.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">MainGameLoop_Keyboard_TestUp</td>
 <td class="address-2"><span id="6086"></span>6086</td>
 <td class="instruction">LD B,$DF</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">B</span>=DF.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6088"></span>6088</td>
 <td class="instruction">IN A,(C)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Read from the keyboard port.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="608a"></span>608A</td>
-<td class="instruction">AND $1F</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">AND %00011111</td>
+<td class="comment-1" rowspan="3">Jump to <a href="5FE9.html#6092">MainGameLoop_Keyboard_TestLeftRight</a> if no key was being pressed.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="608c"></span>608C</td>
 <td class="instruction">CP $1F</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="608e"></span>608E</td>
-<td class="instruction">JR Z,<a href="5FE9.html#6092">Handle_Pause_Input_14</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR Z,<a href="5FE9.html#6092">MainGameLoop_Keyboard_TestLeftRight</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6090"></span>6090</td>
 <td class="instruction">RES 1,E</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Reset bit 1 of <span class="register">E</span> (up active).</td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Pause_Input_14</td>
+<td class="routine-comment" colspan="5">
+<span id="6092"></span>
+<div class="comments">
+<div class="paragraph">
+Read Q-T row for left (Q, bit 0) and right (W, bit 1).
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">MainGameLoop_Keyboard_TestLeftRight</td>
 <td class="address-2"><span id="6092"></span>6092</td>
 <td class="instruction">LD B,$FB</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">B</span>=FB.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6094"></span>6094</td>
 <td class="instruction">IN A,(C)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Read from the keyboard port.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6096"></span>6096</td>
-<td class="instruction">AND $01</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">AND %00000001</td>
+<td class="comment-1" rowspan="2">Jump to <a href="5FE9.html#609c">MainGameLoop_Keyboard_TestRight</a> if Q is not being pressed.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6098"></span>6098</td>
-<td class="instruction">JR NZ,<a href="5FE9.html#609c">Handle_Pause_Input_15</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR NZ,<a href="5FE9.html#609c">MainGameLoop_Keyboard_TestRight</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="609a"></span>609A</td>
 <td class="instruction">RES 4,E</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Reset bit 4 of <span class="register">E</span> (left active).</td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Pause_Input_15</td>
+<td class="asm-label">MainGameLoop_Keyboard_TestRight</td>
 <td class="address-2"><span id="609c"></span>609C</td>
 <td class="instruction">IN A,(C)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Read from the keyboard port again.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="609e"></span>609E</td>
-<td class="instruction">AND $02</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">AND %00000010</td>
+<td class="comment-1" rowspan="2">Jump to <a href="5FE9.html#60a4">MainGameLoop_Keyboard_Store</a> if W is not being pressed.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="60a0"></span>60A0</td>
-<td class="instruction">JR NZ,<a href="5FE9.html#60a4">Handle_Pause_Input_16</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR NZ,<a href="5FE9.html#60a4">MainGameLoop_Keyboard_Store</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="60a2"></span>60A2</td>
 <td class="instruction">RES 3,E</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Reset bit 3 of <span class="register">E</span> (right active).</td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Pause_Input_16</td>
+<td class="asm-label">MainGameLoop_Keyboard_Store</td>
 <td class="address-2"><span id="60a4"></span>60A4</td>
 <td class="instruction">LD A,E</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Write <span class="register">E</span> to *<a href="5FA2.html">InputState</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="60a5"></span>60A5</td>
 <td class="instruction">LD ($5FA2),A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Pause_Input_17</td>
+<td class="routine-comment" colspan="5">
+<span id="60a8"></span>
+<div class="comments">
+<div class="paragraph">
+Handle Percy's special "flying up to collect item" state. If *<a href="5FA9.html">ItemCollectionState</a> is set, Percy is currently flying upward to collect an item.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">MainGameLoop_HandleItemCollection</td>
 <td class="address-2"><span id="60a8"></span>60A8</td>
 <td class="instruction">LD A,($5FA9)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Jump to <a href="5FE9.html#60d9">MainGameLoop_TestFirePressed</a> if *<a href="5FA9.html">ItemCollectionState</a> is unset (no item to collect).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="60ab"></span>60AB</td>
 <td class="instruction">OR A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="60ac"></span>60AC</td>
-<td class="instruction">JR Z,<a href="5FE9.html#60d9">Handle_Pause_Input_19</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR Z,<a href="5FE9.html#60d9">MainGameLoop_TestFirePressed</a></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="60ae"></span>
+<div class="comments">
+<div class="paragraph">
+Percy is flying upward so advance the Y position.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="60ae"></span>60AE</td>
 <td class="instruction">LD A,(IX+$21)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">IX</span>+21.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="60b1"></span>60B1</td>
 <td class="instruction">ADD A,$04</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>+=04.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="60b3"></span>60B3</td>
 <td class="instruction">CP $A8</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Has Percy reached Y position A8?</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="60b5"></span>60B5</td>
-<td class="instruction">JR C,<a href="5FE9.html#60bf">Handle_Pause_Input_18</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR C,<a href="5FE9.html#60bf">MainGameLoop_UpdateCollectionY</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="5FE9.html#60bf">MainGameLoop_UpdateCollectionY</a> if not yet reached.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="60b7"></span>
+<div class="comments">
+<div class="paragraph">
+Percy has reached the target so end the collection state.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="60b7"></span>60B7</td>
 <td class="instruction">LD (IX+$23),$00</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write 00 to *<span class="register">IX</span>+23.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="60bb"></span>60BB</td>
 <td class="instruction">XOR A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Unset *<a href="5FA9.html">ItemCollectionState</a> (the item has been collected).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="60bc"></span>60BC</td>
 <td class="instruction">LD ($5FA9),A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Pause_Input_18</td>
+<td class="asm-label">MainGameLoop_UpdateCollectionY</td>
 <td class="address-2"><span id="60bf"></span>60BF</td>
 <td class="instruction">LD (IX+$21),A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">IX</span>+21.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="60c2"></span>
+<div class="comments">
+<div class="paragraph">
+Play a rising sound effect during item collection.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="60c2"></span>60C2</td>
 <td class="instruction">PUSH IX</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Stash <span class="register">IX</span> on the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="60c4"></span>60C4</td>
 <td class="instruction">LD HL,($5FB7)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>=*<a href="5FB7.html">BeepPitch</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="60c7"></span>60C7</td>
 <td class="instruction">LD BC,$0010</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2"><span class="register">HL</span>+=10.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="60ca"></span>60CA</td>
 <td class="instruction">ADD HL,BC</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="60cb"></span>60CB</td>
 <td class="instruction">LD ($5FB7),HL</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write <span class="register">HL</span> to *<a href="5FB7.html">BeepPitch</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="60ce"></span>60CE</td>
 <td class="instruction">LD DE,$0004</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">DE</span>=0004.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="60d1"></span>60D1</td>
 <td class="instruction">CALL $03B5</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Call <a rel="noopener nofollow" href="https://skoolkid.github.io/rom/asm/03B5.html">BEEP</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="60d4"></span>60D4</td>
 <td class="instruction">DI</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Disable interrupts.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="60d5"></span>60D5</td>
 <td class="instruction">POP IX</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Restore <span class="register">IX</span> from the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="60d7"></span>60D7</td>
-<td class="instruction">JR <a href="5FE9.html#610e">Handle_Pause_Input_20</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR <a href="5FE9.html#610e">MainGameLoop_ApplyMovement</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="5FE9.html#610e">MainGameLoop_ApplyMovement</a>.</td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Pause_Input_19</td>
+<td class="routine-comment" colspan="5">
+<span id="60d9"></span>
+<div class="comments">
+<div class="paragraph">
+Check if fire is pressed and conditions are met to start collecting an item.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">MainGameLoop_TestFirePressed</td>
 <td class="address-2"><span id="60d9"></span>60D9</td>
 <td class="instruction">LD A,($5FA2)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Jump to <a href="5FE9.html#610e">MainGameLoop_ApplyMovement</a> if *<a href="5FA2.html">InputState</a> states that fire has not been pressed.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="60dc"></span>60DC</td>
 <td class="instruction">BIT 0,A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="60de"></span>60DE</td>
-<td class="instruction">JR NZ,<a href="5FE9.html#610e">Handle_Pause_Input_20</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR NZ,<a href="5FE9.html#610e">MainGameLoop_ApplyMovement</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="60e0"></span>60E0</td>
 <td class="instruction">LD A,($5FAD)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Jump to <a href="5FE9.html#610e">MainGameLoop_ApplyMovement</a> if *<a href="5FAD.html">LandedOnPlatformFlag</a> is set.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="60e3"></span>60E3</td>
 <td class="instruction">OR A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="60e4"></span>60E4</td>
-<td class="instruction">JR NZ,<a href="5FE9.html#610e">Handle_Pause_Input_20</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR NZ,<a href="5FE9.html#610e">MainGameLoop_ApplyMovement</a></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="60e6"></span>
+<div class="comments">
+<div class="paragraph">
+Percy must be below Y position 84 to collect items.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="60e6"></span>60E6</td>
 <td class="instruction">LD A,(IX+$01)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Jump to <a href="5FE9.html#610e">MainGameLoop_ApplyMovement</a> if Percy's Y position (*<span class="register">IX</span>+01) states that Percy is too high to collect items (greater than or equal to 84).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="60e9"></span>60E9</td>
 <td class="instruction">CP $84</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="60eb"></span>60EB</td>
-<td class="instruction">JR NC,<a href="5FE9.html#610e">Handle_Pause_Input_20</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR NC,<a href="5FE9.html#610e">MainGameLoop_ApplyMovement</a></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="60ed"></span>
+<div class="comments">
+<div class="paragraph">
+Start the item collection sequence and set Percy's target Y position and collection state.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="60ed"></span>60ED</td>
 <td class="instruction">ADD A,$10</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>+=10.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="60ef"></span>60EF</td>
 <td class="instruction">PUSH AF</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Stash <span class="register">AF</span> on the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="60f0"></span>60F0</td>
 <td class="instruction">CALL <a href="679C.html">CollectItem</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Call <a href="679C.html">CollectItem</a> to find and remove the collectible item.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="60f3"></span>60F3</td>
 <td class="instruction">POP AF</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Restore <span class="register">AF</span> from the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="60f4"></span>60F4</td>
 <td class="instruction">LD (IX+$21),A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">IX</span>+21 (collection target Y).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="60f7"></span>60F7</td>
 <td class="instruction">LD (IX+$23),$0F</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write 0F to *<span class="register">IX</span>+23.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="60fb"></span>60FB</td>
 <td class="instruction">LD A,(IX+$00)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">IX</span>+00 (Percy's X position).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="60fe"></span>60FE</td>
 <td class="instruction">ADD A,$05</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>+=05.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6100"></span>6100</td>
 <td class="instruction">LD (IX+$20),A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">IX</span>+20 (collection target X).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6103"></span>6103</td>
-<td class="instruction">OR $FF</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">OR %11111111</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=FF.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6105"></span>6105</td>
 <td class="instruction">LD ($5FA9),A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write FF to *<a href="5FA9.html">ItemCollectionState</a> (collection in progress).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6108"></span>6108</td>
 <td class="instruction">LD HL,$0064</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Write 0064 to *<a href="5FB7.html">BeepPitch</a> (initial beep pitch).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="610b"></span>610B</td>
 <td class="instruction">LD ($5FB7),HL</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Pause_Input_20</td>
+<td class="routine-comment" colspan="5">
+<span id="610e"></span>
+<div class="comments">
+<div class="paragraph">
+Apply the direction input to Percy's movement. First ensure fire is flagged as released, then dispatch to the appropriate movement handler for each direction.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">MainGameLoop_ApplyMovement</td>
 <td class="address-2"><span id="610e"></span>610E</td>
 <td class="instruction">LD A,($5FA2)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="5FA2.html">InputState</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6111"></span>6111</td>
 <td class="instruction">SET 0,A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Set bit 0 of <span class="register">A</span> (mark fire as handled).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6113"></span>6113</td>
 <td class="instruction">LD ($5FA2),A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<a href="5FA2.html">InputState</a>.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="6116"></span>
+<div class="comments">
+<div class="paragraph">
+If Percy is falling (*<a href="5FA7.html">FallingState</a> is non-zero), handle the falling state.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6116"></span>6116</td>
 <td class="instruction">LD A,($5FA7)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Jump to <a href="5FE9.html#6152">MainGameLoop_MovePercy</a> if *<a href="5FA7.html">FallingState</a> is unset.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6119"></span>6119</td>
 <td class="instruction">OR A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="611a"></span>611A</td>
-<td class="instruction">JR Z,<a href="5FE9.html#6152">Handle_Pause_Input_22</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR Z,<a href="5FE9.html#6152">MainGameLoop_MovePercy</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="611c"></span>611C</td>
 <td class="instruction">CP $FE</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Jump to <a href="5FE9.html#612b">MainGameLoop_Falling</a> if <span class="register">A</span> is FE.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="611e"></span>611E</td>
-<td class="instruction">JR Z,<a href="5FE9.html#612b">Handle_Pause_Input_21</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR Z,<a href="5FE9.html#612b">MainGameLoop_Falling</a></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="6120"></span>
+<div class="comments">
+<div class="paragraph">
+Start falling and set the fall state and initial beep pitch.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6120"></span>6120</td>
 <td class="instruction">LD A,$FE</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Write FE to *<a href="5FA7.html">FallingState</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6122"></span>6122</td>
 <td class="instruction">LD ($5FA7),A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6125"></span>6125</td>
 <td class="instruction">LD HL,$0082</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Write 82 to *<a href="5FB7.html">BeepPitch</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6128"></span>6128</td>
 <td class="instruction">LD ($5FB7),HL</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Pause_Input_21</td>
+<td class="routine-comment" colspan="5">
+<span id="612b"></span>
+<div class="comments">
+<div class="paragraph">
+Percy is falling so play a descending beep and move downward.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">MainGameLoop_Falling</td>
 <td class="address-2"><span id="612b"></span>612B</td>
 <td class="instruction">LD BC,$0010</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="4">Write *<a href="5FB7.html">BeepPitch</a> + 0010 back to *<a href="5FB7.html">BeepPitch</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="612e"></span>612E</td>
 <td class="instruction">LD HL,($5FB7)</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6131"></span>6131</td>
 <td class="instruction">ADD HL,BC</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6132"></span>6132</td>
 <td class="instruction">LD ($5FB7),HL</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6135"></span>6135</td>
 <td class="instruction">LD DE,$0004</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">DE</span>=0004.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6138"></span>6138</td>
 <td class="instruction">PUSH IX</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Stash <span class="register">IX</span> on the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="613a"></span>613A</td>
 <td class="instruction">CALL $03B5</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Call <a rel="noopener nofollow" href="https://skoolkid.github.io/rom/asm/03B5.html">BEEP</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="613d"></span>613D</td>
 <td class="instruction">POP IX</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Restore <span class="register">IX</span> from the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="613f"></span>613F</td>
 <td class="instruction">LD (IX+$02),$FF</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write FF to *<span class="register">IX</span>+02.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="6143"></span>
+<div class="comments">
+<div class="paragraph">
+Override input and force all directions inactive and only allow down.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6143"></span>6143</td>
 <td class="instruction">LD HL,$5FA2</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Write 1F to *<a href="5FA2.html">InputState</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6146"></span>6146</td>
 <td class="instruction">LD (HL),$1F</td>
-<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="6148"></span>
+<div class="comments">
+<div class="paragraph">
+If Percy has fallen below Y position 8D lose a life.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6148"></span>6148</td>
 <td class="instruction">LD A,(IX+$01)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">IX</span>+01 (Percy's Y position).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="614b"></span>614B</td>
 <td class="instruction">CP $8D</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Jump to <a href="68B8.html">Handle_Life_Lost</a> if Percy has fallen off the screen (Percy's Y position is greater than 8D).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="614d"></span>614D</td>
 <td class="instruction">JP NC,<a href="64E7.html">LoseLife</a></td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6150"></span>6150</td>
 <td class="instruction">RES 2,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Reset bit 2 of *<span class="register">HL</span> (force downward movement).</td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Pause_Input_22</td>
+<td class="routine-comment" colspan="5">
+<span id="6152"></span>
+<div class="comments">
+<div class="paragraph">
+Apply directional movement. Each handler moves Percy in the corresponding direction, checking screen boundaries.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">MainGameLoop_MovePercy</td>
 <td class="address-2"><span id="6152"></span>6152</td>
 <td class="instruction">LD C,(IX+$00)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">C</span>=*<span class="register">IX</span>+00 (Percy's X position).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6155"></span>6155</td>
 <td class="instruction">LD B,(IX+$01)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">B</span>=*<span class="register">IX</span>+01 (Percy's Y position).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6158"></span>6158</td>
 <td class="instruction">PUSH BC</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Stash Percy's position on the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6159"></span>6159</td>
 <td class="instruction">LD A,($5FA2)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2"><span class="register">E</span>=*<a href="5FA2.html">InputState</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="615c"></span>615C</td>
 <td class="instruction">LD E,A</td>
-<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="615d"></span>
+<div class="comments">
+<div class="paragraph">
+If no direction is pressed, decelerate.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="615d"></span>615D</td>
 <td class="instruction">CP $1F</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Call <a href="62D8.html#62f8">UpdateMovementSpeed_Decelerate</a> if no direction has been pressed.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="615f"></span>615F</td>
-<td class="instruction">CALL Z,<a href="5FE9.html#62f8">Handle_Pause_Input_46</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">CALL Z,<a href="62D8.html#62f8">UpdateMovementSpeed_Decelerate</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6162"></span>6162</td>
 <td class="instruction">LD A,($5FAE)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2"><span class="register">D</span>=*<a href="5FAE.html">MovementSpeed</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6165"></span>6165</td>
 <td class="instruction">LD D,A</td>
-<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="6166"></span>
+<div class="comments">
+<div class="paragraph">
+Dispatch to each direction handler if active.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6166"></span>6166</td>
 <td class="instruction">BIT 4,E</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Call <a href="6280.html">MovePercyLeft</a> if left is active.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6168"></span>6168</td>
-<td class="instruction">CALL Z,<a href="5FE9.html#6280">Handle_Pause_Input_37</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">CALL Z,<a href="6280.html">MovePercyLeft</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="616b"></span>616B</td>
 <td class="instruction">BIT 3,E</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Call <a href="62A2.html">MovePercyRight</a> if right is active.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="616d"></span>616D</td>
-<td class="instruction">CALL Z,<a href="5FE9.html#62a2">Handle_Pause_Input_39</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">CALL Z,<a href="62A2.html">MovePercyRight</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6170"></span>6170</td>
 <td class="instruction">BIT 1,E</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Call <a href="62C2.html">MovePercyUp</a> if up is active.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6172"></span>6172</td>
-<td class="instruction">CALL Z,<a href="5FE9.html#62c2">Handle_Pause_Input_41</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">CALL Z,<a href="62C2.html">MovePercyUp</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6175"></span>6175</td>
 <td class="instruction">BIT 2,E</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Call <a href="62D0.html">MovePercyDown</a> if down is active.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6177"></span>6177</td>
-<td class="instruction">CALL Z,<a href="5FE9.html#62d0">Handle_Pause_Input_43</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">CALL Z,<a href="62D0.html">MovePercyDown</a></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="617a"></span>
+<div class="comments">
+<div class="paragraph">
+Update the movement speed.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="617a"></span>617A</td>
-<td class="instruction">CALL <a href="5FE9.html#62d8">Handle_Pause_Input_44</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">CALL <a href="62D8.html">UpdateMovementSpeed</a></td>
+<td class="comment-1" rowspan="1">Call <a href="62D8.html">UpdateMovementSpeed</a>.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="617d"></span>
+<div class="comments">
+<div class="paragraph">
+If any direction was pressed, store it for animation purposes.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="617d"></span>617D</td>
 <td class="instruction">LD A,($5FA2)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="5FA2.html">InputState</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6180"></span>6180</td>
 <td class="instruction">CP $1F</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Jump to <a href="5FE9.html#6187">MainGameLoop_CollisionDetection</a> if there was no input.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6182"></span>6182</td>
-<td class="instruction">JR Z,<a href="5FE9.html#6187">Handle_Pause_Input_23</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR Z,<a href="5FE9.html#6187">MainGameLoop_CollisionDetection</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6184"></span>6184</td>
 <td class="instruction">LD ($5FA4),A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<a href="5FA4.html">PreviousInputState</a>.</td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Pause_Input_23</td>
+<td class="routine-comment" colspan="5">
+<span id="6187"></span>
+<div class="comments">
+<div class="paragraph">
+Collision detection with room scenery. Converts Percy's position to a room attribute buffer address and checks if Percy overlaps any solid tiles.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">MainGameLoop_CollisionDetection</td>
 <td class="address-2"><span id="6187"></span>6187</td>
 <td class="instruction">LD D,$00</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">D</span>=00.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6189"></span>6189</td>
 <td class="instruction">LD A,$00</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Write 00 to *<a href="5FA8.html">CollisionFlag</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="618b"></span>618B</td>
 <td class="instruction">LD ($5FA8),A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="618e"></span>618E</td>
 <td class="instruction">LD E,$07</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">E</span>=07.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="6190"></span>
+<div class="comments">
+<div class="paragraph">
+Load Percy's current position.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6190"></span>6190</td>
 <td class="instruction">LD C,(IX+$00)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">C</span>=*<span class="register">IX</span>+00 (Percy's X position).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6193"></span>6193</td>
 <td class="instruction">LD B,(IX+$01)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">B</span>=*<span class="register">IX</span>+01 (Percy's Y position).</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="6196"></span>
+<div class="comments">
+<div class="paragraph">
+Check if Percy's X position is on a pixel boundary.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6196"></span>6196</td>
 <td class="instruction">LD A,C</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=<span class="register">C</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6197"></span>6197</td>
-<td class="instruction">AND $07</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">AND %00000111</td>
+<td class="comment-1" rowspan="1">Keep only bits 0-2 (sub-character X offset).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6199"></span>6199</td>
 <td class="instruction">OR A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Jump to <a href="5FE9.html#619e">MainGameLoop_CalcAttributeAddress</a> if <span class="register">A</span> is zero (aligned to character).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="619a"></span>619A</td>
-<td class="instruction">JR Z,<a href="5FE9.html#619e">Handle_Pause_Input_24</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR Z,<a href="5FE9.html#619e">MainGameLoop_CalcAttributeAddress</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="619c"></span>619C</td>
 <td class="instruction">SET 0,D</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Set bit 0 of <span class="register">D</span> (not X-aligned).</td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Pause_Input_24</td>
+<td class="routine-comment" colspan="5">
+<span id="619e"></span>
+<div class="comments">
+<div class="paragraph">
+Calculate the room attribute buffer address from Percy's position.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">MainGameLoop_CalcAttributeAddress</td>
 <td class="address-2"><span id="619e"></span>619E</td>
 <td class="instruction">LD A,C</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=<span class="register">C</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="619f"></span>619F</td>
 <td class="instruction">RRCA</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Rotate right three positions (divide X by 08).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61a0"></span>61A0</td>
 <td class="instruction">RRCA</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61a1"></span>61A1</td>
 <td class="instruction">RRCA</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61a2"></span>61A2</td>
-<td class="instruction">AND $1F</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">AND %00011111</td>
+<td class="comment-1" rowspan="1">Keep only bits 0-4 (character column).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61a4"></span>61A4</td>
 <td class="instruction">LD L,A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">L</span>=<span class="register">A</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61a5"></span>61A5</td>
 <td class="instruction">LD A,B</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2"><span class="register">A</span>=<span class="register">B</span>, keep only bits 0-2 (sub-character Y offset).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61a6"></span>61A6</td>
 <td class="instruction">AND $07</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61a8"></span>61A8</td>
 <td class="instruction">OR A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Jump to <a href="5FE9.html#61ad">MainGameLoop_CalcAttributeAddress_2</a> if <span class="register">A</span> is zero (aligned to character row).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61a9"></span>61A9</td>
-<td class="instruction">JR Z,<a href="5FE9.html#61ad">Handle_Pause_Input_25</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR Z,<a href="5FE9.html#61ad">MainGameLoop_CalcAttributeAddress_2</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61ab"></span>61AB</td>
 <td class="instruction">SET 1,D</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Set bit 1 of <span class="register">D</span> (not Y-aligned).</td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Pause_Input_25</td>
+<td class="asm-label">MainGameLoop_CalcAttributeAddress_2</td>
 <td class="address-2"><span id="61ad"></span>61AD</td>
 <td class="instruction">LD A,B</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=<span class="register">B</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61ae"></span>61AE</td>
 <td class="instruction">RLCA</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Rotate left two positions.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61af"></span>61AF</td>
 <td class="instruction">RLCA</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61b0"></span>61B0</td>
-<td class="instruction">AND $E0</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">AND %11100000</td>
+<td class="comment-1" rowspan="1">Keep only bits 5-7.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61b2"></span>61B2</td>
 <td class="instruction">OR L</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Merge in the column from <span class="register">L</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61b3"></span>61B3</td>
 <td class="instruction">LD L,A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">L</span>=<span class="register">A</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61b4"></span>61B4</td>
 <td class="instruction">LD A,B</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=<span class="register">B</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61b5"></span>61B5</td>
 <td class="instruction">RLCA</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Rotate left two positions.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61b6"></span>61B6</td>
 <td class="instruction">RLCA</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61b7"></span>61B7</td>
-<td class="instruction">AND $03</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">AND %00000011</td>
+<td class="comment-1" rowspan="1">Keep only bits 0-1.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61b9"></span>61B9</td>
-<td class="instruction">OR $D8</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">OR %11011000</td>
+<td class="comment-1" rowspan="1">Set bits 3-4 and 6-7 for room attribute buffer at <a href="C1DD.html#d800">D800</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61bb"></span>61BB</td>
 <td class="instruction">LD H,A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">H</span>=<span class="register">A</span>.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="61bc"></span>
+<div class="comments">
+<div class="paragraph">
+Check a vertical strip of attribute cells for solid tiles. The height of the strip depends on whether Percy is Y-aligned.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61bc"></span>61BC</td>
 <td class="instruction">LD B,$02</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">B</span>=02 (rows to check).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61be"></span>61BE</td>
 <td class="instruction">BIT 1,D</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Jump to <a href="5FE9.html#61c3">MainGameLoop_CollisionCheck_Loop</a> if Y-aligned.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61c0"></span>61C0</td>
-<td class="instruction">JR Z,<a href="5FE9.html#61c3">Handle_Pause_Input_26</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR Z,<a href="5FE9.html#61c3">MainGameLoop_CollisionCheck_Loop</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61c2"></span>61C2</td>
 <td class="instruction">INC B</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Check an extra row if not Y-aligned.</td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Pause_Input_26</td>
+<td class="asm-label">MainGameLoop_CollisionCheck_Loop</td>
 <td class="address-2"><span id="61c3"></span>61C3</td>
 <td class="instruction">PUSH BC</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Stash the row counter on the stack.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="61c4"></span>
+<div class="comments">
+<div class="paragraph">
+Check the current attribute cell and the one to its right.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61c4"></span>61C4</td>
 <td class="instruction">LD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">HL</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61c5"></span>61C5</td>
 <td class="instruction">AND E</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Mask with <span class="register">E</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61c6"></span>61C6</td>
 <td class="instruction">CP E</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Jump to <a href="5FE9.html#6244">MainGameLoop_CollisionDetected</a> if a collision was detected (not all bits set).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61c7"></span>61C7</td>
-<td class="instruction">JR NZ,<a href="5FE9.html#6244">Handle_Pause_Input_33</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR NZ,<a href="5FE9.html#6244">MainGameLoop_CollisionDetected</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61c9"></span>61C9</td>
 <td class="instruction">INC HL</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Move to the next column.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61ca"></span>61CA</td>
 <td class="instruction">LD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">HL</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61cb"></span>61CB</td>
 <td class="instruction">AND E</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Mask with <span class="register">E</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61cc"></span>61CC</td>
 <td class="instruction">CP E</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Jump to <a href="5FE9.html#6244">MainGameLoop_CollisionDetected</a> if a collision was detected.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61cd"></span>61CD</td>
-<td class="instruction">JR NZ,<a href="5FE9.html#6244">Handle_Pause_Input_33</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR NZ,<a href="5FE9.html#6244">MainGameLoop_CollisionDetected</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61cf"></span>61CF</td>
 <td class="instruction">DEC HL</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Move back to the original column.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="61d0"></span>
+<div class="comments">
+<div class="paragraph">
+If Percy is not X-aligned, also check the cell two columns right.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61d0"></span>61D0</td>
 <td class="instruction">BIT 0,D</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Jump to <a href="5FE9.html#61dd">MainGameLoop_CollisionCheck_NextRow</a> if X-aligned.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61d2"></span>61D2</td>
-<td class="instruction">JR Z,<a href="5FE9.html#61dd">Handle_Pause_Input_27</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR Z,<a href="5FE9.html#61dd">MainGameLoop_CollisionCheck_NextRow</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61d4"></span>61D4</td>
 <td class="instruction">INC HL</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Move two columns right.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61d5"></span>61D5</td>
 <td class="instruction">INC HL</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61d6"></span>61D6</td>
 <td class="instruction">LD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">HL</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61d7"></span>61D7</td>
 <td class="instruction">AND E</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Mask with <span class="register">E</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61d8"></span>61D8</td>
 <td class="instruction">CP E</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Jump to <a href="5FE9.html#6244">MainGameLoop_CollisionDetected</a> if a collision was detected.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61d9"></span>61D9</td>
-<td class="instruction">JR NZ,<a href="5FE9.html#6244">Handle_Pause_Input_33</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR NZ,<a href="5FE9.html#6244">MainGameLoop_CollisionDetected</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61db"></span>61DB</td>
 <td class="instruction">DEC HL</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Move back two columns.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61dc"></span>61DC</td>
 <td class="instruction">DEC HL</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Pause_Input_27</td>
+<td class="routine-comment" colspan="5">
+<span id="61dd"></span>
+<div class="comments">
+<div class="paragraph">
+Move down one row in the attribute buffer and continue.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">MainGameLoop_CollisionCheck_NextRow</td>
 <td class="address-2"><span id="61dd"></span>61DD</td>
 <td class="instruction">LD BC,$0020</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2"><span class="register">HL</span>+=0020.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61e0"></span>61E0</td>
 <td class="instruction">ADD HL,BC</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61e1"></span>61E1</td>
 <td class="instruction">POP BC</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Restore the row counter from the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61e2"></span>61E2</td>
-<td class="instruction">DJNZ <a href="5FE9.html#61c3">Handle_Pause_Input_26</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">DJNZ <a href="5FE9.html#61c3">MainGameLoop_CollisionCheck_Loop</a></td>
+<td class="comment-1" rowspan="1">Decrease the row counter by one and loop back to <a href="5FE9.html#61c3">MainGameLoop_CollisionCheck_Loop</a> until all rows are checked.</td>
 </tr>
 <tr>
-<td class="asm-label"></td>
+<td class="routine-comment" colspan="5">
+<span id="61e4"></span>
+<div class="comments">
+<div class="paragraph">
+No collision detected so Percy can move freely. Restore the position from the stack and update the sprite frame.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">MainGameLoop_NoCollision</td>
 <td class="address-1"><span id="61e4"></span>61E4</td>
 <td class="instruction">POP BC</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Restore Percy's previous position from the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61e5"></span>61E5</td>
 <td class="instruction">LD (IX+$02),$07</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write 07 to *<span class="register">IX</span>+02.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="61e9"></span>
+<div class="comments">
+<div class="paragraph">
+If Percy is not falling, check for ground beneath.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61e9"></span>61E9</td>
 <td class="instruction">LD A,($5FA7)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Jump to <a href="5FE9.html#623d">MainGameLoop_ClearLandedFlag</a> if Percy is falling (*<a href="5FA7.html">FallingState</a> is set).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61ec"></span>61EC</td>
 <td class="instruction">OR A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61ed"></span>61ED</td>
-<td class="instruction">JR NZ,<a href="5FE9.html#623d">Handle_Pause_Input_31</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR NZ,<a href="5FE9.html#623d">MainGameLoop_ClearLandedFlag</a></td>
 </tr>
 <tr>
-<td class="asm-label"></td>
+<td class="routine-comment" colspan="5">
+<span id="61ef"></span>
+<div class="comments">
+<div class="paragraph">
+Check if there is ground below Percy's feet. Calculate the attribute address one character row below Percy's position.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">MainGameLoop_CheckGround</td>
 <td class="address-1"><span id="61ef"></span>61EF</td>
 <td class="instruction">LD C,(IX+$00)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">C</span>=*<span class="register">IX</span>+00 (Percy's X position).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61f2"></span>61F2</td>
 <td class="instruction">LD B,(IX+$01)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">B</span>=*<span class="register">IX</span>+01 (Percy's Y position)..</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61f5"></span>61F5</td>
 <td class="instruction">LD A,C</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=<span class="register">C</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61f6"></span>61F6</td>
-<td class="instruction">AND $07</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">AND %00000111</td>
+<td class="comment-1" rowspan="1">Keep only bits 0-2 (sub-character X offset).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61f8"></span>61F8</td>
 <td class="instruction">PUSH AF</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Stash the X offset on the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61f9"></span>61F9</td>
 <td class="instruction">LD A,C</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=<span class="register">C</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61fa"></span>61FA</td>
 <td class="instruction">RRCA</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Rotate right three positions (divide X by 08).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61fb"></span>61FB</td>
 <td class="instruction">RRCA</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61fc"></span>61FC</td>
 <td class="instruction">RRCA</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61fd"></span>61FD</td>
-<td class="instruction">AND $1F</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">AND %00011111</td>
+<td class="comment-1" rowspan="1">Keep only bits 0-4 (character column).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="61ff"></span>61FF</td>
 <td class="instruction">LD L,A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">L</span>=<span class="register">A</span>.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="6200"></span>
+<div class="comments">
+<div class="paragraph">
+Add 10 pixels to the Y position to check below Percy's feet.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6200"></span>6200</td>
 <td class="instruction">LD A,B</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=<span class="register">B</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6201"></span>6201</td>
 <td class="instruction">ADD A,$10</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2"><span class="register">B</span>=<span class="register">A</span> + 10.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6203"></span>6203</td>
 <td class="instruction">LD B,A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6204"></span>6204</td>
 <td class="instruction">RLCA</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Rotate left two positions.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6205"></span>6205</td>
 <td class="instruction">RLCA</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6206"></span>6206</td>
-<td class="instruction">AND $E0</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">AND %11100000</td>
+<td class="comment-1" rowspan="1">Keep only bits 5-7.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6208"></span>6208</td>
 <td class="instruction">OR L</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Merge in the column.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6209"></span>6209</td>
 <td class="instruction">LD L,A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">L</span>=<span class="register">A</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="620a"></span>620A</td>
 <td class="instruction">LD A,B</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=<span class="register">B</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="620b"></span>620B</td>
-<td class="instruction">AND $C0</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">AND %11000000</td>
+<td class="comment-1" rowspan="1">Keep only bits 6-7.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="620d"></span>620D</td>
 <td class="instruction">RRCA</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Rotate right three positions.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="620e"></span>620E</td>
 <td class="instruction">RRCA</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="620f"></span>620F</td>
 <td class="instruction">RRCA</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6210"></span>6210</td>
-<td class="instruction">OR $C0</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">OR %11000000</td>
+<td class="comment-1" rowspan="1">Set bits 6-7 for the room attribute buffer at <a href="C000.html">RoomBuffer</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6212"></span>6212</td>
 <td class="instruction">LD H,A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">H</span>=<span class="register">A</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6213"></span>6213</td>
 <td class="instruction">POP AF</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Restore the X offset from the stack.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="6214"></span>
+<div class="comments">
+<div class="paragraph">
+If Percy is X-aligned, skip the extra column check.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6214"></span>6214</td>
 <td class="instruction">OR A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Jump to <a href="5FE9.html#621d">MainGameLoop_CheckGround_ExtraCol</a> if the X offset is non-zero.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6215"></span>6215</td>
-<td class="instruction">JR NZ,<a href="5FE9.html#621d">Handle_Pause_Input_28</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR NZ,<a href="5FE9.html#621d">MainGameLoop_CheckGround_ExtraCol</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6217"></span>6217</td>
 <td class="instruction">LD A,($5FA5)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Jump to <a href="5FE9.html#621e">MainGameLoop_CheckGround_Test</a> if *<a href="5FA5.html">PercyFacingDirection</a> is zero (Percy is facing right).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="621a"></span>621A</td>
 <td class="instruction">OR A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="621b"></span>621B</td>
-<td class="instruction">JR Z,<a href="5FE9.html#621e">Handle_Pause_Input_29</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR Z,<a href="5FE9.html#621e">MainGameLoop_CheckGround_Test</a></td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Pause_Input_28</td>
+<td class="asm-label">MainGameLoop_CheckGround_ExtraCol</td>
 <td class="address-2"><span id="621d"></span>621D</td>
 <td class="instruction">INC L</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Move one column right.</td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Pause_Input_29</td>
+<td class="routine-comment" colspan="5">
+<span id="621e"></span>
+<div class="comments">
+<div class="paragraph">
+Check if the tile below is a platform (attribute AA).
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">MainGameLoop_CheckGround_Test</td>
 <td class="address-2"><span id="621e"></span>621E</td>
 <td class="instruction">LD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Jump to <a href="5FE9.html#623d">MainGameLoop_ClearLandedFlag</a> if there's no platform below Percy (by checking if the attribute is AA/ INK:
+RED,
+PAPER:
+CYAN
+
+FLASH: ON).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="621f"></span>621F</td>
 <td class="instruction">CP $AA</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6221"></span>6221</td>
-<td class="instruction">JR NZ,<a href="5FE9.html#623d">Handle_Pause_Input_31</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR NZ,<a href="5FE9.html#623d">MainGameLoop_ClearLandedFlag</a></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="6223"></span>
+<div class="comments">
+<div class="paragraph">
+Platform detected so check if Percy should land.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6223"></span>6223</td>
 <td class="instruction">LD A,($5FA2)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Jump to <a href="5FE9.html#6239">MainGameLoop_CheckGround_TestUp</a> if *<a href="5FA2.html">InputState</a> states that down is not being pressed.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6226"></span>6226</td>
 <td class="instruction">BIT 2,A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6228"></span>6228</td>
-<td class="instruction">JR NZ,<a href="5FE9.html#6239">Handle_Pause_Input_30</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR NZ,<a href="5FE9.html#6239">MainGameLoop_CheckGround_TestUp</a></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="622a"></span>
+<div class="comments">
+<div class="paragraph">
+Down is pressed while on a platform so snap Percy's Y to the platform.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="622a"></span>622A</td>
 <td class="instruction">LD A,(IX+$01)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">IX</span>+01.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="622d"></span>622D</td>
-<td class="instruction">AND $F8</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">AND %11111000</td>
+<td class="comment-1" rowspan="1">Keep only bits 3-7 (snap to character row).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="622f"></span>622F</td>
 <td class="instruction">LD (IX+$01),A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">IX</span>+01.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6232"></span>6232</td>
-<td class="instruction">OR $FF</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">OR %11111111</td>
+<td class="comment-1" rowspan="2">Write FF to *<a href="5FAD.html">LandedOnPlatformFlag</a> (landed on platform flag).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6234"></span>6234</td>
 <td class="instruction">LD ($5FAD),A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6237"></span>6237</td>
-<td class="instruction">JR <a href="5FE9.html#6241">Handle_Pause_Input_32</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR <a href="5FE9.html#6241">MainGameLoop_UpdateAnimation</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="5FE9.html#6241">MainGameLoop_UpdateAnimation</a>.</td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Pause_Input_30</td>
+<td class="routine-comment" colspan="5">
+<span id="6239"></span>
+<div class="comments">
+<div class="paragraph">
+Check if up is pressed while on a platform.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">MainGameLoop_CheckGround_TestUp</td>
 <td class="address-2"><span id="6239"></span>6239</td>
 <td class="instruction">BIT 1,A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Jump to <a href="5FE9.html#6241">MainGameLoop_UpdateAnimation</a> if up is not pressed.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="623b"></span>623B</td>
-<td class="instruction">JR NZ,<a href="5FE9.html#6241">Handle_Pause_Input_32</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR NZ,<a href="5FE9.html#6241">MainGameLoop_UpdateAnimation</a></td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Pause_Input_31</td>
+<td class="routine-comment" colspan="5">
+<span id="623d"></span>
+<div class="comments">
+<div class="paragraph">
+No platform below so clear the landed flag.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">MainGameLoop_ClearLandedFlag</td>
 <td class="address-2"><span id="623d"></span>623D</td>
 <td class="instruction">XOR A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Write 00 to *<a href="5FAD.html">LandedOnPlatformFlag</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="623e"></span>623E</td>
 <td class="instruction">LD ($5FAD),A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Pause_Input_32</td>
+<td class="asm-label">MainGameLoop_UpdateAnimation</td>
 <td class="address-2"><span id="6241"></span>6241</td>
-<td class="instruction">JP <a href="5FE9.html#6338">Handle_Pause_Input_51</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JP <a href="6338.html">UpdatePercyAnimation</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="6338.html">UpdatePercyAnimation</a>.</td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Pause_Input_33</td>
+<td class="routine-comment" colspan="5">
+<span id="6244"></span>
+<div class="comments">
+<div class="paragraph">
+Collision with solid scenery detected so reject the move and restore Percy's previous position.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">MainGameLoop_CollisionDetected</td>
 <td class="address-2"><span id="6244"></span>6244</td>
 <td class="instruction">POP BC</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Restore the row counter and overwrite it with Percy's previous position from the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6245"></span>6245</td>
 <td class="instruction">POP BC</td>
-<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="6246"></span>
+<div class="comments">
+<div class="paragraph">
+If Percy is falling, handle the impact.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6246"></span>6246</td>
 <td class="instruction">LD A,($5FA7)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Jump to <a href="5FE9.html#625f">MainGameLoop_FallImpact</a> if Percy is falling (*<a href="5FA7.html">FallingState</a> is set).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6249"></span>6249</td>
 <td class="instruction">OR A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="624a"></span>624A</td>
-<td class="instruction">JR NZ,<a href="5FE9.html#625f">Handle_Pause_Input_34</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR NZ,<a href="5FE9.html#625f">MainGameLoop_FallImpact</a></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="624c"></span>
+<div class="comments">
+<div class="paragraph">
+Check if Percy has hit the bottom of the screen.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="624c"></span>624C</td>
 <td class="instruction">LD A,(IX+$01)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Jump to <a href="5FE9.html#626f">MainGameLoop_SnapPosition</a> if Percy's Y position (*<span class="register">IX</span>+01) is greater than or equal to 91 and Percy is at the bottom of the screen.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="624f"></span>624F</td>
 <td class="instruction">CP $91</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6251"></span>6251</td>
-<td class="instruction">JR NC,<a href="5FE9.html#626f">Handle_Pause_Input_36</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR NC,<a href="5FE9.html#626f">MainGameLoop_SnapPosition</a></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="6253"></span>
+<div class="comments">
+<div class="paragraph">
+Special case; if in room 06 treat collision differently.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6253"></span>6253</td>
 <td class="instruction">LD A,($5FC5)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Jump to <a href="5FE9.html#626f">MainGameLoop_SnapPosition</a> if *<a href="5FC5.html">CurrentRoom</a> is room 06.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6256"></span>6256</td>
 <td class="instruction">CP $06</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6258"></span>6258</td>
-<td class="instruction">JR Z,<a href="5FE9.html#626f">Handle_Pause_Input_36</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR Z,<a href="5FE9.html#626f">MainGameLoop_SnapPosition</a></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="625a"></span>
+<div class="comments">
+<div class="paragraph">
+Check if the collision cell is empty.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="625a"></span>625A</td>
 <td class="instruction">LD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">HL</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="625b"></span>625B</td>
 <td class="instruction">AND E</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Mask with <span class="register">E</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="625c"></span>625C</td>
 <td class="instruction">OR A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Jump to <a href="5FE9.html#626f">MainGameLoop_SnapPosition</a> if the cell is empty.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="625d"></span>625D</td>
-<td class="instruction">JR Z,<a href="5FE9.html#626f">Handle_Pause_Input_36</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR Z,<a href="5FE9.html#626f">MainGameLoop_SnapPosition</a></td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Pause_Input_34</td>
+<td class="routine-comment" colspan="5">
+<span id="625f"></span>
+<div class="comments">
+<div class="paragraph">
+Handle Percy falling and hitting something.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">MainGameLoop_FallImpact</td>
 <td class="address-2"><span id="625f"></span>625F</td>
 <td class="instruction">CP $FE</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Jump to <a href="5FE9.html#626c">MainGameLoop_FallImpact_Done</a> if <span class="register">A</span> is FE.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6261"></span>6261</td>
-<td class="instruction">JR Z,<a href="5FE9.html#626c">Handle_Pause_Input_35</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR Z,<a href="5FE9.html#626c">MainGameLoop_FallImpact_Done</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6263"></span>6263</td>
-<td class="instruction">OR $FF</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">OR %11111111</td>
+<td class="comment-1" rowspan="2">Write FF to *<a href="5FA7.html">FallingState</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6265"></span>6265</td>
 <td class="instruction">LD ($5FA7),A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6268"></span>6268</td>
 <td class="instruction">LD (IX+$02),$FF</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write FF to *<span class="register">IX</span>+02.</td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Pause_Input_35</td>
+<td class="asm-label">MainGameLoop_FallImpact_Done</td>
 <td class="address-2"><span id="626c"></span>626C</td>
-<td class="instruction">JP <a href="5FE9.html#6338">Handle_Pause_Input_51</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JP <a href="6338.html">UpdatePercyAnimation</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="6338.html">UpdatePercyAnimation</a>.</td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Pause_Input_36</td>
+<td class="routine-comment" colspan="5">
+<span id="626f"></span>
+<div class="comments">
+<div class="paragraph">
+Percy has moved past a screen boundary so trigger a room transition. The direction determines which room to move to.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">MainGameLoop_SnapPosition</td>
 <td class="address-2"><span id="626f"></span>626F</td>
 <td class="instruction">LD A,$01</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Write 01 to; <ul class="">
+<li>*<a href="5FAE.html">MovementSpeed</a></li>
+<li>*<a href="5FA8.html">CollisionFlag</a></li>
+</ul></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6271"></span>6271</td>
 <td class="instruction">LD ($5FAE),A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6274"></span>6274</td>
 <td class="instruction">LD ($5FA8),A</td>
-<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="6277"></span>
+<div class="comments">
+<div class="paragraph">
+Restore Percy's position from before the rejected move.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6277"></span>6277</td>
 <td class="instruction">LD (IX+$00),C</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write <span class="register">C</span> to *<span class="register">IX</span>+00 (Percy's X position).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="627a"></span>627A</td>
 <td class="instruction">LD (IX+$01),B</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write <span class="register">B</span> to *<span class="register">IX</span>+01 (Percy's Y position).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="627d"></span>627D</td>
-<td class="instruction">JP <a href="5FE9.html#6338">Handle_Pause_Input_51</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label">Handle_Pause_Input_37</td>
-<td class="address-2"><span id="6280"></span>6280</td>
-<td class="instruction">LD A,$01</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="6282"></span>6282</td>
-<td class="instruction">LD ($5FA5),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="6285"></span>6285</td>
-<td class="instruction">LD A,($5FAA)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="6288"></span>6288</td>
-<td class="instruction">OR A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="6289"></span>6289</td>
-<td class="instruction">JR Z,<a href="5FE9.html#6297">Handle_Pause_Input_38</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="628b"></span>628B</td>
-<td class="instruction">LD A,(IX+$00)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="628e"></span>628E</td>
-<td class="instruction">SUB $05</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="6290"></span>6290</td>
-<td class="instruction">JP C,<a href="5FE9.html#631f">Handle_Pause_Input_49</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="6293"></span>6293</td>
-<td class="instruction">SUB D</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="6294"></span>6294</td>
-<td class="instruction">JP C,<a href="5FE9.html#631f">Handle_Pause_Input_49</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label">Handle_Pause_Input_38</td>
-<td class="address-2"><span id="6297"></span>6297</td>
-<td class="instruction">LD A,(IX+$00)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="629a"></span>629A</td>
-<td class="instruction">SUB D</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="629b"></span>629B</td>
-<td class="instruction">JP C,<a href="5FE9.html#631f">Handle_Pause_Input_49</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="629e"></span>629E</td>
-<td class="instruction">LD (IX+$00),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="62a1"></span>62A1</td>
-<td class="instruction">RET</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label">Handle_Pause_Input_39</td>
-<td class="address-2"><span id="62a2"></span>62A2</td>
-<td class="instruction">XOR A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="62a3"></span>62A3</td>
-<td class="instruction">LD ($5FA5),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="62a6"></span>62A6</td>
-<td class="instruction">LD A,($5FAA)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="62a9"></span>62A9</td>
-<td class="instruction">OR A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="62aa"></span>62AA</td>
-<td class="instruction">JR Z,<a href="5FE9.html#62b6">Handle_Pause_Input_40</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="62ac"></span>62AC</td>
-<td class="instruction">LD A,(IX+$00)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="62af"></span>62AF</td>
-<td class="instruction">ADD A,D</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="62b0"></span>62B0</td>
-<td class="instruction">ADD A,$04</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="62b2"></span>62B2</td>
-<td class="instruction">CP $EF</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="62b4"></span>62B4</td>
-<td class="instruction">JR NC,<a href="5FE9.html#6307">Handle_Pause_Input_47</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label">Handle_Pause_Input_40</td>
-<td class="address-2"><span id="62b6"></span>62B6</td>
-<td class="instruction">LD A,(IX+$00)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="62b9"></span>62B9</td>
-<td class="instruction">ADD A,D</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="62ba"></span>62BA</td>
-<td class="instruction">CP $EF</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="62bc"></span>62BC</td>
-<td class="instruction">JR NC,<a href="5FE9.html#6307">Handle_Pause_Input_47</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="62be"></span>62BE</td>
-<td class="instruction">LD (IX+$00),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="62c1"></span>62C1</td>
-<td class="instruction">RET</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label">Handle_Pause_Input_41</td>
-<td class="address-2"><span id="62c2"></span>62C2</td>
-<td class="instruction">LD A,(IX+$01)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="62c5"></span>62C5</td>
-<td class="instruction">SUB D</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="62c6"></span>62C6</td>
-<td class="instruction">CP $A0</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="62c8"></span>62C8</td>
-<td class="instruction">JR C,<a href="5FE9.html#62cc">Handle_Pause_Input_42</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="62ca"></span>62CA</td>
-<td class="instruction">LD A,$00</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label">Handle_Pause_Input_42</td>
-<td class="address-2"><span id="62cc"></span>62CC</td>
-<td class="instruction">LD (IX+$01),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="62cf"></span>62CF</td>
-<td class="instruction">RET</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label">Handle_Pause_Input_43</td>
-<td class="address-2"><span id="62d0"></span>62D0</td>
-<td class="instruction">LD A,(IX+$01)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="62d3"></span>62D3</td>
-<td class="instruction">ADD A,D</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="62d4"></span>62D4</td>
-<td class="instruction">LD (IX+$01),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="62d7"></span>62D7</td>
-<td class="instruction">RET</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label">Handle_Pause_Input_44</td>
-<td class="address-2"><span id="62d8"></span>62D8</td>
-<td class="instruction">LD A,($5FA2)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="62db"></span>62DB</td>
-<td class="instruction">LD C,A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="62dc"></span>62DC</td>
-<td class="instruction">LD A,($5FA4)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="62df"></span>62DF</td>
-<td class="instruction">CP C</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="62e0"></span>62E0</td>
-<td class="instruction">JR Z,<a href="5FE9.html#62ed">Handle_Pause_Input_45</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="62e2"></span>62E2</td>
-<td class="instruction">LD A,($5FAE)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="62e5"></span>62E5</td>
-<td class="instruction">CP $01</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="62e7"></span>62E7</td>
-<td class="instruction">RET Z</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="62e8"></span>62E8</td>
-<td class="instruction">DEC A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="62e9"></span>62E9</td>
-<td class="instruction">LD ($5FAE),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="62ec"></span>62EC</td>
-<td class="instruction">RET</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label">Handle_Pause_Input_45</td>
-<td class="address-2"><span id="62ed"></span>62ED</td>
-<td class="instruction">LD A,($5FAE)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="62f0"></span>62F0</td>
-<td class="instruction">CP $04</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="62f2"></span>62F2</td>
-<td class="instruction">RET Z</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="62f3"></span>62F3</td>
-<td class="instruction">INC A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="62f4"></span>62F4</td>
-<td class="instruction">LD ($5FAE),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="62f7"></span>62F7</td>
-<td class="instruction">RET</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label">Handle_Pause_Input_46</td>
-<td class="address-2"><span id="62f8"></span>62F8</td>
-<td class="instruction">LD A,($5FAE)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="62fb"></span>62FB</td>
-<td class="instruction">CP $01</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="62fd"></span>62FD</td>
-<td class="instruction">RET Z</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="62fe"></span>62FE</td>
-<td class="instruction">DEC A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="62ff"></span>62FF</td>
-<td class="instruction">LD ($5FAE),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="6302"></span>6302</td>
-<td class="instruction">LD A,($5FA4)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="6305"></span>6305</td>
-<td class="instruction">LD E,A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="6306"></span>6306</td>
-<td class="instruction">RET</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label">Handle_Pause_Input_47</td>
-<td class="address-2"><span id="6307"></span>6307</td>
-<td class="instruction">PUSH AF</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="6308"></span>6308</td>
-<td class="instruction">LD A,($5FC5)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="630b"></span>630B</td>
-<td class="instruction">CP $0B</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="630d"></span>630D</td>
-<td class="instruction">JR NZ,<a href="5FE9.html#6310">Handle_Pause_Input_48</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="630f"></span>630F</td>
-<td class="instruction">XOR A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label">Handle_Pause_Input_48</td>
-<td class="address-2"><span id="6310"></span>6310</td>
-<td class="instruction">LD (IX+$00),$00</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="6314"></span>6314</td>
-<td class="instruction">INC A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="6315"></span>6315</td>
-<td class="instruction">LD ($5FC5),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="6318"></span>6318</td>
-<td class="instruction">CALL <a href="5E24.html">PopulateRoomBuffer</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="631b"></span>631B</td>
-<td class="instruction">POP AF</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="631c"></span>631C</td>
-<td class="instruction">POP AF</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="631d"></span>631D</td>
-<td class="instruction">POP AF</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="631e"></span>631E</td>
-<td class="instruction">RET</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label">Handle_Pause_Input_49</td>
-<td class="address-2"><span id="631f"></span>631F</td>
-<td class="instruction">PUSH AF</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="6320"></span>6320</td>
-<td class="instruction">LD A,($5FC5)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="6323"></span>6323</td>
-<td class="instruction">CP $01</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="6325"></span>6325</td>
-<td class="instruction">JR NZ,<a href="5FE9.html#6329">Handle_Pause_Input_50</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="6327"></span>6327</td>
-<td class="instruction">LD A,$0C</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label">Handle_Pause_Input_50</td>
-<td class="address-2"><span id="6329"></span>6329</td>
-<td class="instruction">LD (IX+$00),$EE</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="632d"></span>632D</td>
-<td class="instruction">DEC A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="632e"></span>632E</td>
-<td class="instruction">LD ($5FC5),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="6331"></span>6331</td>
-<td class="instruction">POP AF</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="6332"></span>6332</td>
-<td class="instruction">CALL <a href="5E24.html">PopulateRoomBuffer</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="6335"></span>6335</td>
-<td class="instruction">POP AF</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="6336"></span>6336</td>
-<td class="instruction">POP AF</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="6337"></span>6337</td>
-<td class="instruction">RET</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label">Handle_Pause_Input_51</td>
-<td class="address-2"><span id="6338"></span>6338</td>
-<td class="instruction">LD A,($5FB0)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="633b"></span>633B</td>
-<td class="instruction">BIT 7,A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="633d"></span>633D</td>
-<td class="instruction">JR NZ,<a href="5FE9.html#6349">Handle_Pause_Input_52</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="633f"></span>633F</td>
-<td class="instruction">INC A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="6340"></span>6340</td>
-<td class="instruction">CP $05</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="6342"></span>6342</td>
-<td class="instruction">JR Z,<a href="5FE9.html#6356">Handle_Pause_Input_53</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="6344"></span>6344</td>
-<td class="instruction">LD ($5FB0),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="6347"></span>6347</td>
-<td class="instruction">JR <a href="5FE9.html#6362">Handle_Pause_Input_55</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label">Handle_Pause_Input_52</td>
-<td class="address-2"><span id="6349"></span>6349</td>
-<td class="instruction">AND $07</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="634b"></span>634B</td>
-<td class="instruction">DEC A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="634c"></span>634C</td>
-<td class="instruction">OR A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="634d"></span>634D</td>
-<td class="instruction">JR Z,<a href="5FE9.html#635d">Handle_Pause_Input_54</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="634f"></span>634F</td>
-<td class="instruction">ADD A,$80</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="6351"></span>6351</td>
-<td class="instruction">LD ($5FB0),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="6354"></span>6354</td>
-<td class="instruction">JR <a href="5FE9.html#6362">Handle_Pause_Input_55</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label">Handle_Pause_Input_53</td>
-<td class="address-2"><span id="6356"></span>6356</td>
-<td class="instruction">LD A,$84</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="6358"></span>6358</td>
-<td class="instruction">LD ($5FB0),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="635b"></span>635B</td>
-<td class="instruction">JR <a href="5FE9.html#6362">Handle_Pause_Input_55</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label">Handle_Pause_Input_54</td>
-<td class="address-2"><span id="635d"></span>635D</td>
-<td class="instruction">LD A,$01</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="635f"></span>635F</td>
-<td class="instruction">LD ($5FB0),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label">Handle_Pause_Input_55</td>
-<td class="address-2"><span id="6362"></span>6362</td>
-<td class="instruction">LD A,(IX+$00)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="6365"></span>6365</td>
-<td class="instruction">CP (IX+$40)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="6368"></span>6368</td>
-<td class="instruction">JR Z,<a href="5FE9.html#6377">Handle_Pause_Input_57</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="636a"></span>636A</td>
-<td class="instruction">LD A,($5FAF)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="636d"></span>636D</td>
-<td class="instruction">INC A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="636e"></span>636E</td>
-<td class="instruction">CP $05</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="6370"></span>6370</td>
-<td class="instruction">JR NZ,<a href="5FE9.html#6374">Handle_Pause_Input_56</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="6372"></span>6372</td>
-<td class="instruction">LD A,$01</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label">Handle_Pause_Input_56</td>
-<td class="address-2"><span id="6374"></span>6374</td>
-<td class="instruction">LD ($5FAF),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label">Handle_Pause_Input_57</td>
-<td class="address-2"><span id="6377"></span>6377</td>
-<td class="instruction">LD A,(IX+$01)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="637a"></span>637A</td>
-<td class="instruction">CP $90</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="637c"></span>637C</td>
-<td class="instruction">JR NC,<a href="5FE9.html#639e">Handle_Pause_Input_59</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="637e"></span>637E</td>
-<td class="instruction">LD A,($5FAD)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="6381"></span>6381</td>
-<td class="instruction">OR A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="6382"></span>6382</td>
-<td class="instruction">JR NZ,<a href="5FE9.html#639e">Handle_Pause_Input_59</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="6384"></span>6384</td>
-<td class="instruction">LD A,($5FA5)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="6387"></span>6387</td>
-<td class="instruction">OR A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="6388"></span>6388</td>
-<td class="instruction">JR Z,<a href="5FE9.html#6393">Handle_Pause_Input_58</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="638a"></span>638A</td>
-<td class="instruction">LD A,($5FB0)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="638d"></span>638D</td>
-<td class="instruction">AND $07</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="638f"></span>638F</td>
-<td class="instruction">LD (IX+$03),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="6392"></span>6392</td>
-<td class="instruction">RET</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label">Handle_Pause_Input_58</td>
-<td class="address-2"><span id="6393"></span>6393</td>
-<td class="instruction">LD A,($5FB0)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="6396"></span>6396</td>
-<td class="instruction">AND $07</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="6398"></span>6398</td>
-<td class="instruction">ADD A,$04</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="639a"></span>639A</td>
-<td class="instruction">LD (IX+$03),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="639d"></span>639D</td>
-<td class="instruction">RET</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label">Handle_Pause_Input_59</td>
-<td class="address-2"><span id="639e"></span>639E</td>
-<td class="instruction">LD A,$01</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="63a0"></span>63A0</td>
-<td class="instruction">LD ($5FAE),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="63a3"></span>63A3</td>
-<td class="instruction">LD A,($5FA5)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="63a6"></span>63A6</td>
-<td class="instruction">OR A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="63a7"></span>63A7</td>
-<td class="instruction">JR Z,<a href="5FE9.html#63b2">Handle_Pause_Input_60</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="63a9"></span>63A9</td>
-<td class="instruction">LD A,($5FAF)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="63ac"></span>63AC</td>
-<td class="instruction">ADD A,$08</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="63ae"></span>63AE</td>
-<td class="instruction">LD (IX+$03),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="63b1"></span>63B1</td>
-<td class="instruction">RET</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label">Handle_Pause_Input_60</td>
-<td class="address-2"><span id="63b2"></span>63B2</td>
-<td class="instruction">LD A,($5FAF)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="63b5"></span>63B5</td>
-<td class="instruction">ADD A,$0C</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="63b7"></span>63B7</td>
-<td class="instruction">LD (IX+$03),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="63ba"></span>63BA</td>
-<td class="instruction">RET</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JP <a href="6338.html">UpdatePercyAnimation</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="6338.html">UpdatePercyAnimation</a>.</td>
 </tr>
 </table>
 <table class="asm-navigation">
@@ -2944,7 +2565,7 @@ Prev: <a href="5FE7.html">5FE7</a>
 </td>
 <td class="up">Up: <a href="../maps/all.html#5fe9">Map</a></td>
 <td class="next">
-Next: <a href="63BB.html">63BB</a>
+Next: <a href="6280.html">6280</a>
 </td>
 </tr>
 </table>

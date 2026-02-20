@@ -75,7 +75,7 @@ Command 03: fill the attribute buffer with a single colour, then parse an overla
 <td class="asm-label"></td>
 <td class="address-1"><span id="5edc"></span>5EDC</td>
 <td class="instruction">LD C,(HL)</td>
-<td class="comment-1" rowspan="1"><span class="register">C</span>=*<span class="register">HL</span>.</td>
+<td class="comment-1" rowspan="1">Fetch the base fill colour into <span class="register">C</span>.</td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
@@ -100,7 +100,7 @@ Fill 02C0 attribute cells at <a href="C1DD.html#d800">D800</a> with the base col
 <td class="comment-1" rowspan="1"><span class="register">DE</span>=02C0.</td>
 </tr>
 <tr>
-<td class="asm-label">PopulateRoomBuffer_FillAttributes_Loop</td>
+<td class="asm-label">FillAttributes_Loop</td>
 <td class="address-2"><span id="5ee4"></span>5EE4</td>
 <td class="instruction">LD (IX+$00),C</td>
 <td class="comment-1" rowspan="1">Write <span class="register">C</span> to *<span class="register">IX</span>+00.</td>
@@ -121,7 +121,7 @@ Fill 02C0 attribute cells at <a href="C1DD.html#d800">D800</a> with the base col
 <td class="asm-label"></td>
 <td class="address-1"><span id="5eea"></span>5EEA</td>
 <td class="instruction">LD A,E</td>
-<td class="comment-1" rowspan="3">Jump back to <a href="5EDB.html#5ee4">PopulateRoomBuffer_FillAttributes_Loop</a> until <span class="register">DE</span> is zero.</td>
+<td class="comment-1" rowspan="3">Jump back to <a href="5EDB.html#5ee4">FillAttributes_Loop</a> until <span class="register">DE</span> is zero.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -131,7 +131,7 @@ Fill 02C0 attribute cells at <a href="C1DD.html#d800">D800</a> with the base col
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="5eec"></span>5EEC</td>
-<td class="instruction">JR NZ,<a href="5EDB.html#5ee4">PopulateRoomBuffer_FillAttributes_Loop</a></td>
+<td class="instruction">JR NZ,<a href="5EDB.html#5ee4">FillAttributes_Loop</a></td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
@@ -144,7 +144,7 @@ Now parse the attribute overlay data to apply per-cell changes on top of the bas
 </td>
 </tr>
 <tr>
-<td class="asm-label">PopulateRoomBuffer_AttributeOverlay</td>
+<td class="asm-label">FillAttributes_Overlay</td>
 <td class="address-1"><span id="5eee"></span>5EEE</td>
 <td class="instruction">INC HL</td>
 <td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
@@ -162,7 +162,7 @@ Now parse the attribute overlay data to apply per-cell changes on top of the bas
 <td class="comment-1" rowspan="1"><span class="register">IX</span>=<a href="C1DD.html#d800">D800</a>.</td>
 </tr>
 <tr>
-<td class="asm-label">PopulateRoomBuffer_AttributeOverlay_Loop</td>
+<td class="asm-label">FillAttributes_Overlay_Loop</td>
 <td class="address-2"><span id="5ef6"></span>5EF6</td>
 <td class="instruction">LD A,(HL)</td>
 <td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">HL</span>.</td>
@@ -171,34 +171,34 @@ Now parse the attribute overlay data to apply per-cell changes on top of the bas
 <td class="asm-label"></td>
 <td class="address-1"><span id="5ef7"></span>5EF7</td>
 <td class="instruction">CP $12</td>
-<td class="comment-1" rowspan="2">Jump to <a href="5EDB.html#5f12">PopulateRoomBuffer_AttributeSkip</a> if <span class="register">A</span> is 12 (skip command).</td>
+<td class="comment-1" rowspan="2">Jump to <a href="5EDB.html#5f12">FillAttributes_Skip</a> if <span class="register">A</span> is 12 (skip command).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="5ef9"></span>5EF9</td>
-<td class="instruction">JR Z,<a href="5EDB.html#5f12">PopulateRoomBuffer_AttributeSkip</a></td>
+<td class="instruction">JR Z,<a href="5EDB.html#5f12">FillAttributes_Skip</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="5efb"></span>5EFB</td>
 <td class="instruction">CP $1B</td>
-<td class="comment-1" rowspan="2">Jump to <a href="5EDB.html#5f21">PopulateRoomBuffer_AttributeRepeat</a> if <span class="register">A</span> is 1B (repeat command).</td>
+<td class="comment-1" rowspan="2">Jump to <a href="5EDB.html#5f21">FillAttributes_Repeat</a> if <span class="register">A</span> is 1B (repeat command).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="5efd"></span>5EFD</td>
-<td class="instruction">JR Z,<a href="5EDB.html#5f21">PopulateRoomBuffer_AttributeRepeat</a></td>
+<td class="instruction">JR Z,<a href="5EDB.html#5f21">FillAttributes_Repeat</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="5eff"></span>5EFF</td>
 <td class="instruction">CP $24</td>
-<td class="comment-1" rowspan="2">Jump to <a href="5F35.html#5f74">PopulateRoomBuffer_EndAttributes</a> if <span class="register">A</span> is 24 (end of attribute data).</td>
+<td class="comment-1" rowspan="2">Jump to <a href="5F35.html#5f74">FillAttributes_End</a> if <span class="register">A</span> is 24 (end of attribute data).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="5f01"></span>5F01</td>
-<td class="instruction">JR Z,<a href="5F35.html#5f74">PopulateRoomBuffer_EndAttributes</a></td>
+<td class="instruction">JR Z,<a href="5F35.html#5f74">FillAttributes_End</a></td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
@@ -238,7 +238,7 @@ Otherwise, write this byte directly as a single attribute value.
 <td class="asm-label"></td>
 <td class="address-1"><span id="5f0a"></span>5F0A</td>
 <td class="instruction">LD A,E</td>
-<td class="comment-1" rowspan="3">Jump back to <a href="5E24.html#5e6d">PopulateRoomBuffer_Error</a> if <span class="register">DE</span> is zero.</td>
+<td class="comment-1" rowspan="3">Jump to <a href="5E24.html#5e6d">PopulateRoomBuffer_Error</a> if <span class="register">DE</span> is zero.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -259,8 +259,8 @@ Otherwise, write this byte directly as a single attribute value.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="5f10"></span>5F10</td>
-<td class="instruction">JR <a href="5EDB.html#5ef6">PopulateRoomBuffer_AttributeOverlay_Loop</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="5EDB.html#5ef6">PopulateRoomBuffer_AttributeOverlay_Loop</a>.</td>
+<td class="instruction">JR <a href="5EDB.html#5ef6">FillAttributes_Overlay_Loop</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="5EDB.html#5ef6">FillAttributes_Overlay_Loop</a>.</td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
@@ -276,7 +276,7 @@ The following byte gives the skip count.
 </td>
 </tr>
 <tr>
-<td class="asm-label">PopulateRoomBuffer_AttributeSkip</td>
+<td class="asm-label">FillAttributes_Skip</td>
 <td class="address-2"><span id="5f12"></span>5F12</td>
 <td class="instruction">INC HL</td>
 <td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
@@ -285,10 +285,10 @@ The following byte gives the skip count.
 <td class="asm-label"></td>
 <td class="address-1"><span id="5f13"></span>5F13</td>
 <td class="instruction">LD B,(HL)</td>
-<td class="comment-1" rowspan="1"><span class="register">B</span>=*<span class="register">HL</span>.</td>
+<td class="comment-1" rowspan="1">Fetch the skip count into <span class="register">B</span>.</td>
 </tr>
 <tr>
-<td class="asm-label">PopulateRoomBuffer_AttributeSkip_Loop</td>
+<td class="asm-label">FillAttributes_Skip_Loop</td>
 <td class="address-2"><span id="5f14"></span>5F14</td>
 <td class="instruction">INC IX</td>
 <td class="comment-1" rowspan="1">Increment <span class="register">IX</span> by one.</td>
@@ -303,7 +303,7 @@ The following byte gives the skip count.
 <td class="asm-label"></td>
 <td class="address-1"><span id="5f17"></span>5F17</td>
 <td class="instruction">LD A,E</td>
-<td class="comment-1" rowspan="3">Jump back to <a href="5E24.html#5e6d">PopulateRoomBuffer_Error</a> if <span class="register">DE</span> is zero.</td>
+<td class="comment-1" rowspan="3">Jump to <a href="5E24.html#5e6d">PopulateRoomBuffer_Error</a> if <span class="register">DE</span> is zero.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -318,8 +318,8 @@ The following byte gives the skip count.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="5f1c"></span>5F1C</td>
-<td class="instruction">DJNZ <a href="5EDB.html#5f14">PopulateRoomBuffer_AttributeSkip_Loop</a></td>
-<td class="comment-1" rowspan="1">Decrease the skip counter by one and loop back to <a href="5EDB.html#5f14">PopulateRoomBuffer_AttributeSkip_Loop</a> until done.</td>
+<td class="instruction">DJNZ <a href="5EDB.html#5f14">FillAttributes_Skip_Loop</a></td>
+<td class="comment-1" rowspan="1">Decrease the skip counter by one and loop back to <a href="5EDB.html#5f14">FillAttributes_Skip_Loop</a> until done.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -330,8 +330,8 @@ The following byte gives the skip count.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="5f1f"></span>5F1F</td>
-<td class="instruction">JR <a href="5EDB.html#5ef6">PopulateRoomBuffer_AttributeOverlay_Loop</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="5EDB.html#5ef6">PopulateRoomBuffer_AttributeOverlay_Loop</a>.</td>
+<td class="instruction">JR <a href="5EDB.html#5ef6">FillAttributes_Overlay_Loop</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="5EDB.html#5ef6">FillAttributes_Overlay_Loop</a>.</td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
@@ -344,7 +344,7 @@ Attribute overlay command 1B: repeat a colour value a number of times. The follo
 </td>
 </tr>
 <tr>
-<td class="asm-label">PopulateRoomBuffer_AttributeRepeat</td>
+<td class="asm-label">FillAttributes_Repeat</td>
 <td class="address-2"><span id="5f21"></span>5F21</td>
 <td class="instruction">INC HL</td>
 <td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
@@ -353,7 +353,7 @@ Attribute overlay command 1B: repeat a colour value a number of times. The follo
 <td class="asm-label"></td>
 <td class="address-1"><span id="5f22"></span>5F22</td>
 <td class="instruction">LD B,(HL)</td>
-<td class="comment-1" rowspan="1"><span class="register">B</span>=*<span class="register">HL</span>.</td>
+<td class="comment-1" rowspan="1">Fetch the repeat count into <span class="register">B</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -365,16 +365,16 @@ Attribute overlay command 1B: repeat a colour value a number of times. The follo
 <td class="asm-label"></td>
 <td class="address-1"><span id="5f24"></span>5F24</td>
 <td class="instruction">LD C,(HL)</td>
-<td class="comment-1" rowspan="1"><span class="register">C</span>=*<span class="register">HL</span>.</td>
+<td class="comment-1" rowspan="1">Fetch the colour value into <span class="register">C</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="5f25"></span>5F25</td>
 <td class="instruction">INC HL</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
+<td class="comment-1" rowspan="1">Increment <span class="register">HL</span> past the colour value byte.</td>
 </tr>
 <tr>
-<td class="asm-label">PopulateRoomBuffer_AttributeRepeat_Loop</td>
+<td class="asm-label">FillAttributes_Repeat_Loop</td>
 <td class="address-2"><span id="5f26"></span>5F26</td>
 <td class="instruction">LD (IX+$00),C</td>
 <td class="comment-1" rowspan="1">Write <span class="register">C</span> to *<span class="register">IX</span>+00.</td>
@@ -395,7 +395,7 @@ Attribute overlay command 1B: repeat a colour value a number of times. The follo
 <td class="asm-label"></td>
 <td class="address-1"><span id="5f2c"></span>5F2C</td>
 <td class="instruction">LD A,E</td>
-<td class="comment-1" rowspan="3">Jump back to <a href="5E24.html#5e6d">PopulateRoomBuffer_Error</a> if <span class="register">DE</span> is zero.</td>
+<td class="comment-1" rowspan="3">Jump to <a href="5E24.html#5e6d">PopulateRoomBuffer_Error</a> if <span class="register">DE</span> is zero.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -410,14 +410,14 @@ Attribute overlay command 1B: repeat a colour value a number of times. The follo
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="5f31"></span>5F31</td>
-<td class="instruction">DJNZ <a href="5EDB.html#5f26">PopulateRoomBuffer_AttributeRepeat_Loop</a></td>
-<td class="comment-1" rowspan="1">Decrease the repeat counter by one and loop back to <a href="5EDB.html#5f26">PopulateRoomBuffer_AttributeRepeat_Loop</a> until done.</td>
+<td class="instruction">DJNZ <a href="5EDB.html#5f26">FillAttributes_Repeat_Loop</a></td>
+<td class="comment-1" rowspan="1">Decrease the repeat counter by one and loop back to <a href="5EDB.html#5f26">FillAttributes_Repeat_Loop</a> until done.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="5f33"></span>5F33</td>
-<td class="instruction">JR <a href="5EDB.html#5ef6">PopulateRoomBuffer_AttributeOverlay_Loop</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="5EDB.html#5ef6">PopulateRoomBuffer_AttributeOverlay_Loop</a>.</td>
+<td class="instruction">JR <a href="5EDB.html#5ef6">FillAttributes_Overlay_Loop</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="5EDB.html#5ef6">FillAttributes_Overlay_Loop</a>.</td>
 </tr>
 </table>
 <table class="asm-navigation">

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Percy the Potty Pigeon: Routine at 25304</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-dark.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-wide.css" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-75RERFCHBG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-75RERFCHBG');
+</script>
+</head>
+<body class="Asm-c">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html"><img alt="logo" src="../images/logo.png" /></a></td>
+<td class="page-header">Routines</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="25296.html">25296</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#25304">Map</a></td>
+<td class="next">
+Next: <a href="25351.html">25351</a>
+</td>
+</tr>
+</table>
+<div class="description">25304: Update Movement Speed</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="5">
+<div class="details">
+<div class="paragraph">
+Used by the routine at <a href="24553.html">MainGameLoop</a>.
+</div>
+<div class="paragraph">
+Update Percy's movement speed.
+</div>
+<div class="paragraph">
+If the current input matches the previous input, accelerate up to a maximum of 4. If the input has changed, decelerate down to a minimum of 1.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">UpdateMovementSpeed</td>
+<td class="address-2"><span id="25304"></span>25304</td>
+<td class="instruction">LD A,(24482)</td>
+<td class="comment-1" rowspan="5">Jump to <a href="25304.html#25325">UpdateMovementSpeed_Accelerate</a> if *<a href="24484.html">PreviousInputState</a> is the same as *<a href="24482.html">InputState</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25307"></span>25307</td>
+<td class="instruction">LD C,A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25308"></span>25308</td>
+<td class="instruction">LD A,(24484)</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25311"></span>25311</td>
+<td class="instruction">CP C</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25312"></span>25312</td>
+<td class="instruction">JR Z,<a href="25304.html#25325">UpdateMovementSpeed_Accelerate</a></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="25314"></span>
+<div class="comments">
+<div class="paragraph">
+Input changed so decelerate.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25314"></span>25314</td>
+<td class="instruction">LD A,(24494)</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="24494.html">MovementSpeed</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25317"></span>25317</td>
+<td class="instruction">CP 1</td>
+<td class="comment-1" rowspan="1">Return if already at minimum speed (1).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25319"></span>25319</td>
+<td class="instruction">RET Z</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25320"></span>25320</td>
+<td class="instruction">DEC A</td>
+<td class="comment-1" rowspan="1">Decrease speed by one.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25321"></span>25321</td>
+<td class="instruction">LD (24494),A</td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<a href="24494.html">MovementSpeed</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25324"></span>25324</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="25325"></span>
+<div class="comments">
+<div class="paragraph">
+Input is the same so accelerate.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">UpdateMovementSpeed_Accelerate</td>
+<td class="address-2"><span id="25325"></span>25325</td>
+<td class="instruction">LD A,(24494)</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="24494.html">MovementSpeed</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25328"></span>25328</td>
+<td class="instruction">CP 4</td>
+<td class="comment-1" rowspan="1">Return if already at maximum speed (4).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25330"></span>25330</td>
+<td class="instruction">RET Z</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25331"></span>25331</td>
+<td class="instruction">INC A</td>
+<td class="comment-1" rowspan="1">Increase speed by one.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25332"></span>25332</td>
+<td class="instruction">LD (24494),A</td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<a href="24494.html">MovementSpeed</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25335"></span>25335</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="25336"></span>
+<div class="comments">
+<div class="paragraph">
+This entry point is used by the routine at <a href="24553.html">MainGameLoop</a>.
+</div>
+<div class="paragraph">
+No input so decelerate movement speed towards minimum.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">UpdateMovementSpeed_Decelerate</td>
+<td class="address-2"><span id="25336"></span>25336</td>
+<td class="instruction">LD A,(24494)</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="24494.html">MovementSpeed</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25339"></span>25339</td>
+<td class="instruction">CP 1</td>
+<td class="comment-1" rowspan="1">Return if already at minimum speed (1).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25341"></span>25341</td>
+<td class="instruction">RET Z</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25342"></span>25342</td>
+<td class="instruction">DEC A</td>
+<td class="comment-1" rowspan="1">Decrease speed by one.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25343"></span>25343</td>
+<td class="instruction">LD (24494),A</td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<a href="24494.html">MovementSpeed</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25346"></span>25346</td>
+<td class="instruction">LD A,(24484)</td>
+<td class="comment-1" rowspan="2"><span class="register">E</span>=*<a href="24484.html">PreviousInputState</a> (use the previous direction for animation).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25349"></span>25349</td>
+<td class="instruction">LD E,A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25350"></span>25350</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="25296.html">25296</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#25304">Map</a></td>
+<td class="next">
+Next: <a href="25351.html">25351</a>
+</td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
+<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
+<div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
+<div><a href="../../asm/62D8.html">Switch to hexadecimal</a>.</div>
+</footer>
+</body>
+</html>

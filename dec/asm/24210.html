@@ -33,7 +33,7 @@ Next: <a href="24234.html">24234</a>
 </td>
 </tr>
 </table>
-<div class="description">24210: Command 1: Draw Repeated Tile</div>
+<div class="description">24210: Command 1: Skip Tiles</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
@@ -42,7 +42,7 @@ Next: <a href="24234.html">24234</a>
 Used by the routine at <a href="24100.html">PopulateRoomBuffer</a>.
 </div>
 <div class="paragraph">
-Command 1: Draw a repeated tile. The following byte specifies how many times to repeat the current tile.
+Command 1: skip over a number of tile positions without drawing. The following byte specifies how many positions to skip.
 </div>
 </div>
 <table class="input">
@@ -61,7 +61,7 @@ Command 1: Draw a repeated tile. The following byte specifies how many times to 
 </td>
 </tr>
 <tr>
-<td class="asm-label">Command01_RepeatedTile</td>
+<td class="asm-label">Command01_SkipTiles</td>
 <td class="address-2"><span id="24210"></span>24210</td>
 <td class="instruction">INC HL</td>
 <td class="comment-1" rowspan="1">Increment the room data pointer by one.</td>
@@ -70,25 +70,25 @@ Command 1: Draw a repeated tile. The following byte specifies how many times to 
 <td class="asm-label"></td>
 <td class="address-1"><span id="24211"></span>24211</td>
 <td class="instruction">LD A,(HL)</td>
-<td class="comment-1" rowspan="1">Fetch the tile byte/ repeat counter.</td>
+<td class="comment-1" rowspan="1">Fetch the skip count.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="24212"></span>24212</td>
 <td class="instruction">INC HL</td>
-<td class="comment-1" rowspan="1">Increment the room data pointer by one to move past the command byte.</td>
+<td class="comment-1" rowspan="1">Increment the room data pointer past the skip count byte.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="24213"></span>24213</td>
 <td class="instruction">LD B,A</td>
-<td class="comment-1" rowspan="1">Set the repeat counter in <span class="register">B</span>.</td>
+<td class="comment-1" rowspan="1">Set the skip counter in <span class="register">B</span>.</td>
 </tr>
 <tr>
-<td class="asm-label">RepeatedTile_Loop</td>
+<td class="asm-label">SkipTiles_Loop</td>
 <td class="address-2"><span id="24214"></span>24214</td>
 <td class="instruction">PUSH HL</td>
-<td class="comment-1" rowspan="3">Stash the room data pointer, tile counter and repeat counter on the stack.</td>
+<td class="comment-1" rowspan="3">Stash the room data pointer, tile counter and skip counter on the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -116,7 +116,7 @@ Command 1: Draw a repeated tile. The following byte specifies how many times to 
 <td class="asm-label"></td>
 <td class="address-1"><span id="24222"></span>24222</td>
 <td class="instruction">POP BC</td>
-<td class="comment-1" rowspan="3">Restore the repeat counter, tile counter and room data pointer from the stack.</td>
+<td class="comment-1" rowspan="3">Restore the skip counter, tile counter and room data pointer from the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -153,8 +153,8 @@ Command 1: Draw a repeated tile. The following byte specifies how many times to 
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="24230"></span>24230</td>
-<td class="instruction">DJNZ <a href="24210.html#24214">RepeatedTile_Loop</a></td>
-<td class="comment-1" rowspan="1">Decrease the repeat counter by one and loop back to <a href="24210.html#24214">RepeatedTile_Loop</a> until all repeats are processed.</td>
+<td class="instruction">DJNZ <a href="24210.html#24214">SkipTiles_Loop</a></td>
+<td class="comment-1" rowspan="1">Decrease the skip counter by one and loop back to <a href="24210.html#24214">SkipTiles_Loop</a> until all positions are skipped.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>

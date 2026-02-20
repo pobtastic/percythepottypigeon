@@ -45,7 +45,7 @@ Used by the routine at <a href="24100.html">PopulateRoomBuffer</a>.
 Command 4: Switch the tile set.
 </div>
 <div class="paragraph">
-The following byte selects which tile set to use — 1 for the default set at <a href="39850.html">TileSet_Default</a>, 2 for the alternate set at <a href="41834.html">TileSet_Alternate</a>.
+The following byte selects which tile set to use; 1 for the default set at <a href="39850.html">TileSet_Default</a>, 2 for the alternate set at <a href="41834.html">TileSet_Alternate</a>.
 </div>
 </div>
 <table class="input">
@@ -123,7 +123,7 @@ Tile set 2: switch to the alternate tile set.
 <td class="asm-label"></td>
 <td class="address-1"><span id="24191"></span>24191</td>
 <td class="instruction">LD HL,41834</td>
-<td class="comment-1" rowspan="2">Write <a href="41834.html">TileSet_Alternate</a> to *<a href="24513.html">Pointer_ActiveTileSet</a>.</td>
+<td class="comment-1" rowspan="2">Write <a href="41834.html">TileSet_Alternate</a> to *<a href="24513.html">PointerActiveTileSet</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -162,7 +162,7 @@ Tile set 1: switch back to the default tile set.
 <td class="asm-label"></td>
 <td class="address-1"><span id="24201"></span>24201</td>
 <td class="instruction">LD HL,39850</td>
-<td class="comment-1" rowspan="2">Write <a href="39850.html">TileSet_Default</a> to *<a href="24513.html">Pointer_ActiveTileSet</a>.</td>
+<td class="comment-1" rowspan="2">Write <a href="39850.html">TileSet_Default</a> to *<a href="24513.html">PointerActiveTileSet</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>

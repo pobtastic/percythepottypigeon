@@ -48,7 +48,7 @@ Used by the routine at <a href="26155.html">Compute_Sprite_Position</a>.
 <td class="asm-label">Handle_Life_Lost</td>
 <td class="address-2"><span id="26808"></span>26808</td>
 <td class="instruction">LD HL,24498</td>
-<td class="comment-1" rowspan="2">Decrease *<a href="24498.html">Aux_State</a> by one.</td>
+<td class="comment-1" rowspan="2">Decrease *<a href="24498.html">LivesRemaining</a> by one.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -71,31 +71,41 @@ Used by the routine at <a href="26155.html">Compute_Sprite_Position</a>.
 <td class="asm-label"></td>
 <td class="address-1"><span id="26815"></span>26815</td>
 <td class="instruction">LD B,40</td>
-<td class="comment-1" rowspan="1"><span class="register">B</span>=40.</td>
+<td class="comment-1" rowspan="1">Set a sound step counter in <span class="register">B</span> of 40 steps.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26817"></span>26817</td>
 <td class="instruction">LD HL,800</td>
-<td class="comment-1" rowspan="1"><span class="register">HL</span>=800.</td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>=800 (initial sound pitch).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26820"></span>26820</td>
 <td class="instruction">LD DE,8</td>
-<td class="comment-1" rowspan="1"><span class="register">DE</span>=0008.</td>
+<td class="comment-1" rowspan="1"><span class="register">DE</span>=0008 (pitch step per iteration).</td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Life_Lost_0</td>
+<td class="routine-comment" colspan="5">
+<span id="26823"></span>
+<div class="comments">
+<div class="paragraph">
+Play one step of the death sound.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">HandleLifeLost_SoundLoop</td>
 <td class="address-2"><span id="26823"></span>26823</td>
-<td class="instruction">CALL <a href="26939.html">Flash_Border_Step</a></td>
-<td class="comment-1" rowspan="1">Call <a href="26939.html">Flash_Border_Step</a>.</td>
+<td class="instruction">CALL <a href="26939.html">DeathSoundStep</a></td>
+<td class="comment-1" rowspan="1">Call <a href="26939.html">DeathSoundStep</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26826"></span>26826</td>
-<td class="instruction">DJNZ <a href="26808.html#26823">Handle_Life_Lost_0</a></td>
-<td class="comment-1" rowspan="1">Decrease counter by one and loop back to <a href="26808.html#26823">Handle_Life_Lost_0</a> until counter is zero.</td>
+<td class="instruction">DJNZ <a href="26808.html#26823">HandleLifeLost_SoundLoop</a></td>
+<td class="comment-1" rowspan="1">Decrease the step counter by one and loop back to <a href="26808.html#26823">HandleLifeLost_SoundLoop</a> until the sound is complete.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -103,7 +113,7 @@ Used by the routine at <a href="26155.html">Compute_Sprite_Position</a>.
 <td class="instruction">LD A,15</td>
 <td class="comment-1" rowspan="3">Write 15 to; <ul class="">
 <li>*<a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/5C48.html">BORDCR</a></li>
-<li>*<a href="24509.html">Sub_State</a></li>
+<li>*<a href="24509.html">BorderColour</a></li>
 </ul></td>
 </tr>
 <tr>
@@ -139,14 +149,14 @@ BLUE.</td>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26842"></span>26842</td>
-<td class="instruction">CALL <a href="26871.html">Update_Lives_Display</a></td>
-<td class="comment-1" rowspan="1">Call <a href="26871.html">Update_Lives_Display</a>.</td>
+<td class="instruction">CALL <a href="26871.html">UpdateLivesDisplay</a></td>
+<td class="comment-1" rowspan="1">Call <a href="26871.html">UpdateLivesDisplay</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26845"></span>26845</td>
 <td class="instruction">LD A,(24497)</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="24497.html">Stored_Level_Or_Phase</a>.</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="24497.html">CurrentLevel</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -194,7 +204,7 @@ BLUE.</td>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26866"></span>26866</td>
 <td class="instruction">XOR A</td>
-<td class="comment-1" rowspan="2">Write 0 to *<a href="24485.html">24485</a>.</td>
+<td class="comment-1" rowspan="2">Write 0 to *<a href="24485.html">PercyFacingDirection</a> (Percy is facing right).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>

@@ -45,29 +45,45 @@ Top of the stack (so, pushes below this point).
 <td class="map-g"><span id="24481"></span><a href="../asm/24481.html">24481</a></td>
 <td class="map-length">1</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24481.html">Header Drawn Flag</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24481.html">Game State Flag</a></div>
 <div class="map-entry-desc">
-<div class="paragraph">
-0=draw HUD via <a href="../asm/25531.html">Print_HUD_Header</a> when needed; 1=already drawn.
-</div>
 </div>
 </td>
 </tr>
 <tr>
 <td class="map-g"><span id="24482"></span><a href="../asm/24482.html">24482</a></td>
-<td class="map-length">1</td>
+<td class="map-length">2</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24482.html">Game status buffer entry at 5FA2</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24482.html">Input State</a></div>
 <div class="map-entry-desc">
-</div>
-</td>
+<div class="paragraph">
+Bitmask representing the current directional input. 31 means no input. Each bit represents a direction when reset: <table class="default">
+<tr>
+<th colspan="1" rowspan="1">Bit</th>
+<th colspan="1" rowspan="1">State</th>
 </tr>
 <tr>
-<td class="map-g"><span id="24483"></span><a href="../asm/24483.html">24483</a></td>
-<td class="map-length">1</td>
-<td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24483.html">Game status buffer entry at 5FA3</a></div>
-<div class="map-entry-desc">
+<td class="centre" colspan="1" rowspan="1">0</td>
+<td class="centre" colspan="1" rowspan="1">Fire</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">1</td>
+<td class="centre" colspan="1" rowspan="1">Up</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">2</td>
+<td class="centre" colspan="1" rowspan="1">Down</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">3</td>
+<td class="centre" colspan="1" rowspan="1">Right</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">4</td>
+<td class="centre" colspan="1" rowspan="1">Left</td>
+</tr>
+</table>
+</div>
 </div>
 </td>
 </tr>
@@ -75,8 +91,11 @@ Top of the stack (so, pushes below this point).
 <td class="map-g"><span id="24484"></span><a href="../asm/24484.html">24484</a></td>
 <td class="map-length">1</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24484.html">Game status buffer entry at 5FA4</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24484.html">Previous Input State</a></div>
 <div class="map-entry-desc">
+<div class="paragraph">
+Stores the last directional input for animation and speed purposes.
+</div>
 </div>
 </td>
 </tr>
@@ -84,8 +103,11 @@ Top of the stack (so, pushes below this point).
 <td class="map-g"><span id="24485"></span><a href="../asm/24485.html">24485</a></td>
 <td class="map-length">1</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24485.html">Game status buffer entry at 5FA5</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24485.html">Percy Facing Direction</a></div>
 <div class="map-entry-desc">
+<div class="paragraph">
+0=facing right, 1=facing left.
+</div>
 </div>
 </td>
 </tr>
@@ -93,19 +115,68 @@ Top of the stack (so, pushes below this point).
 <td class="map-g"><span id="24486"></span><a href="../asm/24486.html">24486</a></td>
 <td class="map-length">1</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24486.html">Game status buffer entry at 5FA6</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24486.html">Input Mode</a></div>
 <div class="map-entry-desc">
+<div class="paragraph">
+Controls which input device is active: <table class="default">
+<tr>
+<th colspan="1" rowspan="1">Byte</th>
+<th colspan="1" rowspan="1">State</th>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">0</td>
+<td class="centre" colspan="1" rowspan="1">Not yet detected</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">31</td>
+<td class="centre" colspan="1" rowspan="1">Kempston joystick</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">128</td>
+<td class="centre" colspan="1" rowspan="1">Keyboard</td>
+</tr>
+</table>
+</div>
 </div>
 </td>
 </tr>
 <tr>
 <td class="map-g"><span id="24487"></span><a href="../asm/24487.html">24487</a></td>
-<td class="map-length">2</td>
+<td class="map-length">1</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24487.html">Title Countdown?</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24487.html">Falling State</a></div>
 <div class="map-entry-desc">
 <div class="paragraph">
-Countdown or init; read at <a href="../asm/24553.html">Handle_Pause_Input</a>; when zero call <a href="../asm/25728.html">Handle_Title_Screen</a>. Cleared at <a href="../asm/25948.html">Start_Level</a>.
+Tracks whether Percy is falling: <table class="default">
+<tr>
+<th colspan="1" rowspan="1">Byte</th>
+<th colspan="1" rowspan="1">State</th>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">0</td>
+<td class="centre" colspan="1" rowspan="1">Not falling</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">254</td>
+<td class="centre" colspan="1" rowspan="1">Falling (active)</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">255</td>
+<td class="centre" colspan="1" rowspan="1">Falling (impact)</td>
+</tr>
+</table>
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="24488"></span><a href="../asm/24488.html">24488</a></td>
+<td class="map-length">1</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24488.html">Collision Flag</a></div>
+<div class="map-entry-desc">
+<div class="paragraph">
+Set to 1 when Percy has collided with scenery and the move was rejected.
 </div>
 </div>
 </td>
@@ -114,10 +185,10 @@ Countdown or init; read at <a href="../asm/24553.html">Handle_Pause_Input</a>; w
 <td class="map-g"><span id="24489"></span><a href="../asm/24489.html">24489</a></td>
 <td class="map-length">1</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24489.html">Skip Flag?</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24489.html">Item Collection State</a></div>
 <div class="map-entry-desc">
 <div class="paragraph">
-When zero at <a href="../asm/24373.html#24436">PopulateRoomBuffer_EndAttributes</a> jump to <a href="../asm/24373.html#24451">PopulateRoomBuffer_SetAttributeBase</a>. Cleared at <a href="../asm/24373.html#24442">24442</a>.
+Set to 255 when Percy is flying upward to collect an item. Cleared to 0 when the collection is complete.
 </div>
 </div>
 </td>
@@ -126,17 +197,56 @@ When zero at <a href="../asm/24373.html#24436">PopulateRoomBuffer_EndAttributes<
 <td class="map-g"><span id="24490"></span><a href="../asm/24490.html">24490</a></td>
 <td class="map-length">3</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24490.html">Game status buffer entry at 5FAA</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24490.html">Game Mode Flag</a></div>
 <div class="map-entry-desc">
 </div>
 </td>
 </tr>
 <tr>
 <td class="map-g"><span id="24493"></span><a href="../asm/24493.html">24493</a></td>
-<td class="map-length">4</td>
+<td class="map-length">1</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24493.html">Game status buffer entry at 5FAD</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24493.html">Landed On Platform Flag</a></div>
 <div class="map-entry-desc">
+<div class="paragraph">
+Set to 255 when Percy has landed on a platform. Cleared to 0 when no platform is beneath.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="24494"></span><a href="../asm/24494.html">24494</a></td>
+<td class="map-length">1</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24494.html">Movement Speed</a></div>
+<div class="map-entry-desc">
+<div class="paragraph">
+Percy's current movement speed in pixels per frame. Ranges from 1 (minimum) to 4 (maximum). Accelerates while a direction is held, decelerates when input changes or is released.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="24495"></span><a href="../asm/24495.html">24495</a></td>
+<td class="map-length">1</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24495.html">Percy Flap Counter</a></div>
+<div class="map-entry-desc">
+<div class="paragraph">
+Animation frame counter for Percy's wing flap cycle. Increments each frame Percy moves horizontally, cycling from 1 to 4.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="24496"></span><a href="../asm/24496.html">24496</a></td>
+<td class="map-length">1</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24496.html">Percy Animation Counter</a></div>
+<div class="map-entry-desc">
+<div class="paragraph">
+Controls the animation frame cycle. Counts up from 1 to 4 (first half), then bit 7 is set and it counts back down (second half). Bits 0-2 hold the frame index, bit 7 indicates the second half.
+</div>
 </div>
 </td>
 </tr>
@@ -144,10 +254,10 @@ When zero at <a href="../asm/24373.html#24436">PopulateRoomBuffer_EndAttributes<
 <td class="map-g"><span id="24497"></span><a href="../asm/24497.html">24497</a></td>
 <td class="map-length">1</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24497.html">Stored Level Or Phase?</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24497.html">Current Level</a></div>
 <div class="map-entry-desc">
 <div class="paragraph">
-Copied to <a href="../asm/24517.html">CurrentRoom</a> in some paths; cleared when lives are reset.
+The current level number. E.g. 1 for the first level.
 </div>
 </div>
 </td>
@@ -156,10 +266,10 @@ Copied to <a href="../asm/24517.html">CurrentRoom</a> in some paths; cleared whe
 <td class="map-g"><span id="24498"></span><a href="../asm/24498.html">24498</a></td>
 <td class="map-length">1</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24498.html">Aux State?</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24498.html">Lives Remaining</a></div>
 <div class="map-entry-desc">
 <div class="paragraph">
-Pointer base; used with <a href="../asm/26808.html">Handle_Life_Lost</a>.
+Number of lives Percy has remaining for the current phase.
 </div>
 </div>
 </td>
@@ -168,10 +278,10 @@ Pointer base; used with <a href="../asm/26808.html">Handle_Life_Lost</a>.
 <td class="map-g"><span id="24499"></span><a href="../asm/24499.html">24499</a></td>
 <td class="map-length">1</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24499.html">Player Lives</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24499.html">Lives Display Character</a></div>
 <div class="map-entry-desc">
 <div class="paragraph">
-Current lives count. Synced with <a href="../asm/24510.html">Lives_Backup</a> for compare/display.
+The ASCII character displayed on screen to represent the current lives count.
 </div>
 </div>
 </td>
@@ -182,17 +292,32 @@ Current lives count. Synced with <a href="../asm/24510.html">Lives_Backup</a> fo
 <td class="map-g-desc">
 <div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24500.html">Chick Animation States</a></div>
 <div class="map-entry-desc">
+<div class="paragraph">
+A rotating bit pattern used to animate the nest chicks. Each bit controls the animation frame for one chick, rotated each frame so they animate independently.
+</div>
 </div>
 </td>
 </tr>
 <tr>
 <td class="map-g"><span id="24501"></span><a href="../asm/24501.html">24501</a></td>
-<td class="map-length">4</td>
+<td class="map-length">2</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24501.html">Saved Pointer</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24501.html">Room Attribute Pointer</a></div>
 <div class="map-entry-desc">
 <div class="paragraph">
-Caller <span class="register">HL</span> stored here; read at <a href="../asm/26155.html#26189">Compute_Sprite_Position_0</a>.
+Pointer to the current room's colour attribute data, calculated from the room number and the base at <a href="../asm/56990.html">56990</a>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="24503"></span><a href="../asm/24503.html">24503</a></td>
+<td class="map-length">2</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24503.html">Beep Pitch</a></div>
+<div class="map-entry-desc">
+<div class="paragraph">
+Current pitch value used for sound effects (item collection, falling). Adjusted each frame during the sound.
 </div>
 </div>
 </td>
@@ -216,10 +341,10 @@ The low byte is the column and the high byte is the row.
 <td class="map-g"><span id="24507"></span><a href="../asm/24507.html">24507</a></td>
 <td class="map-length">1</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24507.html">Level Flag?</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24507.html">Room Buffer Flag</a></div>
 <div class="map-entry-desc">
 <div class="paragraph">
-255 when level active; read in many game loops.
+Set to 255 at the start of <a href="../asm/24100.html">PopulateRoomBuffer</a> when the room buffer is being populated. Used to trigger initialisation of room objects.
 </div>
 </div>
 </td>
@@ -240,11 +365,8 @@ The low byte is the column and the high byte is the row.
 <td class="map-g"><span id="24509"></span><a href="../asm/24509.html">24509</a></td>
 <td class="map-length">1</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24509.html">Sub-State?</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24509.html">Border Colour</a></div>
 <div class="map-entry-desc">
-<div class="paragraph">
-Written from <span class="register">A</span> in <a href="../asm/26808.html#26833">26833</a>.
-</div>
 </div>
 </td>
 </tr>
@@ -255,7 +377,7 @@ Written from <span class="register">A</span> in <a href="../asm/26808.html#26833
 <div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24510.html">Lives Backup?</a></div>
 <div class="map-entry-desc">
 <div class="paragraph">
-Copy of <a href="../asm/24499.html">Lives</a> for compare/display; synced at <a href="../asm/25917.html#25932">25932</a>/<a href="../asm/27047.html#27116">27116</a>.
+Copy of <a href="../asm/24499.html">LivesDisplayCharacter</a> for compare/display; synced at <a href="../asm/25917.html#25932">25932</a>/<a href="../asm/27047.html#27116">27116</a>.
 </div>
 </div>
 </td>
@@ -264,7 +386,7 @@ Copy of <a href="../asm/24499.html">Lives</a> for compare/display; synced at <a 
 <td class="map-g"><span id="24513"></span><a href="../asm/24513.html">24513</a></td>
 <td class="map-length">2</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24513.html">Pointer: Active Tile Set</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24513.html">Active Tile Set Pointer</a></div>
 <div class="map-entry-desc">
 <div class="paragraph">
 Holds the pointer to the currently active tile set.
@@ -276,10 +398,10 @@ Holds the pointer to the currently active tile set.
 <td class="map-g"><span id="24515"></span><a href="../asm/24515.html">24515</a></td>
 <td class="map-length">2</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24515.html">Pointer: Current Room Data</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24515.html">Room Data Pointer</a></div>
 <div class="map-entry-desc">
 <div class="paragraph">
-Points to the data for the current room.
+Points to the tile data for the current room.
 </div>
 </div>
 </td>

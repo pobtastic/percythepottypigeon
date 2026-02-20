@@ -42,7 +42,10 @@ Next: <a href="24553.html">24553</a>
 Used by the routines at <a href="24178.html">Command04_SwitchTileSet</a> and <a href="24518.html">FindRoomData</a>.
 </div>
 <div class="paragraph">
-RST 8 then LD A,(BC). Used when table index &gt;= 17 in <a href="24518.html">FindRoomData</a>.
+<code>RST 8</code> with the "Invalid argument" error code.
+</div>
+<div class="paragraph">
+Used when the table index &gt;= 17 in <a href="24518.html">FindRoomData</a>, and when an invalid tile set is requested in <a href="24178.html">Command04_SwitchTileSet</a>.
 </div>
 </div>
 </td>
@@ -51,13 +54,13 @@ RST 8 then LD A,(BC). Used when table index &gt;= 17 in <a href="24518.html">Fin
 <td class="asm-label">Raise_Table_Error</td>
 <td class="address-2"><span id="24551"></span>24551</td>
 <td class="instruction">RST 8</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Run the ERROR_1 routine: <a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/0008.html">RST 8</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="24552"></span>24552</td>
-<td class="instruction">LD A,(BC)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">DEFB 10</td>
+<td class="comment-1" rowspan="1">Error code: 10 ("Invalid argument").</td>
 </tr>
 </table>
 <table class="asm-navigation">

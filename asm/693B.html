@@ -33,7 +33,7 @@ Next: <a href="6961.html">6961</a>
 </td>
 </tr>
 </table>
-<div class="description">693B: Flash Border Step</div>
+<div class="description">693B: Death Sound Step</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
@@ -41,17 +41,31 @@ Next: <a href="6961.html">6961</a>
 <div class="paragraph">
 Used by the routine at <a href="68B8.html">Handle_Life_Lost</a>.
 </div>
-<div class="paragraph">
-Push BC/HL/DE; set border from R; write <a href="5FB4.html">ChickAnimationStates</a> and BORDCR; BEEP. Used in loop from <a href="68B8.html">Handle_Life_Lost</a>.
 </div>
-</div>
+<table class="input">
+<tr class="asm-input-header">
+<th colspan="2">Input</th>
+</tr>
+<tr>
+<td class="register">B</td>
+<td class="register-desc">Sound step counter</td>
+</tr>
+<tr>
+<td class="register">HL</td>
+<td class="register-desc">Current pitch</td>
+</tr>
+<tr>
+<td class="register">DE</td>
+<td class="register-desc">Pitch adjustment per step</td>
+</tr>
+</table>
 </td>
 </tr>
 <tr>
-<td class="asm-label">Flash_Border_Step</td>
+<td class="asm-label">DeathSoundStep</td>
 <td class="address-2"><span id="693b"></span>693B</td>
 <td class="instruction">PUSH BC</td>
-<td class="comment-1" rowspan="3">Stash <span class="register">BC</span>, <span class="register">HL</span> and <span class="register">DE</span> on the stack.</td>
+<td class="comment-1" rowspan="3">Stash the step counter, pitch and pitch adjustment on the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -62,6 +76,16 @@ Push BC/HL/DE; set border from R; write <a href="5FB4.html">ChickAnimationStates
 <td class="asm-label"></td>
 <td class="address-1"><span id="693d"></span>693D</td>
 <td class="instruction">PUSH DE</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="693e"></span>
+<div class="comments">
+<div class="paragraph">
+Add 19 to the score during the death sequence.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -76,22 +100,31 @@ Push BC/HL/DE; set border from R; write <a href="5FB4.html">ChickAnimationStates
 <td class="comment-1" rowspan="1">Call <a href="67B2.html">AddToScore</a>.</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="6943"></span>
+<div class="comments">
+<div class="paragraph">
+Pick a random border colour using the Memory Refresh Register.
+</div>
+</div>
+</td>
+</tr>
+<tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6943"></span>6943</td>
 <td class="instruction">LD A,R</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=the contents of the Memory Refresh Register.</td>
+<td class="comment-1" rowspan="2"><span class="register">L</span>=the contents of the Memory Refresh Register.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6945"></span>6945</td>
 <td class="instruction">LD L,A</td>
-<td class="comment-1" rowspan="1"><span class="register">L</span>=<span class="register">A</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6946"></span>6946</td>
 <td class="instruction">LD H,$00</td>
-<td class="comment-1" rowspan="1"><span class="register">H</span>=00.</td>
+<td class="comment-1" rowspan="1">Set the low byte in <span class="register">H</span> to 00 so only low memory is accessed.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -118,10 +151,20 @@ Push BC/HL/DE; set border from R; write <a href="5FB4.html">ChickAnimationStates
 <td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/5C48.html">BORDCR</a>.</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="6951"></span>
+<div class="comments">
+<div class="paragraph">
+Play a beep at the current pitch.
+</div>
+</div>
+</td>
+</tr>
+<tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6951"></span>6951</td>
 <td class="instruction">POP DE</td>
-<td class="comment-1" rowspan="2">Restore <span class="register">DE</span> and <span class="register">HL</span> from the stack.</td>
+<td class="comment-1" rowspan="2">Restore pitch adjustment and pitch from the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -132,7 +175,7 @@ Push BC/HL/DE; set border from R; write <a href="5FB4.html">ChickAnimationStates
 <td class="asm-label"></td>
 <td class="address-1"><span id="6953"></span>6953</td>
 <td class="instruction">PUSH HL</td>
-<td class="comment-1" rowspan="2">Stash <span class="register">HL</span> and <span class="register">DE</span> on the stack.</td>
+<td class="comment-1" rowspan="2">Stash the pitch and pitch adjustment on the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -143,18 +186,28 @@ Push BC/HL/DE; set border from R; write <a href="5FB4.html">ChickAnimationStates
 <td class="asm-label"></td>
 <td class="address-1"><span id="6955"></span>6955</td>
 <td class="instruction">CALL $03B5</td>
-<td class="comment-1" rowspan="1">Call <a href="https://skoolkid.github.io/rom/asm/03B5.html">BEEP</a>.</td>
+<td class="comment-1" rowspan="1">Call <a rel="noopener nofollow" href="https://skoolkid.github.io/rom/asm/03B5.html">BEEP</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6958"></span>6958</td>
 <td class="instruction">POP DE</td>
-<td class="comment-1" rowspan="2">Restore <span class="register">DE</span> and <span class="register">HL</span> from the stack.</td>
+<td class="comment-1" rowspan="2">Restore the pitch adjustment and pitch from the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6959"></span>6959</td>
 <td class="instruction">POP HL</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="695a"></span>
+<div class="comments">
+<div class="paragraph">
+Lower the pitch for the next step by subtracting the pitch adjustment.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -172,7 +225,7 @@ Push BC/HL/DE; set border from R; write <a href="5FB4.html">ChickAnimationStates
 <td class="asm-label"></td>
 <td class="address-1"><span id="695f"></span>695F</td>
 <td class="instruction">POP BC</td>
-<td class="comment-1" rowspan="1">Restore <span class="register">BC</span> from the stack.</td>
+<td class="comment-1" rowspan="1">Restore the step counter from the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>

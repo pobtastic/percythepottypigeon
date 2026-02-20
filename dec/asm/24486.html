@@ -33,15 +33,36 @@ Next: <a href="24487.html">24487</a>
 </td>
 </tr>
 </table>
-<div class="description">24486: Game status buffer entry at 5FA6</div>
+<div class="description">24486: Input Mode</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
 <div class="details">
+<div class="paragraph">
+Controls which input device is active: <table class="default">
+<tr>
+<th colspan="1" rowspan="1">Byte</th>
+<th colspan="1" rowspan="1">State</th>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">0</td>
+<td class="centre" colspan="1" rowspan="1">Not yet detected</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">31</td>
+<td class="centre" colspan="1" rowspan="1">Kempston joystick</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">128</td>
+<td class="centre" colspan="1" rowspan="1">Keyboard</td>
+</tr>
+</table>
+</div>
 </div>
 </td>
 </tr>
 <tr>
+<td class="asm-label">InputMode</td>
 <td class="address-1"><span id="24486"></span>24486</td>
 <td class="instruction">DEFB 0</td>
 <td class="comment-0" rowspan="1"></td>

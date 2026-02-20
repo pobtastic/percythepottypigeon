@@ -39,7 +39,7 @@ Next: <a href="6811.html">6811</a>
 <td class="routine-comment" colspan="5">
 <div class="details">
 <div class="paragraph">
-Used by the routines at <a href="662B.html">Compute_Sprite_Position</a>, <a href="693B.html">Flash_Border_Step</a>, <a href="69F7.html">Load_Level_Data</a>, <a href="6CDD.html">6CDD</a>, <a href="6E5D.html">6E5D</a> and <a href="74D6.html">74D6</a>.
+Used by the routines at <a href="662B.html">Compute_Sprite_Position</a>, <a href="693B.html">DeathSoundStep</a>, <a href="69F7.html">Load_Level_Data</a>, <a href="6CDD.html">6CDD</a>, <a href="6E5D.html">6E5D</a> and <a href="74D6.html">74D6</a>.
 </div>
 <div class="paragraph">
 Converts a binary score value in <span class="register">A</span> into three decimal digits and adds them to the current score. The digits are stored in the score buffer at <a href="6825.html">CurrentScore</a>. The updated score is then printed to the screen.
@@ -354,7 +354,7 @@ There is no carry so store the result and move to the next digit.
 <span id="67ef"></span>
 <div class="comments">
 <div class="paragraph">
-Handle decimal carry — subtract 0A from the current digit and propagate the carry to higher digits.
+Handle decimal carry so subtract 0A from the current digit and propagate the carry to higher digits.
 </div>
 </div>
 </td>
@@ -412,7 +412,7 @@ Handle decimal carry — subtract 0A from the current digit and propagate the ca
 <span id="67fa"></span>
 <div class="comments">
 <div class="paragraph">
-This digit also overflowed — wrap it to 00 and continue propagating.
+This digit also overflowed so wrap it to 00 and continue propagating.
 </div>
 </div>
 </td>

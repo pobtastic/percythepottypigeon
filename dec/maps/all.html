@@ -75,7 +75,7 @@ gtag('config', 'G-75RERFCHBG');
 <td class="map-byte">146</td>
 <td class="map-c"><span id="24210"></span><a href="../asm/24210.html">24210</a></td>
 <td class="map-c-desc">
-<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/24210.html">Command 1: Draw Repeated Tile</a></div>
+<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/24210.html">Command 1: Skip Tiles</a></div>
 </td>
 </tr>
 <tr>
@@ -83,7 +83,7 @@ gtag('config', 'G-75RERFCHBG');
 <td class="map-byte">170</td>
 <td class="map-c"><span id="24234"></span><a href="../asm/24234.html">24234</a></td>
 <td class="map-c-desc">
-<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/24234.html">Command 2: Tile With Attribute</a></div>
+<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/24234.html">Command 2: Draw Repeated Tile</a></div>
 </td>
 </tr>
 <tr>
@@ -115,7 +115,7 @@ gtag('config', 'G-75RERFCHBG');
 <td class="map-byte">161</td>
 <td class="map-g"><span id="24481"></span><a href="../asm/24481.html">24481</a></td>
 <td class="map-g-desc">
-<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/24481.html">Header Drawn Flag</a></div>
+<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/24481.html">Game State Flag</a></div>
 </td>
 </tr>
 <tr>
@@ -123,15 +123,7 @@ gtag('config', 'G-75RERFCHBG');
 <td class="map-byte">162</td>
 <td class="map-g"><span id="24482"></span><a href="../asm/24482.html">24482</a></td>
 <td class="map-g-desc">
-<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/24482.html">Game status buffer entry at 5FA2</a></div>
-</td>
-</tr>
-<tr>
-<td class="map-page">95</td>
-<td class="map-byte">163</td>
-<td class="map-g"><span id="24483"></span><a href="../asm/24483.html">24483</a></td>
-<td class="map-g-desc">
-<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/24483.html">Game status buffer entry at 5FA3</a></div>
+<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/24482.html">Input State</a></div>
 </td>
 </tr>
 <tr>
@@ -139,7 +131,7 @@ gtag('config', 'G-75RERFCHBG');
 <td class="map-byte">164</td>
 <td class="map-g"><span id="24484"></span><a href="../asm/24484.html">24484</a></td>
 <td class="map-g-desc">
-<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/24484.html">Game status buffer entry at 5FA4</a></div>
+<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/24484.html">Previous Input State</a></div>
 </td>
 </tr>
 <tr>
@@ -147,7 +139,7 @@ gtag('config', 'G-75RERFCHBG');
 <td class="map-byte">165</td>
 <td class="map-g"><span id="24485"></span><a href="../asm/24485.html">24485</a></td>
 <td class="map-g-desc">
-<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/24485.html">Game status buffer entry at 5FA5</a></div>
+<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/24485.html">Percy Facing Direction</a></div>
 </td>
 </tr>
 <tr>
@@ -155,7 +147,7 @@ gtag('config', 'G-75RERFCHBG');
 <td class="map-byte">166</td>
 <td class="map-g"><span id="24486"></span><a href="../asm/24486.html">24486</a></td>
 <td class="map-g-desc">
-<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/24486.html">Game status buffer entry at 5FA6</a></div>
+<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/24486.html">Input Mode</a></div>
 </td>
 </tr>
 <tr>
@@ -163,7 +155,15 @@ gtag('config', 'G-75RERFCHBG');
 <td class="map-byte">167</td>
 <td class="map-g"><span id="24487"></span><a href="../asm/24487.html">24487</a></td>
 <td class="map-g-desc">
-<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/24487.html">Title Countdown?</a></div>
+<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/24487.html">Falling State</a></div>
+</td>
+</tr>
+<tr>
+<td class="map-page">95</td>
+<td class="map-byte">168</td>
+<td class="map-g"><span id="24488"></span><a href="../asm/24488.html">24488</a></td>
+<td class="map-g-desc">
+<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/24488.html">Collision Flag</a></div>
 </td>
 </tr>
 <tr>
@@ -171,7 +171,7 @@ gtag('config', 'G-75RERFCHBG');
 <td class="map-byte">169</td>
 <td class="map-g"><span id="24489"></span><a href="../asm/24489.html">24489</a></td>
 <td class="map-g-desc">
-<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/24489.html">Skip Flag?</a></div>
+<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/24489.html">Item Collection State</a></div>
 </td>
 </tr>
 <tr>
@@ -179,7 +179,7 @@ gtag('config', 'G-75RERFCHBG');
 <td class="map-byte">170</td>
 <td class="map-g"><span id="24490"></span><a href="../asm/24490.html">24490</a></td>
 <td class="map-g-desc">
-<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/24490.html">Game status buffer entry at 5FAA</a></div>
+<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/24490.html">Game Mode Flag</a></div>
 </td>
 </tr>
 <tr>
@@ -187,7 +187,31 @@ gtag('config', 'G-75RERFCHBG');
 <td class="map-byte">173</td>
 <td class="map-g"><span id="24493"></span><a href="../asm/24493.html">24493</a></td>
 <td class="map-g-desc">
-<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/24493.html">Game status buffer entry at 5FAD</a></div>
+<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/24493.html">Landed On Platform Flag</a></div>
+</td>
+</tr>
+<tr>
+<td class="map-page">95</td>
+<td class="map-byte">174</td>
+<td class="map-g"><span id="24494"></span><a href="../asm/24494.html">24494</a></td>
+<td class="map-g-desc">
+<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/24494.html">Movement Speed</a></div>
+</td>
+</tr>
+<tr>
+<td class="map-page">95</td>
+<td class="map-byte">175</td>
+<td class="map-g"><span id="24495"></span><a href="../asm/24495.html">24495</a></td>
+<td class="map-g-desc">
+<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/24495.html">Percy Flap Counter</a></div>
+</td>
+</tr>
+<tr>
+<td class="map-page">95</td>
+<td class="map-byte">176</td>
+<td class="map-g"><span id="24496"></span><a href="../asm/24496.html">24496</a></td>
+<td class="map-g-desc">
+<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/24496.html">Percy Animation Counter</a></div>
 </td>
 </tr>
 <tr>
@@ -195,7 +219,7 @@ gtag('config', 'G-75RERFCHBG');
 <td class="map-byte">177</td>
 <td class="map-g"><span id="24497"></span><a href="../asm/24497.html">24497</a></td>
 <td class="map-g-desc">
-<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/24497.html">Stored Level Or Phase?</a></div>
+<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/24497.html">Current Level</a></div>
 </td>
 </tr>
 <tr>
@@ -203,7 +227,7 @@ gtag('config', 'G-75RERFCHBG');
 <td class="map-byte">178</td>
 <td class="map-g"><span id="24498"></span><a href="../asm/24498.html">24498</a></td>
 <td class="map-g-desc">
-<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/24498.html">Aux State?</a></div>
+<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/24498.html">Lives Remaining</a></div>
 </td>
 </tr>
 <tr>
@@ -211,7 +235,7 @@ gtag('config', 'G-75RERFCHBG');
 <td class="map-byte">179</td>
 <td class="map-g"><span id="24499"></span><a href="../asm/24499.html">24499</a></td>
 <td class="map-g-desc">
-<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/24499.html">Player Lives</a></div>
+<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/24499.html">Lives Display Character</a></div>
 </td>
 </tr>
 <tr>
@@ -227,7 +251,15 @@ gtag('config', 'G-75RERFCHBG');
 <td class="map-byte">181</td>
 <td class="map-g"><span id="24501"></span><a href="../asm/24501.html">24501</a></td>
 <td class="map-g-desc">
-<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/24501.html">Saved Pointer</a></div>
+<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/24501.html">Room Attribute Pointer</a></div>
+</td>
+</tr>
+<tr>
+<td class="map-page">95</td>
+<td class="map-byte">183</td>
+<td class="map-g"><span id="24503"></span><a href="../asm/24503.html">24503</a></td>
+<td class="map-g-desc">
+<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/24503.html">Beep Pitch</a></div>
 </td>
 </tr>
 <tr>
@@ -243,7 +275,7 @@ gtag('config', 'G-75RERFCHBG');
 <td class="map-byte">187</td>
 <td class="map-g"><span id="24507"></span><a href="../asm/24507.html">24507</a></td>
 <td class="map-g-desc">
-<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/24507.html">Level Flag?</a></div>
+<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/24507.html">Room Buffer Flag</a></div>
 </td>
 </tr>
 <tr>
@@ -259,7 +291,7 @@ gtag('config', 'G-75RERFCHBG');
 <td class="map-byte">189</td>
 <td class="map-g"><span id="24509"></span><a href="../asm/24509.html">24509</a></td>
 <td class="map-g-desc">
-<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/24509.html">Sub-State?</a></div>
+<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/24509.html">Border Colour</a></div>
 </td>
 </tr>
 <tr>
@@ -275,7 +307,7 @@ gtag('config', 'G-75RERFCHBG');
 <td class="map-byte">193</td>
 <td class="map-g"><span id="24513"></span><a href="../asm/24513.html">24513</a></td>
 <td class="map-g-desc">
-<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/24513.html">Pointer: Active Tile Set</a></div>
+<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/24513.html">Active Tile Set Pointer</a></div>
 </td>
 </tr>
 <tr>
@@ -283,7 +315,7 @@ gtag('config', 'G-75RERFCHBG');
 <td class="map-byte">195</td>
 <td class="map-g"><span id="24515"></span><a href="../asm/24515.html">24515</a></td>
 <td class="map-g-desc">
-<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/24515.html">Pointer: Current Room Data</a></div>
+<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/24515.html">Room Data Pointer</a></div>
 </td>
 </tr>
 <tr>
@@ -315,7 +347,71 @@ gtag('config', 'G-75RERFCHBG');
 <td class="map-byte">233</td>
 <td class="map-c"><span id="24553"></span><a href="../asm/24553.html">24553</a></td>
 <td class="map-c-desc">
-<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/24553.html">Handle Pause Input</a></div>
+<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/24553.html">Main Game Loop</a></div>
+</td>
+</tr>
+<tr>
+<td class="map-page">98</td>
+<td class="map-byte">128</td>
+<td class="map-c"><span id="25216"></span><a href="../asm/25216.html">25216</a></td>
+<td class="map-c-desc">
+<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/25216.html">Move Percy Left</a></div>
+</td>
+</tr>
+<tr>
+<td class="map-page">98</td>
+<td class="map-byte">162</td>
+<td class="map-c"><span id="25250"></span><a href="../asm/25250.html">25250</a></td>
+<td class="map-c-desc">
+<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/25250.html">Move Percy Right</a></div>
+</td>
+</tr>
+<tr>
+<td class="map-page">98</td>
+<td class="map-byte">194</td>
+<td class="map-c"><span id="25282"></span><a href="../asm/25282.html">25282</a></td>
+<td class="map-c-desc">
+<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/25282.html">Move Percy Up</a></div>
+</td>
+</tr>
+<tr>
+<td class="map-page">98</td>
+<td class="map-byte">208</td>
+<td class="map-c"><span id="25296"></span><a href="../asm/25296.html">25296</a></td>
+<td class="map-c-desc">
+<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/25296.html">Move Percy Down</a></div>
+</td>
+</tr>
+<tr>
+<td class="map-page">98</td>
+<td class="map-byte">216</td>
+<td class="map-c"><span id="25304"></span><a href="../asm/25304.html">25304</a></td>
+<td class="map-c-desc">
+<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/25304.html">Update Movement Speed</a></div>
+</td>
+</tr>
+<tr>
+<td class="map-page">99</td>
+<td class="map-byte">7</td>
+<td class="map-c"><span id="25351"></span><a href="../asm/25351.html">25351</a></td>
+<td class="map-c-desc">
+<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/25351.html">Transition Room Right</a></div>
+</td>
+</tr>
+<tr>
+<td class="map-page">99</td>
+<td class="map-byte">31</td>
+<td class="map-c"><span id="25375"></span><a href="../asm/25375.html">25375</a></td>
+<td class="map-c-desc">
+<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/25375.html">Transition Room Left</a></div>
+</td>
+</tr>
+<tr>
+<td class="map-page">99</td>
+<td class="map-byte">56</td>
+<td class="map-c"><span id="25400"></span><a href="../asm/25400.html">25400</a></td>
+<td class="map-c-desc">
+<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/25400.html">Update Percy Animation</a></div>
 </td>
 </tr>
 <tr>
@@ -507,7 +603,7 @@ gtag('config', 'G-75RERFCHBG');
 <td class="map-byte">59</td>
 <td class="map-c"><span id="26939"></span><a href="../asm/26939.html">26939</a></td>
 <td class="map-c-desc">
-<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/26939.html">Flash Border Step</a></div>
+<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/26939.html">Death Sound Step</a></div>
 </td>
 </tr>
 <tr>
@@ -1011,7 +1107,15 @@ gtag('config', 'G-75RERFCHBG');
 <td class="map-byte">115</td>
 <td class="map-b"><span id="42867"></span><a href="../asm/42867.html">42867</a></td>
 <td class="map-b-desc">
-<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/42867.html">Data block at A773</a></div>
+<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/42867.html">Graphics: Mayfly Frames</a></div>
+</td>
+</tr>
+<tr>
+<td class="map-page">167</td>
+<td class="map-byte">147</td>
+<td class="map-b"><span id="42899"></span><a href="../asm/42899.html">42899</a></td>
+<td class="map-b-desc">
+<div class="map-entry-title-10"><a class="map-entry-title" href="../asm/42899.html">Data block at A793</a></div>
 </td>
 </tr>
 <tr>

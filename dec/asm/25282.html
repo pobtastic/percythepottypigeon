@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Percy the Potty Pigeon: Routine at 25282</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-dark.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-wide.css" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-75RERFCHBG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-75RERFCHBG');
+</script>
+</head>
+<body class="Asm-c">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html"><img alt="logo" src="../images/logo.png" /></a></td>
+<td class="page-header">Routines</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="25250.html">25250</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#25282">Map</a></td>
+<td class="next">
+Next: <a href="25296.html">25296</a>
+</td>
+</tr>
+</table>
+<div class="description">25282: Move Percy Up</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="5">
+<div class="details">
+<div class="paragraph">
+Used by the routine at <a href="24553.html">MainGameLoop</a>.
+</div>
+<div class="paragraph">
+Move Percy up. Clamps to Y position 0 at the top of the screen.
+</div>
+</div>
+<table class="input">
+<tr class="asm-input-header">
+<th colspan="2">Input</th>
+</tr>
+<tr>
+<td class="register">IX</td>
+<td class="register-desc">Pointer to Percys state data</td>
+</tr>
+<tr>
+<td class="register">D</td>
+<td class="register-desc">Number of pixels to move</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td class="asm-label">MovePercyUp</td>
+<td class="address-2"><span id="25282"></span>25282</td>
+<td class="instruction">LD A,(IX+1)</td>
+<td class="comment-1" rowspan="2">Load <span class="register">A</span> with Percy's Y position (*<span class="register">IX</span>+1) - the number of pixels to move (from <span class="register">D</span>).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25285"></span>25285</td>
+<td class="instruction">SUB D</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25286"></span>25286</td>
+<td class="instruction">CP 160</td>
+<td class="comment-1" rowspan="2">Jump to <a href="25282.html#25292">MovePercyUp_Store</a> if Percy's new position is less than 160 (is Percy within the screen boundaries).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25288"></span>25288</td>
+<td class="instruction">JR C,<a href="25282.html#25292">MovePercyUp_Store</a></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="25290"></span>
+<div class="comments">
+<div class="paragraph">
+Percy is outside of the screen boundaries!
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25290"></span>25290</td>
+<td class="instruction">LD A,0</td>
+<td class="comment-1" rowspan="1">Clamp Percy to Y position 0 (the top of screen).</td>
+</tr>
+<tr>
+<td class="asm-label">MovePercyUp_Store</td>
+<td class="address-2"><span id="25292"></span>25292</td>
+<td class="instruction">LD (IX+1),A</td>
+<td class="comment-1" rowspan="1">Write Percy's updated Y screen position back to *<span class="register">IX</span>+1.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25295"></span>25295</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="25250.html">25250</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#25282">Map</a></td>
+<td class="next">
+Next: <a href="25296.html">25296</a>
+</td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
+<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
+<div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
+<div><a href="../../asm/62C2.html">Switch to hexadecimal</a>.</div>
+</footer>
+</body>
+</html>

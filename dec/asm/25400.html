@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Percy the Potty Pigeon: Routine at 25400</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-dark.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-wide.css" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-75RERFCHBG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-75RERFCHBG');
+</script>
+</head>
+<body class="Asm-c">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html"><img alt="logo" src="../images/logo.png" /></a></td>
+<td class="page-header">Routines</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="25375.html">25375</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#25400">Map</a></td>
+<td class="next">
+Next: <a href="25531.html">25531</a>
+</td>
+</tr>
+</table>
+<div class="description">25400: Update Percy Animation</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="5">
+<div class="details">
+<div class="paragraph">
+Used by the routine at <a href="24553.html">MainGameLoop</a>.
+</div>
+<div class="paragraph">
+Update Percy's animation frame based on the current movement state and direction. The animation counter at *<a href="24496.html">PercyAnimationCounter</a> cycles through frames, with bit 7 indicating the second half of the cycle.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">UpdatePercyAnimation</td>
+<td class="address-2"><span id="25400"></span>25400</td>
+<td class="instruction">LD A,(24496)</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="24496.html">PercyAnimationCounter</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25403"></span>25403</td>
+<td class="instruction">BIT 7,A</td>
+<td class="comment-1" rowspan="2">Jump to <a href="25400.html#25417">UpdatePercyAnimation_SecondHalf</a> if in the second half of the cycle.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25405"></span>25405</td>
+<td class="instruction">JR NZ,<a href="25400.html#25417">UpdatePercyAnimation_SecondHalf</a></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="25407"></span>
+<div class="comments">
+<div class="paragraph">
+First half so increment the counter.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25407"></span>25407</td>
+<td class="instruction">INC A</td>
+<td class="comment-1" rowspan="1">Increment <span class="register">A</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25408"></span>25408</td>
+<td class="instruction">CP 5</td>
+<td class="comment-1" rowspan="2">Jump to <a href="25400.html#25430">UpdatePercyAnimation_SwitchToSecondHalf</a> if the counter has reached 5 (switch to second half).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25410"></span>25410</td>
+<td class="instruction">JR Z,<a href="25400.html#25430">UpdatePercyAnimation_SwitchToSecondHalf</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25412"></span>25412</td>
+<td class="instruction">LD (24496),A</td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<a href="24496.html">PercyAnimationCounter</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25415"></span>25415</td>
+<td class="instruction">JR <a href="25400.html#25442">UpdatePercyAnimation_SetFrame</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="25400.html#25442">UpdatePercyAnimation_SetFrame</a>.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="25417"></span>
+<div class="comments">
+<div class="paragraph">
+Second half so decrement the counter.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">UpdatePercyAnimation_SecondHalf</td>
+<td class="address-2"><span id="25417"></span>25417</td>
+<td class="instruction">AND %00000111</td>
+<td class="comment-1" rowspan="1">Keep only bits 0-2 (frame index).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25419"></span>25419</td>
+<td class="instruction">DEC A</td>
+<td class="comment-1" rowspan="1">Decrement the frame index.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25420"></span>25420</td>
+<td class="instruction">OR A</td>
+<td class="comment-1" rowspan="2">Jump to <a href="25400.html#25437">UpdatePercyAnimation_SwitchToFirstHalf</a> if the frame index has reached zero.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25421"></span>25421</td>
+<td class="instruction">JR Z,<a href="25400.html#25437">UpdatePercyAnimation_SwitchToFirstHalf</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25423"></span>25423</td>
+<td class="instruction">ADD A,128</td>
+<td class="comment-1" rowspan="2">Write <span class="register">A</span> + 128 (keep bit 7 set) to *<a href="24496.html">PercyAnimationCounter</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25425"></span>25425</td>
+<td class="instruction">LD (24496),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25428"></span>25428</td>
+<td class="instruction">JR <a href="25400.html#25442">UpdatePercyAnimation_SetFrame</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="25400.html#25442">UpdatePercyAnimation_SetFrame</a>.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="25430"></span>
+<div class="comments">
+<div class="paragraph">
+Switch to the second half of the animation cycle.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">UpdatePercyAnimation_SwitchToSecondHalf</td>
+<td class="address-2"><span id="25430"></span>25430</td>
+<td class="instruction">LD A,132</td>
+<td class="comment-1" rowspan="2">Write 132 to *<a href="24496.html">PercyAnimationCounter</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25432"></span>25432</td>
+<td class="instruction">LD (24496),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25435"></span>25435</td>
+<td class="instruction">JR <a href="25400.html#25442">UpdatePercyAnimation_SetFrame</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="25400.html#25442">UpdatePercyAnimation_SetFrame</a>.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="25437"></span>
+<div class="comments">
+<div class="paragraph">
+Switch back to the first half of the animation cycle.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">UpdatePercyAnimation_SwitchToFirstHalf</td>
+<td class="address-2"><span id="25437"></span>25437</td>
+<td class="instruction">LD A,1</td>
+<td class="comment-1" rowspan="2">Write 1 to *<a href="24496.html">PercyAnimationCounter</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25439"></span>25439</td>
+<td class="instruction">LD (24496),A</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="25442"></span>
+<div class="comments">
+<div class="paragraph">
+Select Percy's sprite frame based on direction and animation state. Frames are arranged in groups: <table class="default">
+<tr>
+<th colspan="1" rowspan="1">Byte Range</th>
+<th colspan="1" rowspan="1">State</th>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">1-4</td>
+<td class="centre" colspan="1" rowspan="1">Flying right</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">5-8</td>
+<td class="centre" colspan="1" rowspan="1">Flying left</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">9-12</td>
+<td class="centre" colspan="1" rowspan="1">Walking/ Standing right</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">13-16</td>
+<td class="centre" colspan="1" rowspan="1">Walking/ Standing left</td>
+</tr>
+</table>
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">UpdatePercyAnimation_SetFrame</td>
+<td class="address-2"><span id="25442"></span>25442</td>
+<td class="instruction">LD A,(IX+0)</td>
+<td class="comment-1" rowspan="2">Jump to <a href="25400.html#25463">UpdatePercyAnimation_ChooseFrame</a> if Percy's current X position (*<span class="register">IX</span>+0) is the same as his previous X position (*<span class="register">IX</span>+64).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25445"></span>25445</td>
+<td class="instruction">CP (IX+64)</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25448"></span>25448</td>
+<td class="instruction">JR Z,<a href="25400.html#25463">UpdatePercyAnimation_ChooseFrame</a></td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="25450"></span>
+<div class="comments">
+<div class="paragraph">
+Percy has moved horizontally so cycle the wing flap counter between
+</div>
+<div class="paragraph">
+1 and 4.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25450"></span>25450</td>
+<td class="instruction">LD A,(24495)</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="24495.html">PercyFlapCounter</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25453"></span>25453</td>
+<td class="instruction">INC A</td>
+<td class="comment-1" rowspan="1">Increment the flap counter.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25454"></span>25454</td>
+<td class="instruction">CP 5</td>
+<td class="comment-1" rowspan="2">Jump to <a href="25400.html#25460">UpdatePercyAnimation_StoreFlap</a> if it hasn't reached 5 yet.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25456"></span>25456</td>
+<td class="instruction">JR NZ,<a href="25400.html#25460">UpdatePercyAnimation_StoreFlap</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25458"></span>25458</td>
+<td class="instruction">LD A,1</td>
+<td class="comment-1" rowspan="1">Reset the flap counter to 1.</td>
+</tr>
+<tr>
+<td class="asm-label">UpdatePercyAnimation_StoreFlap</td>
+<td class="address-2"><span id="25460"></span>25460</td>
+<td class="instruction">LD (24495),A</td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<a href="24495.html">PercyFlapCounter</a>.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="25463"></span>
+<div class="comments">
+<div class="paragraph">
+Determine whether Percy is airborne or grounded, and facing left or right.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">UpdatePercyAnimation_ChooseFrame</td>
+<td class="address-2"><span id="25463"></span>25463</td>
+<td class="instruction">LD A,(IX+1)</td>
+<td class="comment-1" rowspan="6">Jump to <a href="25400.html#25502">UpdatePercyAnimation_Grounded</a> if Percy's Y position (*<span class="register">IX</span>+1) is on the ground, or if *<a href="24493.html">LandedOnPlatformFlag</a> is set (and percy has landed on a platform).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25466"></span>25466</td>
+<td class="instruction">CP 144</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25468"></span>25468</td>
+<td class="instruction">JR NC,<a href="25400.html#25502">UpdatePercyAnimation_Grounded</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25470"></span>25470</td>
+<td class="instruction">LD A,(24493)</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25473"></span>25473</td>
+<td class="instruction">OR A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25474"></span>25474</td>
+<td class="instruction">JR NZ,<a href="25400.html#25502">UpdatePercyAnimation_Grounded</a></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="25476"></span>
+<div class="comments">
+<div class="paragraph">
+Percy is airborne so select flying frame based on direction.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25476"></span>25476</td>
+<td class="instruction">LD A,(24485)</td>
+<td class="comment-1" rowspan="3">Jump to <a href="25400.html#25491">UpdatePercyAnimation_FlyingRight</a> if *<a href="24485.html">PercyFacingDirection</a> is unset (Percy is facing right).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25479"></span>25479</td>
+<td class="instruction">OR A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25480"></span>25480</td>
+<td class="instruction">JR Z,<a href="25400.html#25491">UpdatePercyAnimation_FlyingRight</a></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="25482"></span>
+<div class="comments">
+<div class="paragraph">
+Flying left: frame = flap counter + 0.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25482"></span>25482</td>
+<td class="instruction">LD A,(24496)</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="24496.html">PercyAnimationCounter</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25485"></span>25485</td>
+<td class="instruction">AND %00000111</td>
+<td class="comment-1" rowspan="1">Keep only bits 0-2 (animation frame index).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25487"></span>25487</td>
+<td class="instruction">LD (IX+3),A</td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">IX</span>+3.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25490"></span>25490</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="25491"></span>
+<div class="comments">
+<div class="paragraph">
+Flying right: frame = flap counter + 4.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">UpdatePercyAnimation_FlyingRight</td>
+<td class="address-2"><span id="25491"></span>25491</td>
+<td class="instruction">LD A,(24496)</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="24496.html">PercyAnimationCounter</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25494"></span>25494</td>
+<td class="instruction">AND %00000111</td>
+<td class="comment-1" rowspan="1">Keep only bits 0-2.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25496"></span>25496</td>
+<td class="instruction">ADD A,4</td>
+<td class="comment-1" rowspan="2">Write <span class="register">A</span> + 4 to *<span class="register">IX</span>+3.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25498"></span>25498</td>
+<td class="instruction">LD (IX+3),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25501"></span>25501</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="25502"></span>
+<div class="comments">
+<div class="paragraph">
+Percy is on the ground or landed so select grounded frame.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">UpdatePercyAnimation_Grounded</td>
+<td class="address-2"><span id="25502"></span>25502</td>
+<td class="instruction">LD A,1</td>
+<td class="comment-1" rowspan="2">Write 1 to *<a href="24494.html">MovementSpeed</a> (reset movement speed).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25504"></span>25504</td>
+<td class="instruction">LD (24494),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25507"></span>25507</td>
+<td class="instruction">LD A,(24485)</td>
+<td class="comment-1" rowspan="3">Jump to <a href="25400.html#25522">UpdatePercyAnimation_GroundedRight</a> if *<a href="24485.html">PercyFacingDirection</a> is unset (Percy is facing right).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25510"></span>25510</td>
+<td class="instruction">OR A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25511"></span>25511</td>
+<td class="instruction">JR Z,<a href="25400.html#25522">UpdatePercyAnimation_GroundedRight</a></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="25513"></span>
+<div class="comments">
+<div class="paragraph">
+Grounded left: frame = flap counter + 8.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25513"></span>25513</td>
+<td class="instruction">LD A,(24495)</td>
+<td class="comment-1" rowspan="3">Write *<a href="24495.html">PercyFlapCounter</a> + 8 to *<span class="register">IX</span>+3.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25516"></span>25516</td>
+<td class="instruction">ADD A,8</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25518"></span>25518</td>
+<td class="instruction">LD (IX+3),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25521"></span>25521</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="25522"></span>
+<div class="comments">
+<div class="paragraph">
+Grounded right: frame = flap counter + 12.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">UpdatePercyAnimation_GroundedRight</td>
+<td class="address-2"><span id="25522"></span>25522</td>
+<td class="instruction">LD A,(24495)</td>
+<td class="comment-1" rowspan="3">Write *<a href="24495.html">PercyFlapCounter</a> + 12 to *<span class="register">IX</span>+3.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25525"></span>25525</td>
+<td class="instruction">ADD A,12</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25527"></span>25527</td>
+<td class="instruction">LD (IX+3),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25530"></span>25530</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="25375.html">25375</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#25400">Map</a></td>
+<td class="next">
+Next: <a href="25531.html">25531</a>
+</td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
+<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
+<div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
+<div><a href="../../asm/6338.html">Switch to hexadecimal</a>.</div>
+</footer>
+</body>
+</html>

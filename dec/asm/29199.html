@@ -49,7 +49,7 @@ Used by the routine at <a href="27047.html">Run_Main_Loop_Body</a>.
 <span id="29199"></span>
 <div class="comments">
 <div class="paragraph">
-This is a self-modified instruction — the immediate value is patched at runtime. If it is non-zero, store it in *<a href="24497.html">Stored_Level_Or_Phase</a>.
+This is a self-modified instruction so the immediate value is patched at runtime. If it is non-zero, store it in *<a href="24497.html">CurrentLevel</a>.
 </div>
 </div>
 </td>
@@ -75,14 +75,14 @@ This is a self-modified instruction — the immediate value is patched at runtim
 <td class="asm-label"></td>
 <td class="address-1"><span id="29204"></span>29204</td>
 <td class="instruction">LD (24497),A</td>
-<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<a href="24497.html">Stored_Level_Or_Phase</a>.</td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<a href="24497.html">CurrentLevel</a>.</td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
 <span id="29207"></span>
 <div class="comments">
 <div class="paragraph">
-If *<a href="24507.html">Level_Flag</a> is non-zero, clear 2047 bytes of the sprite attribute buffer at <a href="57344.html#59392">59392</a>.
+If *<a href="24507.html">RoomBufferFlag</a> is non-zero, clear 2047 bytes of the sprite attribute buffer at <a href="57344.html#59392">59392</a>.
 </div>
 </div>
 </td>
@@ -91,7 +91,7 @@ If *<a href="24507.html">Level_Flag</a> is non-zero, clear 2047 bytes of the spr
 <td class="asm-label">RoomHandlerDispatch_TestSpriteAttributes</td>
 <td class="address-2"><span id="29207"></span>29207</td>
 <td class="instruction">LD A,(24507)</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="24507.html">Level_Flag</a>.</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="24507.html">RoomBufferFlag</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -144,7 +144,7 @@ Look up the handler address for the current room from the jump table at <a href=
 <td class="asm-label">RoomHandlerDispatch_Lookup</td>
 <td class="address-2"><span id="29226"></span>29226</td>
 <td class="instruction">LD A,(24497)</td>
-<td class="comment-1" rowspan="2"><span class="register">B</span>=*<a href="24497.html">Stored_Level_Or_Phase</a>.</td>
+<td class="comment-1" rowspan="2"><span class="register">B</span>=*<a href="24497.html">CurrentLevel</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>

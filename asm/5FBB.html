@@ -33,19 +33,19 @@ Next: <a href="5FBC.html">5FBC</a>
 </td>
 </tr>
 </table>
-<div class="description">5FBB: Level Flag?</div>
+<div class="description">5FBB: Room Buffer Flag</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
 <div class="details">
 <div class="paragraph">
-FF when level active; read in many game loops.
+Set to FF at the start of <a href="5E24.html">PopulateRoomBuffer</a> when the room buffer is being populated. Used to trigger initialisation of room objects.
 </div>
 </div>
 </td>
 </tr>
 <tr>
-<td class="asm-label">Level_Flag</td>
+<td class="asm-label">RoomBufferFlag</td>
 <td class="address-1"><span id="5fbb"></span>5FBB</td>
 <td class="instruction">DEFB $00</td>
 <td class="comment-0" rowspan="1"></td>

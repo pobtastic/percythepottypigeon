@@ -33,7 +33,7 @@ Next: <a href="24264.html">24264</a>
 </td>
 </tr>
 </table>
-<div class="description">24234: Command 2: Tile With Attribute</div>
+<div class="description">24234: Command 2: Draw Repeated Tile</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
@@ -42,10 +42,7 @@ Next: <a href="24264.html">24264</a>
 Used by the routine at <a href="24100.html">PopulateRoomBuffer</a>.
 </div>
 <div class="paragraph">
-Command 2: Draw a tile with an explicit attribute.
-</div>
-<div class="paragraph">
-The following two bytes specify the repeat count and the tile character to draw.
+Command 2: draw the same tile repeatedly. The following two bytes specify the repeat count and the tile ID to draw.
 </div>
 </div>
 <table class="input">
@@ -64,7 +61,7 @@ The following two bytes specify the repeat count and the tile character to draw.
 </td>
 </tr>
 <tr>
-<td class="asm-label">Command02_TileWithAttribute</td>
+<td class="asm-label">Command02_RepeatedTile</td>
 <td class="address-2"><span id="24234"></span>24234</td>
 <td class="instruction">INC HL</td>
 <td class="comment-1" rowspan="1">Increment the room data pointer by one.</td>
@@ -73,7 +70,7 @@ The following two bytes specify the repeat count and the tile character to draw.
 <td class="asm-label"></td>
 <td class="address-1"><span id="24235"></span>24235</td>
 <td class="instruction">LD A,(HL)</td>
-<td class="comment-1" rowspan="2">Fetch the repeat counter from *<span class="register">HL</span> and store it in <span class="register">B</span>.</td>
+<td class="comment-1" rowspan="2">Fetch the repeat count from *<span class="register">HL</span> and store it in <span class="register">B</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -90,19 +87,19 @@ The following two bytes specify the repeat count and the tile character to draw.
 <td class="asm-label"></td>
 <td class="address-1"><span id="24238"></span>24238</td>
 <td class="instruction">LD A,(HL)</td>
-<td class="comment-1" rowspan="1">Fetch the tile ID from *<span class="register">HL</span> and store it in <span class="register">A</span>.</td>
+<td class="comment-1" rowspan="1">Fetch the tile ID from *<span class="register">HL</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="24239"></span>24239</td>
 <td class="instruction">INC HL</td>
-<td class="comment-1" rowspan="1">Increment the room data pointer by one to move past the command bytes.</td>
+<td class="comment-1" rowspan="1">Increment the room data pointer past the command bytes.</td>
 </tr>
 <tr>
-<td class="asm-label">TileWithAttribute_Loop</td>
+<td class="asm-label">RepeatedTile_Loop</td>
 <td class="address-2"><span id="24240"></span>24240</td>
 <td class="instruction">PUSH AF</td>
-<td class="comment-1" rowspan="4">Stash the tile character, repeat counter, tile counter and room data pointer on the stack.</td>
+<td class="comment-1" rowspan="4">Stash the tile ID, repeat counter, tile counter and room data pointer on the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -123,7 +120,7 @@ The following two bytes specify the repeat count and the tile character to draw.
 <td class="asm-label"></td>
 <td class="address-1"><span id="24244"></span>24244</td>
 <td class="instruction">LD D,0</td>
-<td class="comment-1" rowspan="1"><span class="register">D</span>=0 (flag: draw tile to screen buffer).</td>
+<td class="comment-1" rowspan="1"><span class="register">D</span>=0 (flag: draw tile to room buffer).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -135,7 +132,7 @@ The following two bytes specify the repeat count and the tile character to draw.
 <td class="asm-label"></td>
 <td class="address-1"><span id="24249"></span>24249</td>
 <td class="instruction">POP HL</td>
-<td class="comment-1" rowspan="4">Restore the room data pointer, tile counter, repeat counter and tile character from the stack.</td>
+<td class="comment-1" rowspan="4">Restore the room data pointer, tile counter, repeat counter and tile ID from the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -156,7 +153,7 @@ The following two bytes specify the repeat count and the tile character to draw.
 <td class="asm-label"></td>
 <td class="address-1"><span id="24253"></span>24253</td>
 <td class="instruction">EX AF,AF'</td>
-<td class="comment-1" rowspan="1">Switch to shadow <span class="register">AF</span> to preserve the tile character.</td>
+<td class="comment-1" rowspan="1">Switch to shadow <span class="register">AF</span> to preserve the tile ID.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -184,13 +181,13 @@ The following two bytes specify the repeat count and the tile character to draw.
 <td class="asm-label"></td>
 <td class="address-1"><span id="24259"></span>24259</td>
 <td class="instruction">EX AF,AF'</td>
-<td class="comment-1" rowspan="1">Switch back to main <span class="register">AF</span> to retrieve the tile character.</td>
+<td class="comment-1" rowspan="1">Switch back to main <span class="register">AF</span> to retrieve the tile ID.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="24260"></span>24260</td>
-<td class="instruction">DJNZ <a href="24234.html#24240">TileWithAttribute_Loop</a></td>
-<td class="comment-1" rowspan="1">Decrease the repeat counter by one and loop back to <a href="24234.html#24240">TileWithAttribute_Loop</a> until all tiles are drawn.</td>
+<td class="instruction">DJNZ <a href="24234.html#24240">RepeatedTile_Loop</a></td>
+<td class="comment-1" rowspan="1">Decrease the repeat counter by one and loop back to <a href="24234.html#24240">RepeatedTile_Loop</a> until all tiles are drawn.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>

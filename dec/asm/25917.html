@@ -41,9 +41,6 @@ Next: <a href="25948.html">25948</a>
 <div class="paragraph">
 Used by the routine at <a href="24000.html">Game_Initialise</a>.
 </div>
-<div class="paragraph">
-Set <a href="24499.html">Lives</a> and <a href="24510.html">Lives_Backup</a> to 51 clear <a href="24497.html">Stored_Level_Or_Phase</a>, call <a href="26871.html">Update_Lives_Display</a> then jump to <a href="26011.html">MainMenu</a> (game over / title).
-</div>
 </div>
 </td>
 </tr>
@@ -141,7 +138,7 @@ See <a href="../reference/pokes.html#255_lives">255 Lives</a>.
 <td class="instruction">LD A,51</td>
 <td class="comment-1" rowspan="3">Write ASCII 51 ("&#51;") to; <ul class="">
 <li>*<a href="24510.html">Lives_Backup</a></li>
-<li>*<a href="24499.html">Lives</a></li>
+<li>*<a href="24499.html">LivesDisplayCharacter</a></li>
 </ul></td>
 </tr>
 <tr>
@@ -158,7 +155,7 @@ See <a href="../reference/pokes.html#255_lives">255 Lives</a>.
 <td class="asm-label"></td>
 <td class="address-1"><span id="25938"></span>25938</td>
 <td class="instruction">XOR A</td>
-<td class="comment-1" rowspan="2">Write 0 to *<a href="24497.html">Stored_Level_Or_Phase</a>.</td>
+<td class="comment-1" rowspan="2">Write 0 to *<a href="24497.html">CurrentLevel</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -168,8 +165,8 @@ See <a href="../reference/pokes.html#255_lives">255 Lives</a>.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25942"></span>25942</td>
-<td class="instruction">CALL <a href="26871.html">Update_Lives_Display</a></td>
-<td class="comment-1" rowspan="1">Call <a href="26871.html">Update_Lives_Display</a>.</td>
+<td class="instruction">CALL <a href="26871.html">UpdateLivesDisplay</a></td>
+<td class="comment-1" rowspan="1">Call <a href="26871.html">UpdateLivesDisplay</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>

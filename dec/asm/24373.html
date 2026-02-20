@@ -39,10 +39,10 @@ Next: <a href="24481.html">24481</a>
 <td class="routine-comment" colspan="5">
 <div class="details">
 <div class="paragraph">
-Used by the routines at <a href="24210.html">Command01_RepeatedTile</a>, <a href="24234.html">Command02_TileWithAttribute</a> and <a href="24264.html">Command08+_SingleTile</a>.
+Used by the routines at <a href="24210.html">Command01_SkipTiles</a>, <a href="24234.html">Command02_RepeatedTile</a> and <a href="24264.html">Command08Plus_SingleTile</a>.
 </div>
 <div class="paragraph">
-Draws a single tile to the screen buffer at the current drawing position stored in *<a href="24505.html">RoomDrawPosition</a>. The position is advanced after each call. If <span class="register">D</span>bit 0 is set, the position is advanced but no tile is drawn (used for blank/ skip tiles in command 1).
+Draws a single tile to the room buffer at the current drawing position stored in *<a href="24505.html">RoomDrawPosition</a>. The position is advanced after each call. If <span class="register">D</span> bit 0 is set, the position is advanced but no tile is drawn (used for blank/ skip tiles in command 1).
 </div>
 </div>
 <table class="input">
@@ -58,6 +58,16 @@ Draws a single tile to the screen buffer at the current drawing position stored 
 <td class="register-desc">Bit 0: 1=advance position only, 0=draw and advance</td>
 </tr>
 </table>
+</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="24373"></span>
+<div class="comments">
+<div class="paragraph">
+Load and advance the current column/row drawing position.
+</div>
+</div>
 </td>
 </tr>
 <tr>
@@ -127,7 +137,7 @@ If the column has reached 32 (past the right edge), wrap to the next row.
 <td class="asm-label"></td>
 <td class="address-1"><span id="24392"></span>24392</td>
 <td class="instruction">BIT 0,D</td>
-<td class="comment-1" rowspan="2">Return if bit 0 of <span class="register">D</span> is set.</td>
+<td class="comment-1" rowspan="2">Return if this is a position-advance-only call (bit 0 of <span class="register">D</span> is set).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -139,7 +149,7 @@ If the column has reached 32 (past the right edge), wrap to the next row.
 <span id="24395"></span>
 <div class="comments">
 <div class="paragraph">
-Calculate the screen buffer address from the column (<span class="register">C</span>) and row (<span class="register">B</span>) drawing position. This converts the character cell coordinates into a pixel address within the screen buffer at <a href="49152.html">RoomBuffer</a>.
+Calculate the room buffer address from the column (<span class="register">C</span>) and row (<span class="register">B</span>) drawing position. This converts the character cell co-ordinates into a pixel address within the room buffer at <a href="49152.html">RoomBuffer</a>.
 </div>
 </div>
 </td>
@@ -166,19 +176,17 @@ Calculate the screen buffer address from the column (<span class="register">C</s
 <td class="asm-label"></td>
 <td class="address-1"><span id="24399"></span>24399</td>
 <td class="instruction">RRCA</td>
-<td class="comment-1" rowspan="1">RRCA.</td>
+<td class="comment-1" rowspan="3">Rotate right three positions to move bits 0-2 into bits 5-7.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="24400"></span>24400</td>
 <td class="instruction">RRCA</td>
-<td class="comment-1" rowspan="1">RRCA.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="24401"></span>24401</td>
 <td class="instruction">RRCA</td>
-<td class="comment-1" rowspan="1">RRCA.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -208,7 +216,7 @@ Calculate the screen buffer address from the column (<span class="register">C</s
 <td class="asm-label"></td>
 <td class="address-1"><span id="24407"></span>24407</td>
 <td class="instruction">OR %11000000</td>
-<td class="comment-1" rowspan="1">Set bits 6-7 for the screen buffer base at <a href="49152.html">RoomBuffer</a>.</td>
+<td class="comment-1" rowspan="1">Set bits 6-7 for the room buffer base at <a href="49152.html">RoomBuffer</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -221,7 +229,7 @@ Calculate the screen buffer address from the column (<span class="register">C</s
 <span id="24410"></span>
 <div class="comments">
 <div class="paragraph">
-Look up the tile graphic data from the active tile set and copy all 8 pixel rows to the screen buffer.
+Look up the tile graphic data from the active tile set and copy all 8 pixel rows to the room buffer.
 </div>
 </div>
 </td>
@@ -230,13 +238,13 @@ Look up the tile graphic data from the active tile set and copy all 8 pixel rows
 <td class="asm-label"></td>
 <td class="address-1"><span id="24410"></span>24410</td>
 <td class="instruction">PUSH HL</td>
-<td class="comment-1" rowspan="1">Stash the screen buffer address on the stack.</td>
+<td class="comment-1" rowspan="1">Stash the room buffer address on the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="24411"></span>24411</td>
 <td class="instruction">LD DE,(24513)</td>
-<td class="comment-1" rowspan="1"><span class="register">DE</span>=*<a href="24513.html">Pointer_ActiveTileSet</a> (active tile set base address).</td>
+<td class="comment-1" rowspan="1"><span class="register">DE</span>=*<a href="24513.html">PointerActiveTileSet</a> (active tile set base address).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -287,13 +295,13 @@ Look up the tile graphic data from the active tile set and copy all 8 pixel rows
 <td class="asm-label"></td>
 <td class="address-1"><span id="24425"></span>24425</td>
 <td class="instruction">EX DE,HL</td>
-<td class="comment-1" rowspan="1">Exchange so <span class="register">DE</span>=tile graphic data, <span class="register">HL</span>=screen buffer address.</td>
+<td class="comment-1" rowspan="1">Exchange so <span class="register">DE</span>=tile graphic data.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="24426"></span>24426</td>
 <td class="instruction">POP HL</td>
-<td class="comment-1" rowspan="1">Restore the screen buffer address from the stack.</td>
+<td class="comment-1" rowspan="1">Restore the room buffer address from the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -305,13 +313,12 @@ Look up the tile graphic data from the active tile set and copy all 8 pixel rows
 <td class="asm-label">DrawRoomTile_CopyLoop</td>
 <td class="address-2"><span id="24429"></span>24429</td>
 <td class="instruction">LD A,(DE)</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">DE</span>.</td>
+<td class="comment-1" rowspan="2">Copy the tile graphic data byte to the room buffer.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="24430"></span>24430</td>
 <td class="instruction">LD (HL),A</td>
-<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">HL</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -323,7 +330,7 @@ Look up the tile graphic data from the active tile set and copy all 8 pixel rows
 <td class="asm-label"></td>
 <td class="address-1"><span id="24432"></span>24432</td>
 <td class="instruction">INC H</td>
-<td class="comment-1" rowspan="1">Move down one pixel row in the screen buffer.</td>
+<td class="comment-1" rowspan="1">Move down one pixel row in the room buffer.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -351,10 +358,10 @@ Attribute overlay command 36: end of attribute data. Finalises the room setup by
 </td>
 </tr>
 <tr>
-<td class="asm-label">PopulateRoomBuffer_EndAttributes</td>
+<td class="asm-label">FillAttributes_End</td>
 <td class="address-2"><span id="24436"></span>24436</td>
 <td class="instruction">LD A,(24489)</td>
-<td class="comment-1" rowspan="3">Jump to <a href="24373.html#24451">PopulateRoomBuffer_SetAttributeBase</a> if *<a href="24489.html">Skip_Flag</a> is zero.</td>
+<td class="comment-1" rowspan="3">Jump to <a href="24373.html#24451">FillAttributes_SetAttributeBase</a> if *<a href="24489.html">ItemCollectionState</a> is zero.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -364,13 +371,13 @@ Attribute overlay command 36: end of attribute data. Finalises the room setup by
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="24440"></span>24440</td>
-<td class="instruction">JR Z,<a href="24373.html#24451">PopulateRoomBuffer_SetAttributeBase</a></td>
+<td class="instruction">JR Z,<a href="24373.html#24451">FillAttributes_SetAttributeBase</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="24442"></span>24442</td>
 <td class="instruction">XOR A</td>
-<td class="comment-1" rowspan="2">Write 0 to *<a href="24489.html">Skip_Flag</a>.</td>
+<td class="comment-1" rowspan="2">Write 0 to *<a href="24489.html">ItemCollectionState</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -406,10 +413,10 @@ Calculate the base address for this room's colour attributes. Each room has 32 b
 </td>
 </tr>
 <tr>
-<td class="asm-label">PopulateRoomBuffer_SetAttributeBase</td>
+<td class="asm-label">FillAttributes_SetAttributeBase</td>
 <td class="address-2"><span id="24451"></span>24451</td>
 <td class="instruction">LD A,(24517)</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="24517.html">CurrentRoom</a> (current room number).</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="24517.html">CurrentRoom</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -470,14 +477,14 @@ Calculate the base address for this room's colour attributes. Each room has 32 b
 <td class="asm-label"></td>
 <td class="address-1"><span id="24467"></span>24467</td>
 <td class="instruction">LD (24501),HL</td>
-<td class="comment-1" rowspan="1">Write the result to *<a href="24501.html">Saved_Pointer</a>.</td>
+<td class="comment-1" rowspan="1">Write the result to *<a href="24501.html">RoomAttributePointer</a>.</td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
 <span id="24470"></span>
 <div class="comments">
 <div class="paragraph">
-Wait for the next interrupt frame, then transfer the completed screen buffer to the display.
+Wait for the next interrupt frame, then transfer the completed room buffer to the display.
 </div>
 </div>
 </td>

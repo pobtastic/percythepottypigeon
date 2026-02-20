@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Percy the Potty Pigeon: Routine at 25351</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-dark.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-wide.css" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-75RERFCHBG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-75RERFCHBG');
+</script>
+</head>
+<body class="Asm-c">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html"><img alt="logo" src="../images/logo.png" /></a></td>
+<td class="page-header">Routines</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="25304.html">25304</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#25351">Map</a></td>
+<td class="next">
+Next: <a href="25375.html">25375</a>
+</td>
+</tr>
+</table>
+<div class="description">25351: Transition Room Right</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="5">
+<div class="details">
+<div class="paragraph">
+Used by the routine at <a href="25250.html">MovePercyRight</a>.
+</div>
+<div class="paragraph">
+Percy has gone past the right edge so transition into the next room.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">TransitionRoomRight</td>
+<td class="address-2"><span id="25351"></span>25351</td>
+<td class="instruction">PUSH AF</td>
+<td class="comment-1" rowspan="1">Stash <span class="register">AF</span> on the stack.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25352"></span>25352</td>
+<td class="instruction">LD A,(24517)</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="24517.html">CurrentRoom</a>.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="25355"></span>
+<div class="comments">
+<div class="paragraph">
+If the current room is 11 (the last room), wrap to room 1.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25355"></span>25355</td>
+<td class="instruction">CP 11</td>
+<td class="comment-1" rowspan="2">Jump to <a href="25351.html#25360">TransitionRoomRight_SetRoom</a> if this isn't room 11.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25357"></span>25357</td>
+<td class="instruction">JR NZ,<a href="25351.html#25360">TransitionRoomRight_SetRoom</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25359"></span>25359</td>
+<td class="instruction">XOR A</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=0 (will become 1 after increment).</td>
+</tr>
+<tr>
+<td class="asm-label">TransitionRoomRight_SetRoom</td>
+<td class="address-2"><span id="25360"></span>25360</td>
+<td class="instruction">LD (IX+0),0</td>
+<td class="comment-1" rowspan="1">Write 0 to *<span class="register">IX</span>+0 (reset Percy's X to left edge).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25364"></span>25364</td>
+<td class="instruction">INC A</td>
+<td class="comment-1" rowspan="1">Increment room number.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25365"></span>25365</td>
+<td class="instruction">LD (24517),A</td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<a href="24517.html">CurrentRoom</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25368"></span>25368</td>
+<td class="instruction">CALL <a href="24100.html">PopulateRoomBuffer</a></td>
+<td class="comment-1" rowspan="1">Call <a href="24100.html">PopulateRoomBuffer</a> to draw the new room.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25371"></span>25371</td>
+<td class="instruction">POP AF</td>
+<td class="comment-1" rowspan="1">Restore <span class="register">AF</span> from the stack.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25372"></span>25372</td>
+<td class="instruction">POP AF</td>
+<td class="comment-1" rowspan="2">Discard two stack values.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25373"></span>25373</td>
+<td class="instruction">POP AF</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="25374"></span>25374</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="25304.html">25304</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#25351">Map</a></td>
+<td class="next">
+Next: <a href="25375.html">25375</a>
+</td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
+<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
+<div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
+<div><a href="../../asm/6307.html">Switch to hexadecimal</a>.</div>
+</footer>
+</body>
+</html>
