@@ -45,7 +45,7 @@ N $5DDD #HTML(Sets the border colour to use when calling
 . *<a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/5C48.html">BORDCR</a>.)
   $5DE2,$04 #REGix=#R$DAC0.
   $5DE6,$04 Write #N$00 to *#REGix+#N$23.
-  $5DEA,$04 Write #N$07 to *#REGix+#N$02.
+  $5DEA,$04 Write #INK$07 to *#REGix+#N$02 (#R$DAC2).
   $5DEE,$04 Write #N$FF to *#REGix+#N$22.
   $5DF2,$03 Call #R$653D.
   $5DF5,$05 Write #N$FF to *#R$5FBC.
@@ -112,11 +112,12 @@ N $5E52 The main room data parsing loop. Reads a command byte from the room
   $5E61,$04 Jump to #R$5EDB if the room data byte is #N$03.
   $5E65,$04 Jump to #R$5E72 if the room data byte is #N$04.
   $5E69,$04 Jump to #R$5EC8 if the room data byte is #N$08 or higher.
-N $5E6D If none of the above matched, trigger an error.
+N $5E6D If none of the above matched, trigger an error (with an arbitary error
+. code).
 @ $5E6D label=PopulateRoomBuffer_Error
   $5E6D,$01 #HTML(Run the ERROR_1 routine:
 . <a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/0008.html">RST #N$08</a>.)
-  $5E6E,$01 Increment #REGb by one.
+B $5E6E,$01 Error code: #N$04 ("Out of memory").
 N $5E6F Command #N$00: no-op. Skip this byte and continue parsing.
 @ $5E6F label=Command00_Skip
   $5E6F,$01 Increment the room data pointer by one.
@@ -126,7 +127,7 @@ c $5E72 Command #N$04: Switch Tile Set
 @ $5E72 label=Command04_SwitchTileSet
 D $5E72 Command #N$04: Switch the tile set.
 .
-. The following byte selects which tile set to use — #N$01 for the default set
+. The following byte selects which tile set to use; #N$01 for the default set
 . at #R$9BAA, #N$02 for the alternate set at #R$A36A.
 R $5E72 DE Tile counter
 R $5E72 HL The room data pointer
@@ -148,74 +149,69 @@ N $5E88 Tile set #N$01: switch back to the default tile set.
   $5E8F,$01 Restore the room data pointer from the stack.
   $5E90,$02 Jump back to #R$5E55 to continue parsing.
 
-c $5E92 Command #N$01: Draw Repeated Tile
-@ $5E92 label=Command01_RepeatedTile
-D $5E92 Command #N$01: Draw a repeated tile. The following byte specifies how
-. many times to repeat the current tile.
+c $5E92 Command #N$01: Skip Tiles
+@ $5E92 label=Command01_SkipTiles
+D $5E92 Command #N$01: skip over a number of tile positions without drawing.
+. The following byte specifies how many positions to skip.
 R $5E92 DE Tile counter
 R $5E92 HL The room data pointer
   $5E92,$01 Increment the room data pointer by one.
-  $5E93,$01 Fetch the tile byte/ repeat counter.
-  $5E94,$01 Increment the room data pointer by one to move past the command
-. byte.
-  $5E95,$01 Set the repeat counter in #REGb.
-@ $5E96 label=RepeatedTile_Loop
-  $5E96,$03 Stash the room data pointer, tile counter and repeat counter on the
+  $5E93,$01 Fetch the skip count.
+  $5E94,$01 Increment the room data pointer past the skip count byte.
+  $5E95,$01 Set the skip counter in #REGb.
+@ $5E96 label=SkipTiles_Loop
+  $5E96,$03 Stash the room data pointer, tile counter and skip counter on the
 . stack.
   $5E99,$02 #REGd=#N$01 (flag: advance position only, don't draw).
   $5E9B,$03 Call #R$5F35.
-  $5E9E,$03 Restore the repeat counter, tile counter and room data pointer from
+  $5E9E,$03 Restore the skip counter, tile counter and room data pointer from
 . the stack.
   $5EA1,$01 Decrease the tile counter by one.
   $5EA2,$04 Jump to #R$5E6D if the tile counter is zero.
-  $5EA6,$02 Decrease the repeat counter by one and loop back to #R$5E96 until
-. all repeats are processed.
+  $5EA6,$02 Decrease the skip counter by one and loop back to #R$5E96 until all
+. positions are skipped.
   $5EA8,$02 Jump to #R$5E55 to continue parsing.
 
-c $5EAA Command #N$02: Tile With Attribute
-@ $5EAA label=Command02_TileWithAttribute
-D $5EAA Command #N$02: Draw a tile with an explicit attribute.
-.
-. The following two bytes specify the repeat count and the tile character to
-. draw.
+c $5EAA Command #N$02: Draw Repeated Tile
+@ $5EAA label=Command02_RepeatedTile
+D $5EAA Command #N$02: draw the same tile repeatedly. The following two bytes
+. specify the repeat count and the tile ID to draw.
 R $5EAA DE Tile counter
 R $5EAA HL Pointer to the room data
   $5EAA,$01 Increment the room data pointer by one.
-  $5EAB,$02 Fetch the repeat counter from *#REGhl and store it in #REGb.
+  $5EAB,$02 Fetch the repeat count from *#REGhl and store it in #REGb.
   $5EAD,$01 Increment the room data pointer by one.
-  $5EAE,$01 Fetch the tile ID from *#REGhl and store it in #REGa.
-  $5EAF,$01 Increment the room data pointer by one to move past the command
-. bytes.
-@ $5EB0 label=TileWithAttribute_Loop
-  $5EB0,$04 Stash the tile character, repeat counter, tile counter and room data
+  $5EAE,$01 Fetch the tile ID from *#REGhl.
+  $5EAF,$01 Increment the room data pointer past the command bytes.
+@ $5EB0 label=RepeatedTile_Loop
+  $5EB0,$04 Stash the tile ID, repeat counter, tile counter and room data
 . pointer on the stack.
-  $5EB4,$02 #REGd=#N$00 (flag: draw tile to screen buffer).
+  $5EB4,$02 #REGd=#N$00 (flag: draw tile to room buffer).
   $5EB6,$03 Call #R$5F35.
   $5EB9,$04 Restore the room data pointer, tile counter, repeat counter and tile
-. character from the stack.
-  $5EBD,$01 Switch to shadow #REGaf to preserve the tile character.
+. ID from the stack.
+  $5EBD,$01 Switch to shadow #REGaf to preserve the tile ID.
   $5EBE,$01 Decrease the tile counter by one.
   $5EBF,$04 Jump back to #R$5E6D if the tile counter is zero.
-  $5EC3,$01 Switch back to main #REGaf to retrieve the tile character.
+  $5EC3,$01 Switch back to main #REGaf to retrieve the tile ID.
   $5EC4,$02 Decrease the repeat counter by one and loop back to #R$5EB0 until
 . all tiles are drawn.
   $5EC6,$02 Jump to #R$5E55 to continue parsing.
 
 c $5EC8 Command #N$08 (Or Higher): Single Tile
-@ $5EC8 label=Command08+_SingleTile
+@ $5EC8 label=Command08Plus_SingleTile
 D $5EC8 Command #N$08+: draw a single tile. The command byte itself is the tile
-. character to draw.
+. ID to draw.
 R $5EC8 DE Tile counter
 R $5EC8 HL Pointer to the room data
-  $5EC8,$01 Fetch the tile ID from *#REGhl and store it in #REGa.
-  $5EC9,$01 Increment the room data pointer by one to move past the command
-. byte.
+  $5EC8,$01 Fetch the tile ID from *#REGhl.
+  $5EC9,$01 Increment the room data pointer past the tile ID byte.
   $5ECA,$02 Stash the room data pointer and tile counter on the stack.
-  $5ECC,$02 #REGd=#N$00 (flag: draw tile to screen buffer).
+  $5ECC,$02 #REGd=#N$00 (flag: draw tile to room buffer).
   $5ECE,$03 Call #R$5F35.
   $5ED1,$02 Restore the tile counter and room data pointer from the stack.
-  $5ED3,$01 Decrease #REGde by one.
-  $5ED4,$04 Jump back to #R$5E6D if #REGde is zero.
+  $5ED3,$01 Decrease the tile counter by one.
+  $5ED4,$04 Jump to #R$5E6D if the tile counter is zero.
   $5ED8,$03 Jump to #R$5E55 to continue parsing.
 
 c $5EDB Command #N$03: Fill Attribute Buffer With Single Colour
@@ -231,22 +227,22 @@ D $5EDB Command #N$03: fill the attribute buffer with a single colour, then
 R $5EDB DE Tile counter
 R $5EDB HL Pointer to the room data
   $5EDB,$01 Increment the room data pointer by one.
-  $5EDC,$01 #REGc=*#REGhl.
+  $5EDC,$01 Fetch the base fill colour into #REGc.
 N $5EDD Fill #N$02C0 attribute cells at #R$D800 with the base colour.
   $5EDD,$04 #REGix=#R$D800.
   $5EE1,$03 #REGde=#N($02C0,$04,$04).
-@ $5EE4 label=PopulateRoomBuffer_FillAttributes_Loop
+@ $5EE4 label=FillAttributes_Loop
   $5EE4,$03 Write #REGc to *#REGix+#N$00.
   $5EE7,$02 Increment #REGix by one.
   $5EE9,$01 Decrease #REGde by one.
   $5EEA,$04 Jump back to #R$5EE4 until #REGde is zero.
 N $5EEE Now parse the attribute overlay data to apply per-cell changes on top
 . of the base fill colour.
-@ $5EEE label=PopulateRoomBuffer_AttributeOverlay
+@ $5EEE label=FillAttributes_Overlay
   $5EEE,$01 Increment #REGhl by one.
   $5EEF,$03 #REGde=#N($02C1,$04,$04).
   $5EF2,$04 #REGix=#R$D800.
-@ $5EF6 label=PopulateRoomBuffer_AttributeOverlay_Loop
+@ $5EF6 label=FillAttributes_Overlay_Loop
   $5EF6,$01 #REGa=*#REGhl.
   $5EF7,$04 Jump to #R$5F12 if #REGa is #N$12 (skip command).
   $5EFB,$04 Jump to #R$5F21 if #REGa is #N$1B (repeat command).
@@ -256,47 +252,48 @@ N $5F03 Otherwise, write this byte directly as a single attribute value.
   $5F04,$03 Write #REGc to *#REGix+#N$00.
   $5F07,$01 Decrease #REGde by one.
   $5F08,$02 Increment #REGix by one.
-  $5F0A,$05 Jump back to #R$5E6D if #REGde is zero.
+  $5F0A,$05 Jump to #R$5E6D if #REGde is zero.
   $5F0F,$01 Increment #REGhl by one.
   $5F10,$02 Jump to #R$5EF6.
 N $5F12 Attribute overlay command #N$12: skip over a number of attribute cells.
 N $5F12 The following byte gives the skip count.
-@ $5F12 label=PopulateRoomBuffer_AttributeSkip
+@ $5F12 label=FillAttributes_Skip
   $5F12,$01 Increment #REGhl by one.
-  $5F13,$01 #REGb=*#REGhl.
-@ $5F14 label=PopulateRoomBuffer_AttributeSkip_Loop
+  $5F13,$01 Fetch the skip count into #REGb.
+@ $5F14 label=FillAttributes_Skip_Loop
   $5F14,$02 Increment #REGix by one.
   $5F16,$01 Decrease #REGde by one.
-  $5F17,$05 Jump back to #R$5E6D if #REGde is zero.
-  $5F1C,$02 Decrease the skip counter by one and loop back to #R$5F14 until done.
+  $5F17,$05 Jump to #R$5E6D if #REGde is zero.
+  $5F1C,$02 Decrease the skip counter by one and loop back to #R$5F14 until
+. done.
   $5F1E,$01 Increment #REGhl by one.
   $5F1F,$02 Jump to #R$5EF6.
 N $5F21 Attribute overlay command #N$1B: repeat a colour value a number of
 . times. The following two bytes give the repeat count and colour value.
-@ $5F21 label=PopulateRoomBuffer_AttributeRepeat
+@ $5F21 label=FillAttributes_Repeat
   $5F21,$01 Increment #REGhl by one.
-  $5F22,$01 #REGb=*#REGhl.
+  $5F22,$01 Fetch the repeat count into #REGb.
   $5F23,$01 Increment #REGhl by one.
-  $5F24,$01 #REGc=*#REGhl.
-  $5F25,$01 Increment #REGhl by one.
-@ $5F26 label=PopulateRoomBuffer_AttributeRepeat_Loop
+  $5F24,$01 Fetch the colour value into #REGc.
+  $5F25,$01 Increment #REGhl past the colour value byte.
+@ $5F26 label=FillAttributes_Repeat_Loop
   $5F26,$03 Write #REGc to *#REGix+#N$00.
   $5F29,$02 Increment #REGix by one.
   $5F2B,$01 Decrease #REGde by one.
-  $5F2C,$05 Jump back to #R$5E6D if #REGde is zero.
+  $5F2C,$05 Jump to #R$5E6D if #REGde is zero.
   $5F31,$02 Decrease the repeat counter by one and loop back to #R$5F26 until
 . done.
   $5F33,$02 Jump to #R$5EF6.
 
 c $5F35 Draw Room Tile
 @ $5F35 label=DrawRoomTile
-D $5F35 Draws a single tile to the screen buffer at the current drawing
+D $5F35 Draws a single tile to the room buffer at the current drawing
 . position stored in *#R$5FB9. The position is advanced after each call. If
-. #REGdbit 0 is set, the position is advanced but no tile is drawn (used for
+. #REGd bit 0 is set, the position is advanced but no tile is drawn (used for
 . blank/ skip tiles in command #N$01).
 R $5F35 A Tile character to draw
 R $5F35 D Bit 0: #N$01=advance position only, #N$00=draw and advance
-; Load and advance the current column/row drawing position.
+N $5F35 Load and advance the current column/row drawing position.
   $5F35,$04 #REGbc=*#R$5FB9.
   $5F39,$01 Increment the column in #REGc.
   $5F3A,$01 Stash the tile character in shadow #REGaf.
@@ -309,46 +306,44 @@ N $5F3B If the column has reached #N$20 (past the right edge), wrap to the next
   $5F42,$02 Reset the column to #N$00.
 @ $5F44 label=DrawRoomTile_StorePosition
   $5F44,$04 Write #REGbc to *#R$5FB9.
-  $5F48,$03 Return if bit 0 of #REGd is set.
-N $5F4B Calculate the screen buffer address from the column (#REGc) and row
-. (#REGb) drawing position. This converts the character cell coordinates into a
-. pixel address within the screen buffer at #R$C000.
+  $5F48,$03 Return if this is a position-advance-only call (bit 0 of #REGd is
+. set).
+N $5F4B Calculate the room buffer address from the column (#REGc) and row
+. (#REGb) drawing position. This converts the character cell co-ordinates into
+. a pixel address within the room buffer at #R$C000.
   $5F4B,$01 #REGl=#REGc.
   $5F4C,$01 #REGa=#REGb.
   $5F4D,$02,b$01 Keep only bits 0-2.
-  $5F4F,$01 RRCA.
-  $5F50,$01 RRCA.
-  $5F51,$01 RRCA.
+  $5F4F,$03 Rotate right three positions to move bits 0-2 into bits 5-7.
   $5F52,$01 Merge in the column bits from #REGl.
   $5F53,$01 #REGl=#REGa.
   $5F54,$01 #REGa=#REGb.
   $5F55,$02,b$01 Keep only bits 3-4.
-  $5F57,$02,b$01 Set bits 6-7 for the screen buffer base at #R$C000.
+  $5F57,$02,b$01 Set bits 6-7 for the room buffer base at #R$C000.
   $5F59,$01 #REGh=#REGa.
 N $5F5A Look up the tile graphic data from the active tile set and copy all
-. #N$08 pixel rows to the screen buffer.
-  $5F5A,$01 Stash the screen buffer address on the stack.
+. #N$08 pixel rows to the room buffer.
+  $5F5A,$01 Stash the room buffer address on the stack.
   $5F5B,$04 #REGde=*#R$5FC1 (active tile set base address).
   $5F5F,$01 Retrieve the tile character from shadow #REGaf.
   $5F60,$02 #REGa-=#N$08.
   $5F62,$03 Transfer the tile index to #REGhl.
   $5F65,$03 Multiply by #N$08 (bytes per tile).
   $5F68,$01 Add the tile set base address.
-  $5F69,$01 Exchange so #REGde=tile graphic data, #REGhl=screen buffer address.
-  $5F6A,$01 Restore the screen buffer address from the stack.
+  $5F69,$01 Exchange so #REGde=tile graphic data.
+  $5F6A,$01 Restore the room buffer address from the stack.
   $5F6B,$02 Set a line counter in #REGb of #N$08.
 @ $5F6D label=DrawRoomTile_CopyLoop
-  $5F6D,$01 #REGa=*#REGde.
-  $5F6E,$01 Write #REGa to *#REGhl.
+  $5F6D,$02 Copy the tile graphic data byte to the room buffer.
   $5F6F,$01 Advance the tile graphic data pointer.
-  $5F70,$01 Move down one pixel row in the screen buffer.
+  $5F70,$01 Move down one pixel row in the room buffer.
   $5F71,$02 Decrease the line counter by one and loop back to #R$5F6D until all
 . #N$08 rows are drawn.
   $5F73,$01 Return.
 N $5F74 Attribute overlay command #N$24: end of attribute data. Finalises the
 . room setup by resetting game flags and calculating the base address for this
 . room's colour attribute lookup table.
-@ $5F74 label=PopulateRoomBuffer_EndAttributes
+@ $5F74 label=FillAttributes_End
   $5F74,$06 Jump to #R$5F83 if *#R$5FA9 is zero.
   $5F7A,$04 Write #N$00 to *#R$5FA9.
   $5F7E,$01 No operation.
@@ -357,15 +352,15 @@ N $5F74 Attribute overlay command #N$24: end of attribute data. Finalises the
 N $5F83 Calculate the base address for this room's colour attributes. Each room
 . has #N$20 bytes of attribute data stored sequentially from #R$DE9E, so
 . multiply the zero-indexed room number by #N$20 and add the base.
-@ $5F83 label=PopulateRoomBuffer_SetAttributeBase
-  $5F83,$03 #REGa=*#R$5FC5 (current room number).
+@ $5F83 label=FillAttributes_SetAttributeBase
+  $5F83,$03 #REGa=*#R$5FC5.
   $5F86,$01 Decrease by one to make zero-indexed.
   $5F87,$03 #REGde=#R$DE9E.
   $5F8A,$03 Transfer the room index to #REGhl.
   $5F8D,$05 Multiply by #N$20.
   $5F92,$01 Add the base address.
   $5F93,$03 Write the result to *#R$5FB5.
-N $5F96 Wait for the next interrupt frame, then transfer the completed screen
+N $5F96 Wait for the next interrupt frame, then transfer the completed room
 . buffer to the display.
   $5F96,$01 Enable interrupts.
   $5F97,$01 Halt operation (suspend CPU until the next interrupt).
@@ -375,64 +370,130 @@ N $5F99 Set up printing the room to the screen buffer.
   $5F9B,$03 Point #REGhl at #R$C000.
   $5F9E,$03 Jump to #R$6438.
 
-g $5FA1 Header Drawn Flag
-@ $5FA1 label=Header_Drawn_Flag
-D $5FA1 #N$00=draw HUD via #R$63BB when needed; #N$01=already drawn.
+g $5FA1 Game State Flag
+@ $5FA1 label=GameStateFlag
 B $5FA1,$01
 
-g $5FA2
+g $5FA2 Input State
+@ $5FA2 label=InputState
+D $5FA2 Bitmask representing the current directional input. #N$1F means no
+. input. Each bit represents a direction when reset:
+. #TABLE(default,centre,centre)
+. { =h Bit | =h State }
+. { 0 | Fire }
+. { 1 | Up }
+. { 2 | Down }
+. { 3 | Right }
+. { 4 | Left }
+. TABLE#
 B $5FA2,$01
 
-g $5FA3
-B $5FA3,$01
-
-g $5FA4
+g $5FA4 Previous Input State
+@ $5FA4 label=PreviousInputState
+D $5FA4 Stores the last directional input for animation and speed purposes.
 B $5FA4,$01
 
-g $5FA5
+g $5FA5 Percy Facing Direction
+@ $5FA5 label=PercyFacingDirection
+D $5FA5 #N$00=facing right, #N$01=facing left.
 B $5FA5,$01
 
-g $5FA6
+g $5FA6 Input Mode
+@ $5FA6 label=InputMode
+D $5FA6 Controls which input device is active: #TABLE(default,centre,centre)
+. { =h Byte | =h State }
+. { #N$00 | Not yet detected }
+. { #N$1F | Kempston joystick }
+. { #N$80 | Keyboard }
+. TABLE#
 B $5FA6,$01
 
-g $5FA7 Title Countdown?
-@ $5FA7 label=Title_Countdown
-D $5FA7 Countdown or init; read at #R$5FE9; when zero call #R$6480. Cleared at #R$655C.
+g $5FA7 Falling State
+@ $5FA7 label=FallingState
+D $5FA7 Tracks whether Percy is falling: #TABLE(default,centre,centre)
+. { =h Byte | =h State }
+. { #N$00 | Not falling }
+. { #N$FE | Falling (active) }
+. { #N$FF | Falling (impact) }
+. TABLE#
 B $5FA7,$01
 
-g $5FA9 Skip Flag?
-@ $5FA9 label=Skip_Flag
-D $5FA9 When zero at #R$5F74 jump to #R$5F83. Cleared at #R$5F7A.
+g $5FA8 Collision Flag
+@ $5FA8 label=CollisionFlag
+D $5FA8 Set to #N$01 when Percy has collided with scenery and the move was
+. rejected.
+B $5FA8,$01
+
+g $5FA9 Item Collection State
+@ $5FA9 label=ItemCollectionState
+D $5FA9 Set to #N$FF when Percy is flying upward to collect an item. Cleared
+. to #N$00 when the collection is complete.
 B $5FA9,$01
 
-g $5FAA
+g $5FAA Game Mode Flag
+@ $5FAA label=GameModeFlag
 B $5FAA,$01
 
-g $5FAD
+g $5FAD Landed On Platform Flag
+@ $5FAD label=LandedOnPlatformFlag
+D $5FAD Set to #N$FF when Percy has landed on a platform. Cleared to #N$00
+. when no platform is beneath.
+B $5FAD,$01
 
-g $5FB1 Stored Level Or Phase?
-@ $5FB1 label=Stored_Level_Or_Phase
-D $5FB1 Copied to #R$5FC5 in some paths; cleared when lives are reset.
+g $5FAE Movement Speed
+@ $5FAE label=MovementSpeed
+D $5FAE Percy's current movement speed in pixels per frame. Ranges from #N$01
+. (minimum) to #N$04 (maximum). Accelerates while a direction is held,
+. decelerates when input changes or is released.
+B $5FAE,$01
+
+g $5FAF Percy Flap Counter
+@ $5FAF label=PercyFlapCounter
+D $5FAF Animation frame counter for Percy's wing flap cycle. Increments each
+. frame Percy moves horizontally, cycling from #N$01 to #N$04.
+B $5FAF,$01
+
+g $5FB0 Percy Animation Counter
+@ $5FB0 label=PercyAnimationCounter
+D $5FB0 Controls the animation frame cycle. Counts up from #N$01 to #N$04
+. (first half), then bit 7 is set and it counts back down (second half).
+. Bits 0-2 hold the frame index, bit 7 indicates the second half.
+B $5FB0,$01
+
+g $5FB1 Current Level
+@ $5FB1 label=CurrentLevel
+D $5FB1 The current level number. E.g. #N$01 for the first level.
 B $5FB1,$01
 
-g $5FB2 Aux State?
-@ $5FB2 label=Aux_State
-D $5FB2 Pointer base; used with #R$68B8.
+g $5FB2 Lives Remaining
+@ $5FB2 label=LivesRemaining
+D $5FB2 Number of lives Percy has remaining for the current phase.
 B $5FB2,$01
 
-g $5FB3 Player Lives
-@ $5FB3 label=Lives
-D $5FB3 Current lives count. Synced with #R$5FBE for compare/display.
+g $5FB3 Lives Display Character
+@ $5FB3 label=LivesDisplayCharacter
+D $5FB3 The ASCII character displayed on screen to represent the current
+. lives count.
 B $5FB3,$01
 
 g $5FB4 Chick Animation States
 @ $5FB4 label=ChickAnimationStates
+D $5FB4 A rotating bit pattern used to animate the nest chicks. Each bit
+. controls the animation frame for one chick, rotated each frame so
+. they animate independently.
 B $5FB4,$01
 
-g $5FB5 Saved Pointer
-@ $5FB5 label=Saved_Pointer
-D $5FB5 Caller #REGhl stored here; read at #R$664D.
+g $5FB5 Room Attribute Pointer
+@ $5FB5 label=RoomAttributePointer
+D $5FB5 Pointer to the current room's colour attribute data, calculated from
+. the room number and the base at #R$DE9E.
 W $5FB5,$02
+
+g $5FB7 Beep Pitch
+@ $5FB7 label=BeepPitch
+D $5FB7 Current pitch value used for sound effects (item collection, falling).
+. Adjusted each frame during the sound.
+W $5FB7,$02
 
 g $5FB9 Room Drawing Position
 @ $5FB9 label=RoomDrawPosition
@@ -442,9 +503,10 @@ D $5FB9 The two-byte drawing position used by #R$5F35 to track where the next
 . The low byte is the column and the high byte is the row.
 B $5FB9,$02
 
-g $5FBB Level Flag?
-@ $5FBB label=Level_Flag
-D $5FBB #N$FF when level active; read in many game loops.
+g $5FBB Room Buffer Flag
+@ $5FBB label=RoomBufferFlag
+D $5FBB Set to #N$FF at the start of #R$5E24 when the room buffer is being
+. populated. Used to trigger initialisation of room objects.
 B $5FBB,$01
 
 g $5FBC Pause Flag
@@ -452,9 +514,8 @@ g $5FBC Pause Flag
 D $5FBC #N$00=not paused, #N$FF=paused; set at #R$5DF5.
 B $5FBC,$01
 
-g $5FBD Sub-State?
-@ $5FBD label=Sub_State
-D $5FBD Written from #REGa in #R$68D1.
+g $5FBD Border Colour
+@ $5FBD label=BorderColour
 B $5FBD,$01
 
 g $5FBE Lives Backup?
@@ -462,14 +523,14 @@ g $5FBE Lives Backup?
 D $5FBE Copy of #R$5FB3 for compare/display; synced at #R$654C/#R$69EC.
 B $5FBE,$03
 
-g $5FC1 Pointer: Active Tile Set
-@ $5FC1 label=Pointer_ActiveTileSet
+g $5FC1 Active Tile Set Pointer
+@ $5FC1 label=PointerActiveTileSet
 D $5FC1 Holds the pointer to the currently active tile set.
 W $5FC1,$02
 
-g $5FC3 Pointer: Current Room Data
-@ $5FC3 label=Pointer_CurrentRoomData
-D $5FC3 Points to the data for the current room.
+g $5FC3 Room Data Pointer
+@ $5FC3 label=PointerRoomData
+D $5FC3 Points to the tile data for the current room.
 W $5FC3,$02
 
 g $5FC5 Current Room
@@ -496,117 +557,633 @@ N $5FCE Scan through the room data blocks. Each block is terminated by #N$00,
   $5FD2,$01 Advance the data pointer.
   $5FD3,$03 Jump to #R$5FD8 if a #N$00 terminator was found.
   $5FD6,$02 Jump to #R$5FD1 to keep scanning.
-N $5FD8 Found a block terminator — check if we've reached the target room.
+N $5FD8 Found a block terminator so check if we've reached the target room.
 @ $5FD8 label=FindRoomData_FoundTerminator
   $5FD8,$01 Increment the room counter in #REGe.
   $5FD9,$05 Jump to #R$5FE7 if the room counter has exceeded #N$11 (maximum
-. number of rooms — room not found).
+. number of rooms/room not found).
   $5FDE,$03 Jump to #R$5FE3 if the room counter matches the target room number.
   $5FE1,$02 Otherwise, jump to #R$5FD1 to keep scanning.
-N $5FE3 The target room was found — store the pointer to its data.
+N $5FE3 The target room was found so store the pointer to its data.
 @ $5FE3 label=FindRoomData_Found
   $5FE3,$03 Write #REGhl to *#R$5FC3.
   $5FE6,$01 Return.
 
 c $5FE7 Raise Table Error
 @ $5FE7 label=Raise_Table_Error
-D $5FE7 RST #N$08 then LD A,(BC). Used when table index >= #N$11 in #R$5FC6.
+D $5FE7 #HTML(<code>RST #N$08</code> with the "Invalid argument" error code.)
+.
+. Used when the table index >= #N$11 in #R$5FC6, and when an invalid tile set
+. is requested in #R$5E72.
+  $5FE7,$01 #HTML(Run the ERROR_1 routine:
+. <a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/0008.html">RST #N$08</a>.)
+B $5FE8,$01 Error code: #N$0A ("Invalid argument").
 
-c $5FE9 Handle Pause Input
-@ $5FE9 label=Handle_Pause_Input
-  $6480,$03 #REGhl=#N$52EC (screen buffer location).
-  $6483,$03 #REGa=*#R$5FA7.
-  $6486,$03 Jump to #R$648E if #REGa is zero.
-  $6489,$01 Decrease #REGa by one.
-  $648A,$03 Write #REGa to *#R$5FA7.
-  $648D,$01 Return.
+c $5FE9 Main Game Loop
+@ $5FE9 label=MainGameLoop
+D $5FE9 Main game loop handler. Reads player input (either from Kempston
+. joystick or keyboard), moves Percy, checks for collisions with the room
+. scenery, handles room transitions, item collection and updates Percy's
+. animation frame.
+  $5FE9,$07 If *#R$5FA7 is unset, call #R$653D.
+N $5FF0 Seed the chick animation states and introduce a short random delay
+. using the Memory Refresh Register.
+  $5FF0,$03 #REGl=the contents of the Memory Refresh Register.
+  $5FF3,$02 Set the low byte in #REGh to #N$00 so only low memory is accessed.
+  $5FF5,$04 Fetch a byte from low memory and write it to *#R$5FB4.
+  $5FF9,$02,b$01 Keep only bits 0-2.
+  $5FFB,$01 Set the same byte value as a delay counter in #REGb.
+@ $5FFC label=MainGameLoop_RandomDelay
+  $5FFC,$01 No operation.
+  $5FFD,$02 Decrease the delay counter by one and loop back to #R$5FFC until
+. done.
+N $5FFF Read the Kempston joystick port to check for input.
+@ $5FFF label=MainGameLoop_ReadInput
+  $5FFF,$03 #REGbc=#N$EFFE.
+  $6002,$04 #REGix=#R$DAC0.
+  $6006,$05 Write #N$1F to *#R$5FA2 (default: no direction pressed).
+  $600B,$02 Read from the Kempston joystick port.
+  $600D,$02,b$01 Keep only bits 0-4.
+  $600F,$04 Jump to #R$6015 if any joystick direction was detected.
+  $6013,$02 Jump to #R$601B.
+@ $6015 label=MainGameLoop_JoystickInput
+  $6015,$03 Write #REGa to *#R$5FA2.
+  $6018,$03 Jump to #R$60A8.
 
-  $648E,$07 Jump to #R$64BE if *#REGix+#N$01 is greater than or equal to #N$90.
-  $6495,$03 #REGa=*#R$5FAB.
-  $6498,$01 Increment #REGa by one.
-  $6499,$03 Write #REGa to *#R$5FAB.
-  $649C,$03 Return if #REGa is not equal to #N$07.
-  $649F,$04 Write #N$00 to *#R$5FAB.
-  $64A3,$05 Return if *#R$5FAD is non-zero.
-  $64A8,$04 Jump to #R$64B6 if *#REGhl is zero.
-  $64AC,$02 Shift *#REGhl left (with carry).
-  $64AE,$01 #REGa=*#REGhl.
-  $64AF,$01 Increment #REGh by one.
-  $64B0,$01 Write #REGa to *#REGhl.
-  $64B1,$01 Increment #REGh by one.
-  $64B2,$01 Write #REGa to *#REGhl.
-  $64B3,$01 Increment #REGh by one.
-  $64B4,$01 Write #REGa to *#REGhl.
-  $64B5,$01 Return.
+N $601B Check whether to read from Kempston joystick or keyboard. Bit 7 of
+. *#R$5FA6 indicates keyboard mode.
+@ $601B label=MainGameLoop_CheckInputMode
+  $601B,$03 #REGa=*#R$5FA6.
+  $601E,$04 Jump to #R$606B if keyboard mode is active (bit 7 is set).
+  $6022,$03 #REGbc=#N($001F,$04,$04).
+  $6025,$03 Jump to #R$6043 if #REGa is non-zero.
+N $6028 Auto-detect input method. Poll the joystick port repeatedly and if any
+. input is detected, switch to joystick mode; otherwise switch to keyboard.
+  $6028,$02 #REGe=#N$F0 (poll retry counter).
+@ $602A label=MainGameLoop_AutoDetect_Loop
+  $602A,$02 Read from the joystick port.
+  $602C,$02,b$01 Keep only bits 0-4.
+  $602E,$04 Jump to #R$603C if no joystick was input detected.
+  $6032,$01 Decrease the retry counter.
+  $6033,$02 Jump to #R$602A until all the retries have been used.
+N $6035 Joystick input was detected so set joystick mode.
+  $6035,$05 Write #N$1F to *#R$5FA6 (joystick mode).
+  $603A,$02 Jump to #R$6043.
+N $603C No joystick was detected so set keyboard mode.
+@ $603C label=MainGameLoop_SetKeyboardMode
+  $603C,$05 Write #N$80 to *#R$5FA6 (keyboard mode).
+  $6041,$02 Jump to #R$606B.
 
-  $64B6,$01 Decrease #REGl by one.
-  $64B7,$05 Jump to #R$64E1 if #REGl is equal to #N$E0.
-  $64BC,$02 Jump to #R$64A8.
+N $6043 Read the Kempston joystick and remap the direction bits into the
+. game's internal input format stored in *#R$5FA2.
+N $6043 #TABLE(default,centre,centre,centre)
+. { =h Joystick Bit | =h Direction | =h Game Bit }
+. { 4 | Fire | 0 }
+. { 0 | Right | 3 }
+. { 1 | Left | 4 }
+. { 2 | Down | 2 }
+. { 3 | Up | 1 }
+. TABLE#
+@ $6043 label=MainGameLoop_ReadJoystick
+  $6043,$02 Read from the joystick port.
+  $6045,$02 #REGe=#N$1F (all directions inactive).
+@ $6047 label=MainGameLoop_Joystick_TestFire
+  $6047,$04 Jump to #R$604D if fire is not being pressed.
+  $604B,$02 Reset bit 0 of #REGe (fire active).
+@ $604D label=MainGameLoop_Joystick_TestRight
+  $604D,$04 Jump to #R$6053 if right is not being pressed.
+  $6051,$02 Reset bit 3 of #REGe (right active).
+@ $6053 label=MainGameLoop_Joystick_TestLeft
+  $6053,$04 Jump to #R$6059 if left is not being pressed.
+  $6057,$02 Reset bit 4 of #REGe (left active).
+@ $6059 label=MainGameLoop_Joystick_TestDown
+  $6059,$04 Jump to #R$605F if down is not being pressed.
+  $605D,$02 Reset bit 2 of #REGe (down active).
+@ $605F label=MainGameLoop_Joystick_TestUp
+  $605F,$04 Jump to #R$6065 if up is not being pressed.
+  $6063,$02 Reset bit 1 of #REGe (up active).
+@ $6065 label=MainGameLoop_Joystick_Store
+  $6065,$04 Write #REGe to *#R$5FA2.
+  $6069,$02 Jump to #R$60A8.
 
-  $64BE,$03 #REGa=*#R$5FAB.
-  $64C1,$01 Increment #REGa by one.
-  $64C2,$03 Write #REGa to *#R$5FAB.
-  $64C5,$03 Return if #REGa is less than #N$03.
-  $64C8,$04 Write #N$00 to *#R$5FAB.
-  $64CC,$03 #REGhl=#N$52E1 (screen buffer location).
-  $64CF,$05 Jump to #R$64DA if *#REGhl is equal to #N$FF.
-  $64D4,$02 Shift *#REGhl right.
-  $64D6,$02 Set bit 7 of *#REGhl.
-  $64D8,$02 Jump to #R$64AE.
+N $606B Read keyboard input. Scans multiple keyboard half-rows and maps them
+. into the same internal input format.
+N $606B #TABLE(default,centre,centre,centre)
+. { =h Port | =h Keys | =h Game Bit }
+. { #N$7FFE | SPACE..B | 0 (fire) }
+. { #N$BFFE | ENTER..H | 2 (down) }
+. { #N$DFFE | P..Y | 1 (up) }
+. { #N$FBFE | Q (bit 0) | 4 (left) }
+. { #N$FBFE | W (bit 1) | 3 (right) }
+. TABLE#
+@ $606B label=MainGameLoop_ReadKeyboard
+  $606B,$03 #REGbc=#N$7FFE.
+  $606E,$02 #REGe=#N$1F (all directions inactive).
+N $6070 Read SPACE-B row for fire.
+  $6070,$02 Read from the keyboard port.
+  $6072,$02,b$01 Keep only bits 0-4.
+  $6074,$04 Jump to #R$607A if no key was being pressed.
+  $6078,$02 Reset bit 0 of #REGe (fire active).
+N $607A Read ENTER-H row for down.
+@ $607A label=MainGameLoop_Keyboard_TestDown
+  $607A,$02 #REGb=#N$BF.
+  $607C,$02 Read from the keyboard port.
+  $607E,$02,b$01 Keep only bits 0-4.
+M $607E,$06 Jump to #R$6086 if no key was being pressed.
+  $6084,$02 Reset bit 2 of #REGe (down active).
+N $6086 Read P-Y row for up.
+@ $6086 label=MainGameLoop_Keyboard_TestUp
+  $6086,$02 #REGb=#N$DF.
+  $6088,$02 Read from the keyboard port.
+  $608A,$02,b$01 Keep only bits 0-4.
+M $608A,$06 Jump to #R$6092 if no key was being pressed.
+  $6090,$02 Reset bit 1 of #REGe (up active).
+N $6092 Read Q-T row for left (Q, bit 0) and right (W, bit 1).
+@ $6092 label=MainGameLoop_Keyboard_TestLeftRight
+  $6092,$02 #REGb=#N$FB.
+  $6094,$02 Read from the keyboard port.
+  $6096,$02,b$01 Keep only bit 0 (Q key).
+M $6096,$04 Jump to #R$609C if Q is not being pressed.
+  $609A,$02 Reset bit 4 of #REGe (left active).
+@ $609C label=MainGameLoop_Keyboard_TestRight
+  $609C,$02 Read from the keyboard port again.
+  $609E,$02,b$01 Keep only bit 1 (W key).
+M $609E,$04 Jump to #R$60A4 if W is not being pressed.
+  $60A2,$02 Reset bit 3 of #REGe (right active).
+@ $60A4 label=MainGameLoop_Keyboard_Store
+  $60A4,$04 Write #REGe to *#R$5FA2.
+N $60A8 Handle Percy's special "flying up to collect item" state. If *#R$5FA9
+. is set, Percy is currently flying upward to collect an item.
+@ $60A8 label=MainGameLoop_HandleItemCollection
+  $60A8,$06 Jump to #R$60D9 if *#R$5FA9 is unset (no item to collect).
+N $60AE Percy is flying upward so advance the Y position.
+  $60AE,$03 #REGa=*#REGix+#N$21.
+  $60B1,$02 #REGa+=#N$04.
+  $60B3,$02 Has Percy reached Y position #N$A8?
+  $60B5,$02 Jump to #R$60BF if not yet reached.
+N $60B7 Percy has reached the target so end the collection state.
+  $60B7,$04 Write #N$00 to *#REGix+#N$23.
+  $60BB,$04 Unset *#R$5FA9 (the item has been collected).
+@ $60BF label=MainGameLoop_UpdateCollectionY
+  $60BF,$03 Write #REGa to *#REGix+#N$21.
+N $60C2 Play a rising sound effect during item collection.
+  $60C2,$02 Stash #REGix on the stack.
+  $60C4,$03 #REGhl=*#R$5FB7.
+  $60C7,$04 #REGhl+=#N$0010.
+  $60CB,$03 Write #REGhl to *#R$5FB7.
+  $60CE,$03 #REGde=#N($0004,$04,$04).
+  $60D1,$03 #HTML(Call <a rel="noopener nofollow" href="https://skoolkid.github.io/rom/asm/03B5.html">BEEP</a>.)
+  $60D4,$01 Disable interrupts.
+  $60D5,$02 Restore #REGix from the stack.
+  $60D7,$02 Jump to #R$610E.
+N $60D9 Check if fire is pressed and conditions are met to start collecting
+. an item.
+@ $60D9 label=MainGameLoop_TestFirePressed
+  $60D9,$07 Jump to #R$610E if *#R$5FA2 states that fire has not been pressed.
+  $60E0,$06 Jump to #R$610E if *#R$5FAD is set.
+N $60E6 Percy must be below Y position #N$84 to collect items.
+  $60E6,$07 Jump to #R$610E if Percy's Y position (*#REGix+#N$01) states that
+. Percy is too high to collect items (greater than or equal to #N$84).
+N $60ED Start the item collection sequence and set Percy's target Y position and
+. collection state.
+  $60ED,$02 #REGa+=#N$10.
+  $60EF,$01 Stash #REGaf on the stack.
+  $60F0,$03 Call #R$679C to find and remove the collectible item.
+  $60F3,$01 Restore #REGaf from the stack.
+  $60F4,$03 Write #REGa to *#REGix+#N$21 (collection target Y).
+  $60F7,$04 Write #N$0F to *#REGix+#N$23.
+  $60FB,$03 #REGa=*#REGix+#N$00 (Percy's X position).
+  $60FE,$02 #REGa+=#N$05.
+  $6100,$03 Write #REGa to *#REGix+#N$20 (collection target X).
+  $6103,$02,b$01 #REGa=#N$FF.
+  $6105,$03 Write #N$FF to *#R$5FA9 (collection in progress).
+  $6108,$06 Write #N($0064,$04,$04) to *#R$5FB7 (initial beep pitch).
+N $610E Apply the direction input to Percy's movement. First ensure fire
+. is flagged as released, then dispatch to the appropriate movement handler for
+. each direction.
+@ $610E label=MainGameLoop_ApplyMovement
+  $610E,$03 #REGa=*#R$5FA2.
+  $6111,$02 Set bit 0 of #REGa (mark fire as handled).
+  $6113,$03 Write #REGa to *#R$5FA2.
+N $6116 If Percy is falling (*#R$5FA7 is non-zero), handle the falling state.
+  $6116,$06 Jump to #R$6152 if *#R$5FA7 is unset.
+  $611C,$04 Jump to #R$612B if #REGa is #N$FE.
+N $6120 Start falling and set the fall state and initial beep pitch.
+  $6120,$05 Write #N$FE to *#R$5FA7.
+  $6125,$06 Write #N$0082 to *#R$5FB7.
+N $612B Percy is falling so play a descending beep and move downward.
+@ $612B label=MainGameLoop_Falling
+  $612B,$0A Write *#R$5FB7 + #N($0010,$04,$04) back to *#R$5FB7.
+  $6135,$03 #REGde=#N($0004,$04,$04).
+  $6138,$02 Stash #REGix on the stack.
+  $613A,$03 #HTML(Call <a rel="noopener nofollow" href="https://skoolkid.github.io/rom/asm/03B5.html">BEEP</a>.)
+  $613D,$02 Restore #REGix from the stack.
+  $613F,$04 Write #N$FF to *#REGix+#N$02.
+N $6143 Override input and force all directions inactive and only allow down.
+  $6143,$05 Write #N$1F to *#R$5FA2.
+N $6148 If Percy has fallen below Y position #N$8D, lose a life.
+  $6148,$03 #REGa=*#REGix+#N$01 (Percy's Y position).
+  $614B,$05 Jump to #R$68B8 if Percy has fallen off the screen (Percy's Y
+. position is greater than #N$8D).
+  $6150,$02 Reset bit 2 of *#REGhl (force downward movement).
+N $6152 Apply directional movement. Each handler moves Percy in the
+. corresponding direction, checking screen boundaries.
+@ $6152 label=MainGameLoop_MovePercy
+  $6152,$03 #REGc=*#REGix+#N$00 (Percy's X position).
+  $6155,$03 #REGb=*#REGix+#N$01 (Percy's Y position).
+  $6158,$01 Stash Percy's position on the stack.
+  $6159,$04 #REGe=*#R$5FA2.
+N $615D If no direction is pressed, decelerate.
+  $615D,$05 Call #R$62F8 if no direction has been pressed.
+  $6162,$04 #REGd=*#R$5FAE.
+N $6166 Dispatch to each direction handler if active.
+  $6166,$05 Call #R$6280 if left is active.
+  $616B,$05 Call #R$62A2 if right is active.
+  $6170,$05 Call #R$62C2 if up is active.
+  $6175,$05 Call #R$62D0 if down is active.
+N $617A Update the movement speed.
+  $617A,$03 Call #R$62D8.
+N $617D If any direction was pressed, store it for animation purposes.
+  $617D,$03 #REGa=*#R$5FA2.
+  $6180,$04 Jump to #R$6187 if there was no input.
+  $6184,$03 Write #REGa to *#R$5FA4.
+N $6187 Collision detection with room scenery. Converts Percy's position to a
+. room attribute buffer address and checks if Percy overlaps any solid tiles.
+@ $6187 label=MainGameLoop_CollisionDetection
+  $6187,$02 #REGd=#N$00.
+  $6189,$05 Write #N$00 to *#R$5FA8.
+  $618E,$02 #REGe=#N$07.
+N $6190 Load Percy's current position.
+  $6190,$03 #REGc=*#REGix+#N$00 (Percy's X position).
+  $6193,$03 #REGb=*#REGix+#N$01 (Percy's Y position).
+N $6196 Check if Percy's X position is on a pixel boundary.
+  $6196,$01 #REGa=#REGc.
+  $6197,$02,b$01 Keep only bits 0-2 (sub-character X offset).
+  $6199,$03 Jump to #R$619E if #REGa is zero (aligned to character).
+  $619C,$02 Set bit 0 of #REGd (not X-aligned).
+N $619E Calculate the room attribute buffer address from Percy's position.
+@ $619E label=MainGameLoop_CalcAttributeAddress
+  $619E,$01 #REGa=#REGc.
+  $619F,$03 Rotate right three positions (divide X by #N$08).
+  $61A2,$02,b$01 Keep only bits 0-4 (character column).
+  $61A4,$01 #REGl=#REGa.
+  $61A5,$03 #REGa=#REGb, keep only bits 0-2 (sub-character Y offset).
+  $61A8,$03 Jump to #R$61AD if #REGa is zero (aligned to character row).
+  $61AB,$02 Set bit 1 of #REGd (not Y-aligned).
+@ $61AD label=MainGameLoop_CalcAttributeAddress_2
+  $61AD,$01 #REGa=#REGb.
+  $61AE,$02 Rotate left two positions.
+  $61B0,$02,b$01 Keep only bits 5-7.
+  $61B2,$01 Merge in the column from #REGl.
+  $61B3,$01 #REGl=#REGa.
+  $61B4,$01 #REGa=#REGb.
+  $61B5,$02 Rotate left two positions.
+  $61B7,$02,b$01 Keep only bits 0-1.
+  $61B9,$02,b$01 Set bits 3-4 and 6-7 for room attribute buffer at #R$D800.
+  $61BB,$01 #REGh=#REGa.
+N $61BC Check a vertical strip of attribute cells for solid tiles. The height
+. of the strip depends on whether Percy is Y-aligned.
+  $61BC,$02 #REGb=#N$02 (rows to check).
+  $61BE,$04 Jump to #R$61C3 if Y-aligned.
+  $61C2,$01 Check an extra row if not Y-aligned.
+@ $61C3 label=MainGameLoop_CollisionCheck_Loop
+  $61C3,$01 Stash the row counter on the stack.
+N $61C4 Check the current attribute cell and the one to its right.
+  $61C4,$01 #REGa=*#REGhl.
+  $61C5,$01 Mask with #REGe.
+  $61C6,$03 Jump to #R$6244 if a collision was detected (not all bits set).
+  $61C9,$01 Move to the next column.
+  $61CA,$01 #REGa=*#REGhl.
+  $61CB,$01 Mask with #REGe.
+  $61CC,$03 Jump to #R$6244 if a collision was detected.
+  $61CF,$01 Move back to the original column.
+N $61D0 If Percy is not X-aligned, also check the cell two columns right.
+  $61D0,$04 Jump to #R$61DD if X-aligned.
+  $61D4,$02 Move two columns right.
+  $61D6,$01 #REGa=*#REGhl.
+  $61D7,$01 Mask with #REGe.
+  $61D8,$03 Jump to #R$6244 if a collision was detected.
+  $61DB,$02 Move back two columns.
+N $61DD Move down one row in the attribute buffer and continue.
+@ $61DD label=MainGameLoop_CollisionCheck_NextRow
+  $61DD,$04 #REGhl+=#N($0020,$04,$04).
+  $61E1,$01 Restore the row counter from the stack.
+  $61E2,$02 Decrease the row counter by one and loop back to #R$61C3 until all
+. rows are checked.
+N $61E4 No collision detected so Percy can move freely. Restore the position
+. from the stack and update the sprite frame.
+@ $61E4 label=MainGameLoop_NoCollision
+  $61E4,$01 Restore Percy's previous position from the stack.
+  $61E5,$04 Write #N$07 to *#REGix+#N$02.
+N $61E9 If Percy is not falling, check for ground beneath.
+  $61E9,$06 Jump to #R$623D if Percy is falling (*#R$5FA7 is set).
+N $61EF Check if there is ground below Percy's feet. Calculate the attribute
+. address one character row below Percy's position.
+@ $61EF label=MainGameLoop_CheckGround
+  $61EF,$03 #REGc=*#REGix+#N$00 (Percy's X position).
+  $61F2,$03 #REGb=*#REGix+#N$01 (Percy's Y position)..
+  $61F5,$01 #REGa=#REGc.
+  $61F6,$02,b$01 Keep only bits 0-2 (sub-character X offset).
+  $61F8,$01 Stash the X offset on the stack.
+  $61F9,$01 #REGa=#REGc.
+  $61FA,$03 Rotate right three positions (divide X by #N$08).
+  $61FD,$02,b$01 Keep only bits 0-4 (character column).
+  $61FF,$01 #REGl=#REGa.
+N $6200 Add #N$10 pixels to the Y position to check below Percy's feet.
+  $6200,$01 #REGa=#REGb.
+  $6201,$03 #REGb=#REGa + #N$10.
+  $6204,$02 Rotate left two positions.
+  $6206,$02,b$01 Keep only bits 5-7.
+  $6208,$01 Merge in the column.
+  $6209,$01 #REGl=#REGa.
+  $620A,$01 #REGa=#REGb.
+  $620B,$02,b$01 Keep only bits 6-7.
+  $620D,$03 Rotate right three positions.
+  $6210,$02,b$01 Set bits 6-7 for the room attribute buffer at #R$C000.
+  $6212,$01 #REGh=#REGa.
+  $6213,$01 Restore the X offset from the stack.
+N $6214 If Percy is X-aligned, skip the extra column check.
+  $6214,$03 Jump to #R$621D if the X offset is non-zero.
+  $6217,$06 Jump to #R$621E if *#R$5FA5 is zero (Percy is facing right).
+@ $621D label=MainGameLoop_CheckGround_ExtraCol
+  $621D,$01 Move one column right.
+N $621E Check if the tile below is a platform (attribute #N$AA).
+@ $621E label=MainGameLoop_CheckGround_Test
+  $621E,$05 Jump to #R$623D if there's no platform below Percy (by checking if
+. the attribute is #N$AA/ #COLOUR$AA).
+N $6223 Platform detected so check if Percy should land.
+  $6223,$07 Jump to #R$6239 if *#R$5FA2 states that down is not being pressed.
+N $622A Down is pressed while on a platform so snap Percy's Y to the platform.
+  $622A,$03 #REGa=*#REGix+#N$01.
+  $622D,$02,b$01 Keep only bits 3-7 (snap to character row).
+  $622F,$03 Write #REGa to *#REGix+#N$01.
+  $6232,$02,b$01 #REGa=#N$FF.
+M $6232,$05 Write #N$FF to *#R$5FAD (landed on platform flag).
+  $6237,$02 Jump to #R$6241.
+N $6239 Check if up is pressed while on a platform.
+@ $6239 label=MainGameLoop_CheckGround_TestUp
+  $6239,$04 Jump to #R$6241 if up is not pressed.
+N $623D No platform below so clear the landed flag.
+@ $623D label=MainGameLoop_ClearLandedFlag
+  $623D,$04 Write #N$00 to *#R$5FAD.
+@ $6241 label=MainGameLoop_UpdateAnimation
+  $6241,$03 Jump to #R$6338.
 
-  $64DA,$01 Increment #REGl by one.
-  $64DB,$04 Return if #REGl is equal to #N$ED.
-  $64DF,$02 Jump to #R$64CF.
-  $64E1,$05 Write #N$FF to *#R$5FA7.
-  $64E6,$01 Return.
+N $6244 Collision with solid scenery detected so reject the move and restore
+. Percy's previous position.
+@ $6244 label=MainGameLoop_CollisionDetected
+  $6244,$02 Restore the row counter and overwrite it with Percy's previous
+. position from the stack.
+N $6246 If Percy is falling, handle the impact.
+  $6246,$06 Jump to #R$625F if Percy is falling (*#R$5FA7 is set).
+N $624C Check if Percy has hit the bottom of the screen.
+  $624C,$07 Jump to #R$626F if Percy's Y position (*#REGix+#N$01) is greater
+. than or equal to #N$91 and Percy is at the bottom of the screen.
+N $6253 Special case; if in room #N$06, treat collision differently.
+  $6253,$07 Jump to #R$626F if *#R$5FC5 is room #N$06.
+N $625A Check if the collision cell is empty.
+  $625A,$01 #REGa=*#REGhl.
+  $625B,$01 Mask with #REGe.
+  $625C,$03 Jump to #R$626F if the cell is empty.
+N $625F Handle Percy falling and hitting something.
+@ $625F label=MainGameLoop_FallImpact
+  $625F,$04 Jump to #R$626C if #REGa is #N$FE.
+  $6263,$02,b$01 #REGa=#N$FF.
+M $6263,$05 Write #N$FF to *#R$5FA7.
+  $6268,$04 Write #N$FF to *#REGix+#N$02.
+@ $626C label=MainGameLoop_FallImpact_Done
+  $626C,$03 Jump to #R$6338.
 
-c $64E7 Lose Life
-@ $64E7 label=LoseLife
-E $64E7 Continue on to #R$653D.
-  $64E7,$05 Write #N$90 to *#R$DAC1.
-  $64EC,$04 Write #N$11 to *#R$DAC3.
-  $64F0,$02 Stash #REGix on the stack.
-  $64F2,$03 Call #R$6992.
-N $64F5 Play the "lose a life" sound effect.
-N $64F5 #HTML(#AUDIO(lose-life.wav)(#INCLUDE(LoseLife)))
-  $64F5,$03 #REGhl=#N($0000,$04,$04).
-  $64F8,$02 #REGa=#N$01.
-  $64FA,$02 #REGb=#N$00.
-  $64FC,$01 Stash #REGbc on the stack.
-  $64FD,$01 #REGd=#REGb.
-  $64FE,$02 Rotate #REGb right.
-  $6500,$02 Send to the speaker.
-  $6502,$01 No operation.
-  $6503,$01 No operation.
-  $6504,$01 No operation.
-  $6505,$01 No operation.
-  $6506,$02 Decrease counter by one and loop back to #R$6500 until counter is zero.
-  $6508,$01 Restore #REGbc from the stack.
-  $6509,$02,b$01 Flip bits 3-4.
-  $650B,$01 Set the bits from #REGd.
-  $650C,$01 Merge the bits from *#REGhl.
-  $650D,$02,b$01 Keep only bits 3-7.
-  $650F,$02,b$01 Set bit 0.
-  $6511,$01 Increment #REGhl by one.
-  $6512,$02 Decrease counter by one and loop back to #R$64FC until counter is zero.
-  $6514,$02 Restore #REGix from the stack.
-  $6516,$03 #REGhl=#R$DE9E.
-  $6519,$03 #REGbc=#N($0160,$04,$04).
-  $651C,$05 Jump to #R$6523 if *#REGhl is not equal to #N$1E.
-  $6521,$02 Write #N$00 to *#REGhl.
-  $6523,$01 Decrease #REGbc by one.
-  $6524,$01 Increment #REGhl by one.
-  $6525,$04 Jump to #R$651C until #REGbc is zero.
-  $6529,$03 Call #R$6791.
-N $652C See #POKE#infinite_lives(Infinite Lives).
-N $652C Decrease the lives counter by one.
-  $652C,$03 #REGhl=#R$5FB3.
-  $652F,$01 Decrease *#REGhl by one.
-  $6530,$05 Jump to #R$655C if *#R$5FB3 is not yet equal to ASCII #N$30
-. ("#CHR$30").
-  $6535,$02 #REGa=#N$30.
-  $6537,$03 #REGhl=#N$50F0 (screen buffer location).
-  $653A,$03 Call #R$6581.
+N $626F Percy has moved past a screen boundary so trigger a room transition.
+. The direction determines which room to move to.
+@ $626F label=MainGameLoop_SnapPosition
+  $626F,$08 Write #N$01 to; #LIST
+. { *#R$5FAE }
+. { *#R$5FA8 }
+. LIST#
+N $6277 Restore Percy's position from before the rejected move.
+  $6277,$03 Write #REGc to *#REGix+#N$00 (Percy's X position).
+  $627A,$03 Write #REGb to *#REGix+#N$01 (Percy's Y position).
+  $627D,$03 Jump to #R$6338.
+
+c $6280 Move Percy Left
+@ $6280 label=MovePercyLeft
+D $6280 Move Percy left. Checks screen boundary and handles room transitions.
+R $6280 IX Pointer to Percys state data
+R $6280 D Number of pixels to move
+  $6280,$05 Write #N$01 to *#R$5FA5 (Percy is facing left).
+N $6285 If *#R$5FAA is non-zero, apply an extra boundary check.
+  $6285,$06 Jump to #R$6297 if *#R$5FAA is set.
+  $628B,$03 Load #REGa with Percy's X position (*#REGix+#N$00) - #N$05.
+N $6290 If Percy has gone past the left edge transition into the previous room.
+  $6290,$03 Jump to #R$631F if Percy's new position is less than #N$00
+. (transition to the previous room).
+  $6293,$01 Subtract the movement speed from Percy's X position.
+  $6294,$03 Jump to #R$631F if Percy's new position is less than #N$00
+. (transition to the previous room).
+@ $6297 label=MovePercyLeft_Apply
+  $6297,$04 Load #REGa with Percy's X position (*#REGix+#N$00) - the number of
+. pixels to move (from #REGd).
+N $629B If Percy has gone past the left edge transition into the previous room.
+  $629B,$03 Jump to #R$631F if Percy's new position is less than #N$00
+. (transition to the previous room).
+  $629E,$03 Write Percy's updated X screen position back to *#REGix+#N$00.
+  $62A1,$01 Return.
+
+c $62A2 Move Percy Right
+@ $62A2 label=MovePercyRight
+D $62A2 Move Percy right. Checks screen boundary and handles room transitions.
+R $62A2 IX Pointer to Percys state data
+R $62A2 D Number of pixels to move
+  $62A2,$04 Write #N$00 to *#R$5FA5 (Percy is facing right).
+N $62A6 If *#R$5FAA is non-zero, apply an extra boundary check.
+  $62A6,$06 Jump to #R$62B6 if *#R$5FAA is unset.
+  $62AC,$06 Load #REGa with Percy's X position (*#REGix+#N$00) + the number of
+. pixels to move (from #REGd) + #N$04.
+N $62B2 If Percy has gone past the right edge transition into the next room.
+  $62B2,$04 Jump to #R$6307 if Percy's new position is greater than or equal to
+. #N$EF.
+@ $62B6 label=MovePercyRight_Apply
+  $62B6,$04 Load #REGa with Percy's X position (*#REGix+#N$00) + the number of
+. pixels to move (from #REGd).
+N $62BA If Percy has gone past the right edge transition into the next room.
+  $62BA,$04 Jump to #R$6307 if Percy's new position is greater than or equal to
+. #N$EF (transition to next room).
+  $62BE,$03 Write Percy's updated X screen position back to *#REGix+#N$00.
+  $62C1,$01 Return.
+
+c $62C2 Move Percy Up
+@ $62C2 label=MovePercyUp
+D $62C2 Move Percy up. Clamps to Y position #N$00 at the top of the screen.
+R $62C2 IX Pointer to Percys state data
+R $62C2 D Number of pixels to move
+  $62C2,$04 Load #REGa with Percy's Y position (*#REGix+#N$01) - the number of
+. pixels to move (from #REGd).
+  $62C6,$04 Jump to #R$62CC if Percy's new position is less than #N$A0 (is
+. Percy within the screen boundaries).
+N $62CA Percy is outside of the screen boundaries!
+  $62CA,$02 Clamp Percy to Y position #N$00 (the top of screen).
+@ $62CC label=MovePercyUp_Store
+  $62CC,$03 Write Percy's updated Y screen position back to *#REGix+#N$01.
+  $62CF,$01 Return.
+
+c $62D0 Move Percy Down
+@ $62D0 label=MovePercyDown
+R $62D0 IX Pointer to Percys state data
+R $62D0 D Number of pixels to move
+  $62D0,$03 Load #REGa with Percy's Y position (*#REGix+#N$01).
+  $62D3,$04 Write #REGa + the number of pixels to move (from #REGd) back to
+. *#REGix+#N$01.
+  $62D7,$01 Return.
+
+c $62D8 Update Movement Speed
+@ $62D8 label=UpdateMovementSpeed
+D $62D8 Update Percy's movement speed.
+.
+. If the current input matches the previous input, accelerate up to a maximum
+. of #N$04. If the input has changed, decelerate down to a minimum of #N$01.
+  $62D8,$0A Jump to #R$62ED if *#R$5FA4 is the same as *#R$5FA2.
+N $62E2 Input changed so decelerate.
+  $62E2,$03 #REGa=*#R$5FAE.
+  $62E5,$02 Return if already at minimum speed (#N$01).
+  $62E8,$01 Decrease speed by one.
+  $62E9,$03 Write #REGa to *#R$5FAE.
+  $62EC,$01 Return.
+
+N $62ED Input is the same so accelerate.
+@ $62ED label=UpdateMovementSpeed_Accelerate
+  $62ED,$03 #REGa=*#R$5FAE.
+  $62F0,$02 Return if already at maximum speed (#N$04).
+  $62F3,$01 Increase speed by one.
+  $62F4,$03 Write #REGa to *#R$5FAE.
+  $62F7,$01 Return.
+
+N $62F8 No input so decelerate movement speed towards minimum.
+@ $62F8 label=UpdateMovementSpeed_Decelerate
+  $62F8,$03 #REGa=*#R$5FAE.
+  $62FB,$02 Return if already at minimum speed (#N$01).
+  $62FE,$01 Decrease speed by one.
+  $62FF,$03 Write #REGa to *#R$5FAE.
+  $6302,$04 #REGe=*#R$5FA4 (use the previous direction for animation).
+  $6306,$01 Return.
+
+c $6307 Transition Room Right
+@ $6307 label=TransitionRoomRight
+D $6307 Percy has gone past the right edge so transition into the next room.
+  $6307,$01 Stash #REGaf on the stack.
+  $6308,$03 #REGa=*#R$5FC5.
+N $630B If the current room is #N$0B (the last room), wrap to room #N$01.
+  $630B,$04 Jump to #R$6310 if this isn't room #N$0B.
+  $630F,$01 #REGa=#N$00 (will become #N$01 after increment).
+@ $6310 label=TransitionRoomRight_SetRoom
+  $6310,$04 Write #N$00 to *#REGix+#N$00 (reset Percy's X to left edge).
+  $6314,$01 Increment room number.
+  $6315,$03 Write #REGa to *#R$5FC5.
+  $6318,$03 Call #R$5E24 to draw the new room.
+  $631B,$01 Restore #REGaf from the stack.
+  $631C,$02 Discard two stack values.
+  $631E,$01 Return.
+
+c $631F Transition Room Left
+@ $631F label=TransitionRoomLeft
+D $631F Percy has gone past the left edge so transition into the previous room.
+  $631F,$01 Stash #REGaf on the stack.
+  $6320,$03 #REGa=*#R$5FC5.
+N $6323 If the current room is room #N$01 wrap around to room #N$0B.
+  $6323,$04 Jump to #R$6329 if this isn't room #N$01.
+  $6327,$02 Set #REGa to room #N$0C (will become #N$0B after decrement).
+@ $6329 label=TransitionRoomLeft_SetRoom
+  $6329,$04 Write #N$EE to *#REGix+#N$00 (reset Percy's X to right edge).
+  $632D,$01 Decrement room number.
+  $632E,$03 Write #REGa to *#R$5FC5.
+  $6331,$01 Restore #REGaf from the stack.
+  $6332,$03 Call #R$5E24 to draw the new room.
+  $6335,$02 Discard two stack values.
+  $6337,$01 Return.
+
+c $6338 Update Percy Animation
+@ $6338 label=UpdatePercyAnimation
+D $6338 Update Percy's animation frame based on the current movement state and
+. direction. The animation counter at *#R$5FB0 cycles through frames, with bit
+. 7 indicating the second half of the cycle.
+c $6338 Update Percy Animation
+@ $6338 label=UpdatePercyAnimation
+  $6338,$03 #REGa=*#R$5FB0.
+  $633B,$04 Jump to #R$6349 if in the second half of the cycle.
+N $633F First half so increment the counter.
+  $633F,$01 Increment #REGa.
+  $6340,$04 Jump to #R$6356 if the counter has reached #N$05 (switch to second
+. half).
+  $6344,$03 Write #REGa to *#R$5FB0.
+  $6347,$02 Jump to #R$6362.
+
+N $6349 Second half so decrement the counter.
+@ $6349 label=UpdatePercyAnimation_SecondHalf
+  $6349,$02,b$01 Keep only bits 0-2 (frame index).
+  $634B,$01 Decrement the frame index.
+  $634C,$03 Jump to #R$635D if the frame index has reached zero.
+  $634F,$05 Write #REGa + #N$80 (keep bit 7 set) to *#R$5FB0.
+  $6354,$02 Jump to #R$6362.
+
+N $6356 Switch to the second half of the animation cycle.
+@ $6356 label=UpdatePercyAnimation_SwitchToSecondHalf
+  $6356,$05 Write #N$84 to *#R$5FB0.
+  $635B,$02 Jump to #R$6362.
+
+N $635D Switch back to the first half of the animation cycle.
+@ $635D label=UpdatePercyAnimation_SwitchToFirstHalf
+  $635D,$05 Write #N$01 to *#R$5FB0.
+N $6362 Select Percy's sprite frame based on direction and animation state.
+. Frames are arranged in groups: #TABLE(default,centre,centre)
+. { =h Byte Range | =h State }
+. { #N$01-#N$04 | Flying right }
+. { #N$05-#N$08 | Flying left }
+. { #N$09-#N$0C | Walking/ Standing right }
+. { #N$0D-#N$10 | Walking/ Standing left }
+. TABLE#
+@ $6362 label=UpdatePercyAnimation_SetFrame
+  $6362,$06 Jump to #R$6377 if Percy's current X position (*#REGix+#N$00) is the
+. same as his previous X position (*#REGix+#N$40).
+N $636A Percy has moved horizontally so cycle the wing flap counter between
+N $636A #N$01 and #N$04.
+  $636A,$03 #REGa=*#R$5FAF.
+  $636D,$01 Increment the flap counter.
+  $636E,$04 Jump to #R$6374 if it hasn't reached #N$05 yet.
+  $6372,$02 Reset the flap counter to #N$01.
+@ $6374 label=UpdatePercyAnimation_StoreFlap
+  $6374,$03 Write #REGa to *#R$5FAF.
+N $6377 Determine whether Percy is airborne or grounded, and facing left or
+. right.
+@ $6377 label=UpdatePercyAnimation_ChooseFrame
+  $6377,$0D Jump to #R$639E if Percy's Y position (*#REGix+#N$01) is on the
+. ground, or if *#R$5FAD is set (and percy has landed on a platform).
+N $6384 Percy is airborne so select flying frame based on direction.
+  $6384,$06 Jump to #R$6393 if *#R$5FA5 is unset (Percy is facing right).
+N $638A Flying left: frame = flap counter + #N$00.
+  $638A,$03 #REGa=*#R$5FB0.
+  $638D,$02,b$01 Keep only bits 0-2 (animation frame index).
+  $638F,$03 Write #REGa to *#REGix+#N$03.
+  $6392,$01 Return.
+
+N $6393 Flying right: frame = flap counter + #N$04.
+@ $6393 label=UpdatePercyAnimation_FlyingRight
+  $6393,$03 #REGa=*#R$5FB0.
+  $6396,$02,b$01 Keep only bits 0-2.
+  $6398,$05 Write #REGa + #N$04 to *#REGix+#N$03.
+  $639D,$01 Return.
+
+N $639E Percy is on the ground or landed so select grounded frame.
+@ $639E label=UpdatePercyAnimation_Grounded
+  $639E,$05 Write #N$01 to *#R$5FAE (reset movement speed).
+  $63A3,$06 Jump to #R$63B2 if *#R$5FA5 is unset (Percy is facing right).
+N $63A9 Grounded left: frame = flap counter + #N$08.
+  $63A9,$08 Write *#R$5FAF + #N$08 to *#REGix+#N$03.
+  $63B1,$01 Return.
+
+N $63B2 Grounded right: frame = flap counter + #N$0C.
+@ $63B2 label=UpdatePercyAnimation_GroundedRight
+  $63B2,$08 Write *#R$5FAF + #N$0C to *#REGix+#N$03.
+  $63BA,$01 Return.
 
 c $63BB Print HUD Header
 @ $63BB label=Print_HUD_Header
@@ -714,11 +1291,102 @@ c $6480 Handle Title Screen
 @ $6480 label=Handle_Title_Screen
 D $6480 #R$5FA7 countdown or init; IX+1 compare; #R$5FAB counter. Called from
 . #R$5FE9 when Z.
+  $6480,$03 #REGhl=#N$52EC (screen buffer location).
+  $6483,$03 #REGa=*#R$5FA7.
+  $6486,$03 Jump to #R$648E if #REGa is zero.
+  $6489,$01 Decrease #REGa by one.
+  $648A,$03 Write #REGa to *#R$5FA7.
+  $648D,$01 Return.
+
+  $648E,$07 Jump to #R$64BE if *#REGix+#N$01 is greater than or equal to #N$90.
+  $6495,$03 #REGa=*#R$5FAB.
+  $6498,$01 Increment #REGa by one.
+  $6499,$03 Write #REGa to *#R$5FAB.
+  $649C,$03 Return if #REGa is not equal to #N$07.
+  $649F,$04 Write #N$00 to *#R$5FAB.
+  $64A3,$05 Return if *#R$5FAD is non-zero.
+  $64A8,$04 Jump to #R$64B6 if *#REGhl is zero.
+  $64AC,$02 Shift *#REGhl left (with carry).
+  $64AE,$01 #REGa=*#REGhl.
+  $64AF,$01 Increment #REGh by one.
+  $64B0,$01 Write #REGa to *#REGhl.
+  $64B1,$01 Increment #REGh by one.
+  $64B2,$01 Write #REGa to *#REGhl.
+  $64B3,$01 Increment #REGh by one.
+  $64B4,$01 Write #REGa to *#REGhl.
+  $64B5,$01 Return.
+
+  $64B6,$01 Decrease #REGl by one.
+  $64B7,$05 Jump to #R$64E1 if #REGl is equal to #N$E0.
+  $64BC,$02 Jump to #R$64A8.
+
+  $64BE,$03 #REGa=*#R$5FAB.
+  $64C1,$01 Increment #REGa by one.
+  $64C2,$03 Write #REGa to *#R$5FAB.
+  $64C5,$03 Return if #REGa is less than #N$03.
+  $64C8,$04 Write #N$00 to *#R$5FAB.
+  $64CC,$03 #REGhl=#N$52E1 (screen buffer location).
+  $64CF,$05 Jump to #R$64DA if *#REGhl is equal to #N$FF.
+  $64D4,$02 Shift *#REGhl right.
+  $64D6,$02 Set bit 7 of *#REGhl.
+  $64D8,$02 Jump to #R$64AE.
+
+  $64DA,$01 Increment #REGl by one.
+  $64DB,$04 Return if #REGl is equal to #N$ED.
+  $64DF,$02 Jump to #R$64CF.
+  $64E1,$05 Write #N$FF to *#R$5FA7.
+  $64E6,$01 Return.
+
+c $64E7 Lose Life
+@ $64E7 label=LoseLife
+E $64E7 Continue on to #R$653D.
+  $64E7,$05 Write #N$90 to *#R$DAC1.
+  $64EC,$04 Write #N$11 to *#R$DAC3.
+  $64F0,$02 Stash #REGix on the stack.
+  $64F2,$03 Call #R$6992.
+N $64F5 Play the "lose a life" sound effect.
+N $64F5 #HTML(#AUDIO(lose-life.wav)(#INCLUDE(LoseLife)))
+  $64F5,$03 #REGhl=#N($0000,$04,$04).
+  $64F8,$02 #REGa=#N$01.
+  $64FA,$02 #REGb=#N$00.
+  $64FC,$01 Stash #REGbc on the stack.
+  $64FD,$01 #REGd=#REGb.
+  $64FE,$02 Rotate #REGb right.
+  $6500,$02 Send to the speaker.
+  $6502,$01 No operation.
+  $6503,$01 No operation.
+  $6504,$01 No operation.
+  $6505,$01 No operation.
+  $6506,$02 Decrease counter by one and loop back to #R$6500 until counter is zero.
+  $6508,$01 Restore #REGbc from the stack.
+  $6509,$02,b$01 Flip bits 3-4.
+  $650B,$01 Set the bits from #REGd.
+  $650C,$01 Merge the bits from *#REGhl.
+  $650D,$02,b$01 Keep only bits 3-7.
+  $650F,$02,b$01 Set bit 0.
+  $6511,$01 Increment #REGhl by one.
+  $6512,$02 Decrease counter by one and loop back to #R$64FC until counter is zero.
+  $6514,$02 Restore #REGix from the stack.
+  $6516,$03 #REGhl=#R$DE9E.
+  $6519,$03 #REGbc=#N($0160,$04,$04).
+  $651C,$05 Jump to #R$6523 if *#REGhl is not equal to #N$1E.
+  $6521,$02 Write #N$00 to *#REGhl.
+  $6523,$01 Decrease #REGbc by one.
+  $6524,$01 Increment #REGhl by one.
+  $6525,$04 Jump to #R$651C until #REGbc is zero.
+  $6529,$03 Call #R$6791.
+N $652C See #POKE#infinite_lives(Infinite Lives).
+N $652C Decrease the lives counter by one.
+  $652C,$03 #REGhl=#R$5FB3.
+  $652F,$01 Decrease *#REGhl by one.
+  $6530,$05 Jump to #R$655C if *#R$5FB3 is not yet equal to ASCII #N$30
+. ("#CHR$30").
+  $6535,$02 #REGa=#N$30.
+  $6537,$03 #REGhl=#N$50F0 (screen buffer location).
+  $653A,$03 Call #R$6581.
 
 c $653D Initialise Lives
 @ $653D label=Initialise_Lives
-D $653D Set #R$5FB3 and #R$5FBE to #N$33, clear #R$5FB1, call #R$68F7 then
-. jump to #R$659B (game over / title).
 N $654A See #POKE#255_lives(255 Lives).
   $654A,$08 Write ASCII #N$33 ("#CHR$33") to; #LIST
 . { *#R$5FBE }
@@ -942,7 +1610,7 @@ N $67E6 There is no carry so store the result and move to the next digit.
   $67EB,$02 Decrease the counter by one and loop back to #R$67DE until all
 . #N$03 digits are added.
   $67ED,$02 Jump to #R$6802.
-N $67EF Handle decimal carry — subtract #N$0A from the current digit and
+N $67EF Handle decimal carry so subtract #N$0A from the current digit and
 . propagate the carry to higher digits.
 @ $67EF label=AddToScore_Carry
   $67EF,$01 Exchange #REGde and #REGhl so #REGhl points to the score digit.
@@ -954,7 +1622,7 @@ N $67EF Handle decimal carry — subtract #N$0A from the current digit and
   $67F5,$01 #REGa=the incremented digit.
   $67F6,$02 Has this digit also reached #N$0A?
   $67F8,$02 Jump to #R$67FE if no further carry is needed.
-N $67FA This digit also overflowed — wrap it to #N$00 and continue propagating.
+N $67FA This digit also overflowed so wrap it to #N$00 and continue propagating.
   $67FA,$02 Write #N$00 to *#REGhl.
   $67FC,$02 Jump to #R$67F3 to propagate carry to the next digit.
 @ $67FE label=AddToScore_CarryDone
@@ -1065,11 +1733,14 @@ c $68B8 Handle Life Lost
   $68B8,$04 Decrease *#R$5FB2 by one.
   $68BC,$01 Return if *#REGhl is not equal to #N$00.
   $68BD,$02 Stash #REGix on the stack.
-  $68BF,$02 #REGb=#N$28.
-  $68C1,$03 #REGhl=#N$0320.
-  $68C4,$03 #REGde=#N($0008,$04,$04).
+  $68BF,$02 Set a sound step counter in #REGb of #N$28 steps.
+  $68C1,$03 #REGhl=#N$0320 (initial sound pitch).
+  $68C4,$03 #REGde=#N($0008,$04,$04) (pitch step per iteration).
+N $68C7 Play one step of the death sound.
+@ $68C7 label=HandleLifeLost_SoundLoop
   $68C7,$03 Call #R$693B.
-  $68CA,$02 Decrease counter by one and loop back to #R$68C7 until counter is zero.
+  $68CA,$02 Decrease the step counter by one and loop back to #R$68C7 until the
+. sound is complete.
   $68CC,$08 #HTML(Write #N$0F to; #LIST
 . { *<a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/5C48.html">BORDCR</a> }
 . { *#R$5FBD }
@@ -1085,16 +1756,15 @@ c $68B8 Handle Life Lost
   $68EB,$03 Call #R$FAC4.
   $68EE,$01 Disable interrupts.
   $68EF,$03 Call #R$6562.
-  $68F2,$04 Write #N$00 to *#R$5FA5.
+  $68F2,$04 Write #N$00 to *#R$5FA5 (Percy is facing right).
   $68F6,$01 Return.
 
 c $68F7 Update Lives Display
-@ $68F7 label=Update_Lives_Display
-D $68F7 Read #R$5FB1 and #R$5FB3; increment #R$5FB1; when #R$5FB1=#N$04 give
-. extra life and print at #N$50F0.
+@ $68F7 label=UpdateLivesDisplay
+D $68F7 Updates the lives display after losing a life.
   $68F7,$03 #REGa=*#R$5FB1.
   $68FA,$03 #REGhl=#R$5FB3.
-  $68FD,$04 Jump to #R$6911 if #REGa is equal to #N$05.
+  $68FD,$04 Jump to #R$6911 if *#R$5FB1 is equal to #N$05.
   $6901,$01 Increment #REGa by one.
   $6902,$03 Write #REGa to *#R$5FB1.
   $6905,$04 Jump to #R$6911 if #REGa is not equal to #N$04.
@@ -1122,27 +1792,31 @@ D $68F7 Read #R$5FB1 and #R$5FB3; increment #R$5FB1; when #R$5FB1=#N$04 give
   $6936,$04 Jump back to #R$6927 until #REGbc is zero.
   $693A,$01 Return.
 
-c $693B Flash Border Step
-@ $693B label=Flash_Border_Step
-D $693B Push BC/HL/DE; set border from R; write #R$5FB4 and BORDCR; BEEP.
-. Used in loop from #R$68B8.
-  $693B,$03 Stash #REGbc, #REGhl and #REGde on the stack.
+c $693B Death Sound Step
+@ $693B label=DeathSoundStep
+R $693B B Sound step counter
+R $693B HL Current pitch
+R $693B DE Pitch adjustment per step
+  $693B,$03 Stash the step counter, pitch and pitch adjustment on the stack.
+N $693E Add #N$19 to the score during the death sequence.
   $693E,$02 #REGa=#N$19.
   $6940,$03 Call #R$67B2.
-  $6943,$02 #REGa=the contents of the Memory Refresh Register.
-  $6945,$01 #REGl=#REGa.
-  $6946,$02 #REGh=#N$00.
+N $6943 Pick a random border colour using the Memory Refresh Register.
+  $6943,$03 #REGl=the contents of the Memory Refresh Register.
+  $6946,$02 Set the low byte in #REGh to #N$00 so only low memory is accessed.
   $6948,$01 #REGa=*#REGhl.
   $6949,$03 Write #REGa to *#R$5FB4.
   $694C,$02,b$01 Keep only bits 3-5.
   $694E,$03 #HTML(Write #REGa to *<a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/5C48.html">BORDCR</a>.)
-  $6951,$02 Restore #REGde and #REGhl from the stack.
-  $6953,$02 Stash #REGhl and #REGde on the stack.
-  $6955,$03 #HTML(Call <a href="https://skoolkid.github.io/rom/asm/03B5.html">BEEP</a>.)
-  $6958,$02 Restore #REGde and #REGhl from the stack.
+N $6951 Play a beep at the current pitch.
+  $6951,$02 Restore pitch adjustment and pitch from the stack.
+  $6953,$02 Stash the pitch and pitch adjustment on the stack.
+  $6955,$03 #HTML(Call <a rel="noopener nofollow" href="https://skoolkid.github.io/rom/asm/03B5.html">BEEP</a>.)
+  $6958,$02 Restore the pitch adjustment and pitch from the stack.
+N $695A Lower the pitch for the next step by subtracting the pitch adjustment.
   $695A,$03 #REGbc=#N($000F,$04,$04).
   $695D,$02 #REGhl-=#REGde (with carry).
-  $695F,$01 Restore #REGbc from the stack.
+  $695F,$01 Restore the step counter from the stack.
   $6960,$01 Return.
 
 b $6961
@@ -1266,7 +1940,7 @@ b $71E9
 
 c $720F Room Handler Dispatch
 @ $720F label=RoomHandlerDispatch
-N $720F This is a self-modified instruction — the immediate value is patched at
+N $720F This is a self-modified instruction so the immediate value is patched at
 . runtime. If it is non-zero, store it in *#R$5FB1.
   $720F,$02 #REGa=#N$00.
   $7211,$03 Jump to #R$7217 if #REGa is zero.
@@ -1305,7 +1979,7 @@ N $7243 Set up the first object.
   $724B,$01 Stash the phase counter on the stack.
   $724C,$03 Call #R$7439.
   $724F,$01 Restore the phase counter from the stack.
-N $7250 Set up the second object — only processed during phase #N$03.
+N $7250 Set up the second object; only processed during phase #N$03.
   $7250,$04 #REGix=#R$DADC.
   $7254,$04 #REGiy=#R$750D.
   $7258,$02 Is the phase counter equal to #N$03?
@@ -1335,18 +2009,18 @@ D $730E Handles room #N$06 logic (the starting screen). The phase counter in
 . progressively setting up more objects as the phase increases.
 R $730E B Room phase counter (from *#R$5FB1)
   $730E,$01 #REGa=#REGb.
-N $730F First object — initialised during phases #N$01, #N$03 and #N$04.
+N $730F First object; initialised during phases #N$01, #N$03 and #N$04.
   $730F,$04 #REGix=#R$DAC8.
   $7313,$01 Stash the phase counter on the stack.
   $7314,$0F Call #R$794A if the phase counter is #N$01#RAW(,) #N$03 or #N$04.
   $7323,$01 Restore the phase counter from the stack.
-N $7324 Second object — return early if still in phase #N$01.
+N $7324 Second object; return early if still in phase #N$01.
   $7324,$04 #REGix=#R$DACC.
   $7328,$02 Return if the phase counter is #N$01.
   $732B,$01 Stash the phase counter on the stack.
   $732C,$03 Call #R$7512.
   $732F,$01 Restore the phase counter from the stack.
-N $7330 Third object — initialised during phase #N$02, then handled every phase
+N $7330 Third object; initialised during phase #N$02, then handled every phase
 . after.
   $7330,$04 #REGix=#R$DAD0.
   $7334,$02 Is the phase counter #N$02?
@@ -1359,7 +2033,7 @@ N $7330 Third object — initialised during phase #N$02, then handled every phas
   $7340,$01 Restore the phase counter from the stack.
   $7341,$02 Return if the phase counter is #N$03.
   $7343,$01 Return.
-N $7344 Fourth object — initialised during phase #N$04.
+N $7344 Fourth object; initialised during phase #N$04.
   $7344,$04 #REGix=#R$DAD4.
   $7348,$01 Stash the phase counter on the stack.
   $7349,$04 #REGiy=#R$750D.
@@ -1367,7 +2041,7 @@ N $7344 Fourth object — initialised during phase #N$04.
   $7352,$01 Restore the phase counter from the stack.
   $7353,$02 Return if the phase counter is #N$04.
   $7355,$01 Return.
-N $7356 Fifth object — active from phase #N$05 onwards.
+N $7356 Fifth object; active from phase #N$05 onwards.
   $7356,$04 #REGix=#R$DAD8.
   $735A,$01 Stash the phase counter on the stack.
   $735B,$03 Call #R$7893.
@@ -1527,12 +2201,20 @@ b $A36A Graphics: Alternate Tile Set?
 b $A763 Graphics: Chick Frames
 @ $A763 label=Graphics_ChickFrame_01
 @ $A76B label=Graphics_ChickFrame_02
-  $A763,$08 #UDG(#PC)
+  $A763,$08 #UDG(#PC,attr=$6F)
 L $A763,$08,$02
 
-b $A773
-  $A773,$08 #UDG(#PC)
-L $A773,$08,$12
+b $A773 Graphics: Mayfly Frames
+@ $A773 label=Graphics_MayflyFrame_01
+@ $A77B label=Graphics_MayflyFrame_02
+@ $A783 label=Graphics_MayflyFrame_03
+@ $A78B label=Graphics_MayflyFrame_04
+  $A773,$08 #UDG(#PC,attr=$68)
+L $A773,$08,$04
+
+b $A793
+  $A793,$08 #UDG(#PC)
+L $A793,$08,$0E
 
 b $AB3B
   $AB3B,$08 #UDG(#PC)
@@ -1962,9 +2644,9 @@ N $FC52 Compare the current score with the stored high score, byte by byte
   $FC63,$01 Move to the next digit in the high score.
   $FC64,$02 Decrease the digit counter by one and loop back to #R$FC5A until
 . all #N$07 digits have been compared.
-N $FC66 All digits matched — scores are equal, so no update needed.
+N $FC66 All digits matched so scores are equal, so no update needed.
   $FC66,$02 Jump to #R$FC73.
-N $FC68 New high score — copy the current score over the stored high score.
+N $FC68 New high score so copy the current score over the stored high score.
 @ $FC68 label=PrintHighScore_NewHighScore
   $FC68,$0B Copy #N($0007,$04,$04) bytes of data from *#R$6825 to *#R$FCA6.
 N $FC73 Print the high score label and value to the screen buffer.
