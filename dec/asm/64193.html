@@ -33,7 +33,7 @@ Next: <a href="64249.html">64249</a>
 </td>
 </tr>
 </table>
-<div class="description">64193: Routine at FAC1</div>
+<div class="description">64193: Play Next Level Jingle</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
@@ -57,9 +57,10 @@ Used by the routine at <a href="64594.html">Print_HighScore</a>.
 </td>
 </tr>
 <tr>
+<td class="asm-label">PlaySound_NextLevelJingle</td>
 <td class="address-2"><span id="64193"></span>64193</td>
 <td class="instruction">LD HL,64249</td>
-<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="64249.html">Audio_NextLevelJingle</a>.</td>
+<td class="comment-1" rowspan="1">Load <span class="register">HL</span> with a pointer to <a href="64249.html">Audio_NextLevelJingle</a>.</td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
@@ -72,110 +73,128 @@ This entry point is used by the routine at <a href="26808.html">Handle_Life_Lost
 </td>
 </tr>
 <tr>
+<td class="asm-label">PlaySound</td>
 <td class="address-2"><span id="64196"></span>64196</td>
 <td class="instruction">NOP</td>
 <td class="comment-1" rowspan="1">No operation.</td>
 </tr>
 <tr>
+<td class="asm-label">PlaySound_Loop</td>
 <td class="address-2"><span id="64197"></span>64197</td>
 <td class="instruction">LD A,(HL)</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">HL</span>.</td>
+<td class="comment-1" rowspan="1">Fetch the music data from *<span class="register">HL</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="64198"></span>64198</td>
 <td class="instruction">CP 255</td>
-<td class="comment-1" rowspan="2">Return if <span class="register">A</span> is equal to 255.</td>
+<td class="comment-1" rowspan="2">Return if this is the terminator (255).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="64200"></span>64200</td>
 <td class="instruction">RET Z</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="64201"></span>64201</td>
 <td class="instruction">OR A</td>
-<td class="comment-1" rowspan="2">Jump to <a href="64193.html#64234">64234</a> if <span class="register">A</span> is zero.</td>
+<td class="comment-1" rowspan="2">Jump to <a href="64193.html#64234">PlaySound_Rest</a> if this is a rest.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="64202"></span>64202</td>
-<td class="instruction">JR Z,<a href="64193.html#64234">64234</a></td>
+<td class="instruction">JR Z,<a href="64193.html#64234">PlaySound_Rest</a></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="64204"></span>64204</td>
 <td class="instruction">XOR A</td>
-<td class="comment-1" rowspan="2">Set border to 
-
-
-BLACK.</td>
+<td class="comment-1" rowspan="2">Set the speaker port to off.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="64205"></span>64205</td>
 <td class="instruction">OUT (254),A</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="64207"></span>64207</td>
 <td class="instruction">LD E,(HL)</td>
-<td class="comment-1" rowspan="2"><span class="register">D</span>=*<span class="register">HL</span>.</td>
+<td class="comment-1" rowspan="2">Load the pitch period into both <span class="register">E</span> (reset value) and <span class="register">D</span> (countdown).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="64208"></span>64208</td>
 <td class="instruction">LD D,E</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="64209"></span>64209</td>
 <td class="instruction">INC HL</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
+<td class="comment-1" rowspan="2">Load the note duration into <span class="register">C</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="64210"></span>64210</td>
 <td class="instruction">LD C,(HL)</td>
-<td class="comment-1" rowspan="1"><span class="register">C</span>=*<span class="register">HL</span>.</td>
 </tr>
 <tr>
+<td class="asm-label">PlaySound_NoteLoop</td>
 <td class="address-2"><span id="64211"></span>64211</td>
 <td class="instruction">OUT (254),A</td>
-<td class="comment-1" rowspan="1">Send to the speaker.</td>
+<td class="comment-1" rowspan="1">Send to the speaker to play the note.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="64213"></span>64213</td>
 <td class="instruction">DEC D</td>
-<td class="comment-1" rowspan="1">Decrease <span class="register">D</span> by one.</td>
+<td class="comment-1" rowspan="1">Decrease the period counter by one.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="64214"></span>64214</td>
-<td class="instruction">JR NZ,<a href="64193.html#64219">64219</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="64193.html#64219">64219</a> if <span class="register">D</span> is not equal to <span class="register">A</span>.</td>
+<td class="instruction">JR NZ,<a href="64193.html#64219">PlaySound_NoteInnerLoop</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="64193.html#64219">PlaySound_NoteInnerLoop</a> if the period hasn't elapsed yet.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="64216"></span>64216</td>
 <td class="instruction">LD D,E</td>
-<td class="comment-1" rowspan="1"><span class="register">D</span>=<span class="register">E</span>.</td>
+<td class="comment-1" rowspan="1">Reset the period counter from <span class="register">E</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="64217"></span>64217</td>
 <td class="instruction">XOR %00011000</td>
-<td class="comment-1" rowspan="1">Flip bits 3-4.</td>
+<td class="comment-1" rowspan="1">Toggle the speaker and MIC outputs.</td>
 </tr>
 <tr>
+<td class="asm-label">PlaySound_NoteInnerLoop</td>
 <td class="address-2"><span id="64219"></span>64219</td>
-<td class="instruction">DJNZ <a href="64193.html#64211">64211</a></td>
-<td class="comment-1" rowspan="1">Decrease counter by one and loop back to <a href="64193.html#64211">64211</a> until counter is zero.</td>
+<td class="instruction">DJNZ <a href="64193.html#64211">PlaySound_NoteLoop</a></td>
+<td class="comment-1" rowspan="1">Decrease counter by one and loop back to <a href="64193.html#64211">PlaySound_NoteLoop</a> until counter is zero.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="64221"></span>64221</td>
 <td class="instruction">DEC C</td>
-<td class="comment-1" rowspan="1">Decrease <span class="register">C</span> by one.</td>
+<td class="comment-1" rowspan="1">Decrease the duration counter.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="64222"></span>64222</td>
-<td class="instruction">JR NZ,<a href="64193.html#64211">64211</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="64193.html#64211">64211</a> if <span class="register">C</span> is not equal to <span class="register">A</span>.</td>
+<td class="instruction">JR NZ,<a href="64193.html#64211">PlaySound_NoteLoop</a></td>
+<td class="comment-1" rowspan="1">Jump back to <a href="64193.html#64211">PlaySound_NoteLoop</a> until the full duration has elapsed.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="64224"></span>64224</td>
 <td class="instruction">INC HL</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
+<td class="comment-1" rowspan="1">Advance to the next sound data entry.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="64225"></span>64225</td>
 <td class="instruction">LD A,191</td>
 <td class="comment-1" rowspan="2">Read from the keyboard; <table class="default">
@@ -201,82 +220,98 @@ BLACK.</td>
 </table></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="64227"></span>64227</td>
 <td class="instruction">IN A,(254)</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="64229"></span>64229</td>
 <td class="instruction">AND %00000001</td>
 <td class="comment-1" rowspan="2">Return if "ENTER" has been pressed.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="64231"></span>64231</td>
 <td class="instruction">RET Z</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="64232"></span>64232</td>
-<td class="instruction">JR <a href="64193.html#64197">64197</a></td>
-<td class="comment-1" rowspan="1">Jump back to <a href="64193.html#64197">64197</a>.</td>
+<td class="instruction">JR <a href="64193.html#64197">PlaySound_Loop</a></td>
+<td class="comment-1" rowspan="1">Jump back to <a href="64193.html#64197">PlaySound_Loop</a>.</td>
 </tr>
 <tr>
+<td class="asm-label">PlaySound_Rest</td>
 <td class="address-2"><span id="64234"></span>64234</td>
 <td class="instruction">INC HL</td>
 <td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="64235"></span>64235</td>
 <td class="instruction">LD C,(HL)</td>
 <td class="comment-1" rowspan="1"><span class="register">C</span>=*<span class="register">HL</span>.</td>
 </tr>
 <tr>
+<td class="asm-label">PlaySound_RestOuterLoop</td>
 <td class="address-2"><span id="64236"></span>64236</td>
 <td class="instruction">NOP</td>
 <td class="comment-1" rowspan="1">No operation.</td>
 </tr>
 <tr>
+<td class="asm-label">PlaySound_RestInnerLoop</td>
 <td class="address-2"><span id="64237"></span>64237</td>
 <td class="instruction">NOP</td>
 <td class="comment-1" rowspan="1">No operation.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="64238"></span>64238</td>
 <td class="instruction">NOP</td>
 <td class="comment-1" rowspan="1">No operation.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="64239"></span>64239</td>
 <td class="instruction">NOP</td>
 <td class="comment-1" rowspan="1">No operation.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="64240"></span>64240</td>
 <td class="instruction">NOP</td>
 <td class="comment-1" rowspan="1">No operation.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="64241"></span>64241</td>
-<td class="instruction">DJNZ <a href="64193.html#64237">64237</a></td>
-<td class="comment-1" rowspan="1">Decrease counter by one and loop back to <a href="64193.html#64237">64237</a> until counter is zero.</td>
+<td class="instruction">DJNZ <a href="64193.html#64237">PlaySound_RestInnerLoop</a></td>
+<td class="comment-1" rowspan="1">Decrease the counter by one and loop back to <a href="64193.html#64237">PlaySound_RestInnerLoop</a> until counter is zero.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="64243"></span>64243</td>
 <td class="instruction">DEC C</td>
-<td class="comment-1" rowspan="1">Decrease <span class="register">C</span> by one.</td>
+<td class="comment-1" rowspan="1">Decrease the rest duration counter.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="64244"></span>64244</td>
-<td class="instruction">JR NZ,<a href="64193.html#64236">64236</a></td>
-<td class="comment-1" rowspan="1">Jump back to <a href="64193.html#64236">64236</a> until <span class="register">C</span> is zero.</td>
+<td class="instruction">JR NZ,<a href="64193.html#64236">PlaySound_RestOuterLoop</a></td>
+<td class="comment-1" rowspan="1">Jump back to <a href="64193.html#64236">PlaySound_RestOuterLoop</a> until the full rest duration has elapsed.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="64246"></span>64246</td>
 <td class="instruction">INC HL</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
+<td class="comment-1" rowspan="1">Advance to the next sound data entry.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="64247"></span>64247</td>
-<td class="instruction">JR <a href="64193.html#64197">64197</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="64193.html#64197">64197</a>.</td>
+<td class="instruction">JR <a href="64193.html#64197">PlaySound_Loop</a></td>
+<td class="comment-1" rowspan="1">Jump back to <a href="64193.html#64197">PlaySound_Loop</a>.</td>
 </tr>
 </table>
 <table class="asm-navigation">

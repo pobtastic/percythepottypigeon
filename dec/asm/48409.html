@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Percy the Potty Pigeon: Routine at 48409</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-dark.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-wide.css" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-75RERFCHBG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-75RERFCHBG');
+</script>
+</head>
+<body class="Asm-c">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html"><img alt="logo" src="../images/logo.png" /></a></td>
+<td class="page-header">Routines</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="48375.html">48375</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#48409">Map</a></td>
+<td class="next">
+Next: <a href="48478.html">48478</a>
+</td>
+</tr>
+</table>
+<div class="description">48409: Write Attribute Block (2-Wide)</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="5">
+<div class="details">
+<div class="paragraph">
+Used by the routine at <a href="48375.html">ApplySpriteAttributes2Wide</a>.
+</div>
+<div class="paragraph">
+Writes a colour attribute to a 2-wide block of attribute cells. The height is 1-2 rows if Y-aligned, or 2-3 rows if not. The width is 1 or 2 columns depending on X alignment.
+</div>
+</div>
+<table class="input">
+<tr class="asm-input-header">
+<th colspan="2">Input</th>
+</tr>
+<tr>
+<td class="register">C</td>
+<td class="register-desc">Attribute base high byte (88 for screen, 248 for room)</td>
+</tr>
+<tr>
+<td class="register">D</td>
+<td class="register-desc">Bit 0: extra column needed, Bit 1: extra row needed</td>
+</tr>
+<tr>
+<td class="register">E</td>
+<td class="register-desc">Attribute value to write (ink bits 0-2)</td>
+</tr>
+<tr>
+<td class="register">HL</td>
+<td class="register-desc">Screen buffer address</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="48409"></span>
+<div class="comments">
+<div class="paragraph">
+Check if the Y position crosses a character boundary.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">WriteAttributeBlock2Wide</td>
+<td class="address-2"><span id="48409"></span>48409</td>
+<td class="instruction">LD A,H</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=<span class="register">H</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48410"></span>48410</td>
+<td class="instruction">AND %00000111</td>
+<td class="comment-1" rowspan="1">Keep only bits 0-2.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48412"></span>48412</td>
+<td class="instruction">OR A</td>
+<td class="comment-1" rowspan="2">Jump to <a href="48409.html#48417">WriteAttributeBlock2Wide_CalcAddress</a> if Y-aligned.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48413"></span>48413</td>
+<td class="instruction">JR Z,<a href="48409.html#48417">WriteAttributeBlock2Wide_CalcAddress</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48415"></span>48415</td>
+<td class="instruction">SET 1,D</td>
+<td class="comment-1" rowspan="1">Set bit 1 of <span class="register">D</span> (extra row needed).</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="48417"></span>
+<div class="comments">
+<div class="paragraph">
+Convert the screen buffer address to the attribute address.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">WriteAttributeBlock2Wide_CalcAddress</td>
+<td class="address-2"><span id="48417"></span>48417</td>
+<td class="instruction">LD A,H</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=<span class="register">H</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48418"></span>48418</td>
+<td class="instruction">RRCA</td>
+<td class="comment-1" rowspan="3">Rotate right three positions.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48419"></span>48419</td>
+<td class="instruction">RRCA</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48420"></span>48420</td>
+<td class="instruction">RRCA</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48421"></span>48421</td>
+<td class="instruction">AND %00000011</td>
+<td class="comment-1" rowspan="1">Keep only bits 0-1.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48423"></span>48423</td>
+<td class="instruction">OR C</td>
+<td class="comment-1" rowspan="1">Merge with the attribute base in <span class="register">C</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48424"></span>48424</td>
+<td class="instruction">LD H,A</td>
+<td class="comment-1" rowspan="1"><span class="register">H</span>=<span class="register">A</span>.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="48425"></span>
+<div class="comments">
+<div class="paragraph">
+Branch based on whether an extra column is needed.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48425"></span>48425</td>
+<td class="instruction">BIT 0,D</td>
+<td class="comment-1" rowspan="1">Test bit 0 of <span class="register">D</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48427"></span>48427</td>
+<td class="instruction">JR Z,<a href="48409.html#48460">WriteAttributeBlock2Wide_1Column</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="48409.html#48460">WriteAttributeBlock2Wide_1Column</a> if X-aligned (1 column wide).</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="48429"></span>
+<div class="comments">
+<div class="paragraph">
+Not X-aligned: write attributes across 2 columns.
+</div>
+<div class="paragraph">
+Write attribute to the first row (2 cells).
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">WriteAttributeBlock2Wide_2Columns</td>
+<td class="address-1"><span id="48429"></span>48429</td>
+<td class="instruction">LD A,(HL)</td>
+<td class="comment-1" rowspan="3">Write the ink bits to *<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48430"></span>48430</td>
+<td class="instruction">AND 248</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48432"></span>48432</td>
+<td class="instruction">OR E</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48433"></span>48433</td>
+<td class="instruction">LD (HL),A</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48434"></span>48434</td>
+<td class="instruction">INC L</td>
+<td class="comment-1" rowspan="1">Move to the next column.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48435"></span>48435</td>
+<td class="instruction">LD A,(HL)</td>
+<td class="comment-1" rowspan="3">Write the ink bits to *<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48436"></span>48436</td>
+<td class="instruction">AND 248</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48438"></span>48438</td>
+<td class="instruction">OR E</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48439"></span>48439</td>
+<td class="instruction">LD (HL),A</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="48440"></span>
+<div class="comments">
+<div class="paragraph">
+Return if Y-aligned, otherwise write a second row.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48440"></span>48440</td>
+<td class="instruction">DEC L</td>
+<td class="comment-1" rowspan="1">Move back one column.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48441"></span>48441</td>
+<td class="instruction">BIT 1,D</td>
+<td class="comment-1" rowspan="1">Test bit 1 of <span class="register">D</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48443"></span>48443</td>
+<td class="instruction">RET Z</td>
+<td class="comment-1" rowspan="1">Return if Y-aligned.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="48444"></span>
+<div class="comments">
+<div class="paragraph">
+Move down one attribute row.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48444"></span>48444</td>
+<td class="instruction">LD BC,32</td>
+<td class="comment-1" rowspan="1"><span class="register">BC</span>=32.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48447"></span>48447</td>
+<td class="instruction">ADD HL,BC</td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>+=<span class="register">BC</span>.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="48448"></span>
+<div class="comments">
+<div class="paragraph">
+Write attribute to the second row (2 cells).
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48448"></span>48448</td>
+<td class="instruction">LD A,(HL)</td>
+<td class="comment-1" rowspan="3">Write the ink bits to *<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48449"></span>48449</td>
+<td class="instruction">AND 248</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48451"></span>48451</td>
+<td class="instruction">OR E</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48452"></span>48452</td>
+<td class="instruction">LD (HL),A</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48453"></span>48453</td>
+<td class="instruction">INC L</td>
+<td class="comment-1" rowspan="1">Move to the next column.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48454"></span>48454</td>
+<td class="instruction">LD A,(HL)</td>
+<td class="comment-1" rowspan="3">Write the ink bits to *<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48455"></span>48455</td>
+<td class="instruction">AND 248</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48457"></span>48457</td>
+<td class="instruction">OR E</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48458"></span>48458</td>
+<td class="instruction">LD (HL),A</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48459"></span>48459</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="48460"></span>
+<div class="comments">
+<div class="paragraph">
+X-aligned: write attributes across 1 column only.
+</div>
+<div class="paragraph">
+Write attribute to the first row (1 cell).
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">WriteAttributeBlock2Wide_1Column</td>
+<td class="address-2"><span id="48460"></span>48460</td>
+<td class="instruction">LD A,(HL)</td>
+<td class="comment-1" rowspan="3">Write the ink bits to *<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48461"></span>48461</td>
+<td class="instruction">AND 248</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48463"></span>48463</td>
+<td class="instruction">OR E</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48464"></span>48464</td>
+<td class="instruction">LD (HL),A</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="48465"></span>
+<div class="comments">
+<div class="paragraph">
+Return if Y-aligned, otherwise write a second row.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48465"></span>48465</td>
+<td class="instruction">BIT 1,D</td>
+<td class="comment-1" rowspan="1">Test bit 1 of <span class="register">D</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48467"></span>48467</td>
+<td class="instruction">RET Z</td>
+<td class="comment-1" rowspan="1">Return if Y-aligned.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="48468"></span>
+<div class="comments">
+<div class="paragraph">
+Move down one attribute row.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48468"></span>48468</td>
+<td class="instruction">LD BC,32</td>
+<td class="comment-1" rowspan="1"><span class="register">BC</span>=32.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48471"></span>48471</td>
+<td class="instruction">ADD HL,BC</td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>+=<span class="register">BC</span>.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="48472"></span>
+<div class="comments">
+<div class="paragraph">
+Write attribute to the second row (1 cell).
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48472"></span>48472</td>
+<td class="instruction">LD A,(HL)</td>
+<td class="comment-1" rowspan="3">Write the ink bits to *<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48473"></span>48473</td>
+<td class="instruction">AND 248</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48475"></span>48475</td>
+<td class="instruction">OR E</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48476"></span>48476</td>
+<td class="instruction">LD (HL),A</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48477"></span>48477</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="48375.html">48375</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#48409">Map</a></td>
+<td class="next">
+Next: <a href="48478.html">48478</a>
+</td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
+<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
+<div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
+<div><a href="../../asm/BD19.html">Switch to hexadecimal</a>.</div>
+</footer>
+</body>
+</html>

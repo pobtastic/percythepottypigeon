@@ -82,7 +82,7 @@ Command 03: fill the attribute buffer with a single colour, then parse an overla
 <span id="5edd"></span>
 <div class="comments">
 <div class="paragraph">
-Fill 02C0 attribute cells at <a href="C1DD.html#d800">D800</a> with the base colour.
+Fill 02C0 attribute cells at <a href="C000.html#d800">RoomAttributeBuffer</a> with the base colour.
 </div>
 </div>
 </td>
@@ -91,7 +91,7 @@ Fill 02C0 attribute cells at <a href="C1DD.html#d800">D800</a> with the base col
 <td class="asm-label"></td>
 <td class="address-1"><span id="5edd"></span>5EDD</td>
 <td class="instruction">LD IX,$D800</td>
-<td class="comment-1" rowspan="1"><span class="register">IX</span>=<a href="C1DD.html#d800">D800</a>.</td>
+<td class="comment-1" rowspan="1"><span class="register">IX</span>=<a href="C000.html#d800">RoomAttributeBuffer</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -159,7 +159,7 @@ Now parse the attribute overlay data to apply per-cell changes on top of the bas
 <td class="asm-label"></td>
 <td class="address-1"><span id="5ef2"></span>5EF2</td>
 <td class="instruction">LD IX,$D800</td>
-<td class="comment-1" rowspan="1"><span class="register">IX</span>=<a href="C1DD.html#d800">D800</a>.</td>
+<td class="comment-1" rowspan="1"><span class="register">IX</span>=<a href="C000.html#d800">RoomAttributeBuffer</a>.</td>
 </tr>
 <tr>
 <td class="asm-label">FillAttributes_Overlay_Loop</td>

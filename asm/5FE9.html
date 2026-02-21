@@ -1693,7 +1693,7 @@ Calculate the room attribute buffer address from Percy's position.
 <td class="asm-label"></td>
 <td class="address-1"><span id="61b9"></span>61B9</td>
 <td class="instruction">OR %11011000</td>
-<td class="comment-1" rowspan="1">Set bits 3-4 and 6-7 for room attribute buffer at <a href="C1DD.html#d800">D800</a>.</td>
+<td class="comment-1" rowspan="1">Set bits 3-4 and 6-7 for room attribute buffer at <a href="C000.html#d800">RoomAttributeBuffer</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -2188,10 +2188,10 @@ Check if the tile below is a platform (attribute AA).
 <td class="asm-label">MainGameLoop_CheckGround_Test</td>
 <td class="address-2"><span id="621e"></span>621E</td>
 <td class="instruction">LD A,(HL)</td>
-<td class="comment-1" rowspan="3">Jump to <a href="5FE9.html#623d">MainGameLoop_ClearLandedFlag</a> if there's no platform below Percy (by checking if the attribute is AA/ INK:
-RED,
-PAPER:
-CYAN
+<td class="comment-1" rowspan="3">Jump to <a href="5FE9.html#623d">MainGameLoop_ClearLandedFlag</a> if there's no platform below Percy (by checking if the attribute is AA/ 
+INK:RED,
+
+PAPER:CYAN
 
 FLASH: ON).</td>
 </tr>

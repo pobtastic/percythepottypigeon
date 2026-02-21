@@ -130,10 +130,7 @@ Play one step of the death sound.
 <td class="asm-label"></td>
 <td class="address-1"><span id="68d4"></span>68D4</td>
 <td class="instruction">LD A,$01</td>
-<td class="comment-1" rowspan="2">Set border to 
-
-
-BLUE.</td>
+<td class="comment-1" rowspan="2">Set border to BLUE.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -177,6 +174,18 @@ BLUE.</td>
 <td class="comment-1" rowspan="1">Call <a href="5E24.html">PopulateRoomBuffer</a>.</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="68e8"></span>
+<div class="comments">
+<div class="paragraph">
+<audio controls="" src="../audio/lose-life.wav">
+<p>Your browser doesn't support HTML5 audio. Here is a <a href="../audio/lose-life.wav">link to the audio</a> instead.</p>
+</audio>
+</div>
+</div>
+</td>
+</tr>
+<tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="68e8"></span>68E8</td>
 <td class="instruction">LD HL,$FBF9</td>
@@ -185,8 +194,8 @@ BLUE.</td>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="68eb"></span>68EB</td>
-<td class="instruction">CALL <a href="FAC1.html#fac4">$FAC4</a></td>
-<td class="comment-1" rowspan="1">Call <a href="FAC1.html#fac4">FAC4</a>.</td>
+<td class="instruction">CALL <a href="FAC1.html#fac4">PlaySound</a></td>
+<td class="comment-1" rowspan="1">Call <a href="FAC1.html#fac4">PlaySound</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>

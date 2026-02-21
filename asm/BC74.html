@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Percy the Potty Pigeon: Routine at BC74</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-dark.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-wide.css" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-75RERFCHBG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-75RERFCHBG');
+</script>
+</head>
+<body class="Asm-c">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html"><img alt="logo" src="../images/logo.png" /></a></td>
+<td class="page-header">Routines</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="BC52.html">BC52</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#bc74">Map</a></td>
+<td class="next">
+Next: <a href="BCF4.html">BCF4</a>
+</td>
+</tr>
+</table>
+<div class="description">BC74: Write Attribute Block (3-Wide)</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="5">
+<div class="details">
+<div class="paragraph">
+Used by the routine at <a href="BC52.html">ApplySpriteAttributes3Wide</a>.
+</div>
+<div class="paragraph">
+Writes a colour attribute to a 3-wide block of attribute cells at the position derived from the screen buffer address in <span class="register">HL</span>. The height is 2 rows if Y-aligned, or 3 rows if not. The width is 2 or 3 columns depending on bit 0 of <span class="register">D</span> (X alignment).
+</div>
+</div>
+<table class="input">
+<tr class="asm-input-header">
+<th colspan="2">Input</th>
+</tr>
+<tr>
+<td class="register">C</td>
+<td class="register-desc">Attribute base high byte (58 for screen, F8 for room)</td>
+</tr>
+<tr>
+<td class="register">D</td>
+<td class="register-desc">Bit 0: extra column needed, Bit 1: extra row needed</td>
+</tr>
+<tr>
+<td class="register">E</td>
+<td class="register-desc">Attribute value to write (ink bits 0-2)</td>
+</tr>
+<tr>
+<td class="register">HL</td>
+<td class="register-desc">Screen buffer address</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="bc74"></span>
+<div class="comments">
+<div class="paragraph">
+Check if the Y position crosses a character boundary — if so, an extra row of attributes is needed.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">WriteAttributeBlock3Wide</td>
+<td class="address-2"><span id="bc74"></span>BC74</td>
+<td class="instruction">LD A,H</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=<span class="register">H</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bc75"></span>BC75</td>
+<td class="instruction">AND %00000111</td>
+<td class="comment-1" rowspan="1">Keep only bits 0-2 (sub-character Y offset).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bc77"></span>BC77</td>
+<td class="instruction">OR A</td>
+<td class="comment-1" rowspan="2">Jump to <a href="BC74.html#bc7c">WriteAttributeBlock3Wide_CalcAddress</a> if Y-aligned.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bc78"></span>BC78</td>
+<td class="instruction">JR Z,<a href="BC74.html#bc7c">WriteAttributeBlock3Wide_CalcAddress</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bc7a"></span>BC7A</td>
+<td class="instruction">SET 1,D</td>
+<td class="comment-1" rowspan="1">Set bit 1 of <span class="register">D</span> (extra row needed).</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="bc7c"></span>
+<div class="comments">
+<div class="paragraph">
+Convert the screen buffer address to the corresponding attribute address.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">WriteAttributeBlock3Wide_CalcAddress</td>
+<td class="address-2"><span id="bc7c"></span>BC7C</td>
+<td class="instruction">LD A,H</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=<span class="register">H</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bc7d"></span>BC7D</td>
+<td class="instruction">RRCA</td>
+<td class="comment-1" rowspan="3">Rotate right three positions.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bc7e"></span>BC7E</td>
+<td class="instruction">RRCA</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bc7f"></span>BC7F</td>
+<td class="instruction">RRCA</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bc80"></span>BC80</td>
+<td class="instruction">AND %00000011</td>
+<td class="comment-1" rowspan="1">Keep only bits 0-1.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bc82"></span>BC82</td>
+<td class="instruction">OR C</td>
+<td class="comment-1" rowspan="1">Merge with the attribute base in <span class="register">C</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bc83"></span>BC83</td>
+<td class="instruction">LD H,A</td>
+<td class="comment-1" rowspan="1"><span class="register">H</span>=<span class="register">A</span>.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="bc84"></span>
+<div class="comments">
+<div class="paragraph">
+Branch based on whether an extra column is needed.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bc84"></span>BC84</td>
+<td class="instruction">BIT 0,D</td>
+<td class="comment-1" rowspan="1">Test bit 0 of <span class="register">D</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bc86"></span>BC86</td>
+<td class="instruction">JR Z,<a href="BC74.html#bcc8">WriteAttributeBlock3Wide_2Columns</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="BC74.html#bcc8">WriteAttributeBlock3Wide_2Columns</a> if X-aligned (2 columns wide).</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="bc88"></span>
+<div class="comments">
+<div class="paragraph">
+Not X-aligned: write attributes across 3 columns.
+</div>
+<div class="paragraph">
+Write attribute to the first row (3 cells).
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">WriteAttributeBlock3Wide_3Columns</td>
+<td class="address-1"><span id="bc88"></span>BC88</td>
+<td class="instruction">LD A,(HL)</td>
+<td class="comment-1" rowspan="4">Write the ink bits to *<span class="register">HL</span> (preserve paper/brightness).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bc89"></span>BC89</td>
+<td class="instruction">AND %11111000</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bc8b"></span>BC8B</td>
+<td class="instruction">OR E</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bc8c"></span>BC8C</td>
+<td class="instruction">LD (HL),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bc8d"></span>BC8D</td>
+<td class="instruction">INC HL</td>
+<td class="comment-1" rowspan="1">Move to the next column.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bc8e"></span>BC8E</td>
+<td class="instruction">LD A,(HL)</td>
+<td class="comment-1" rowspan="1">Write the ink bits to *<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bc8f"></span>BC8F</td>
+<td class="instruction">AND %11111000</td>
+<td class="comment-1" rowspan="1">Keep only bits 3-7.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bc91"></span>BC91</td>
+<td class="instruction">OR E</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bc92"></span>BC92</td>
+<td class="instruction">LD (HL),A</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bc93"></span>BC93</td>
+<td class="instruction">INC HL</td>
+<td class="comment-1" rowspan="1">Move to the next column.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bc94"></span>BC94</td>
+<td class="instruction">LD A,(HL)</td>
+<td class="comment-1" rowspan="4">Write the ink bits to *<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bc95"></span>BC95</td>
+<td class="instruction">AND %11111000</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bc97"></span>BC97</td>
+<td class="instruction">OR E</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bc98"></span>BC98</td>
+<td class="instruction">LD (HL),A</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="bc99"></span>
+<div class="comments">
+<div class="paragraph">
+Move back to the first column and down one attribute row.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bc99"></span>BC99</td>
+<td class="instruction">DEC HL</td>
+<td class="comment-1" rowspan="2">Move back two columns.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bc9a"></span>BC9A</td>
+<td class="instruction">DEC HL</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bc9b"></span>BC9B</td>
+<td class="instruction">LD BC,$0020</td>
+<td class="comment-1" rowspan="2"><span class="register">HL</span>+=0020 (move down one row).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bc9e"></span>BC9E</td>
+<td class="instruction">ADD HL,BC</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="bc9f"></span>
+<div class="comments">
+<div class="paragraph">
+Write attribute to the second row (3 cells).
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bc9f"></span>BC9F</td>
+<td class="instruction">LD A,(HL)</td>
+<td class="comment-1" rowspan="4">Write the ink bits to *<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bca0"></span>BCA0</td>
+<td class="instruction">AND %11111000</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bca2"></span>BCA2</td>
+<td class="instruction">OR E</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bca3"></span>BCA3</td>
+<td class="instruction">LD (HL),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bca4"></span>BCA4</td>
+<td class="instruction">INC HL</td>
+<td class="comment-1" rowspan="1">Move to the next column.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bca5"></span>BCA5</td>
+<td class="instruction">LD A,(HL)</td>
+<td class="comment-1" rowspan="4">Write the ink bits to *<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bca6"></span>BCA6</td>
+<td class="instruction">AND %11111000</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bca8"></span>BCA8</td>
+<td class="instruction">OR E</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bca9"></span>BCA9</td>
+<td class="instruction">LD (HL),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bcaa"></span>BCAA</td>
+<td class="instruction">INC HL</td>
+<td class="comment-1" rowspan="1">Move to the next column.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bcab"></span>BCAB</td>
+<td class="instruction">LD A,(HL)</td>
+<td class="comment-1" rowspan="4">Write the ink bits to *<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bcac"></span>BCAC</td>
+<td class="instruction">AND %11111000</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bcae"></span>BCAE</td>
+<td class="instruction">OR E</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bcaf"></span>BCAF</td>
+<td class="instruction">LD (HL),A</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="bcb0"></span>
+<div class="comments">
+<div class="paragraph">
+If Y-aligned, we're done. Otherwise write a third row.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bcb0"></span>BCB0</td>
+<td class="instruction">BIT 1,D</td>
+<td class="comment-1" rowspan="1">Test bit 1 of <span class="register">D</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bcb2"></span>BCB2</td>
+<td class="instruction">RET Z</td>
+<td class="comment-1" rowspan="1">Return if Y-aligned (no extra row needed).</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="bcb3"></span>
+<div class="comments">
+<div class="paragraph">
+Move back and down to the third row.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bcb3"></span>BCB3</td>
+<td class="instruction">DEC HL</td>
+<td class="comment-1" rowspan="2">Move back two columns.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bcb4"></span>BCB4</td>
+<td class="instruction">DEC HL</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bcb5"></span>BCB5</td>
+<td class="instruction">ADD HL,BC</td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>+=<span class="register">BC</span> (move down one row).</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="bcb6"></span>
+<div class="comments">
+<div class="paragraph">
+Write attribute to the third row (3 cells).
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bcb6"></span>BCB6</td>
+<td class="instruction">LD A,(HL)</td>
+<td class="comment-1" rowspan="4">Write the ink bits to *<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bcb7"></span>BCB7</td>
+<td class="instruction">AND %11111000</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bcb9"></span>BCB9</td>
+<td class="instruction">OR E</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bcba"></span>BCBA</td>
+<td class="instruction">LD (HL),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bcbb"></span>BCBB</td>
+<td class="instruction">INC HL</td>
+<td class="comment-1" rowspan="1">Move to the next column.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bcbc"></span>BCBC</td>
+<td class="instruction">LD A,(HL)</td>
+<td class="comment-1" rowspan="4">Write the ink bits to *<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bcbd"></span>BCBD</td>
+<td class="instruction">AND %11111000</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bcbf"></span>BCBF</td>
+<td class="instruction">OR E</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bcc0"></span>BCC0</td>
+<td class="instruction">LD (HL),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bcc1"></span>BCC1</td>
+<td class="instruction">INC HL</td>
+<td class="comment-1" rowspan="1">Move to the next column.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bcc2"></span>BCC2</td>
+<td class="instruction">LD A,(HL)</td>
+<td class="comment-1" rowspan="4">Write the ink bits to *<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bcc3"></span>BCC3</td>
+<td class="instruction">AND %11111000</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bcc5"></span>BCC5</td>
+<td class="instruction">OR E</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bcc6"></span>BCC6</td>
+<td class="instruction">LD (HL),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bcc7"></span>BCC7</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="bcc8"></span>
+<div class="comments">
+<div class="paragraph">
+X-aligned: write attributes across 2 columns only.
+</div>
+<div class="paragraph">
+Write attribute to the first row (2 cells).
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">WriteAttributeBlock3Wide_2Columns</td>
+<td class="address-2"><span id="bcc8"></span>BCC8</td>
+<td class="instruction">LD A,(HL)</td>
+<td class="comment-1" rowspan="4">Write the ink bits to *<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bcc9"></span>BCC9</td>
+<td class="instruction">AND %11111000</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bccb"></span>BCCB</td>
+<td class="instruction">OR E</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bccc"></span>BCCC</td>
+<td class="instruction">LD (HL),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bccd"></span>BCCD</td>
+<td class="instruction">INC HL</td>
+<td class="comment-1" rowspan="1">Move to the next column.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bcce"></span>BCCE</td>
+<td class="instruction">LD A,(HL)</td>
+<td class="comment-1" rowspan="4">Write the ink bits to *<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bccf"></span>BCCF</td>
+<td class="instruction">AND %11111000</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bcd1"></span>BCD1</td>
+<td class="instruction">OR E</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bcd2"></span>BCD2</td>
+<td class="instruction">LD (HL),A</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="bcd3"></span>
+<div class="comments">
+<div class="paragraph">
+Move back and down one attribute row.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bcd3"></span>BCD3</td>
+<td class="instruction">DEC HL</td>
+<td class="comment-1" rowspan="1">Move back one column.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bcd4"></span>BCD4</td>
+<td class="instruction">LD BC,$0020</td>
+<td class="comment-1" rowspan="2"><span class="register">HL</span>+=0020 (move down one row).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bcd7"></span>BCD7</td>
+<td class="instruction">ADD HL,BC</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="bcd8"></span>
+<div class="comments">
+<div class="paragraph">
+Write attribute to the second row (2 cells).
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bcd8"></span>BCD8</td>
+<td class="instruction">LD A,(HL)</td>
+<td class="comment-1" rowspan="4">Write the ink bits to *<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bcd9"></span>BCD9</td>
+<td class="instruction">AND %11111000</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bcdb"></span>BCDB</td>
+<td class="instruction">OR E</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bcdc"></span>BCDC</td>
+<td class="instruction">LD (HL),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bcdd"></span>BCDD</td>
+<td class="instruction">INC HL</td>
+<td class="comment-1" rowspan="1">Move to the next column.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bcde"></span>BCDE</td>
+<td class="instruction">LD A,(HL)</td>
+<td class="comment-1" rowspan="4">Write the ink bits to *<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bcdf"></span>BCDF</td>
+<td class="instruction">AND %11111000</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bce1"></span>BCE1</td>
+<td class="instruction">OR E</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bce2"></span>BCE2</td>
+<td class="instruction">LD (HL),A</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="bce3"></span>
+<div class="comments">
+<div class="paragraph">
+If Y-aligned, we're done. Otherwise write a third row.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bce3"></span>BCE3</td>
+<td class="instruction">BIT 1,D</td>
+<td class="comment-1" rowspan="1">Test bit 1 of <span class="register">D</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bce5"></span>BCE5</td>
+<td class="instruction">RET Z</td>
+<td class="comment-1" rowspan="1">Return if Y-aligned.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="bce6"></span>
+<div class="comments">
+<div class="paragraph">
+Move back and down to the third row.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bce6"></span>BCE6</td>
+<td class="instruction">DEC HL</td>
+<td class="comment-1" rowspan="1">Move back one column.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bce7"></span>BCE7</td>
+<td class="instruction">ADD HL,BC</td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>+=<span class="register">BC</span> (move down one row).</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="bce8"></span>
+<div class="comments">
+<div class="paragraph">
+Write attribute to the third row (2 cells).
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bce8"></span>BCE8</td>
+<td class="instruction">LD A,(HL)</td>
+<td class="comment-1" rowspan="4">Write the ink bits to *<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bce9"></span>BCE9</td>
+<td class="instruction">AND %11111000</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bceb"></span>BCEB</td>
+<td class="instruction">OR E</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bcec"></span>BCEC</td>
+<td class="instruction">LD (HL),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bced"></span>BCED</td>
+<td class="instruction">INC HL</td>
+<td class="comment-1" rowspan="1">Move to the next column.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bcee"></span>BCEE</td>
+<td class="instruction">LD A,(HL)</td>
+<td class="comment-1" rowspan="4">Write the ink bits to *<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bcef"></span>BCEF</td>
+<td class="instruction">AND %11111000</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bcf1"></span>BCF1</td>
+<td class="instruction">OR E</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bcf2"></span>BCF2</td>
+<td class="instruction">LD (HL),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bcf3"></span>BCF3</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="BC52.html">BC52</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#bc74">Map</a></td>
+<td class="next">
+Next: <a href="BCF4.html">BCF4</a>
+</td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
+<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
+<div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
+<div><a href="../dec/asm/48244.html">Switch to decimal</a>.</div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Percy the Potty Pigeon: Routine at C1DD</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-dark.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-wide.css" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-75RERFCHBG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-75RERFCHBG');
+</script>
+</head>
+<body class="loader-Asm-c">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html"><img alt="logo" src="../images/logo.png" /></a></td>
+<td class="page-header">Routines</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+</td>
+<td class="up">Up: <a href="loader.html#c1dd">Map</a></td>
+<td class="next">
+</td>
+</tr>
+</table>
+<div class="description">C1DD: Game Entry Point</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="5">
+<div class="details">
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">GameEntryPoint</td>
+<td class="address-2"><span id="c1dd"></span>C1DD</td>
+<td class="instruction">LD DE,$C001</td>
+<td class="comment-1" rowspan="4">Copy 0176 bytes of data from 053F to <a href="../asm/C000.html">RoomBuffer</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="c1e0"></span>C1E0</td>
+<td class="instruction">LD BC,$0176</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="c1e3"></span>C1E3</td>
+<td class="instruction">LD HL,$053F</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="c1e6"></span>C1E6</td>
+<td class="instruction">LDIR</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="c1e8"></span>C1E8</td>
+<td class="instruction">LD HL,$FF58</td>
+<td class="comment-1" rowspan="2">Write <a href="../asm/FF58.html">Graphics_CustomUDGs</a> to *<a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/5C7B.html">UDG</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="c1eb"></span>C1EB</td>
+<td class="instruction">LD ($5C7B),HL</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="c1ee"></span>C1EE</td>
+<td class="instruction">LD HL,$3C00</td>
+<td class="comment-1" rowspan="2">Write <a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/3D00.html">3C00</a> (CHARSET-0100) to *<a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/5C36.html">CHARS</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="c1f1"></span>C1F1</td>
+<td class="instruction">LD ($5C36),HL</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="c1f4"></span>C1F4</td>
+<td class="instruction">LD HL,$E000</td>
+<td class="comment-1" rowspan="5">Blank 1770 bytes of data starting from <a href="../asm/E000.html">SpriteBuffer</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="c1f7"></span>C1F7</td>
+<td class="instruction">LD DE,$E001</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="c1fa"></span>C1FA</td>
+<td class="instruction">LD (HL),L</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="c1fb"></span>C1FB</td>
+<td class="instruction">LD BC,$1770</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="c1fe"></span>C1FE</td>
+<td class="instruction">LDIR</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="c200"></span>
+<div class="comments">
+<div class="paragraph">
+Set the lower screen to the default 02 lines.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="c200"></span>C200</td>
+<td class="instruction">LD A,$02</td>
+<td class="comment-1" rowspan="2">Write 02 to *<a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/5C6B.html">DF_SZ</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="c202"></span>C202</td>
+<td class="instruction">LD ($5C6B),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="c205"></span>C205</td>
+<td class="instruction">JP $5DC0</td>
+<td class="comment-1" rowspan="1">Jump to <a href="../asm/5DC0.html">Game_Initialise</a>.</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+</td>
+<td class="up">Up: <a href="loader.html#c1dd">Map</a></td>
+<td class="next">
+</td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
+<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
+<div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
+<div><a href="../dec/loader/C1DD.html">Switch to decimal</a>.</div>
+</footer>
+</body>
+</html>

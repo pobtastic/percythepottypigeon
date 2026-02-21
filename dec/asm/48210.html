@@ -29,11 +29,11 @@ Prev: <a href="48183.html">48183</a>
 </td>
 <td class="up">Up: <a href="../maps/all.html#48210">Map</a></td>
 <td class="next">
-Next: <a href="48478.html">48478</a>
+Next: <a href="48244.html">48244</a>
 </td>
 </tr>
 </table>
-<div class="description">48210: Routine at BC52</div>
+<div class="description">48210: Apply Sprite Attributes (3-Wide)</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
@@ -41,963 +41,154 @@ Next: <a href="48478.html">48478</a>
 <div class="paragraph">
 Used by the routine at <a href="47900.html">47900</a>.
 </div>
+<div class="paragraph">
+Applies colour attributes to a sprite's screen position. First writes the sprite's own colour attribute, then writes the background colour (2 RED ink) on top. The sprite occupies a 3x2 or 3x3 character cell area depending on alignment.
 </div>
+</div>
+<table class="input">
+<tr class="asm-input-header">
+<th colspan="2">Input</th>
+</tr>
+<tr>
+<td class="register">HL</td>
+<td class="register-desc">Screen buffer address of the sprite</td>
+</tr>
+<tr>
+<td class="register">IX</td>
+<td class="register-desc">Pointer to the sprite state data</td>
+</tr>
+</table>
 </td>
 </tr>
 <tr>
+<td class="asm-label">ApplySpriteAttributes3Wide</td>
 <td class="address-2"><span id="48210"></span>48210</td>
 <td class="instruction">LD C,88</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Set the attribute base to 88 (i.e. the attribute buffer at 22528).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="48212"></span>48212</td>
 <td class="instruction">LD D,0</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48214"></span>48214</td>
-<td class="instruction">LD A,(IX+0)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48217"></span>48217</td>
-<td class="instruction">AND 7</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48219"></span>48219</td>
-<td class="instruction">JR Z,<a href="48210.html#48223">48223</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48221"></span>48221</td>
-<td class="instruction">SET 0,D</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-2"><span id="48223"></span>48223</td>
-<td class="instruction">LD E,(IX+2)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48226"></span>48226</td>
-<td class="instruction">LD A,E</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48227"></span>48227</td>
-<td class="instruction">CP 255</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48229"></span>48229</td>
-<td class="instruction">JR Z,<a href="48210.html#48236">48236</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48231"></span>48231</td>
-<td class="instruction">PUSH HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48232"></span>48232</td>
-<td class="instruction">CALL <a href="48210.html#48244">48244</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48235"></span>48235</td>
-<td class="instruction">POP HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-2"><span id="48236"></span>48236</td>
-<td class="instruction">LD C,248</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48238"></span>48238</td>
-<td class="instruction">LD E,2</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48240"></span>48240</td>
-<td class="instruction">CALL <a href="48210.html#48244">48244</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48243"></span>48243</td>
-<td class="instruction">RET</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-2"><span id="48244"></span>48244</td>
-<td class="instruction">LD A,H</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48245"></span>48245</td>
-<td class="instruction">AND 7</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48247"></span>48247</td>
-<td class="instruction">OR A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48248"></span>48248</td>
-<td class="instruction">JR Z,<a href="48210.html#48252">48252</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48250"></span>48250</td>
-<td class="instruction">SET 1,D</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-2"><span id="48252"></span>48252</td>
-<td class="instruction">LD A,H</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48253"></span>48253</td>
-<td class="instruction">RRCA</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48254"></span>48254</td>
-<td class="instruction">RRCA</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48255"></span>48255</td>
-<td class="instruction">RRCA</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48256"></span>48256</td>
-<td class="instruction">AND 3</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48258"></span>48258</td>
-<td class="instruction">OR C</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48259"></span>48259</td>
-<td class="instruction">LD H,A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48260"></span>48260</td>
-<td class="instruction">BIT 0,D</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48262"></span>48262</td>
-<td class="instruction">JR Z,<a href="48210.html#48328">48328</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48264"></span>48264</td>
-<td class="instruction">LD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48265"></span>48265</td>
-<td class="instruction">AND 248</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48267"></span>48267</td>
-<td class="instruction">OR E</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48268"></span>48268</td>
-<td class="instruction">LD (HL),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48269"></span>48269</td>
-<td class="instruction">INC HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48270"></span>48270</td>
-<td class="instruction">LD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48271"></span>48271</td>
-<td class="instruction">AND 248</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48273"></span>48273</td>
-<td class="instruction">OR E</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48274"></span>48274</td>
-<td class="instruction">LD (HL),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48275"></span>48275</td>
-<td class="instruction">INC HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48276"></span>48276</td>
-<td class="instruction">LD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48277"></span>48277</td>
-<td class="instruction">AND 248</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48279"></span>48279</td>
-<td class="instruction">OR E</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48280"></span>48280</td>
-<td class="instruction">LD (HL),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48281"></span>48281</td>
-<td class="instruction">DEC HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48282"></span>48282</td>
-<td class="instruction">DEC HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48283"></span>48283</td>
-<td class="instruction">LD BC,32</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48286"></span>48286</td>
-<td class="instruction">ADD HL,BC</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48287"></span>48287</td>
-<td class="instruction">LD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48288"></span>48288</td>
-<td class="instruction">AND 248</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48290"></span>48290</td>
-<td class="instruction">OR E</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48291"></span>48291</td>
-<td class="instruction">LD (HL),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48292"></span>48292</td>
-<td class="instruction">INC HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48293"></span>48293</td>
-<td class="instruction">LD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48294"></span>48294</td>
-<td class="instruction">AND 248</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48296"></span>48296</td>
-<td class="instruction">OR E</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48297"></span>48297</td>
-<td class="instruction">LD (HL),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48298"></span>48298</td>
-<td class="instruction">INC HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48299"></span>48299</td>
-<td class="instruction">LD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48300"></span>48300</td>
-<td class="instruction">AND 248</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48302"></span>48302</td>
-<td class="instruction">OR E</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48303"></span>48303</td>
-<td class="instruction">LD (HL),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48304"></span>48304</td>
-<td class="instruction">BIT 1,D</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48306"></span>48306</td>
-<td class="instruction">RET Z</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48307"></span>48307</td>
-<td class="instruction">DEC HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48308"></span>48308</td>
-<td class="instruction">DEC HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48309"></span>48309</td>
-<td class="instruction">ADD HL,BC</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48310"></span>48310</td>
-<td class="instruction">LD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48311"></span>48311</td>
-<td class="instruction">AND 248</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48313"></span>48313</td>
-<td class="instruction">OR E</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48314"></span>48314</td>
-<td class="instruction">LD (HL),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48315"></span>48315</td>
-<td class="instruction">INC HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48316"></span>48316</td>
-<td class="instruction">LD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48317"></span>48317</td>
-<td class="instruction">AND 248</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48319"></span>48319</td>
-<td class="instruction">OR E</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48320"></span>48320</td>
-<td class="instruction">LD (HL),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48321"></span>48321</td>
-<td class="instruction">INC HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48322"></span>48322</td>
-<td class="instruction">LD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48323"></span>48323</td>
-<td class="instruction">AND 248</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48325"></span>48325</td>
-<td class="instruction">OR E</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48326"></span>48326</td>
-<td class="instruction">LD (HL),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48327"></span>48327</td>
-<td class="instruction">RET</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-2"><span id="48328"></span>48328</td>
-<td class="instruction">LD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48329"></span>48329</td>
-<td class="instruction">AND 248</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48331"></span>48331</td>
-<td class="instruction">OR E</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48332"></span>48332</td>
-<td class="instruction">LD (HL),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48333"></span>48333</td>
-<td class="instruction">INC HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48334"></span>48334</td>
-<td class="instruction">LD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48335"></span>48335</td>
-<td class="instruction">AND 248</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48337"></span>48337</td>
-<td class="instruction">OR E</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48338"></span>48338</td>
-<td class="instruction">LD (HL),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48339"></span>48339</td>
-<td class="instruction">DEC HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48340"></span>48340</td>
-<td class="instruction">LD BC,32</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48343"></span>48343</td>
-<td class="instruction">ADD HL,BC</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48344"></span>48344</td>
-<td class="instruction">LD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48345"></span>48345</td>
-<td class="instruction">AND 248</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48347"></span>48347</td>
-<td class="instruction">OR E</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48348"></span>48348</td>
-<td class="instruction">LD (HL),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48349"></span>48349</td>
-<td class="instruction">INC HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48350"></span>48350</td>
-<td class="instruction">LD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48351"></span>48351</td>
-<td class="instruction">AND 248</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48353"></span>48353</td>
-<td class="instruction">OR E</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48354"></span>48354</td>
-<td class="instruction">LD (HL),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48355"></span>48355</td>
-<td class="instruction">BIT 1,D</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48357"></span>48357</td>
-<td class="instruction">RET Z</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48358"></span>48358</td>
-<td class="instruction">DEC HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48359"></span>48359</td>
-<td class="instruction">ADD HL,BC</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48360"></span>48360</td>
-<td class="instruction">LD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48361"></span>48361</td>
-<td class="instruction">AND 248</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48363"></span>48363</td>
-<td class="instruction">OR E</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48364"></span>48364</td>
-<td class="instruction">LD (HL),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48365"></span>48365</td>
-<td class="instruction">INC HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48366"></span>48366</td>
-<td class="instruction">LD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48367"></span>48367</td>
-<td class="instruction">AND 248</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48369"></span>48369</td>
-<td class="instruction">OR E</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48370"></span>48370</td>
-<td class="instruction">LD (HL),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48371"></span>48371</td>
-<td class="instruction">RET</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48372"></span>48372</td>
-<td class="instruction">NOP</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48373"></span>48373</td>
-<td class="instruction">NOP</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48374"></span>48374</td>
-<td class="instruction">NOP</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">D</span>=0.</td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
-<span id="48375"></span>
+<span id="48214"></span>
 <div class="comments">
 <div class="paragraph">
-This entry point is used by the routine at <a href="47900.html">47900</a>.
+Check if the sprite's X position is on a character boundary. If not, set bit 0 of <span class="register">D</span> to indicate an extra column is needed.
 </div>
 </div>
 </td>
 </tr>
 <tr>
-<td class="address-2"><span id="48375"></span>48375</td>
-<td class="instruction">LD C,88</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48377"></span>48377</td>
-<td class="instruction">LD D,0</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48379"></span>48379</td>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48214"></span>48214</td>
 <td class="instruction">LD A,(IX+0)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Load <span class="register">A</span> with the sprite X position from *<span class="register">IX</span>+0.</td>
 </tr>
 <tr>
-<td class="address-1"><span id="48382"></span>48382</td>
-<td class="instruction">AND 7</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48217"></span>48217</td>
+<td class="instruction">AND %00000111</td>
+<td class="comment-1" rowspan="1">Keep only bits 0-2 (sub-character X offset).</td>
 </tr>
 <tr>
-<td class="address-1"><span id="48384"></span>48384</td>
-<td class="instruction">JR Z,<a href="48210.html#48388">48388</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48219"></span>48219</td>
+<td class="instruction">JR Z,<a href="48210.html#48223">ApplySpriteAttributes3Wide_SpriteColour</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="48210.html#48223">ApplySpriteAttributes3Wide_SpriteColour</a> if X-aligned.</td>
 </tr>
 <tr>
-<td class="address-1"><span id="48386"></span>48386</td>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48221"></span>48221</td>
 <td class="instruction">SET 0,D</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Set bit 0 of <span class="register">D</span> (not X-aligned, need extra column).</td>
 </tr>
 <tr>
-<td class="address-2"><span id="48388"></span>48388</td>
+<td class="routine-comment" colspan="5">
+<span id="48223"></span>
+<div class="comments">
+<div class="paragraph">
+First pass: write the sprite's own colour attribute to the attribute file. Skip if the attribute is 255 (transparent).
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">ApplySpriteAttributes3Wide_SpriteColour</td>
+<td class="address-2"><span id="48223"></span>48223</td>
 <td class="instruction">LD E,(IX+2)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Load <span class="register">E</span> with the sprite colour attribute from *<span class="register">IX</span>+2.</td>
 </tr>
 <tr>
-<td class="address-1"><span id="48391"></span>48391</td>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48226"></span>48226</td>
 <td class="instruction">LD A,E</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Jump to <a href="48210.html#48236">ApplySpriteAttributes3Wide_Background</a> if the attribute byte is transparent (255).</td>
 </tr>
 <tr>
-<td class="address-1"><span id="48392"></span>48392</td>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48227"></span>48227</td>
 <td class="instruction">CP 255</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
-<td class="address-1"><span id="48394"></span>48394</td>
-<td class="instruction">JR Z,<a href="48210.html#48401">48401</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48229"></span>48229</td>
+<td class="instruction">JR Z,<a href="48210.html#48236">ApplySpriteAttributes3Wide_Background</a></td>
 </tr>
 <tr>
-<td class="address-1"><span id="48396"></span>48396</td>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48231"></span>48231</td>
 <td class="instruction">PUSH HL</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Stash the screen buffer address on the stack.</td>
 </tr>
 <tr>
-<td class="address-1"><span id="48397"></span>48397</td>
-<td class="instruction">CALL <a href="48210.html#48409">48409</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48232"></span>48232</td>
+<td class="instruction">CALL <a href="48244.html">WriteAttributeBlock3Wide</a></td>
+<td class="comment-1" rowspan="1">Call <a href="48244.html">WriteAttributeBlock3Wide</a> to write the sprite attribute.</td>
 </tr>
 <tr>
-<td class="address-1"><span id="48400"></span>48400</td>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48235"></span>48235</td>
 <td class="instruction">POP HL</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Restore the screen buffer address from the stack.</td>
 </tr>
 <tr>
-<td class="address-2"><span id="48401"></span>48401</td>
+<td class="routine-comment" colspan="5">
+<span id="48236"></span>
+<div class="comments">
+<div class="paragraph">
+Second pass: write the background attribute (2 RED ink) over the sprite area using the room attribute base (248 maps to <a href="49152.html#55296">RoomAttributeBuffer</a>).
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">ApplySpriteAttributes3Wide_Background</td>
+<td class="address-2"><span id="48236"></span>48236</td>
 <td class="instruction">LD C,248</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">C</span>=248.</td>
 </tr>
 <tr>
-<td class="address-1"><span id="48403"></span>48403</td>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48238"></span>48238</td>
 <td class="instruction">LD E,2</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">E</span>=RED.</td>
 </tr>
 <tr>
-<td class="address-1"><span id="48405"></span>48405</td>
-<td class="instruction">CALL <a href="48210.html#48409">48409</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48240"></span>48240</td>
+<td class="instruction">CALL <a href="48244.html">WriteAttributeBlock3Wide</a></td>
+<td class="comment-1" rowspan="1">Call <a href="48244.html">WriteAttributeBlock3Wide</a> to write the background attribute.</td>
 </tr>
 <tr>
-<td class="address-1"><span id="48408"></span>48408</td>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48243"></span>48243</td>
 <td class="instruction">RET</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-2"><span id="48409"></span>48409</td>
-<td class="instruction">LD A,H</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48410"></span>48410</td>
-<td class="instruction">AND 7</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48412"></span>48412</td>
-<td class="instruction">OR A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48413"></span>48413</td>
-<td class="instruction">JR Z,<a href="48210.html#48417">48417</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48415"></span>48415</td>
-<td class="instruction">SET 1,D</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-2"><span id="48417"></span>48417</td>
-<td class="instruction">LD A,H</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48418"></span>48418</td>
-<td class="instruction">RRCA</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48419"></span>48419</td>
-<td class="instruction">RRCA</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48420"></span>48420</td>
-<td class="instruction">RRCA</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48421"></span>48421</td>
-<td class="instruction">AND 3</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48423"></span>48423</td>
-<td class="instruction">OR C</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48424"></span>48424</td>
-<td class="instruction">LD H,A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48425"></span>48425</td>
-<td class="instruction">BIT 0,D</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48427"></span>48427</td>
-<td class="instruction">JR Z,<a href="48210.html#48460">48460</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48429"></span>48429</td>
-<td class="instruction">LD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48430"></span>48430</td>
-<td class="instruction">AND 248</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48432"></span>48432</td>
-<td class="instruction">OR E</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48433"></span>48433</td>
-<td class="instruction">LD (HL),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48434"></span>48434</td>
-<td class="instruction">INC L</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48435"></span>48435</td>
-<td class="instruction">LD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48436"></span>48436</td>
-<td class="instruction">AND 248</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48438"></span>48438</td>
-<td class="instruction">OR E</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48439"></span>48439</td>
-<td class="instruction">LD (HL),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48440"></span>48440</td>
-<td class="instruction">DEC L</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48441"></span>48441</td>
-<td class="instruction">BIT 1,D</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48443"></span>48443</td>
-<td class="instruction">RET Z</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48444"></span>48444</td>
-<td class="instruction">LD BC,32</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48447"></span>48447</td>
-<td class="instruction">ADD HL,BC</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48448"></span>48448</td>
-<td class="instruction">LD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48449"></span>48449</td>
-<td class="instruction">AND 248</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48451"></span>48451</td>
-<td class="instruction">OR E</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48452"></span>48452</td>
-<td class="instruction">LD (HL),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48453"></span>48453</td>
-<td class="instruction">INC L</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48454"></span>48454</td>
-<td class="instruction">LD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48455"></span>48455</td>
-<td class="instruction">AND 248</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48457"></span>48457</td>
-<td class="instruction">OR E</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48458"></span>48458</td>
-<td class="instruction">LD (HL),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48459"></span>48459</td>
-<td class="instruction">RET</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-2"><span id="48460"></span>48460</td>
-<td class="instruction">LD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48461"></span>48461</td>
-<td class="instruction">AND 248</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48463"></span>48463</td>
-<td class="instruction">OR E</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48464"></span>48464</td>
-<td class="instruction">LD (HL),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48465"></span>48465</td>
-<td class="instruction">BIT 1,D</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48467"></span>48467</td>
-<td class="instruction">RET Z</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48468"></span>48468</td>
-<td class="instruction">LD BC,32</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48471"></span>48471</td>
-<td class="instruction">ADD HL,BC</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48472"></span>48472</td>
-<td class="instruction">LD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48473"></span>48473</td>
-<td class="instruction">AND 248</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48475"></span>48475</td>
-<td class="instruction">OR E</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48476"></span>48476</td>
-<td class="instruction">LD (HL),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48477"></span>48477</td>
-<td class="instruction">RET</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Return.</td>
 </tr>
 </table>
 <table class="asm-navigation">
@@ -1007,7 +198,7 @@ Prev: <a href="48183.html">48183</a>
 </td>
 <td class="up">Up: <a href="../maps/all.html#48210">Map</a></td>
 <td class="next">
-Next: <a href="48478.html">48478</a>
+Next: <a href="48244.html">48244</a>
 </td>
 </tr>
 </table>

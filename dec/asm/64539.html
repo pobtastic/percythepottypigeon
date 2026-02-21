@@ -51,7 +51,7 @@ Prints the Author Byline messaging to the screen buffer.
 <td class="asm-label">Print_AuthorByline</td>
 <td class="address-2"><span id="64539"></span>64539</td>
 <td class="instruction">LD A,(24508)</td>
-<td class="comment-1" rowspan="2">Check if *<a href="24508.html">Pause_Flag</a> is non-zero.</td>
+<td class="comment-1" rowspan="3">Jump to <a href="64594.html">Print_HighScore</a> if *<a href="24508.html">Pause_Flag</a> is set.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -62,7 +62,6 @@ Prints the Author Byline messaging to the screen buffer.
 <td class="asm-label"></td>
 <td class="address-1"><span id="64543"></span>64543</td>
 <td class="instruction">JR NZ,<a href="64594.html">Print_HighScore</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="64594.html">Print_HighScore</a> if *<a href="24508.html">Pause_Flag</a> is non-zero.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
