@@ -1381,7 +1381,7 @@ N $652C Decrease the lives counter by one.
   $652F,$01 Decrease *#REGhl by one.
   $6530,$05 Jump to #R$655C if *#R$5FB3 is not yet equal to ASCII #N$30
 . ("#CHR$30").
-  $6535,$02 #REGa=#N$30.
+  $6535,$02 Load #REGa with ASCII #N$30 ("#CHR$30").
   $6537,$03 #REGhl=#N$50F0 (screen buffer location).
   $653A,$03 Call #R$6581.
 
@@ -1752,6 +1752,7 @@ N $68C7 Play one step of the death sound.
   $68E0,$02 #REGa+=#N$0B.
   $68E2,$03 Write #REGa to *#R$5FC5.
   $68E5,$03 Call #R$5E24.
+N $68E8 #HTML(#AUDIO(lose-life.wav)(#INCLUDE(LoseLife)))
   $68E8,$03 #REGhl=#R$FBF9.
   $68EB,$03 Call #R$FAC4.
   $68EE,$01 Disable interrupts.
@@ -1923,8 +1924,16 @@ c $6C53
 c $6C85
 
 c $6CA5
+  $6CA5,$06 Write #N$FF to *#R$6CB3.
+  $6CAB,$02 Write #N$FF to *#R$6CB4.
+  $6CAD,$02 Write #N$FF to *#R$6CB5.
+  $6CAF,$02 Write #N$FF to *#R$6CB6.
+  $6CB1,$01 Return.
 
-b $6CB2
+g $6CB2
+B $6CB2,$01
+B $6CB3,$04,$01
+
   $6CC3
 
 c $6CDD
@@ -1935,6 +1944,13 @@ c $6DAB Dispatch Game State
 c $6E2F
 
 c $6E5D
+
+c $71E1
+  $71E1,$07 Write #N$00 to; #LIST
+. { *#R$DAE3 }
+. { *#R$5FA9 }
+. LIST#
+  $71E8,$01 Return.
 
 b $71E9
 
@@ -2094,7 +2110,7 @@ c $794A Handler: Spider
 @ $794A label=Handler_Spider
 R $794A IX Pointer to the spider object state
   $794A,$07 Call #R$79C0 if *#R$5FBB is non-zero.
-  $7951,$03 #REGhl=#R$D90A.
+  $7951,$03 #REGhl=#R$D800(#N$D90A).
   $7954,$03 #REGbc=#N$0020 (one attribute row width).
   $7957,$03 Write #N$68 to the first row.
   $795A,$02 Write #REGa to the second row.
@@ -2216,9 +2232,141 @@ b $A793
   $A793,$08 #UDG(#PC)
 L $A793,$08,$0E
 
-b $AB3B
-  $AB3B,$08 #UDG(#PC)
-L $AB3B,$08,$A0
+b $AB3B Graphics: Sprite Sheet
+N $AB3B Percy: flying left.
+@ $AB3B label=Sprite_01
+@ $AB5B label=Sprite_02
+@ $AB7B label=Sprite_03
+@ $AB9B label=Sprite_04
+N $ABBB Percy: flying right.
+@ $ABBB label=Sprite_05
+@ $ABDB label=Sprite_06
+@ $ABFB label=Sprite_07
+@ $AC1B label=Sprite_08
+N $AC3B Percy: walking left.
+@ $AC3B label=Sprite_09
+@ $AC5B label=Sprite_0A
+@ $AC7B label=Sprite_0B
+@ $AC9B label=Sprite_0C
+N $ACBB Percy: walking right.
+@ $ACBB label=Sprite_0D
+@ $ACDB label=Sprite_0E
+@ $ACFB label=Sprite_0F
+@ $AD1B label=Sprite_10
+N $AD3B Percy: DEAD!
+@ $AD3B label=Sprite_11
+N $AD5B Killer Venus Snap Dragons.
+@ $AD5B label=Sprite_12
+@ $AD7B label=Sprite_13
+@ $AD9B label=Sprite_14
+@ $ADBB label=Sprite_15
+@ $ADDB label=Sprite_16
+@ $ADFB label=Sprite_17
+N $AE1B Red Bird.
+@ $AE1B label=Sprite_18
+@ $AE3B label=Sprite_19
+@ $AE5B label=Sprite_1A
+@ $AE7B label=Sprite_1B
+N $AE9B Car 1: driving right.
+@ $AE9B label=Sprite_1C
+@ $AEBB label=Sprite_1D
+N $AEDB Car 1: driving left.
+@ $AEDB label=Sprite_1E
+@ $AEFB label=Sprite_1F
+N $AF1B Car 2: driving right.
+@ $AF1B label=Sprite_20
+@ $AF3B label=Sprite_21
+N $AF5B Car 2: driving left.
+@ $AF5B label=Sprite_22
+@ $AF7B label=Sprite_23
+N $AF9B Car 3: driving right.
+@ $AF9B label=Sprite_24
+@ $AFBB label=Sprite_25
+N $AFDB Car 3: driving left.
+@ $AFDB label=Sprite_26
+@ $AFFB label=Sprite_27
+N $B01B Frog: jumping right.
+@ $B01B label=Sprite_28
+N $B03B Frog: jumping left.
+@ $B03B label=Sprite_29
+N $B05B Frog: sitting left.
+@ $B05B label=Sprite_2A
+@ $B07B label=Sprite_2B
+N $B09B Frog: sitting right.
+@ $B09B label=Sprite_2C
+@ $B0BB label=Sprite_2D
+N $B0DB Helicopter: flying left.
+@ $B0DB label=Sprite_2E
+@ $B0FB label=Sprite_2F
+@ $B11B label=Sprite_30
+@ $B13B label=Sprite_31
+N $B15B Helicopter: flying right.
+@ $B15B label=Sprite_32
+@ $B17B label=Sprite_33
+@ $B19B label=Sprite_34
+@ $B1BB label=Sprite_35
+N $B1DB ???
+@ $B1DB label=Sprite_36
+@ $B1FB label=Sprite_37
+@ $B21B label=Sprite_38
+N $B23B Cat: walking right.
+@ $B23B label=Sprite_39
+@ $B25B label=Sprite_3A
+@ $B27B label=Sprite_3B
+@ $B29B label=Sprite_3C
+N $B2BB Cat: walking left.
+@ $B2BB label=Sprite_3D
+@ $B2DB label=Sprite_3E
+@ $B2FB label=Sprite_3F
+@ $B31B label=Sprite_40
+N $B33B Dog: walking right.
+@ $B33B label=Sprite_41
+@ $B35B label=Sprite_42
+@ $B37B label=Sprite_43
+@ $B39B label=Sprite_44
+N $B3BB Dog: walking left.
+@ $B3BB label=Sprite_45
+@ $B3DB label=Sprite_46
+@ $B3FB label=Sprite_47
+@ $B41B label=Sprite_48
+N $B43B
+@ $B43B label=Sprite_49
+@ $B45B label=Sprite_4A
+@ $B47B label=Sprite_4B
+@ $B49B label=Sprite_4C
+N $B43B Plane: flying left.
+@ $B4BB label=Sprite_4D
+N $B4DB Plane: flying right.
+@ $B4DB label=Sprite_4E
+N $B4FB UFO.
+@ $B4FB label=Sprite_4F
+@ $B51B label=Sprite_50
+@ $B53B label=Sprite_51
+N $B55B Paratrooper.
+@ $B55B label=Sprite_52
+@ $B57B label=Sprite_53
+@ $B59B label=Sprite_54
+@ $B5BB label=Sprite_55
+@ $B5DB label=Sprite_56
+@ $B5FB label=Sprite_57
+@ $B61B label=Sprite_58
+@ $B63B label=Sprite_59
+@ $B65B label=Sprite_5A
+@ $B67B label=Sprite_5B
+@ $B69B label=Sprite_5C
+@ $B6BB label=Sprite_5D
+@ $B6DB label=Sprite_5E
+N $B6FB Spider.
+@ $B6FB label=Sprite_5F
+@ $B71B label=Sprite_60
+  $AB3B,$20,$08 #UDGTABLE { =h Sprite ID: #N($01+(#PC-$AB3B)/$20) }
+. { #UDGS$02,$02(udg#PC-56x4)(
+.   #UDG(#PC+$08*($02*$x+$y))(*udg)
+.   udg
+. ) } TABLE#
+L $AB3B,$20,$60,$02
+
+b $B73B
 
 c $BB1C
   $BB1C,$04 #REGix=#R$DAC0.
@@ -2390,7 +2538,229 @@ N $BC34 Store the Y pixel row (character cell row) in shadow #REGaf and restore
 
 c $BC37
 
-c $BC52
+c $BC52 Apply Sprite Attributes (3-Wide)
+@ $BC52 label=ApplySpriteAttributes3Wide
+D $BC52 Applies colour attributes to a sprite's screen position. First writes
+. the sprite's own colour attribute, then writes the background colour (#N$02,
+. #INK$02 ink) on top. The sprite occupies a 3x2 or 3x3 character cell area
+. depending on alignment.
+R $BC52 HL Screen buffer address of the sprite
+R $BC52 IX Pointer to the sprite state data
+  $BC52,$02 Set the attribute base to #N$58 (i.e. the attribute buffer at
+. #N$5800).
+  $BC54,$02 #REGd=#N$00.
+N $BC56 Check if the sprite's X position is on a character boundary. If not,
+. set bit 0 of #REGd to indicate an extra column is needed.
+  $BC56,$03 Load #REGa with the sprite X position from *#REGix+#N$00.
+  $BC59,$02,b$01 Keep only bits 0-2 (sub-character X offset).
+  $BC5B,$02 Jump to #R$BC5F if X-aligned.
+  $BC5D,$02 Set bit 0 of #REGd (not X-aligned, need extra column).
+N $BC5F First pass: write the sprite's own colour attribute to the attribute
+. file. Skip if the attribute is #N$FF (transparent).
+@ $BC5F label=ApplySpriteAttributes3Wide_SpriteColour
+  $BC5F,$03 Load #REGe with the sprite colour attribute from *#REGix+#N$02.
+  $BC62,$05 Jump to #R$BC6C if the attribute byte is transparent (#N$FF).
+  $BC67,$01 Stash the screen buffer address on the stack.
+  $BC68,$03 Call #R$BC74 to write the sprite attribute.
+  $BC6B,$01 Restore the screen buffer address from the stack.
+N $BC6C Second pass: write the background attribute (#N$02, #INK$02 ink) over
+. the sprite area using the room attribute base (#N$F8 maps to #R$D800).
+@ $BC6C label=ApplySpriteAttributes3Wide_Background
+  $BC6C,$02 #REGc=#N$F8.
+  $BC6E,$02 #REGe=#INK$02.
+  $BC70,$03 Call #R$BC74 to write the background attribute.
+  $BC73,$01 Return.
+
+c $BC74 Write Attribute Block (3-Wide)
+@ $BC74 label=WriteAttributeBlock3Wide
+D $BC74 Writes a colour attribute to a 3-wide block of attribute cells at the
+. position derived from the screen buffer address in #REGhl. The height is 2
+. rows if Y-aligned, or 3 rows if not. The width is 2 or 3 columns depending on
+. bit 0 of #REGd (X alignment).
+R $BC74 C Attribute base high byte (#N$58 for screen, #N$F8 for room)
+R $BC74 D Bit 0: extra column needed, Bit 1: extra row needed
+R $BC74 E Attribute value to write (ink bits 0-2)
+R $BC74 HL Screen buffer address
+N $BC74 Check if the Y position crosses a character boundary — if so, an extra
+. row of attributes is needed.
+  $BC74,$01 #REGa=#REGh.
+  $BC75,$02,b$01 Keep only bits 0-2 (sub-character Y offset).
+  $BC77,$03 Jump to #R$BC7C if Y-aligned.
+  $BC7A,$02 Set bit 1 of #REGd (extra row needed).
+N $BC7C Convert the screen buffer address to the corresponding attribute address.
+@ $BC7C label=WriteAttributeBlock3Wide_CalcAddress
+  $BC7C,$01 #REGa=#REGh.
+  $BC7D,$03 Rotate right three positions.
+  $BC80,$02,b$01 Keep only bits 0-1.
+  $BC82,$01 Merge with the attribute base in #REGc.
+  $BC83,$01 #REGh=#REGa.
+N $BC84 Branch based on whether an extra column is needed.
+  $BC84,$02 Test bit 0 of #REGd.
+  $BC86,$02 Jump to #R$BCC8 if X-aligned (2 columns wide).
+
+N $BC88 Not X-aligned: write attributes across 3 columns.
+@ $BC88 label=WriteAttributeBlock3Wide_3Columns
+N $BC88 Write attribute to the first row (3 cells).
+M $BC88,$05 Write the ink bits to *#REGhl (preserve paper/brightness).
+  $BC89,$02,b$01 Keep only bits 3-7.
+  $BC8D,$01 Move to the next column.
+  $BC8E,$01 Write the ink bits to *#REGhl.
+  $BC8F,$02,b$01 Keep only bits 3-7.
+  $BC93,$01 Move to the next column.
+M $BC94,$05 Write the ink bits to *#REGhl.
+  $BC95,$02,b$01 Keep only bits 3-7.
+N $BC99 Move back to the first column and down one attribute row.
+  $BC99,$02 Move back two columns.
+  $BC9B,$04 #REGhl+=#N($0020,$04,$04) (move down one row).
+N $BC9F Write attribute to the second row (3 cells).
+M $BC9F,$05 Write the ink bits to *#REGhl.
+  $BCA0,$02,b$01 Keep only bits 3-7.
+  $BCA4,$01 Move to the next column.
+M $BCA5,$05 Write the ink bits to *#REGhl.
+  $BCA6,$02,b$01 Keep only bits 3-7.
+  $BCAA,$01 Move to the next column.
+M $BCAB,$05 Write the ink bits to *#REGhl.
+  $BCAC,$02,b$01 Keep only bits 3-7.
+N $BCB0 If Y-aligned, we're done. Otherwise write a third row.
+  $BCB0,$02 Test bit 1 of #REGd.
+  $BCB2,$01 Return if Y-aligned (no extra row needed).
+N $BCB3 Move back and down to the third row.
+  $BCB3,$02 Move back two columns.
+  $BCB5,$01 #REGhl+=#REGbc (move down one row).
+N $BCB6 Write attribute to the third row (3 cells).
+M $BCB6,$05 Write the ink bits to *#REGhl.
+  $BCB7,$02,b$01 Keep only bits 3-7.
+  $BCBB,$01 Move to the next column.
+M $BCBC,$05 Write the ink bits to *#REGhl.
+  $BCBD,$02,b$01 Keep only bits 3-7.
+  $BCC1,$01 Move to the next column.
+M $BCC2,$05 Write the ink bits to *#REGhl.
+  $BCC3,$02,b$01 Keep only bits 3-7.
+  $BCC7,$01 Return.
+
+N $BCC8 X-aligned: write attributes across 2 columns only.
+@ $BCC8 label=WriteAttributeBlock3Wide_2Columns
+N $BCC8 Write attribute to the first row (2 cells).
+M $BCC8,$05 Write the ink bits to *#REGhl.
+  $BCC9,$02,b$01 Keep only bits 3-7.
+  $BCCD,$01 Move to the next column.
+M $BCCE,$05 Write the ink bits to *#REGhl.
+  $BCCF,$02,b$01 Keep only bits 3-7.
+N $BCD3 Move back and down one attribute row.
+  $BCD3,$01 Move back one column.
+  $BCD4,$04 #REGhl+=#N($0020,$04,$04) (move down one row).
+N $BCD8 Write attribute to the second row (2 cells).
+M $BCD8,$05 Write the ink bits to *#REGhl.
+  $BCD9,$02,b$01 Keep only bits 3-7.
+  $BCDD,$01 Move to the next column.
+M $BCDE,$05 Write the ink bits to *#REGhl.
+  $BCDF,$02,b$01 Keep only bits 3-7.
+N $BCE3 If Y-aligned, we're done. Otherwise write a third row.
+  $BCE3,$02 Test bit 1 of #REGd.
+  $BCE5,$01 Return if Y-aligned.
+N $BCE6 Move back and down to the third row.
+  $BCE6,$01 Move back one column.
+  $BCE7,$01 #REGhl+=#REGbc (move down one row).
+N $BCE8 Write attribute to the third row (2 cells).
+M $BCE8,$05 Write the ink bits to *#REGhl.
+  $BCE9,$02,b$01 Keep only bits 3-7.
+  $BCED,$01 Move to the next column.
+M $BCEE,$05 Write the ink bits to *#REGhl.
+  $BCEF,$02,b$01 Keep only bits 3-7.
+  $BCF3,$01 Return.
+
+b $BCF4
+  $BCF4,$03
+
+c $BCF7 Apply Sprite Attributes (2-Wide)
+@ $BCF7 label=ApplySpriteAttributes2Wide
+D $BCF7 Applies colour attributes to a smaller (2-wide) sprite's screen
+. position. Works the same as #R$BC52 but for sprites that are only 2 character
+. cells wide.
+R $BCF7 HL Screen buffer address of the sprite
+R $BCF7 IX Pointer to the sprite state data
+  $BCF7,$02 Set the attribute base to #N$58 (i.e. the attribute buffer at
+. #N$5800).
+  $BCF9,$02 #REGd=#N$00.
+N $BCFB Check if the sprite's X position is on a character boundary.
+  $BCFB,$03 Load #REGa with the sprite X position from *#REGix+#N$00.
+  $BCFE,$02,b$01 Keep only bits 0-2 (sub-character X offset).
+  $BD00,$02 Jump to #R$BD04 if X-aligned.
+  $BD02,$02 Set bit 0 of #REGd (not X-aligned, need extra column).
+N $BD04 First pass: write the sprite's own colour attribute. Skip if the
+. attribute byte is #N$FF (transparent).
+@ $BD04 label=ApplySpriteAttributes2Wide_SpriteColour
+  $BD04,$03 Load #REGe with the sprite colour attribute from *#REGix+#N$02.
+  $BD07,$05 Jump to #R$BD11 if the attribute byte is transparent (#N$FF).
+  $BD0C,$01 Stash the screen buffer address on the stack.
+  $BD0D,$03 Call #R$BD19 to write the sprite attribute.
+  $BD10,$01 Restore the screen buffer address from the stack.
+N $BD11 Second pass: write the background attribute (#N$02, #INK$02 ink) over
+. the sprite area using the room attribute base (#N$F8 maps to #R$D800).
+@ $BD11 label=ApplySpriteAttributes2Wide_Background
+  $BD11,$02 #REGc=#N$F8.
+  $BD13,$02 #REGe=#INK$02.
+  $BD15,$03 Call #R$BD19 to write the background attribute.
+  $BD18,$01 Return.
+
+c $BD19 Write Attribute Block (2-Wide)
+@ $BD19 label=WriteAttributeBlock2Wide
+D $BD19 Writes a colour attribute to a 2-wide block of attribute cells. The
+. height is 1-2 rows if Y-aligned, or 2-3 rows if not. The width is 1 or 2
+. columns depending on X alignment.
+
+R $BD19 C Attribute base high byte (#N$58 for screen, #N$F8 for room)
+R $BD19 D Bit 0: extra column needed, Bit 1: extra row needed
+R $BD19 E Attribute value to write (ink bits 0-2)
+R $BD19 HL Screen buffer address
+N $BD19 Check if the Y position crosses a character boundary.
+  $BD19,$01 #REGa=#REGh.
+  $BD1A,$02,b$01 Keep only bits 0-2.
+  $BD1C,$03 Jump to #R$BD21 if Y-aligned.
+  $BD1F,$02 Set bit 1 of #REGd (extra row needed).
+N $BD21 Convert the screen buffer address to the attribute address.
+@ $BD21 label=WriteAttributeBlock2Wide_CalcAddress
+  $BD21,$01 #REGa=#REGh.
+  $BD22,$03 Rotate right three positions.
+  $BD25,$02,b$01 Keep only bits 0-1.
+  $BD27,$01 Merge with the attribute base in #REGc.
+  $BD28,$01 #REGh=#REGa.
+N $BD29 Branch based on whether an extra column is needed.
+  $BD29,$02 Test bit 0 of #REGd.
+  $BD2B,$02 Jump to #R$BD4C if X-aligned (1 column wide).
+
+N $BD2D Not X-aligned: write attributes across 2 columns.
+@ $BD2D label=WriteAttributeBlock2Wide_2Columns
+N $BD2D Write attribute to the first row (2 cells).
+  $BD2D,$04 Write the ink bits to *#REGhl.
+  $BD32,$01 Move to the next column.
+  $BD33,$04 Write the ink bits to *#REGhl.
+N $BD38 Return if Y-aligned, otherwise write a second row.
+  $BD38,$01 Move back one column.
+  $BD39,$02 Test bit 1 of #REGd.
+  $BD3B,$01 Return if Y-aligned.
+N $BD3C Move down one attribute row.
+  $BD3C,$03 #REGbc=#N$0020.
+  $BD3F,$01 #REGhl+=#REGbc.
+N $BD40 Write attribute to the second row (2 cells).
+  $BD40,$04 Write the ink bits to *#REGhl.
+  $BD45,$01 Move to the next column.
+  $BD46,$04 Write the ink bits to *#REGhl.
+  $BD4B,$01 Return.
+
+N $BD4C X-aligned: write attributes across 1 column only.
+@ $BD4C label=WriteAttributeBlock2Wide_1Column
+N $BD4C Write attribute to the first row (1 cell).
+  $BD4C,$04 Write the ink bits to *#REGhl.
+N $BD51 Return if Y-aligned, otherwise write a second row.
+  $BD51,$02 Test bit 1 of #REGd.
+  $BD53,$01 Return if Y-aligned.
+N $BD54 Move down one attribute row.
+  $BD54,$03 #REGbc=#N$0020.
+  $BD57,$01 #REGhl+=#REGbc.
+N $BD58 Write attribute to the second row (1 cell).
+  $BD58,$04 Write the ink bits to *#REGhl.
+  $BD5D,$01 Return.
 
 c $BD5E Draw Sprite Column
 @ $BD5E label=DrawSpriteColumn
@@ -2468,22 +2838,8 @@ c $BDA6
 g $C000 Room Buffer
 @ $C000 label=RoomBuffer
 B $C000,$1800,$20
-
-c $C1DD Game Entry Point
-@ $C1DD label=GameEntryPoint
-  $C1DD,$0B Copy #N$0176 bytes of data from #N$053F to #R$C000(#N$C001).
-  $C1E8,$06 #HTML(Write #R$FF58 to
-. *<a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/5C7B.html">UDG</a>.)
-  $C1EE,$06 #HTML(Write <a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/3D00.html">#N$3C00</a>
-. (CHARSET-#N$100) to 
-. *<a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/5C36.html">CHARS</a>.)
-  $C1F4,$0C Blank #N$1770 bytes of data starting from #R$E000.
-N $C200 Set the lower screen to the default #N$02 lines.
-  $C200,$05 #HTML(Write #N$02 to
-. *<a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/5C6B.html">DF_SZ</a>.)
-  $C205,$03 Jump to #R$5DC0.
-
-g $D90A
+@ $D800 label=RoomAttributeBuffer
+B $D800,$02C0,$20
 
 g $DAC0 Percy States
 @ $DAC0 label=Percy_X_Position
@@ -2519,7 +2875,11 @@ g $DADC
 
 g $DAE3
 
-g $DB00
+g $DB00 Percy Previous X Position
+@ $DB00 label=PercyPreviousXPosition
+D $DB00 Stores Percy's X position from the previous frame, used to detect
+. horizontal movement for the wing flap animation.
+B $DB00,$01
 
 b $DE9E
 
@@ -2532,26 +2892,31 @@ b $F800
 g $FAC0
 B $FAC0,$01
 
-c $FAC1
+c $FAC1 Play Next Level Jingle
+@ $FAC1 label=PlaySound_NextLevelJingle
 N $FAC1 #HTML(#AUDIO(next-level.wav)(#INCLUDE(NextLevel)))
-  $FAC1,$03 #REGhl=#R$FAF9.
+  $FAC1,$03 Load #REGhl with a pointer to #R$FAF9.
+@ $FAC4 label=PlaySound
   $FAC4,$01 No operation.
-  $FAC5,$01 #REGa=*#REGhl.
-  $FAC6,$03 Return if #REGa is equal to #N$FF.
-  $FAC9,$03 Jump to #R$FAEA if #REGa is zero.
-  $FACC,$03 Set border to #INK$00.
-  $FACF,$02 #REGd=*#REGhl.
-  $FAD1,$01 Increment #REGhl by one.
-  $FAD2,$01 #REGc=*#REGhl.
-  $FAD3,$02 Send to the speaker.
-  $FAD5,$01 Decrease #REGd by one.
-  $FAD6,$02 Jump to #R$FADB if #REGd is not equal to #REGa.
-  $FAD8,$01 #REGd=#REGe.
-  $FAD9,$02,b$01 Flip bits 3-4.
+@ $FAC5 label=PlaySound_Loop
+  $FAC5,$01 Fetch the music data from *#REGhl.
+  $FAC6,$03 Return if this is the terminator (#N$FF).
+  $FAC9,$03 Jump to #R$FAEA if this is a rest.
+  $FACC,$03 Set the speaker port to off.
+  $FACF,$02 Load the pitch period into both #REGe (reset value) and #REGd
+. (countdown).
+  $FAD1,$02 Load the note duration into #REGc.
+@ $FAD3 label=PlaySound_NoteLoop
+  $FAD3,$02 Send to the speaker to play the note.
+  $FAD5,$01 Decrease the period counter by one.
+  $FAD6,$02 Jump to #R$FADB if the period hasn't elapsed yet.
+  $FAD8,$01 Reset the period counter from #REGe.
+  $FAD9,$02,b$01 Toggle the speaker and MIC outputs.
+@ $FADB label=PlaySound_NoteInnerLoop
   $FADB,$02 Decrease counter by one and loop back to #R$FAD3 until counter is zero.
-  $FADD,$01 Decrease #REGc by one.
-  $FADE,$02 Jump to #R$FAD3 if #REGc is not equal to #REGa.
-  $FAE0,$01 Increment #REGhl by one.
+  $FADD,$01 Decrease the duration counter.
+  $FADE,$02 Jump back to #R$FAD3 until the full duration has elapsed.
+  $FAE0,$01 Advance to the next sound data entry.
   $FAE1,$04 Read from the keyboard;
 . #TABLE(default,centre,centre,centre,centre,centre,centre)
 . { =h,r2 Port Number | =h,c5 Bit }
@@ -2562,18 +2927,21 @@ N $FAC1 #HTML(#AUDIO(next-level.wav)(#INCLUDE(NextLevel)))
   $FAE7,$01 Return if the result is zero.
 M $FAE5,$03 Return if "ENTER" has been pressed.
   $FAE8,$02 Jump back to #R$FAC5.
+@ $FAEA label=PlaySound_Rest
   $FAEA,$01 Increment #REGhl by one.
   $FAEB,$01 #REGc=*#REGhl.
+@ $FAEC label=PlaySound_RestOuterLoop
   $FAEC,$01 No operation.
+@ $FAED label=PlaySound_RestInnerLoop
   $FAED,$01 No operation.
   $FAEE,$01 No operation.
   $FAEF,$01 No operation.
   $FAF0,$01 No operation.
-  $FAF1,$02 Decrease counter by one and loop back to #R$FAED until counter is zero.
-  $FAF3,$01 Decrease #REGc by one.
-  $FAF4,$02 Jump back to #R$FAEC until #REGc is zero.
-  $FAF6,$01 Increment #REGhl by one.
-  $FAF7,$02 Jump to #R$FAC5.
+  $FAF1,$02 Decrease the counter by one and loop back to #R$FAED until counter is zero.
+  $FAF3,$01 Decrease the rest duration counter.
+  $FAF4,$02 Jump back to #R$FAEC until the full rest duration has elapsed.
+  $FAF6,$01 Advance to the next sound data entry.
+  $FAF7,$02 Jump back to #R$FAC5.
 
 b $FAF9 Audio: Next Level Jingle
 @ $FAF9 label=Audio_NextLevelJingle
@@ -2584,8 +2952,7 @@ b $FAF9 Audio: Next Level Jingle
 c $FC1B Print Author Byline
 @ $FC1B label=Print_AuthorByline
 D $FC1B Prints the Author Byline messaging to the screen buffer.
-  $FC1B,$04 Check if *#R$5FBC is non-zero.
-  $FC1F,$02 Jump to #R$FC52 if *#R$5FBC is non-zero.
+  $FC1B,$06 Jump to #R$FC52 if *#R$5FBC is set.
   $FC21,$03 Point #REGde at #R$FC3D.
   $FC24,$03 Load #REGhl with #N$50A6 (screen buffer location to print).
   $FC27,$02 Set a counter in #REGb for #N$15 characters to print to the screen

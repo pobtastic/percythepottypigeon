@@ -1,0 +1,28 @@
+@start
+@org
+@remote=main:$C1DD
+
+; Game Entry Point
+@label=GameEntryPoint
+c$C1DD LD DE,$C001   ; {Copy #N$0176 bytes of data from #N$053F to
+ $C1E0 LD BC,$0176   ; #R$C000@main(RoomBuffer).
+ $C1E3 LD HL,$053F   ;
+ $C1E6 LDIR          ; }
+ $C1E8 LD HL,$FF58   ; {#HTML(Write #R$FF58@main(Graphics_CustomUDGs) to
+ $C1EB LD ($5C7B),HL ; *<a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/5C7B.html">UDG</a>.)
+                     ; }
+ $C1EE LD HL,$3C00   ; {#HTML(Write <a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/3D00.html">#N$3C00</a>
+ $C1F1 LD ($5C36),HL ; (CHARSET-#N$100) to
+                     ; *<a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/5C36.html">CHARS</a>.)
+                     ; }
+ $C1F4 LD HL,$E000   ; {Blank #N$1770 bytes of data starting from
+ $C1F7 LD DE,$E001   ; #R$E000@main(SpriteBuffer).
+ $C1FA LD (HL),L     ;
+ $C1FB LD BC,$1770   ;
+ $C1FE LDIR          ; }
+; Set the lower screen to the default #N$02 lines.
+ $C200 LD A,$02      ; {#HTML(Write #N$02 to
+ $C202 LD ($5C6B),A  ; *<a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/5C6B.html">DF_SZ</a>.)
+                     ; }
+ $C205 JP $5DC0      ; Jump to #R$5DC0@main(Game_Initialise).
+

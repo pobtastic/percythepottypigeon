@@ -22,6 +22,11 @@ AddressAnchor={address#IF({base}==16)(:04x)}
 [PageHeaders]
 GameIndex=The complete<>RAM disassembly (work in progress)
 
+[Titles]
+loader=Loading Code
+
+[OtherCode:loader]
+
 [Paths]
 Rooms=graphics/rooms.html
 Sound=sound/sounds.html
@@ -40,10 +45,8 @@ Rooms
 Sound
 
 [Expand]
-#DEF(#COLOUR(id)
-  #LET(ink=$id&$07)#IF({ink}>=$00)(INK:
-    #MAP({ink})(
-      UNKNOWN,
+#DEF(#COLOUR(id)#LET(ink=$id&$07)
+  #IF({ink}>=$00)(INK:#MAP({ink})(UNKNOWN,
       0:BLACK,
       1:BLUE,
       2:RED,
@@ -52,9 +55,8 @@ Sound
       5:CYAN,
       6:YELLOW,
       7:WHITE)),
-  #LET(paper=$id>>$03&$07)#IF({paper}>=$00)(PAPER:
-    #MAP({paper})(
-      UNKNOWN,
+  #LET(paper=$id>>$03&$07)
+  #IF({paper}>=$00)(PAPER:#MAP({paper})(UNKNOWN,
       0:BLACK,
       1:BLUE,
       2:RED,
@@ -66,17 +68,12 @@ Sound
   #LET(bright=$id&$40)#IF({bright}>$00)((BRIGHT))
   #LET(flash=$id&$80)#IF({flash}>$00)(FLASH: ON))
 
-#DEF(#INK(id)
-  #LET(bright=$id&$40)
-  #LET(flash=$id&$80)
-  #LET(ink=$id&$07)#IF({ink}>=$00)(
-    #MAP({ink})(
-      UNKNOWN,
-      0:BLACK,
-      1:BLUE,
-      2:RED,
-      3:MAGENTA,
-      4:GREEN,
-      5:CYAN,
-      6:YELLOW,
-      7:WHITE))#IF({bright}>$00)( (BRIGHT))#IF({flash}>$00)( (FLASH: ON)))
+#DEF(#INK(id)#LET(bright=$id&$40)#LET(flash=$id&$80)#LET(ink=$id&$07)#IF({ink}>=$00)(#MAP({ink})(UNKNOWN,
+  0:BLACK,
+  1:BLUE,
+  2:RED,
+  3:MAGENTA,
+  4:GREEN,
+  5:CYAN,
+  6:YELLOW,
+  7:WHITE))#IF({bright}>$00)( (BRIGHT))#IF({flash}>$00)( (FLASH: ON)))
