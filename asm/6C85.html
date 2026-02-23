@@ -33,7 +33,7 @@ Next: <a href="6CA5.html">6CA5</a>
 </td>
 </tr>
 </table>
-<div class="description">6C85: Routine at 6C85</div>
+<div class="description">6C85: Check Egg Collision</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
@@ -41,108 +41,189 @@ Next: <a href="6CA5.html">6CA5</a>
 <div class="paragraph">
 Used by the routines at <a href="69F7.html">Load_Level_Data</a>, <a href="6CDD.html">6CDD</a>, <a href="6E5D.html">6E5D</a>, <a href="7190.html">HandlerFrog01_CheckEggCollision</a>, <a href="74D6.html">74D6</a>, <a href="7512.html">7512</a> and <a href="768C.html">UpdatePlaneFlightPath</a>.
 </div>
+<div class="paragraph">
+Checks if an egg overlaps with a sprite by comparing their positions. The egg is assumed to be 10 pixels wide and 10 pixels tall, while the target point is offset by 04 pixels in X and 06 pixels in Y to check against the centre of the target sprite.
+</div>
+</div>
+<table class="input">
+<tr class="asm-input-header">
+<th colspan="2">Input</th>
+</tr>
+<tr>
+<td class="register">IX</td>
+<td class="register-desc">Pointer to sprite data</td>
+</tr>
+<tr>
+<td class="register">IY</td>
+<td class="register-desc">Pointer to egg sprite data</td>
+</tr>
+</table>
+<table class="output">
+<tr class="asm-output-header">
+<th colspan="2">Output</th>
+</tr>
+<tr>
+<td class="register">F</td>
+<td class="register-desc">Carry set = no collision, carry clear = collision</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="6c85"></span>
+<div class="comments">
+<div class="paragraph">
+First check horizontal overlap. The egg's centre point (X + 04) is compared against the sprite's horizontal range.
+</div>
 </div>
 </td>
 </tr>
 <tr>
+<td class="asm-label">CheckEggCollision</td>
 <td class="address-2"><span id="6c85"></span>6C85</td>
 <td class="instruction">LD A,(IY+$00)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Load <span class="register">B</span> with the egg's X position (from *<span class="register">IY</span>+00) + 04 (offset to the egg's centre).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6c88"></span>6C88</td>
 <td class="instruction">ADD A,$04</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6c8a"></span>6C8A</td>
 <td class="instruction">LD B,A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6c8b"></span>6C8B</td>
 <td class="instruction">LD A,(IX+$00)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Load <span class="register">A</span> with the sprite's X position (from *<span class="register">IX</span>+00).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6c8e"></span>6C8E</td>
 <td class="instruction">CP B</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Compare with the egg's centre X position.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6c8f"></span>6C8F</td>
 <td class="instruction">CCF</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Complement the carry flag.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6c90"></span>6C90</td>
 <td class="instruction">RET C</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Return if the sprite is to the right of the egg (no overlap; carry is set).</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="6c91"></span>
+<div class="comments">
+<div class="paragraph">
+Sprite is to the left so check if its right edge reaches the egg's centre.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6c91"></span>6C91</td>
 <td class="instruction">ADD A,$10</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Add 10 to the sprite's X position (add sprite width).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6c93"></span>6C93</td>
 <td class="instruction">CP B</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Compare this with the egg's centre X position.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6c94"></span>6C94</td>
 <td class="instruction">RET C</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Return (with; carry clear meaning a collision, and carry set meaning no collision).</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="6c95"></span>
+<div class="comments">
+<div class="paragraph">
+The two overlap horizontally; now check vertical overlap. The egg's centre point (Y + 06) is compared against the sprite's vertical range.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6c95"></span>6C95</td>
 <td class="instruction">LD A,(IY+$01)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Load <span class="register">B</span> with the egg's Y position (from *<span class="register">IY</span>+01) + 06 (offset to the egg's centre).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6c98"></span>6C98</td>
 <td class="instruction">ADD A,$06</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6c9a"></span>6C9A</td>
 <td class="instruction">LD B,A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6c9b"></span>6C9B</td>
 <td class="instruction">LD A,(IX+$01)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Load <span class="register">A</span> with the sprite's Y position (from *<span class="register">IX</span>+01).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6c9e"></span>6C9E</td>
 <td class="instruction">CP B</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Compare this with the egg's centre Y position.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6c9f"></span>6C9F</td>
 <td class="instruction">CCF</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Complement the carry flag.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6ca0"></span>6CA0</td>
 <td class="instruction">RET C</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Return if the sprite is below the egg (no overlap; carry is set).</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="6ca1"></span>
+<div class="comments">
+<div class="paragraph">
+Sprite is above so check if its bottom edge reaches the egg's centre.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6ca1"></span>6CA1</td>
 <td class="instruction">ADD A,$10</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Add 10 to the sprite's Y position (add sprite height).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6ca3"></span>6CA3</td>
 <td class="instruction">CP B</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Compare this with the egg's centre Y position.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6ca4"></span>6CA4</td>
 <td class="instruction">RET</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Return (with; carry clear meaning a collision, and carry set meaning no collision).</td>
 </tr>
 </table>
 <table class="asm-navigation">

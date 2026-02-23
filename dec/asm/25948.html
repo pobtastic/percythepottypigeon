@@ -87,19 +87,29 @@ This entry point is used by the routines at <a href="26011.html">MainMenu</a> an
 <td class="asm-label"></td>
 <td class="address-1"><span id="25962"></span>25962</td>
 <td class="instruction">LD B,96</td>
-<td class="comment-1" rowspan="1"><span class="register">B</span>=96.</td>
+<td class="comment-1" rowspan="1">Set a counter in <span class="register">B</span> for 96 loops (enough to fill the energy bar completely).</td>
 </tr>
 <tr>
-<td class="asm-label">Start_Level_0</td>
+<td class="asm-label">FillEnergyBar_Loop</td>
 <td class="address-2"><span id="25964"></span>25964</td>
-<td class="instruction">CALL <a href="25728.html#25804">Handle_Title_Screen_5</a></td>
-<td class="comment-1" rowspan="1">Call <a href="25728.html#25804">Handle_Title_Screen_5</a>.</td>
+<td class="instruction">CALL <a href="25728.html#25804">UpdateEnergyBar_Refill_Shift</a></td>
+<td class="comment-1" rowspan="1">Call <a href="25728.html#25804">UpdateEnergyBar_Refill_Shift</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25967"></span>25967</td>
-<td class="instruction">DJNZ <a href="25948.html#25964">Start_Level_0</a></td>
-<td class="comment-1" rowspan="1">Decrease counter by one and loop back to <a href="25948.html#25964">Start_Level_0</a> until counter is zero.</td>
+<td class="instruction">DJNZ <a href="25948.html#25964">FillEnergyBar_Loop</a></td>
+<td class="comment-1" rowspan="1">Decrease the energy bar loop counter by one and loop back to <a href="25948.html#25964">FillEnergyBar_Loop</a> until the energy bar is completely full.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="25969"></span>
+<div class="comments">
+<div class="paragraph">
+Initialise Percy's starting position and INK colour.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>

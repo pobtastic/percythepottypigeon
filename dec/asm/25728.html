@@ -33,7 +33,7 @@ Next: <a href="25831.html">25831</a>
 </td>
 </tr>
 </table>
-<div class="description">25728: Handle Title Screen</div>
+<div class="description">25728: Update Energy Bar</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
@@ -42,16 +42,26 @@ Next: <a href="25831.html">25831</a>
 Used by the routine at <a href="24553.html">MainGameLoop</a>.
 </div>
 <div class="paragraph">
-<a href="24487.html">FallingState</a> countdown or init; IX+1 compare; <a href="24490.html#24491">24491</a> counter. Called from <a href="24553.html">MainGameLoop</a> when Z.
+Animates Percy's energy bar at the bottom of the screen. The bar depletes when Percy is airborne and refills when Percy is on the ground. If the bar fully depletes, Percy enters the falling state.
 </div>
 </div>
 </td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Title_Screen</td>
+<td class="asm-label">UpdateEnergyBar</td>
 <td class="address-2"><span id="25728"></span>25728</td>
 <td class="instruction">LD HL,21228</td>
-<td class="comment-1" rowspan="1"><span class="register">HL</span>=21228 (screen buffer location).</td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>=21228 (screen buffer location for the energy bar).</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="25731"></span>
+<div class="comments">
+<div class="paragraph">
+If *<a href="24487.html">FallingState</a> is non-zero, it's acting as a cooldown timer — decrement it and return.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -63,18 +73,18 @@ Used by the routine at <a href="24553.html">MainGameLoop</a>.
 <td class="asm-label"></td>
 <td class="address-1"><span id="25734"></span>25734</td>
 <td class="instruction">OR A</td>
-<td class="comment-1" rowspan="2">Jump to <a href="25728.html#25742">Handle_Title_Screen_0</a> if <span class="register">A</span> is zero.</td>
+<td class="comment-1" rowspan="2">Jump to <a href="25728.html#25742">UpdateEnergyBar_CheckPosition</a> if *<a href="24487.html">FallingState</a> is zero (Percy isn't falling).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25735"></span>25735</td>
-<td class="instruction">JR Z,<a href="25728.html#25742">Handle_Title_Screen_0</a></td>
+<td class="instruction">JR Z,<a href="25728.html#25742">UpdateEnergyBar_CheckPosition</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25737"></span>25737</td>
 <td class="instruction">DEC A</td>
-<td class="comment-1" rowspan="1">Decrease <span class="register">A</span> by one.</td>
+<td class="comment-1" rowspan="1">Decrement the cooldown timer.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -89,20 +99,44 @@ Used by the routine at <a href="24553.html">MainGameLoop</a>.
 <td class="comment-1" rowspan="1">Return.</td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Title_Screen_0</td>
+<td class="routine-comment" colspan="5">
+<span id="25742"></span>
+<div class="comments">
+<div class="paragraph">
+Check if Percy is on the ground (Y &gt;= 144). If so, the energy bar
+</div>
+<div class="paragraph">
+refills. Otherwise it depletes.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">UpdateEnergyBar_CheckPosition</td>
 <td class="address-2"><span id="25742"></span>25742</td>
 <td class="instruction">LD A,(IX+1)</td>
-<td class="comment-1" rowspan="3">Jump to <a href="25728.html#25790">Handle_Title_Screen_4</a> if *<span class="register">IX</span>+1 is greater than or equal to 144.</td>
+<td class="comment-1" rowspan="1">Load <span class="register">A</span> with Percy's Y position (from *<span class="register">IX</span>+1).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25745"></span>25745</td>
 <td class="instruction">CP 144</td>
+<td class="comment-1" rowspan="2">Jump to <a href="25728.html#25790">UpdateEnergyBar_Refill</a> if Percy is at, or below the ground level (144).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25747"></span>25747</td>
-<td class="instruction">JR NC,<a href="25728.html#25790">Handle_Title_Screen_4</a></td>
+<td class="instruction">JR NC,<a href="25728.html#25790">UpdateEnergyBar_Refill</a></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="25749"></span>
+<div class="comments">
+<div class="paragraph">
+Percy is airborne — deplete the energy bar. Uses a slower frame delay of 7 frames between each step.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -114,24 +148,34 @@ Used by the routine at <a href="24553.html">MainGameLoop</a>.
 <td class="asm-label"></td>
 <td class="address-1"><span id="25752"></span>25752</td>
 <td class="instruction">INC A</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">A</span> by one.</td>
+<td class="comment-1" rowspan="1">Increment the frame delay counter.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25753"></span>25753</td>
 <td class="instruction">LD (24491),A</td>
-<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<a href="24490.html#24491">24491</a>.</td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> back to *<a href="24490.html#24491">24491</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25756"></span>25756</td>
 <td class="instruction">CP 7</td>
-<td class="comment-1" rowspan="2">Return if <span class="register">A</span> is not equal to 7.</td>
+<td class="comment-1" rowspan="2">Return if it's not yet time to update the energy bar.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25758"></span>25758</td>
 <td class="instruction">RET NZ</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="25759"></span>
+<div class="comments">
+<div class="paragraph">
+Reset the frame counter and check if Percy is on a platform (energy doesn't deplete while landed).
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -148,7 +192,7 @@ Used by the routine at <a href="24553.html">MainGameLoop</a>.
 <td class="asm-label"></td>
 <td class="address-1"><span id="25763"></span>25763</td>
 <td class="instruction">LD A,(24493)</td>
-<td class="comment-1" rowspan="3">Return if *<a href="24493.html">LandedOnPlatformFlag</a> is non-zero.</td>
+<td class="comment-1" rowspan="3">Return if *<a href="24493.html">LandedOnPlatformFlag</a> is set, indicating Percy is landed on a platform.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -161,10 +205,20 @@ Used by the routine at <a href="24553.html">MainGameLoop</a>.
 <td class="instruction">RET NZ</td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Title_Screen_1</td>
+<td class="routine-comment" colspan="5">
+<span id="25768"></span>
+<div class="comments">
+<div class="paragraph">
+Deplete the energy bar by shifting pixels left. Scans rightward from the current position to find the rightmost filled byte, then shifts it left by one pixel.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">UpdateEnergyBar_Deplete_FindByte</td>
 <td class="address-2"><span id="25768"></span>25768</td>
 <td class="instruction">LD A,(HL)</td>
-<td class="comment-1" rowspan="3">Jump to <a href="25728.html#25782">Handle_Title_Screen_3</a> if *<span class="register">HL</span> is zero.</td>
+<td class="comment-1" rowspan="3">Jump to <a href="25728.html#25782">UpdateEnergyBar_Deplete_ScanLeft</a> if *<span class="register">HL</span> is zero (no pixels here).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -174,16 +228,26 @@ Used by the routine at <a href="24553.html">MainGameLoop</a>.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25770"></span>25770</td>
-<td class="instruction">JR Z,<a href="25728.html#25782">Handle_Title_Screen_3</a></td>
+<td class="instruction">JR Z,<a href="25728.html#25782">UpdateEnergyBar_Deplete_ScanLeft</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25772"></span>25772</td>
 <td class="instruction">SLA (HL)</td>
-<td class="comment-1" rowspan="1">Shift *<span class="register">HL</span> left (with carry).</td>
+<td class="comment-1" rowspan="1">Shift *<span class="register">HL</span> left one pixel (remove one pixel of energy).</td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Title_Screen_2</td>
+<td class="routine-comment" colspan="5">
+<span id="25774"></span>
+<div class="comments">
+<div class="paragraph">
+Copy the updated byte to the three pixel rows below to give the energy bar its height.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">UpdateEnergyBar_CopyRows</td>
 <td class="address-2"><span id="25774"></span>25774</td>
 <td class="instruction">LD A,(HL)</td>
 <td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">HL</span>.</td>
@@ -192,37 +256,34 @@ Used by the routine at <a href="24553.html">MainGameLoop</a>.
 <td class="asm-label"></td>
 <td class="address-1"><span id="25775"></span>25775</td>
 <td class="instruction">INC H</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">H</span> by one.</td>
+<td class="comment-1" rowspan="2">Copy to the first row below.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25776"></span>25776</td>
 <td class="instruction">LD (HL),A</td>
-<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">HL</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25777"></span>25777</td>
 <td class="instruction">INC H</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">H</span> by one.</td>
+<td class="comment-1" rowspan="2">Copy to the second row below.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25778"></span>25778</td>
 <td class="instruction">LD (HL),A</td>
-<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">HL</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25779"></span>25779</td>
 <td class="instruction">INC H</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">H</span> by one.</td>
+<td class="comment-1" rowspan="2">Copy to the third row below.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25780"></span>25780</td>
 <td class="instruction">LD (HL),A</td>
-<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">HL</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -231,16 +292,26 @@ Used by the routine at <a href="24553.html">MainGameLoop</a>.
 <td class="comment-1" rowspan="1">Return.</td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Title_Screen_3</td>
+<td class="routine-comment" colspan="5">
+<span id="25782"></span>
+<div class="comments">
+<div class="paragraph">
+Current byte is empty — scan leftward for the next filled byte.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">UpdateEnergyBar_Deplete_ScanLeft</td>
 <td class="address-2"><span id="25782"></span>25782</td>
 <td class="instruction">DEC L</td>
-<td class="comment-1" rowspan="1">Decrease <span class="register">L</span> by one.</td>
+<td class="comment-1" rowspan="1">Move one byte to the left.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25783"></span>25783</td>
 <td class="instruction">LD A,L</td>
-<td class="comment-1" rowspan="3">Jump to <a href="25728.html#25825">Handle_Title_Screen_8</a> if <span class="register">L</span> is equal to 224.</td>
+<td class="comment-1" rowspan="3">Jump to <a href="25728.html#25825">UpdateEnergyBar_Depleted</a> if the energy bar is fully depleted (reached 224 the left edge of the bar).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -250,13 +321,13 @@ Used by the routine at <a href="24553.html">MainGameLoop</a>.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25786"></span>25786</td>
-<td class="instruction">JR Z,<a href="25728.html#25825">Handle_Title_Screen_8</a></td>
+<td class="instruction">JR Z,<a href="25728.html#25825">UpdateEnergyBar_Depleted</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25788"></span>25788</td>
-<td class="instruction">JR <a href="25728.html#25768">Handle_Title_Screen_1</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="25728.html#25768">Handle_Title_Screen_1</a>.</td>
+<td class="instruction">JR <a href="25728.html#25768">UpdateEnergyBar_Deplete_FindByte</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="25728.html#25768">UpdateEnergyBar_Deplete_FindByte</a> to check this byte.</td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
@@ -265,11 +336,14 @@ Used by the routine at <a href="24553.html">MainGameLoop</a>.
 <div class="paragraph">
 This entry point is used by the routine at <a href="27047.html">Run_Main_Loop_Body</a>.
 </div>
+<div class="paragraph">
+Percy is on the ground — refill the energy bar. Uses a faster frame delay of 3 frames between each step.
+</div>
 </div>
 </td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Title_Screen_4</td>
+<td class="asm-label">UpdateEnergyBar_Refill</td>
 <td class="address-2"><span id="25790"></span>25790</td>
 <td class="instruction">LD A,(24491)</td>
 <td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="24490.html#24491">24491</a>.</td>
@@ -278,19 +352,19 @@ This entry point is used by the routine at <a href="27047.html">Run_Main_Loop_Bo
 <td class="asm-label"></td>
 <td class="address-1"><span id="25793"></span>25793</td>
 <td class="instruction">INC A</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">A</span> by one.</td>
+<td class="comment-1" rowspan="1">Increment the frame delay counter.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25794"></span>25794</td>
 <td class="instruction">LD (24491),A</td>
-<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<a href="24490.html#24491">24491</a>.</td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> back to *<a href="24490.html#24491">24491</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25797"></span>25797</td>
 <td class="instruction">CP 3</td>
-<td class="comment-1" rowspan="2">Return if <span class="register">A</span> is less than 3.</td>
+<td class="comment-1" rowspan="2">Return if not yet time to update the bar.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -315,60 +389,74 @@ This entry point is used by the routine at <a href="27047.html">Run_Main_Loop_Bo
 <div class="paragraph">
 This entry point is used by the routines at <a href="25948.html">Start_Level</a> and <a href="27869.html">27869</a>.
 </div>
+<div class="paragraph">
+Refill the energy bar by shifting pixels right (filling from the left). Scans leftward to find the first non-full byte and fills it one pixel at a time.
+</div>
 </div>
 </td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Title_Screen_5</td>
+<td class="asm-label">UpdateEnergyBar_Refill_Shift</td>
 <td class="address-2"><span id="25804"></span>25804</td>
 <td class="instruction">LD HL,21217</td>
-<td class="comment-1" rowspan="1"><span class="register">HL</span>=21217 (screen buffer location).</td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>=21217 (left edge of the energy bar).</td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Title_Screen_6</td>
+<td class="asm-label">UpdateEnergyBar_Refill_FindByte</td>
 <td class="address-2"><span id="25807"></span>25807</td>
 <td class="instruction">LD A,(HL)</td>
-<td class="comment-1" rowspan="3">Jump to <a href="25728.html#25818">Handle_Title_Screen_7</a> if *<span class="register">HL</span> is equal to 255.</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">HL</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25808"></span>25808</td>
 <td class="instruction">CP 255</td>
+<td class="comment-1" rowspan="2">Jump to <a href="25728.html#25818">UpdateEnergyBar_Refill_ScanRight</a> if this byte is full (scan next byte).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25810"></span>25810</td>
-<td class="instruction">JR Z,<a href="25728.html#25818">Handle_Title_Screen_7</a></td>
+<td class="instruction">JR Z,<a href="25728.html#25818">UpdateEnergyBar_Refill_ScanRight</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25812"></span>25812</td>
 <td class="instruction">SRL (HL)</td>
-<td class="comment-1" rowspan="1">Shift *<span class="register">HL</span> right.</td>
+<td class="comment-1" rowspan="1">Shift *<span class="register">HL</span> right one pixel.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25814"></span>25814</td>
 <td class="instruction">SET 7,(HL)</td>
-<td class="comment-1" rowspan="1">Set bit 7 of *<span class="register">HL</span>.</td>
+<td class="comment-1" rowspan="1">Set bit 7 of *<span class="register">HL</span> (fill from the left).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25816"></span>25816</td>
-<td class="instruction">JR <a href="25728.html#25774">Handle_Title_Screen_2</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="25728.html#25774">Handle_Title_Screen_2</a>.</td>
+<td class="instruction">JR <a href="25728.html#25774">UpdateEnergyBar_CopyRows</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="25728.html#25774">UpdateEnergyBar_CopyRows</a> to copy the result to the rows below.</td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Title_Screen_7</td>
+<td class="routine-comment" colspan="5">
+<span id="25818"></span>
+<div class="comments">
+<div class="paragraph">
+Current byte is fully filled — scan rightward for the next byte to fill.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">UpdateEnergyBar_Refill_ScanRight</td>
 <td class="address-2"><span id="25818"></span>25818</td>
 <td class="instruction">INC L</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">L</span> by one.</td>
+<td class="comment-1" rowspan="1">Move one byte to the right.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25819"></span>25819</td>
 <td class="instruction">LD A,L</td>
-<td class="comment-1" rowspan="3">Return if <span class="register">L</span> is equal to 237.</td>
+<td class="comment-1" rowspan="3">Return if the bar is fully refilled (the scan reached 237 which is the right edge of the bar).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -383,11 +471,21 @@ This entry point is used by the routines at <a href="25948.html">Start_Level</a>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25823"></span>25823</td>
-<td class="instruction">JR <a href="25728.html#25807">Handle_Title_Screen_6</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="25728.html#25807">Handle_Title_Screen_6</a>.</td>
+<td class="instruction">JR <a href="25728.html#25807">UpdateEnergyBar_Refill_FindByte</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="25728.html#25807">UpdateEnergyBar_Refill_FindByte</a> to check this byte.</td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Title_Screen_8</td>
+<td class="routine-comment" colspan="5">
+<span id="25825"></span>
+<div class="comments">
+<div class="paragraph">
+Energy bar has fully depleted — set Percy to the falling state.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">UpdateEnergyBar_Depleted</td>
 <td class="address-2"><span id="25825"></span>25825</td>
 <td class="instruction">LD A,255</td>
 <td class="comment-1" rowspan="2">Write 255 to *<a href="24487.html">FallingState</a>.</td>

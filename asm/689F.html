@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Percy the Potty Pigeon: Data at 689F</title>
+<title>Percy the Potty Pigeon: Game status buffer entry at 689F</title>
 <meta charset="utf-8" />
 <link rel="stylesheet" type="text/css" href="../skoolkit.css" />
 <link rel="stylesheet" type="text/css" href="../skoolkit-dark.css" />
@@ -15,11 +15,11 @@ gtag('js', new Date());
 gtag('config', 'G-75RERFCHBG');
 </script>
 </head>
-<body class="Asm-b">
+<body class="Asm-g">
 <table class="header">
 <tr>
 <td class="logo"><a href="../index.html"><img alt="logo" src="../images/logo.png" /></a></td>
-<td class="page-header">Data</td>
+<td class="page-header">Game status buffer</td>
 </tr>
 </table>
 <table class="asm-navigation">
@@ -33,7 +33,7 @@ Next: <a href="68B8.html">68B8</a>
 </td>
 </tr>
 </table>
-<div class="description">689F: Data block at 689F</div>
+<div class="description">689F: Table: Snapdragon Definition</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
@@ -42,36 +42,175 @@ Next: <a href="68B8.html">68B8</a>
 </td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="689f"></span>
+<div class="comments">
+<div class="paragraph">
+Snapdragon 01:
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Table_SnapdragonDefinition</td>
 <td class="address-1"><span id="689f"></span>689F</td>
-<td class="instruction">DEFB $08,$02,$C5,$E8</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="instruction">DEFB $08</td>
+<td class="comment-1" rowspan="1">Room 08.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="68a0"></span>68A0</td>
+<td class="instruction">DEFB $02</td>
+<td class="comment-1" rowspan="1">Snapdragon frame 02.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="68a1"></span>68A1</td>
+<td class="instruction">DEFB $C5,$E8</td>
+<td class="comment-1" rowspan="1">Screen position: C5 x E8.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="68a3"></span>
+<div class="comments">
+<div class="paragraph">
+Snapdragon 02:
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="68a3"></span>68A3</td>
-<td class="instruction">DEFB $09,$00,$84,$E8</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="instruction">DEFB $09</td>
+<td class="comment-1" rowspan="1">Room 09.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="68a4"></span>68A4</td>
+<td class="instruction">DEFB $00</td>
+<td class="comment-1" rowspan="1">Snapdragon frame 00.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="68a5"></span>68A5</td>
+<td class="instruction">DEFB $84,$E8</td>
+<td class="comment-1" rowspan="1">Screen position: 84 x E8.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="68a7"></span>
+<div class="comments">
+<div class="paragraph">
+Snapdragon 03:
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="68a7"></span>68A7</td>
-<td class="instruction">DEFB $09,$02,$C8,$E8</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="instruction">DEFB $09</td>
+<td class="comment-1" rowspan="1">Room 09.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="68a8"></span>68A8</td>
+<td class="instruction">DEFB $02</td>
+<td class="comment-1" rowspan="1">Snapdragon frame 02.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="68a9"></span>68A9</td>
+<td class="instruction">DEFB $C8,$E8</td>
+<td class="comment-1" rowspan="1">Screen position: C8 x E8.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="68ab"></span>
+<div class="comments">
+<div class="paragraph">
+Snapdragon 04:
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="68ab"></span>68AB</td>
-<td class="instruction">DEFB $04,$01,$99,$E8</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="instruction">DEFB $04</td>
+<td class="comment-1" rowspan="1">Room 04.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="68ac"></span>68AC</td>
+<td class="instruction">DEFB $01</td>
+<td class="comment-1" rowspan="1">Snapdragon frame 01.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="68ad"></span>68AD</td>
+<td class="instruction">DEFB $99,$E8</td>
+<td class="comment-1" rowspan="1">Screen position: 99 x E8.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="68af"></span>
+<div class="comments">
+<div class="paragraph">
+Snapdragon 05:
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="68af"></span>68AF</td>
-<td class="instruction">DEFB $04,$00,$04,$F0</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="instruction">DEFB $04</td>
+<td class="comment-1" rowspan="1">Room 04.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="68b0"></span>68B0</td>
+<td class="instruction">DEFB $00</td>
+<td class="comment-1" rowspan="1">Snapdragon frame 00.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="68b1"></span>68B1</td>
+<td class="instruction">DEFB $04,$F0</td>
+<td class="comment-1" rowspan="1">Screen position: 04 x F0.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="68b3"></span>
+<div class="comments">
+<div class="paragraph">
+Snapdragon 06:
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="68b3"></span>68B3</td>
-<td class="instruction">DEFB $03,$01,$CC,$E8</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="instruction">DEFB $03</td>
+<td class="comment-1" rowspan="1">Room 03.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="68b4"></span>68B4</td>
+<td class="instruction">DEFB $01</td>
+<td class="comment-1" rowspan="1">Snapdragon frame 01.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="68b5"></span>68B5</td>
+<td class="instruction">DEFB $CC,$E8</td>
+<td class="comment-1" rowspan="1">Screen position: CC x E8.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="68b7"></span>68B7</td>
 <td class="instruction">DEFB $FF</td>
 <td class="comment-1" rowspan="1">Terminator.</td>

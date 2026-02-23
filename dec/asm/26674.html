@@ -33,7 +33,7 @@ Next: <a href="26783.html">26783</a>
 </td>
 </tr>
 </table>
-<div class="description">26674: Update State Counters?</div>
+<div class="description">26674: Animate Snapdragons</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
@@ -41,14 +41,20 @@ Next: <a href="26783.html">26783</a>
 <div class="paragraph">
 Used by the routine at <a href="27026.html">Run_Game_Frame</a>.
 </div>
+<div class="paragraph">
+Animates the snapdragons in the current room. Each snapdragon has a 3-frame snapping animation and faces toward Percy based on his horizontal position.
+</div>
+<div class="paragraph">
+Snapdragon definitions are stored in a table at <a href="26783.html">Table_SnapdragonDefinition</a>.
+</div>
 </div>
 </td>
 </tr>
 <tr>
-<td class="asm-label">Update_State_Counters</td>
+<td class="asm-label">AnimateSnapdragons</td>
 <td class="address-2"><span id="26674"></span>26674</td>
 <td class="instruction">LD HL,26783</td>
-<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="26783.html">26783</a>.</td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="26783.html">Table_SnapdragonDefinition</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -62,38 +68,49 @@ Used by the routine at <a href="27026.html">Run_Game_Frame</a>.
 <td class="instruction">LD B,A</td>
 </tr>
 <tr>
-<td class="asm-label">Update_State_Counters_0</td>
+<td class="asm-label">AnimateSnapdragons_Loop</td>
 <td class="address-2"><span id="26681"></span>26681</td>
 <td class="instruction">LD A,(HL)</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">HL</span>.</td>
+<td class="comment-1" rowspan="1">Fetch the room number for this snapdragon.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26682"></span>26682</td>
 <td class="instruction">CP 255</td>
-<td class="comment-1" rowspan="2">Return if <span class="register">A</span> is equal to 255.</td>
+<td class="comment-1" rowspan="1">Return if the terminator has been reached (this is the end of the table).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26684"></span>26684</td>
 <td class="instruction">RET Z</td>
+<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26685"></span>26685</td>
 <td class="instruction">CP B</td>
-<td class="comment-1" rowspan="2">Call <a href="26674.html#26695">Update_State_Counters_1</a> if <span class="register">A</span> is equal to <span class="register">B</span>.</td>
+<td class="comment-1" rowspan="2">Call <a href="26674.html#26695">AnimateSnapdragon</a> if this snapdragon is in the current room.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26686"></span>26686</td>
-<td class="instruction">CALL Z,<a href="26674.html#26695">Update_State_Counters_1</a></td>
+<td class="instruction">CALL Z,<a href="26674.html#26695">AnimateSnapdragon</a></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="26689"></span>
+<div class="comments">
+<div class="paragraph">
+Advance to the next table entry (4 bytes per snapdragon).
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26689"></span>26689</td>
 <td class="instruction">INC HL</td>
-<td class="comment-1" rowspan="4">Increment <span class="register">HL</span> by four.</td>
+<td class="comment-1" rowspan="4">Advance <span class="register">HL</span> by four.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -113,26 +130,46 @@ Used by the routine at <a href="27026.html">Run_Game_Frame</a>.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26693"></span>26693</td>
-<td class="instruction">JR <a href="26674.html#26681">Update_State_Counters_0</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="26674.html#26681">Update_State_Counters_0</a>.</td>
+<td class="instruction">JR <a href="26674.html#26681">AnimateSnapdragons_Loop</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="26674.html#26681">AnimateSnapdragons_Loop</a> to process the next entry.</td>
 </tr>
 <tr>
-<td class="asm-label">Update_State_Counters_1</td>
+<td class="routine-comment" colspan="5">
+<span id="26695"></span>
+<div class="comments">
+<div class="paragraph">
+Processes a single snapdragon. Cycles the animation frame, determines whether the snapdragon should face left or right based on Percy's position, looks up the graphic data and draws the snapdragon to the screen.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">AnimateSnapdragon</td>
 <td class="address-2"><span id="26695"></span>26695</td>
 <td class="instruction">PUSH HL</td>
-<td class="comment-1" rowspan="1">Stash <span class="register">HL</span> on the stack.</td>
+<td class="comment-1" rowspan="1">Stash the snapdragon table pointer on the stack.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="26696"></span>
+<div class="comments">
+<div class="paragraph">
+Advance to the animation counter and cycle it through 0-2.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26696"></span>26696</td>
 <td class="instruction">INC HL</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
+<td class="comment-1" rowspan="1">Advance to the animation counter byte.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26697"></span>26697</td>
 <td class="instruction">INC (HL)</td>
-<td class="comment-1" rowspan="1">Increment *<span class="register">HL</span> by one.</td>
+<td class="comment-1" rowspan="1">Increment the animation counter.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -144,18 +181,18 @@ Used by the routine at <a href="27026.html">Run_Game_Frame</a>.
 <td class="asm-label"></td>
 <td class="address-1"><span id="26699"></span>26699</td>
 <td class="instruction">CP 3</td>
-<td class="comment-1" rowspan="2">Jump to <a href="26674.html#26705">Update_State_Counters_2</a> if <span class="register">A</span> is not equal to 3.</td>
+<td class="comment-1" rowspan="2">Jump to <a href="26674.html#26705">AnimateSnapdragon_CheckDirection</a> if the animation counter hasn't reached 3 yet.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26701"></span>26701</td>
-<td class="instruction">JR NZ,<a href="26674.html#26705">Update_State_Counters_2</a></td>
+<td class="instruction">JR NZ,<a href="26674.html#26705">AnimateSnapdragon_CheckDirection</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26703"></span>26703</td>
 <td class="instruction">XOR A</td>
-<td class="comment-1" rowspan="2">Write 0 to *<span class="register">HL</span>.</td>
+<td class="comment-1" rowspan="2">Reset the animation counter back to 0.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -163,22 +200,42 @@ Used by the routine at <a href="27026.html">Run_Game_Frame</a>.
 <td class="instruction">LD (HL),A</td>
 </tr>
 <tr>
-<td class="asm-label">Update_State_Counters_2</td>
+<td class="routine-comment" colspan="5">
+<span id="26705"></span>
+<div class="comments">
+<div class="paragraph">
+Determine whether the snapdragon should face toward Percy based on his character column position. If Percy is to the right, 3 is added to the frame index to use the right-facing set.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">AnimateSnapdragon_CheckDirection</td>
 <td class="address-2"><span id="26705"></span>26705</td>
 <td class="instruction">PUSH AF</td>
-<td class="comment-1" rowspan="1">Stash <span class="register">AF</span> on the stack.</td>
+<td class="comment-1" rowspan="1">Stash the animation frame on the stack.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="26706"></span>
+<div class="comments">
+<div class="paragraph">
+Calculate Percy's character column (X position / 8).
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26706"></span>26706</td>
 <td class="instruction">LD A,(56000)</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="56000.html">Percy_X_Position</a>.</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="56000.html">Percy_X_Position</a> (Percy's X position).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26709"></span>26709</td>
 <td class="instruction">RRCA</td>
-<td class="comment-1" rowspan="3">RRCA.</td>
+<td class="comment-1" rowspan="3">Rotate right three positions (divide by 8).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -194,19 +251,29 @@ Used by the routine at <a href="27026.html">Run_Game_Frame</a>.
 <td class="asm-label"></td>
 <td class="address-1"><span id="26712"></span>26712</td>
 <td class="instruction">AND %00011111</td>
-<td class="comment-1" rowspan="1">Keep only bits 0-4.</td>
+<td class="comment-1" rowspan="1">Keep only bits 0-4 (character column 0-31).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26714"></span>26714</td>
 <td class="instruction">LD C,A</td>
-<td class="comment-1" rowspan="1"><span class="register">C</span>=<span class="register">A</span>.</td>
+<td class="comment-1" rowspan="1">Store the result in <span class="register">C</span>.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="26715"></span>
+<div class="comments">
+<div class="paragraph">
+Compare Percy's column with the snapdragon's column from the table.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26715"></span>26715</td>
 <td class="instruction">INC HL</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
+<td class="comment-1" rowspan="1">Advance to the snapdragon's position byte.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -218,24 +285,34 @@ Used by the routine at <a href="27026.html">Run_Game_Frame</a>.
 <td class="asm-label"></td>
 <td class="address-1"><span id="26717"></span>26717</td>
 <td class="instruction">AND %00011111</td>
-<td class="comment-1" rowspan="1">Keep only bits 0-4.</td>
+<td class="comment-1" rowspan="1">Keep only bits 0-4 (snapdragon's character column).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26719"></span>26719</td>
 <td class="instruction">CP C</td>
-<td class="comment-1" rowspan="2">Jump to <a href="26674.html#26727">Update_State_Counters_3</a> if <span class="register">A</span> is greater than or equal to <span class="register">C</span>.</td>
+<td class="comment-1" rowspan="2">Jump to <a href="26674.html#26727">AnimateSnapdragon_FacingLeft</a> if Percy is to the left of the snapdragon.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26720"></span>26720</td>
-<td class="instruction">JR NC,<a href="26674.html#26727">Update_State_Counters_3</a></td>
+<td class="instruction">JR NC,<a href="26674.html#26727">AnimateSnapdragon_FacingLeft</a></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="26722"></span>
+<div class="comments">
+<div class="paragraph">
+Percy is to the right — add 3 to use the right-facing frames.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26722"></span>26722</td>
 <td class="instruction">POP AF</td>
-<td class="comment-1" rowspan="1">Restore <span class="register">AF</span> from the stack.</td>
+<td class="comment-1" rowspan="1">Restore the animation frame from the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -246,20 +323,30 @@ Used by the routine at <a href="27026.html">Run_Game_Frame</a>.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26725"></span>26725</td>
-<td class="instruction">JR <a href="26674.html#26728">Update_State_Counters_4</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="26674.html#26728">Update_State_Counters_4</a>.</td>
+<td class="instruction">JR <a href="26674.html#26728">AnimateSnapdragon_LookupGraphic</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="26674.html#26728">AnimateSnapdragon_LookupGraphic</a>.</td>
 </tr>
 <tr>
-<td class="asm-label">Update_State_Counters_3</td>
+<td class="asm-label">AnimateSnapdragon_FacingLeft</td>
 <td class="address-2"><span id="26727"></span>26727</td>
 <td class="instruction">POP AF</td>
-<td class="comment-1" rowspan="1">Restore <span class="register">AF</span> from the stack.</td>
+<td class="comment-1" rowspan="1">Restore the animation frame from the stack.</td>
 </tr>
 <tr>
-<td class="asm-label">Update_State_Counters_4</td>
+<td class="routine-comment" colspan="5">
+<span id="26728"></span>
+<div class="comments">
+<div class="paragraph">
+Look up the graphic data for the current frame. Each frame is 32 bytes, stored from <a href="43835.html#44379">Sprite_12</a> onwards. Frames 0-2 face left, frames 3-5 face right.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">AnimateSnapdragon_LookupGraphic</td>
 <td class="address-2"><span id="26728"></span>26728</td>
 <td class="instruction">LD DE,44379</td>
-<td class="comment-1" rowspan="1"><span class="register">DE</span>=<a href="43835.html#44379">Sprite_12</a>.</td>
+<td class="comment-1" rowspan="1"><span class="register">DE</span>=<a href="43835.html#44379">Sprite_12</a> (snapdragon graphic data).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -277,7 +364,7 @@ Used by the routine at <a href="27026.html">Run_Game_Frame</a>.
 <td class="asm-label"></td>
 <td class="address-1"><span id="26734"></span>26734</td>
 <td class="instruction">ADD HL,HL</td>
-<td class="comment-1" rowspan="5">Multiply <span class="register">HL</span> by 32.</td>
+<td class="comment-1" rowspan="5">Multiply <span class="register">HL</span> by 32 (bytes per frame).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -303,31 +390,41 @@ Used by the routine at <a href="27026.html">Run_Game_Frame</a>.
 <td class="asm-label"></td>
 <td class="address-1"><span id="26739"></span>26739</td>
 <td class="instruction">ADD HL,DE</td>
-<td class="comment-1" rowspan="1"><span class="register">HL</span>+=<span class="register">DE</span>.</td>
+<td class="comment-1" rowspan="1">Add the graphic data base address.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26740"></span>26740</td>
 <td class="instruction">EX DE,HL</td>
-<td class="comment-1" rowspan="1">Exchange the <span class="register">DE</span> and <span class="register">HL</span> registers.</td>
+<td class="comment-1" rowspan="1">Exchange so <span class="register">DE</span> points to the graphic data.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="26741"></span>
+<div class="comments">
+<div class="paragraph">
+Retrieve the snapdragon's screen position from the table and draw it as a 2x2 character cell graphic.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26741"></span>26741</td>
 <td class="instruction">POP HL</td>
-<td class="comment-1" rowspan="1">Restore <span class="register">HL</span> from the stack.</td>
+<td class="comment-1" rowspan="1">Restore the snapdragon table pointer from the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26742"></span>26742</td>
 <td class="instruction">PUSH HL</td>
-<td class="comment-1" rowspan="1">Stash <span class="register">HL</span> on the stack.</td>
+<td class="comment-1" rowspan="1">Keep a copy of the snapdragons table pointer on the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26743"></span>26743</td>
 <td class="instruction">INC HL</td>
-<td class="comment-1" rowspan="2">Increment <span class="register">HL</span> by two.</td>
+<td class="comment-1" rowspan="2">Advance to the screen position bytes.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -338,25 +435,22 @@ Used by the routine at <a href="27026.html">Run_Game_Frame</a>.
 <td class="asm-label"></td>
 <td class="address-1"><span id="26745"></span>26745</td>
 <td class="instruction">LD C,(HL)</td>
-<td class="comment-1" rowspan="1"><span class="register">C</span>=*<span class="register">HL</span>.</td>
+<td class="comment-1" rowspan="5">Load the screen position into <span class="register">HL</span> (using the stack).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26746"></span>26746</td>
 <td class="instruction">INC HL</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26747"></span>26747</td>
 <td class="instruction">LD B,(HL)</td>
-<td class="comment-1" rowspan="1"><span class="register">B</span>=*<span class="register">HL</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26748"></span>26748</td>
 <td class="instruction">PUSH BC</td>
-<td class="comment-1" rowspan="2">Copy <span class="register">BC</span> into <span class="register">HL</span> on the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -364,10 +458,20 @@ Used by the routine at <a href="27026.html">Run_Game_Frame</a>.
 <td class="instruction">POP HL</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="26750"></span>
+<div class="comments">
+<div class="paragraph">
+Draw the top-left and bottom-left cells.
+</div>
+</div>
+</td>
+</tr>
+<tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26750"></span>26750</td>
 <td class="instruction">PUSH HL</td>
-<td class="comment-1" rowspan="2">Stash <span class="register">HL</span> and <span class="register">HL</span> on the stack.</td>
+<td class="comment-1" rowspan="2">Stash the screen position twice on the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -378,19 +482,19 @@ Used by the routine at <a href="27026.html">Run_Game_Frame</a>.
 <td class="asm-label"></td>
 <td class="address-1"><span id="26752"></span>26752</td>
 <td class="instruction">CALL <a href="26155.html#26258">Compute_Sprite_Position_8</a></td>
-<td class="comment-1" rowspan="1">Call <a href="26155.html#26258">Compute_Sprite_Position_8</a>.</td>
+<td class="comment-1" rowspan="1">Call <a href="26155.html#26258">Compute_Sprite_Position_8</a> to draw the top-left cell.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26755"></span>26755</td>
 <td class="instruction">POP HL</td>
-<td class="comment-1" rowspan="1">Restore <span class="register">HL</span> from the stack.</td>
+<td class="comment-1" rowspan="1">Restore the screen position from the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26756"></span>26756</td>
 <td class="instruction">LD BC,32</td>
-<td class="comment-1" rowspan="2"><span class="register">HL</span>+=0032.</td>
+<td class="comment-1" rowspan="2">Add 0032 to move down one character row.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -401,43 +505,53 @@ Used by the routine at <a href="27026.html">Run_Game_Frame</a>.
 <td class="asm-label"></td>
 <td class="address-1"><span id="26760"></span>26760</td>
 <td class="instruction">CALL <a href="26155.html#26258">Compute_Sprite_Position_8</a></td>
-<td class="comment-1" rowspan="1">Call <a href="26155.html#26258">Compute_Sprite_Position_8</a>.</td>
+<td class="comment-1" rowspan="1">Call <a href="26155.html#26258">Compute_Sprite_Position_8</a> to draw the bottom-left cell.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="26763"></span>
+<div class="comments">
+<div class="paragraph">
+Draw the top-right and bottom-right cells.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26763"></span>26763</td>
 <td class="instruction">POP HL</td>
-<td class="comment-1" rowspan="1">Restore <span class="register">HL</span> from the stack.</td>
+<td class="comment-1" rowspan="1">Restore the screen position from the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26764"></span>26764</td>
 <td class="instruction">INC L</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">L</span> by one.</td>
+<td class="comment-1" rowspan="1">Move one character column to the right.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26765"></span>26765</td>
 <td class="instruction">PUSH HL</td>
-<td class="comment-1" rowspan="1">Stash <span class="register">HL</span> on the stack.</td>
+<td class="comment-1" rowspan="1">Stash the adjusted position on the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26766"></span>26766</td>
 <td class="instruction">CALL <a href="26155.html#26258">Compute_Sprite_Position_8</a></td>
-<td class="comment-1" rowspan="1">Call <a href="26155.html#26258">Compute_Sprite_Position_8</a>.</td>
+<td class="comment-1" rowspan="1">Call <a href="26155.html#26258">Compute_Sprite_Position_8</a> to draw the top-right cell.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26769"></span>26769</td>
 <td class="instruction">POP HL</td>
-<td class="comment-1" rowspan="1">Restore <span class="register">HL</span> from the stack.</td>
+<td class="comment-1" rowspan="1">Restore the position from the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26770"></span>26770</td>
 <td class="instruction">LD BC,32</td>
-<td class="comment-1" rowspan="2"><span class="register">HL</span>+=0032.</td>
+<td class="comment-1" rowspan="2">Add 0032 to move down one character row.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -448,13 +562,23 @@ Used by the routine at <a href="27026.html">Run_Game_Frame</a>.
 <td class="asm-label"></td>
 <td class="address-1"><span id="26774"></span>26774</td>
 <td class="instruction">CALL <a href="26155.html#26258">Compute_Sprite_Position_8</a></td>
-<td class="comment-1" rowspan="1">Call <a href="26155.html#26258">Compute_Sprite_Position_8</a>.</td>
+<td class="comment-1" rowspan="1">Call <a href="26155.html#26258">Compute_Sprite_Position_8</a> to draw the bottom-right cell.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="26777"></span>
+<div class="comments">
+<div class="paragraph">
+Restore the snapdragon table pointer and reload the current room number.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26777"></span>26777</td>
 <td class="instruction">POP HL</td>
-<td class="comment-1" rowspan="1">Restore <span class="register">HL</span> from the stack.</td>
+<td class="comment-1" rowspan="1">Restore the snapdragon table pointer from the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
