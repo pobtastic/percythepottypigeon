@@ -1096,24 +1096,24 @@ c$5FE9 LD A,($5FA7)    ; {If *#R$5FA7 is unset, call #R$653D.
 @label=MainGameLoop_Keyboard_Store
 *$60A4 LD A,E          ; {Write #REGe to *#R$5FA2.
  $60A5 LD ($5FA2),A    ; }
-; Handle Percy's special "flying up to collect item" state. If *#R$5FA9
-; is set, Percy is currently flying upward to collect an item.
-@label=MainGameLoop_HandleItemCollection
-*$60A8 LD A,($5FA9)    ; {Jump to #R$60D9 if *#R$5FA9 is unset (no item to
- $60AB OR A            ; collect).
+; Handle Percy's egg drop state. If *#R$5FA9 is set, Percy has dropped
+; an egg and it is currently in flight.
+@label=MainGameLoop_HandleEggDrop
+*$60A8 LD A,($5FA9)    ; {Jump to #R$60D9 if *#R$5FA9 is unset (no egg active).
+ $60AB OR A            ;
  $60AC JR Z,$60D9      ; }
-; Percy is flying upward so advance the Y position.
+; Egg is in flight — advance its Y position.
  $60AE LD A,(IX+$21)   ; #REGa=*#REGix+#N$21.
  $60B1 ADD A,$04       ; #REGa+=#N$04.
- $60B3 CP $A8          ; Has Percy reached Y position #N$A8?
+ $60B3 CP $A8          ; Has the egg reached Y position #N$A8?
  $60B5 JR C,$60BF      ; Jump to #R$60BF if not yet reached.
-; Percy has reached the target so end the collection state.
+; Egg has reached its target — end the egg drop state.
  $60B7 LD (IX+$23),$00 ; Write #N$00 to *#REGix+#N$23.
- $60BB XOR A           ; {Unset *#R$5FA9 (the item has been collected).
+ $60BB XOR A           ; {Write #N$00 to *#R$5FA9 (egg drop complete).
  $60BC LD ($5FA9),A    ; }
-@label=MainGameLoop_UpdateCollectionY
+@label=MainGameLoop_UpdateEggY
 *$60BF LD (IX+$21),A   ; Write #REGa to *#REGix+#N$21.
-; Play a rising sound effect during item collection.
+; Play a rising sound effect while the egg is in flight.
  $60C2 PUSH IX         ; Stash #REGix on the stack.
  $60C4 LD HL,($5FB7)   ; #REGhl=*#R$5FB7.
  $60C7 LD BC,$0010     ; {#REGhl+=#N$0010.
@@ -1125,8 +1125,7 @@ c$5FE9 LD A,($5FA7)    ; {If *#R$5FA7 is unset, call #R$653D.
  $60D4 DI              ; Disable interrupts.
  $60D5 POP IX          ; Restore #REGix from the stack.
  $60D7 JR $610E        ; Jump to #R$610E.
-; Check if fire is pressed and conditions are met to start collecting
-; an item.
+; Check if fire is pressed and conditions are met to drop an egg.
 @label=MainGameLoop_TestFirePressed
 *$60D9 LD A,($5FA2)    ; {Jump to #R$610E if *#R$5FA2 states that fire has not
  $60DC BIT 0,A         ; been pressed.
@@ -1134,23 +1133,23 @@ c$5FE9 LD A,($5FA7)    ; {If *#R$5FA7 is unset, call #R$653D.
  $60E0 LD A,($5FAD)    ; {Jump to #R$610E if *#R$5FAD is set.
  $60E3 OR A            ;
  $60E4 JR NZ,$610E     ; }
-; Percy must be below Y position #N$84 to collect items.
- $60E6 LD A,(IX+$01)   ; {Jump to #R$610E if Percy's Y position (*#REGix+#N$01) states that
- $60E9 CP $84          ; Percy is too high to collect items (greater than or equal to #N$84).
+; Percy must be below Y position #N$84 to drop an egg.
+ $60E6 LD A,(IX+$01)   ; {Jump to #R$610E if Percy's Y position (*#REGix+#N$01) is greater
+ $60E9 CP $84          ; than or equal to #N$84 (too high to drop an egg).
  $60EB JR NC,$610E     ; }
-; Start the item collection sequence and set Percy's target Y position and
-; collection state.
+; Start the egg drop sequence — set the egg's target position and
+; activate the egg state.
  $60ED ADD A,$10       ; #REGa+=#N$10.
  $60EF PUSH AF         ; Stash #REGaf on the stack.
- $60F0 CALL $679C      ; Call #R$679C to find and remove the collectible item.
+ $60F0 CALL $679C      ; Call #R$679C.
  $60F3 POP AF          ; Restore #REGaf from the stack.
- $60F4 LD (IX+$21),A   ; Write #REGa to *#REGix+#N$21 (collection target Y).
+ $60F4 LD (IX+$21),A   ; Write #REGa to *#REGix+#N$21 (egg target Y).
  $60F7 LD (IX+$23),$0F ; Write #N$0F to *#REGix+#N$23.
  $60FB LD A,(IX+$00)   ; #REGa=*#REGix+#N$00 (Percy's X position).
  $60FE ADD A,$05       ; #REGa+=#N$05.
- $6100 LD (IX+$20),A   ; Write #REGa to *#REGix+#N$20 (collection target X).
+ $6100 LD (IX+$20),A   ; Write #REGa to *#REGix+#N$20 (egg target X).
  $6103 OR %11111111    ; #REGa=#N$FF.
- $6105 LD ($5FA9),A    ; Write #N$FF to *#R$5FA9 (collection in progress).
+ $6105 LD ($5FA9),A    ; Write #N$FF to *#R$5FA9 (egg drop in progress).
  $6108 LD HL,$0064     ; {Write #N($0064,$04,$04) to *#R$5FB7 (initial beep
  $610B LD ($5FB7),HL   ; pitch).}
 ; Apply the direction input to Percy's movement. First ensure fire
@@ -1926,7 +1925,7 @@ c$6480 LD HL,$52EC   ; #REGhl=#N$52EC (screen buffer location for the energy
  $64C7 RET C         ; }
  $64C8 XOR A         ; {Write #N$00 to *#R$5FAB.
  $64C9 LD ($5FAB),A  ; }
-; This entry point is used by the routines at #R$655C and #R$6CDD.
+; This entry point is used by the routine at #R$655C.
 ; .
 ; Refill the energy bar by shifting pixels right (filling from the left).
 ; Scans leftward to find the first non-full byte and fills it one pixel at a
@@ -2470,8 +2469,8 @@ c$679C LD BC,$0160   ; #REGbc=#N$0160 (number of attribute cells to search).
 
 ; Add To Score
 ;
-; Used by the routines at #R$662B, #R$693B, #R$69F7, #R$6CDD, #R$6E5D, #R$7190
-; and #R$74D6.
+; Used by the routines at #R$662B, #R$693B, #R$69F7, #R$6E5D, #R$7190 and
+; #R$74D6.
 ; .
 ; Converts a binary score value in #REGa into three decimal digits and
 ; adds them to the current score. The digits are stored in the score buffer at
@@ -2992,334 +2991,496 @@ c$69A7 DI            ; Disable interrupts.
  $69F4 POP IX        ; }
  $69F6 RET           ; Return.
 
-; Load Level Data
+; Handler: Red Bird
 ;
 ; Used by the routine at #R$69A7.
-@label=Load_Level_Data
-c$69F7 LD A,($5FBB)    ;
+; .
+; Handles the red bird — a thief that steals worms Percy is carrying.
+; Percy can stun the red bird by hitting it with an egg. The red bird's
+; flight path data is stored at #R$BE00 with entries separated by #N$00
+; terminators for each room.
+@label=Handler_RedBird
+c$69F7 LD A,($5FBB)    ; {Jump to #R$6A1C if *#R$5FBB is not set.
  $69FA OR A            ;
- $69FB JR Z,$6A1C      ;
- $69FD LD HL,$BE00     ;
- $6A00 LD A,($5FC5)    ;
- $6A03 LD E,A          ;
- $6A04 LD B,$01        ;
- $6A06 CP B            ;
- $6A07 JR Z,$6A14      ;
-*$6A09 LD A,(HL)       ;
- $6A0A INC HL          ;
- $6A0B OR A            ;
- $6A0C JP NZ,$6A09     ;
- $6A0F INC B           ;
- $6A10 LD A,E          ;
- $6A11 CP B            ;
- $6A12 JR NZ,$6A09     ;
-*$6A14 LD ($6CBB),HL   ;
- $6A17 LD A,R          ;
- $6A19 LD ($6CB7),A    ;
-*$6A1C CALL $6AF6      ;
- $6A1F LD A,($6CB4)    ;
- $6A22 OR A            ;
- $6A23 JR NZ,$6A60     ;
- $6A25 LD A,($5FAA)    ;
+ $69FB JR Z,$6A1C      ; }
+; Initialise the red bird for the current room. Scan through the flight
+; path data at #R$BE00, skipping past #N$00 terminators until the entry for the
+; current room is found.
+ $69FD LD HL,$BE00     ; Point #REGhl at #R$BE00.
+ $6A00 LD A,($5FC5)    ; {Load #REGa and #REGe with *#R$5FC5.
+ $6A03 LD E,A          ; }
+ $6A04 LD B,$01        ; Set a room counter in #REGb starting at #N$01.
+ $6A06 CP B            ; {Jump to #R$6A14 if this is room #N$01 (data starts
+ $6A07 JR Z,$6A14      ; here).}
+; Scan through the flightpath data to find the current room.
+@label=HandleRedBird_ScanLoop
+*$6A09 LD A,(HL)       ; #REGa=*#REGhl.
+ $6A0A INC HL          ; Advance the data pointer.
+ $6A0B OR A            ; {Jump back to #R$6A09 if this byte isn't the
+ $6A0C JP NZ,$6A09     ; terminator (#N$00).}
+; Found a #N$00 terminator so move to the data for the next room.
+ $6A0F INC B           ; Increment the room counter.
+ $6A10 LD A,E          ; {Jump back to #R$6A09 if this isn't at the target room
+ $6A11 CP B            ; yet.
+ $6A12 JR NZ,$6A09     ; }
+; Found the correct room's data — store the flight path pointer.
+@label=HandleRedBird_InitPath
+*$6A14 LD ($6CBB),HL   ; Write #REGhl to *#R$6CBB (current flight path
+                       ; pointer).
+; Seed the random animation state from the Memory Refresh Register.
+ $6A17 LD A,R          ; {Write the contents of the Memory Refresh Register to
+ $6A19 LD ($6CB7),A    ; *#R$6CB7.}
+; Update the red bird's position and check for collisions.
+@label=HandleRedBird_Update
+*$6A1C CALL $6AF6      ; Call #R$6AF6.
+; Check if the red bird has stolen Percy's worm.
+ $6A1F LD A,($6CB4)    ; {Jump to #R$6A60 if *#R$6CB4 is set so the red bird is already
+ $6A22 OR A            ; stunned/ caught.
+ $6A23 JR NZ,$6A60     ; }
+ $6A25 LD A,($5FAA)    ; {Jump to #R$6A60 if *#R$5FAA is unset.
  $6A28 OR A            ;
- $6A29 JR Z,$6A60      ;
- $6A2B LD IX,$DAC0     ;
- $6A2F LD IY,$DAC4     ;
- $6A33 CALL $6C53      ;
- $6A36 JR C,$6A60      ;
- $6A38 LD A,(IY+$03)   ;
- $6A3B OR A            ;
- $6A3C JR Z,$6A60      ;
- $6A3E CALL $679C      ;
- $6A41 LD DE,$0003     ;
- $6A44 LD HL,$00C8     ;
- $6A47 LD B,$0A        ;
-*$6A49 PUSH BC         ;
- $6A4A PUSH HL         ;
- $6A4B PUSH DE         ;
- $6A4C LD IY,$5C3D     ;
- $6A50 CALL $03B5      ;
- $6A53 DI              ;
- $6A54 POP DE          ;
- $6A55 POP HL          ;
- $6A56 LD BC,$0012     ;
- $6A59 ADD HL,BC       ;
- $6A5A POP BC          ;
- $6A5B DJNZ $6A49      ;
- $6A5D NOP             ;
+ $6A29 JR Z,$6A60      ; }
+; Check collision between Percy and the red bird.
+ $6A2B LD IX,$DAC0     ; #REGix=#R$DAC0 (Percy's sprite data).
+ $6A2F LD IY,$DAC4     ; #REGiy=#R$DAC4 (red bird sprite data).
+ $6A33 CALL $6C53      ; Call #R$6C53.
+ $6A36 JR C,$6A60      ; Jump to #R$6A60 if no collision.
+; Check the red bird has a valid frame (is visible).
+ $6A38 LD A,(IY+$03)   ; {Jump to #R$6A60 if *#REGiy+#N$03 is unset, so the red bird frame is
+ $6A3B OR A            ; #N$00 (i.e. not visible).
+ $6A3C JR Z,$6A60      ; }
+; Red bird stole Percy's worm — return the worm to the room and play a
+; sound.
+ $6A3E CALL $679C      ; Call #R$679C.
+ $6A41 LD DE,$0003     ; #REGde=#N($0003,$04,$04).
+ $6A44 LD HL,$00C8     ; #REGhl=#N($00C8,$04,$04) (initial beep pitch).
+ $6A47 LD B,$0A        ; Set a sound step counter in #REGb of #N$0A steps.
+@label=HandleRedBird_StolenSound
+*$6A49 PUSH BC         ; {Stash the step counter, pitch and duration on the
+ $6A4A PUSH HL         ; stack.
+ $6A4B PUSH DE         ; }
+ $6A4C LD IY,$5C3D     ; #HTML(#REGiy=<a rel="noopener nofollow"
+                       ; href="https://skoolkit.ca/disassemblies/rom/hex/asm/5C3D.html">ERR_SP</a>.)
+ $6A50 CALL $03B5      ; #HTML(Call <a rel="noopener nofollow"
+                       ; href="https://skoolkid.github.io/rom/asm/03B5.html">BEEP</a>.)
+ $6A53 DI              ; Disable interrupts.
+ $6A54 POP DE          ; {Restore the duration and pitch from the stack.
+ $6A55 POP HL          ; }
+ $6A56 LD BC,$0012     ; {#REGhl=#N($0012,$04,$04) (raise the pitch for the
+ $6A59 ADD HL,BC       ; next step).}
+ $6A5A POP BC          ; Restore the step counter from the stack.
+ $6A5B DJNZ $6A49      ; Decrease the step counter by one and loop back to #R$6A49 until the
+                       ; sound is complete.
+ $6A5D NOP             ; {No operation.
  $6A5E NOP             ;
- $6A5F NOP             ;
-*$6A60 LD A,($5FA9)    ;
- $6A63 OR A            ;
- $6A64 JR Z,$6A9D      ;
- $6A66 LD IY,$DAE0     ;
- $6A6A LD IX,$DAC4     ;
- $6A6E LD A,($6CB6)    ;
- $6A71 LD B,A          ;
- $6A72 LD A,($5FC5)    ;
- $6A75 CP B            ;
- $6A76 JR NZ,$6A9D     ;
- $6A78 CALL $6C85      ;
- $6A7B JR C,$6A9D      ;
- $6A7D LD A,($6CB4)    ;
- $6A80 OR A            ;
- $6A81 JR NZ,$6A9A     ;
- $6A83 CALL $6C39      ;
- $6A86 OR $40          ;
- $6A88 LD ($6CB4),A    ;
- $6A8B LD ($6CB5),A    ;
- $6A8E LD (IX+$02),$01 ;
- $6A92 LD A,$14        ;
- $6A94 CALL $67B2      ;
- $6A97 CALL $6F7A      ;
-*$6A9A CALL $71E1      ;
-*$6A9D CALL $6CDF      ;
- $6AA0 RET             ;
+ $6A5F NOP             ; }
+; Check if Percy's egg has hit the red bird.
+@label=HandleRedBird_CheckEgg
+*$6A60 LD A,($5FA9)    ; #REGa=*#R$5FA9.
+ $6A63 OR A            ; {Jump to #R$6A9D if no egg is active.
+ $6A64 JR Z,$6A9D      ; }
+ $6A66 LD IY,$DAE0     ; #REGiy=#R$DAE0.
+ $6A6A LD IX,$DAC4     ; #REGix=#R$DAC4.
+; Only check collision if the red bird is in the same room as the egg.
+ $6A6E LD A,($6CB6)    ; {#REGb=*#R$6CB6.
+ $6A71 LD B,A          ; }
+ $6A72 LD A,($5FC5)    ; #REGa=*#R$5FC5.
+ $6A75 CP B            ; {Jump to #R$6A9D if the red bird is not in the same
+ $6A76 JR NZ,$6A9D     ; room.}
+ $6A78 CALL $6C85      ; Call #R$6C85.
+ $6A7B JR C,$6A9D      ; Jump to #R$6A9D if no collision.
+; Egg hit the red bird — check if already stunned.
+ $6A7D LD A,($6CB4)    ; {Jump to #R$6A9A if *#R$6CB4 is set so the red bird is already
+ $6A80 OR A            ; stunned.
+ $6A81 JR NZ,$6A9A     ; }
+; Stun the red bird — set a random stun timer and award points.
+ $6A83 CALL $6C39      ; Call #R$6C39.
+ $6A86 OR %01000000    ; Set bit 6 (ensure a minimum stun duration).
+ $6A88 LD ($6CB4),A    ; Write #REGa to *#R$6CB4.
+ $6A8B LD ($6CB5),A    ; Write #REGa to *#R$6CB5.
+ $6A8E LD (IX+$02),$01 ; Write #N$01 to *#REGix+#N$02 (stunned colour: blue).
+ $6A92 LD A,$14        ; {Call #R$67B2 to add #N$14 points to the score.
+ $6A94 CALL $67B2      ; }
+ $6A97 CALL $6F7A      ; Call #R$6F7A.
+; Cancel the egg.
+@label=HandleRedBird_CancelEgg
+*$6A9A CALL $71E1      ; Call #R$71E1.
+@label=HandleRedBird_Done
+*$6A9D CALL $6CDF      ; Call #R$6CDF.
+ $6AA0 RET             ; Return.
 ; This entry point is used by the routine at #R$6AF6.
-*$6AA1 LD A,($5FC5)    ;
- $6AA4 LD B,A          ;
- $6AA5 LD A,($6CB6)    ;
- $6AA8 ADD A,B         ;
- $6AA9 CP $0C          ;
- $6AAB JR NZ,$6AB5     ;
- $6AAD LD A,($6CB3)    ;
- $6AB0 XOR $01         ;
- $6AB2 LD ($6CB3),A    ;
-*$6AB5 LD HL,$6CBE     ;
- $6AB8 LD A,($5FB1)    ;
- $6ABB DEC A           ;
- $6ABC LD E,A          ;
- $6ABD LD D,$00        ;
- $6ABF ADD HL,DE       ;
- $6AC0 LD A,(HL)       ;
- $6AC1 LD ($6CB9),A    ;
- $6AC4 LD A,($6CB3)    ;
- $6AC7 LD C,$E6        ;
- $6AC9 LD B,$06        ;
- $6ACB OR A            ;
- $6ACC JR NZ,$6AD0     ;
- $6ACE LD C,$06        ;
-*$6AD0 CALL $6C0C      ;
- $6AD3 RET NC          ;
- $6AD4 INC B           ;
+; .
+; Calculates the red bird's next room and flight direction when it crosses
+; a room boundary. Also looks up the flight speed for the current level and
+; finds a valid starting position.
+@label=HandleRedBird_SetupFlight
+*$6AA1 LD A,($5FC5)    ; {#REGb=*#R$5FC5.
+ $6AA4 LD B,A          ; }
+ $6AA5 LD A,($6CB6)    ; #REGa=*#R$6CB6.
+; Check if the combined value wraps past room #N$0B.
+ $6AA8 ADD A,B         ; #REGa+=#REGb.
+ $6AA9 CP $0C          ; {Jump to #R$6AB5 if the combined value doesn't wrap
+ $6AAB JR NZ,$6AB5     ; past room #N$0B.}
+; Wrap point reached — flip the red bird's flight direction.
+ $6AAD LD A,($6CB3)    ; #REGa=*#R$6CB3.
+ $6AB0 XOR %00000001   ; Toggle bit 0 (flip direction).
+ $6AB2 LD ($6CB3),A    ; Write #REGa to *#R$6CB3.
+; Look up the flight speed for the current level from the table at
+; #R$6CBE.
+@label=HandleRedBird_LookupSpeed
+*$6AB5 LD HL,$6CBE     ; #REGhl=#R$6CBE.
+ $6AB8 LD A,($5FB1)    ; #REGa=*#R$5FB1 (current level).
+ $6ABB DEC A           ; Decrement to make zero-indexed.
+ $6ABC LD E,A          ; #REGe=#REGa.
+ $6ABD LD D,$00        ; #REGd=#N$00.
+ $6ABF ADD HL,DE       ; #REGhl+=#REGde.
+ $6AC0 LD A,(HL)       ; #REGa=*#REGhl (flight speed for this level).
+ $6AC1 LD ($6CB9),A    ; Write #REGa to *#R$6CB9.
+; Set up the starting position based on the flight direction.
+ $6AC4 LD A,($6CB3)    ; #REGa=*#R$6CB3.
+ $6AC7 LD C,$E6        ; #REGc=#N$E6 (starting X for rightward flight).
+ $6AC9 LD B,$06        ; #REGb=#N$06 (starting Y).
+ $6ACB OR A            ; {Jump to #R$6AD0 if flying right (direction is
+ $6ACC JR NZ,$6AD0     ; non-zero).}
+ $6ACE LD C,$06        ; #REGc=#N$06 (starting X for leftward flight).
+; Search for a valid Y position that doesn't collide with scenery.
+@label=HandleRedBird_FindPosition
+*$6AD0 CALL $6C0C      ; Call #R$6C0C.
+ $6AD3 RET NC          ; Return if no collision (valid position found).
+; Position blocked — try the next row down.
+ $6AD4 INC B           ; {Increment #REGb by #N$04.
  $6AD5 INC B           ;
  $6AD6 INC B           ;
- $6AD7 INC B           ;
- $6AD8 LD A,B          ;
- $6AD9 CP $50          ;
- $6ADB JR C,$6AD0      ;
- $6ADD LD B,$04        ;
- $6ADF LD A,($6CB3)    ;
- $6AE2 OR A            ;
- $6AE3 JR NZ,$6AED     ;
- $6AE5 INC C           ;
+ $6AD7 INC B           ; }
+ $6AD8 LD A,B          ; #REGa=#REGb.
+ $6AD9 CP $50          ; {Jump back to #R$6AD0 until the bottom of search area
+ $6ADB JR C,$6AD0      ; is reached.}
+; Reached the bottom — wrap back to the top and shift X inward.
+ $6ADD LD B,$04        ; #REGb=#N$04 (reset Y to the top).
+ $6ADF LD A,($6CB3)    ; #REGa=*#R$6CB3 (flight direction).
+ $6AE2 OR A            ; {Jump to #R$6AED if flying right.
+ $6AE3 JR NZ,$6AED     ; }
+; Flying left — shift the starting X position rightward.
+ $6AE5 INC C           ; {Increment #REGc by #N$06.
  $6AE6 INC C           ;
  $6AE7 INC C           ;
  $6AE8 INC C           ;
  $6AE9 INC C           ;
- $6AEA INC C           ;
- $6AEB JR $6AD0        ;
-*$6AED DEC C           ;
+ $6AEA INC C           ; }
+ $6AEB JR $6AD0        ; Jump to #R$6AD0 to try again.
+; Flying right — shift the starting X position leftward.
+@label=HandleRedBird_ShiftLeft
+*$6AED DEC C           ; {Decrement #REGc by #N$06.
  $6AEE DEC C           ;
  $6AEF DEC C           ;
  $6AF0 DEC C           ;
  $6AF1 DEC C           ;
- $6AF2 DEC C           ;
- $6AF3 JR $6AD0        ;
- $6AF5 RET             ;
+ $6AF2 DEC C           ; }
+ $6AF3 JR $6AD0        ; Jump to #R$6AD0 to try again.
+ $6AF5 RET             ; Return.
 
-; Routine at 6AF6
+; Update Red Bird Movement
 ;
 ; Used by the routine at #R$69F7.
-c$6AF6 LD IX,$DAC4     ;
- $6AFA LD (IX+$03),$00 ;
- $6AFE LD (IX+$02),$02 ;
- $6B02 LD A,($6CB4)    ;
- $6B05 OR A            ;
- $6B06 JP NZ,$6B9B     ;
- $6B09 LD A,($5FBB)    ;
+; .
+; Updates the red bird's position and animation. Handles the red bird's
+; movement along its flight path, stun recovery, room transitions, and wing
+; animation.
+@label=UpdateRedBirdMovement
+c$6AF6 LD IX,$DAC4     ; #REGix=#R$DAC4 (red bird sprite data).
+; Reset the red bird's frame and colour to defaults.
+ $6AFA LD (IX+$03),$00 ; Write #N$00 to *#REGix+#N$03 (clear frame —
+                       ; invisible).
+ $6AFE LD (IX+$02),$02 ; Write #INK$02 to *#REGix+#N$02.
+; If the red bird is stunned, handle stun recovery instead.
+ $6B02 LD A,($6CB4)    ; {Jump to #R$6B9B if *#R$6CB4 is set indicating the red bird is
+ $6B05 OR A            ; stunned.
+ $6B06 JP NZ,$6B9B     ; }
+; If the room is being initialised, set a random appearance delay.
+ $6B09 LD A,($5FBB)    ; {Jump to #R$6B19 if *#R$5FBB is unset.
  $6B0C OR A            ;
- $6B0D JR Z,$6B19      ;
- $6B0F CALL $6C39      ;
- $6B12 OR $01          ;
- $6B14 AND $3F         ;
- $6B16 LD ($6CBD),A    ;
-*$6B19 LD A,($6CBD)    ;
+ $6B0D JR Z,$6B19      ; }
+ $6B0F CALL $6C39      ; Call #R$6C39.
+ $6B12 OR %00000001    ; Set bit 0 (ensure an odd value).
+ $6B14 AND %00111111   ; Keep only bits 0-5 (cap at #N$3F).
+ $6B16 LD ($6CBD),A    ; Write #REGa to *#R$6CBD.
+; If an appearance delay is active, the red bird is waiting to enter the
+; current room — count down and handle the transition.
+@label=UpdateRedBirdMovement_CheckDelay
+*$6B19 LD A,($6CBD)    ; {Jump to #R$6B6E if *#R$6CBD is active.
  $6B1C OR A            ;
- $6B1D JR NZ,$6B6E     ;
- $6B1F LD A,($5FC5)    ;
- $6B22 LD ($6CB6),A    ;
- $6B25 LD HL,$6CB2     ;
- $6B28 DEC (HL)        ;
- $6B29 JR NZ,$6B4A     ;
- $6B2B XOR A           ;
- $6B2C LD ($6CBA),A    ;
-*$6B2F LD HL,$6CBA     ;
- $6B32 DEC (HL)        ;
- $6B33 CALL Z,$6AA1    ;
- $6B36 CALL $6C39      ;
- $6B39 PUSH AF         ;
- $6B3A AND $07         ;
- $6B3C LD ($6CB8),A    ;
- $6B3F POP AF          ;
- $6B40 RRCA            ;
+ $6B1D JR NZ,$6B6E     ; }
+; Red bird is active in the current room — update its flight path.
+ $6B1F LD A,($5FC5)    ; {Write *#R$5FC5 to *#R$6CB6 (store the red bird's
+ $6B22 LD ($6CB6),A    ; current room).}
+; Decrement the direction change timer.
+ $6B25 LD HL,$6CB2     ; #REGhl=#R$6CB2.
+ $6B28 DEC (HL)        ; Decrement *#REGhl.
+ $6B29 JR NZ,$6B4A     ; Jump to #R$6B4A if the timer hasn't expired.
+; Timer expired — choose a new flight direction.
+ $6B2B XOR A           ; {Write #N$00 to *#R$6CBA.
+ $6B2C LD ($6CBA),A    ; }
+*$6B2F LD HL,$6CBA     ; #REGhl=#R$6CBA.
+ $6B32 DEC (HL)        ; Decrement *#REGhl.
+ $6B33 CALL Z,$6AA1    ; Call #R$6AA1 if *#REGhl reached zero (find a new
+                       ; flight path).
+; Pick a new random direction and duration.
+ $6B36 CALL $6C39      ; Call #R$6C39.
+ $6B39 PUSH AF         ; Stash #REGaf on the stack.
+ $6B3A AND %00000111   ; Keep only bits 0-2 (random direction #N$00-#N$07).
+ $6B3C LD ($6CB8),A    ; Write #REGa to *#R$6CB8.
+ $6B3F POP AF          ; Restore #REGaf from the stack.
+; Calculate the direction change timer from the random value.
+ $6B40 RRCA            ; {Rotate right three positions.
  $6B41 RRCA            ;
- $6B42 RRCA            ;
- $6B43 AND $40         ;
- $6B45 OR $04          ;
- $6B47 LD ($6CB2),A    ;
-*$6B4A LD A,($6CB8)    ;
- $6B4D ADD A,A         ;
- $6B4E LD ($6BC9),A    ;
- $6B51 LD C,(IX+$00)   ;
- $6B54 LD B,(IX+$01)   ;
- $6B57 LD HL,$6CB9     ;
- $6B5A CALL $6BC8      ;
- $6B5D JR C,$6B2F      ;
-*$6B5F LD HL,$6CC4     ;
- $6B62 LD A,(HL)       ;
- $6B63 INC A           ;
- $6B64 AND $07         ;
- $6B66 LD (HL),A       ;
- $6B67 RRA             ;
- $6B68 ADD A,$18       ;
- $6B6A LD ($DAC7),A    ;
- $6B6D RET             ;
-*$6B6E LD A,($5FC5)    ;
- $6B71 LD B,A          ;
- $6B72 LD A,($6CB6)    ;
- $6B75 CP B            ;
- $6B76 JR NZ,$6B7E     ;
- $6B78 XOR A           ;
- $6B79 LD ($6CBD),A    ;
- $6B7C JR $6B5F        ;
-*$6B7E LD HL,$6CBD     ;
- $6B81 DEC (HL)        ;
- $6B82 RET NZ          ;
- $6B83 XOR A           ;
- $6B84 LD ($6CB3),A    ;
- $6B87 LD A,($5FC5)    ;
- $6B8A LD B,A          ;
- $6B8B LD A,($6CB6)    ;
- $6B8E CP B            ;
- $6B8F JR C,$6B96      ;
- $6B91 LD A,$01        ;
- $6B93 LD ($6CB3),A    ;
-*$6B96 CALL $6AA1      ;
- $6B99 JR $6B5F        ;
-*$6B9B LD HL,$6CB4     ;
- $6B9E LD A,$01        ;
- $6BA0 LD ($DAC6),A    ;
- $6BA3 DEC (HL)        ;
- $6BA4 LD A,(HL)       ;
- $6BA5 CP $01          ;
- $6BA7 JR Z,$6BC0      ;
- $6BA9 LD A,($6CB6)    ;
- $6BAC LD B,A          ;
- $6BAD LD A,($5FC5)    ;
- $6BB0 CP B            ;
- $6BB1 RET NZ          ;
- $6BB2 LD C,(IX+$00)   ;
- $6BB5 LD A,(IX+$01)   ;
- $6BB8 ADD A,$03       ;
- $6BBA LD B,A          ;
- $6BBB CALL $6C0C      ;
- $6BBE JR $6B5F        ;
-*$6BC0 DEC (HL)        ;
- $6BC1 LD A,$04        ;
- $6BC3 LD ($6CBD),A    ;
- $6BC6 JR $6B6E        ;
-; This entry point is used by the routines at #R$6CDD, #R$7439 and #R$7512.
-*$6BC8 JR $6BCA        ;
-*$6BCA JR $6BDA        ;
- $6BCC JR $6BDF        ;
- $6BCE JR $6BE7        ;
- $6BD0 JR $6BEC        ;
- $6BD2 JR $6BF4        ;
- $6BD4 JR $6BF9        ;
- $6BD6 JR $6C01        ;
- $6BD8 JR $6C06        ;
-*$6BDA LD A,B          ;
- $6BDB SUB (HL)        ;
- $6BDC LD B,A          ;
- $6BDD JR $6C0C        ;
-*$6BDF LD A,B          ;
- $6BE0 SUB (HL)        ;
- $6BE1 LD B,A          ;
- $6BE2 LD A,C          ;
- $6BE3 ADD A,(HL)      ;
- $6BE4 LD C,A          ;
- $6BE5 JR $6C0C        ;
-*$6BE7 LD A,C          ;
- $6BE8 ADD A,(HL)      ;
- $6BE9 LD C,A          ;
- $6BEA JR $6C0C        ;
-*$6BEC LD A,C          ;
- $6BED ADD A,(HL)      ;
- $6BEE LD C,A          ;
- $6BEF LD A,B          ;
- $6BF0 ADD A,(HL)      ;
- $6BF1 LD B,A          ;
- $6BF2 JR $6C0C        ;
-*$6BF4 LD A,B          ;
- $6BF5 ADD A,(HL)      ;
- $6BF6 LD B,A          ;
- $6BF7 JR $6C0C        ;
-*$6BF9 LD A,B          ;
- $6BFA ADD A,(HL)      ;
- $6BFB LD B,A          ;
- $6BFC LD A,C          ;
- $6BFD SUB (HL)        ;
- $6BFE LD C,A          ;
- $6BFF JR $6C0C        ;
-*$6C01 LD A,C          ;
- $6C02 SUB (HL)        ;
- $6C03 LD C,A          ;
- $6C04 JR $6C0C        ;
-*$6C06 LD A,B          ;
- $6C07 SUB (HL)        ;
- $6C08 LD B,A          ;
- $6C09 LD A,C          ;
- $6C0A SUB (HL)        ;
- $6C0B LD C,A          ;
-; This entry point is used by the routines at #R$69F7, #R$6CDD and #R$74A7.
-*$6C0C LD HL,($6CBB)   ;
-*$6C0F PUSH HL         ;
- $6C10 LD A,(HL)       ;
- $6C11 OR A            ;
- $6C12 JR Z,$6C36      ;
- $6C14 CP B            ;
- $6C15 JR NC,$6C2F     ;
- $6C17 INC HL          ;
- $6C18 LD A,(HL)       ;
- $6C19 CP B            ;
- $6C1A JR C,$6C2F      ;
- $6C1C INC HL          ;
- $6C1D LD A,(HL)       ;
- $6C1E CP C            ;
- $6C1F JR NC,$6C2F     ;
- $6C21 INC HL          ;
- $6C22 LD A,(HL)       ;
- $6C23 CP C            ;
- $6C24 JR C,$6C2F      ;
- $6C26 LD (IX+$00),C   ;
- $6C29 LD (IX+$01),B   ;
- $6C2C POP HL          ;
- $6C2D AND A           ;
- $6C2E RET             ;
-*$6C2F POP HL          ;
- $6C30 INC HL          ;
- $6C31 INC HL          ;
- $6C32 INC HL          ;
- $6C33 INC HL          ;
- $6C34 JR $6C0F        ;
-*$6C36 POP HL          ;
- $6C37 SCF             ;
- $6C38 RET             ;
+ $6B42 RRCA            ; }
+ $6B43 AND %01000000   ; Keep only bit 6.
+ $6B45 OR %00000100    ; Set bit 2.
+ $6B47 LD ($6CB2),A    ; Write #REGa to *#R$6CB2.
+; Move the red bird in its current direction. The direction is doubled
+; and self-modified into the jump table at #R$6BC8.
+@label=UpdateRedBirdMovement_Move
+*$6B4A LD A,($6CB8)    ; Load #REGa with *#R$6CB8.
+ $6B4D ADD A,A         ; Double it (each jump table entry is #N$02 bytes).
+ $6B4E LD ($6BC9),A    ; Write #REGa to *#R$6BC8(#N$6BC9) (self-modify the jump
+                       ; offset).
+ $6B51 LD C,(IX+$00)   ; #REGc=*#REGix+#N$00 (red bird's X position).
+ $6B54 LD B,(IX+$01)   ; #REGb=*#REGix+#N$01 (red bird's Y position).
+ $6B57 LD HL,$6CB9     ; #REGhl=#R$6CB9.
+ $6B5A CALL $6BC8      ; Call #R$6BC8.
+ $6B5D JR C,$6B2F      ; Jump to #R$6B2F if the carry flag is set (red bird left the valid
+                       ; area).
+; Update the red bird's wing animation frame.
+@label=UpdateRedBirdMovement_Animate
+*$6B5F LD HL,$6CC4     ; #REGhl=#R$6CC4.
+ $6B62 LD A,(HL)       ; #REGa=*#REGhl.
+ $6B63 INC A           ; Increment the animation counter.
+ $6B64 AND %00000111   ; Keep only bits 0-2 (cycle through #N$00-#N$07).
+ $6B66 LD (HL),A       ; Write back to *#REGhl.
+ $6B67 RRA             ; Rotate right (divide by #N$02).
+ $6B68 ADD A,$18       ; #REGa+=#N$18 (red bird animation frame base).
+ $6B6A LD ($DAC7),A    ; Write #REGa to *#R$DAC7 (red bird frame).
+ $6B6D RET             ; Return.
+; Red bird is waiting to appear. Count down the delay timer and handle
+; the room transition when it expires.
+@label=UpdateRedBirdMovement_WaitToAppear
+*$6B6E LD A,($5FC5)    ; {#REGb=*#R$5FC5.
+ $6B71 LD B,A          ; }
+ $6B72 LD A,($6CB6)    ; #REGa=*#R$6CB6 (red bird's current room).
+ $6B75 CP B            ; Is the red bird in the same room as Percy?
+ $6B76 JR NZ,$6B7E     ; Jump to #R$6B7E if not.
+; Red bird has arrived in Percy's room — clear the delay and animate.
+ $6B78 XOR A           ; {Write #N$00 to *#R$6CBD.
+ $6B79 LD ($6CBD),A    ; }
+ $6B7C JR $6B5F        ; Jump to #R$6B5F.
+; Still waiting — decrement the appearance delay.
+@label=UpdateRedBirdMovement_Countdown
+*$6B7E LD HL,$6CBD     ; #REGhl=#R$6CBD.
+ $6B81 DEC (HL)        ; Decrement *#REGhl.
+ $6B82 RET NZ          ; Return if the delay hasn't expired yet.
+; Delay expired — determine which direction the red bird should enter from
+; based on which room it's coming from relative to Percy's room.
+ $6B83 XOR A           ; {Write #N$00 to *#R$6CB3 (default: flying left).
+ $6B84 LD ($6CB3),A    ; }
+ $6B87 LD A,($5FC5)    ; {#REGb=*#R$5FC5.
+ $6B8A LD B,A          ; }
+ $6B8B LD A,($6CB6)    ; #REGa=*#R$6CB6.
+ $6B8E CP B            ; {Jump to #R$6B96 if the red bird is coming from a
+ $6B8F JR C,$6B96      ; lower numbered room.}
+; Red bird is coming from a higher room — enter flying right.
+ $6B91 LD A,$01        ; {Write #N$01 to *#R$6CB3 (flying right).
+ $6B93 LD ($6CB3),A    ; }
+@label=UpdateRedBirdMovement_EnterRoom
+*$6B96 CALL $6AA1      ; Call #R$6AA1.
+ $6B99 JR $6B5F        ; Jump to #R$6B5F.
+; Handle the red bird's stun recovery. The stun timer counts down, and
+; the red bird flashes blue while stunned. When the timer expires, the red bird
+; becomes active again with a short appearance delay.
+@label=UpdateRedBirdMovement_StunRecovery
+*$6B9B LD HL,$6CB4     ; #REGhl=#R$6CB4 (stun timer).
+ $6B9E LD A,$01        ; {Write #INK$01 to *#R$DAC6.
+ $6BA0 LD ($DAC6),A    ; }
+ $6BA3 DEC (HL)        ; Decrement the stun timer.
+ $6BA4 LD A,(HL)       ; #REGa=*#REGhl.
+ $6BA5 CP $01          ; {Jump to #R$6BC0 if the stun is about to end.
+ $6BA7 JR Z,$6BC0      ; }
+; Still stunned — only draw if the red bird is in the current room.
+ $6BA9 LD A,($6CB6)    ; {#REGb=*#R$6CB6.
+ $6BAC LD B,A          ; }
+ $6BAD LD A,($5FC5)    ; #REGa=*#R$5FC5.
+ $6BB0 CP B            ; {Return if the red bird is not in the same room as
+ $6BB1 RET NZ          ; Percy.}
+; Red bird is stunned and visible — move it downward slowly (falling).
+ $6BB2 LD C,(IX+$00)   ; #REGc=*#REGix+#N$00 (red bird's X position).
+ $6BB5 LD A,(IX+$01)   ; #REGa=*#REGix+#N$01 (red bird's Y position).
+ $6BB8 ADD A,$03       ; #REGa+=#N$03 (drift downward).
+ $6BBA LD B,A          ; Store the result in #REGb.
+ $6BBB CALL $6C0C      ; Call #R$6C0C.
+ $6BBE JR $6B5F        ; Jump to #R$6B5F.
+; Stun ending — clear the timer and set a short reappearance delay.
+@label=UpdateRedBirdMovement_StunEnd
+*$6BC0 DEC (HL)        ; Clear the stun timer to #N$00.
+; Set a short reappearance delay.
+ $6BC1 LD A,$04        ; {Write #N$04 to *#R$6CBD.
+ $6BC3 LD ($6CBD),A    ; }
+ $6BC6 JR $6B6E        ; Jump to #R$6B6E.
+
+; Red Bird Direction Jump Table
+;
+; Used by the routines at #R$6AF6, #R$7439 and #R$7512.
+; .
+; Movement direction jump table. The entry point is self-modified at
+; #R$6BC8(#N$6BC9) to jump to one of 8 directional movement handlers. Each
+; handler adjusts #REGb (Y) and/or #REGc (X) by the flight speed value at
+; *#REGhl, then falls through to #R$6C0C to validate the position.
+; #TABLE(default,centre,centre,centre,centre)
+; { =h Direction | =h Index | =h X | =h Y }
+; { Up | 0 | — | −speed }
+; { Up-right | 1 | +speed | −speed }
+; { Right | 2 | +speed | — }
+; { Down-right | 3 | +speed | +speed }
+; { Down | 4 | — | +speed }
+; { Down-left | 5 | −speed | +speed }
+; { Left | 6 | −speed | — }
+; { Up-left | 7 | −speed | −speed }
+; TABLE#
+@label=RedBirdDirectionJumpTable
+c$6BC8 JR $6BCA      ; Self-modified jump — offset written by #R$6B4E.
+@label=RedBirdDirection_Up
+*$6BCA JR $6BDA      ; Jump to #R$6BDA (up).
+@label=RedBirdDirection_UpRight
+ $6BCC JR $6BDF      ; Jump to #R$6BDF (up-right).
+@label=RedBirdDirection_Right
+ $6BCE JR $6BE7      ; Jump to #R$6BE7 (right).
+@label=RedBirdDirection_DownRight
+ $6BD0 JR $6BEC      ; Jump to #R$6BEC (down-right).
+@label=RedBirdDirection_Down
+ $6BD2 JR $6BF4      ; Jump to #R$6BF4 (down).
+@label=RedBirdDirection_DownLeft
+ $6BD4 JR $6BF9      ; Jump to #R$6BF9 (down-left).
+@label=RedBirdDirection_Left
+ $6BD6 JR $6C01      ; Jump to #R$6C01 (left).
+@label=RedBirdDirection_UpLeft
+ $6BD8 JR $6C06      ; Jump to #R$6C06 (up-left).
+; Movement handlers. Each adjusts #REGb and/or #REGc by the speed
+; value at *#REGhl, then falls through to #R$6C0C.
+@label=RedBirdMove_Up
+*$6BDA LD A,B        ; {#REGb-=*#REGhl (subtract speed from Y).
+ $6BDB SUB (HL)      ;
+ $6BDC LD B,A        ; }
+ $6BDD JR $6C0C      ; Jump to #R$6C0C.
+@label=RedBirdMove_UpRight
+*$6BDF LD A,B        ; {#REGb-=*#REGhl (Y − speed).
+ $6BE0 SUB (HL)      ;
+ $6BE1 LD B,A        ; }
+ $6BE2 LD A,C        ; {#REGc+=*#REGhl (X + speed).
+ $6BE3 ADD A,(HL)    ;
+ $6BE4 LD C,A        ; }
+ $6BE5 JR $6C0C      ; Jump to #R$6C0C.
+@label=RedBirdMove_Right
+*$6BE7 LD A,C        ; {#REGc+=*#REGhl (X + speed).
+ $6BE8 ADD A,(HL)    ;
+ $6BE9 LD C,A        ; }
+ $6BEA JR $6C0C      ; Jump to #R$6C0C.
+@label=RedBirdMove_DownRight
+*$6BEC LD A,C        ; {#REGc+=*#REGhl (X + speed).
+ $6BED ADD A,(HL)    ;
+ $6BEE LD C,A        ; }
+ $6BEF LD A,B        ; {#REGb+=*#REGhl (Y + speed).
+ $6BF0 ADD A,(HL)    ;
+ $6BF1 LD B,A        ; }
+ $6BF2 JR $6C0C      ; Jump to #R$6C0C.
+@label=RedBirdMove_Down
+*$6BF4 LD A,B        ; {#REGb+=*#REGhl (Y + speed).
+ $6BF5 ADD A,(HL)    ;
+ $6BF6 LD B,A        ; }
+ $6BF7 JR $6C0C      ; Jump to #R$6C0C.
+@label=RedBirdMove_DownLeft
+*$6BF9 LD A,B        ; {#REGb+=*#REGhl (Y + speed).
+ $6BFA ADD A,(HL)    ;
+ $6BFB LD B,A        ; }
+ $6BFC LD A,C        ; {#REGc-=*#REGhl (X − speed).
+ $6BFD SUB (HL)      ;
+ $6BFE LD C,A        ; }
+ $6BFF JR $6C0C      ; Jump to #R$6C0C.
+@label=RedBirdMove_Left
+*$6C01 LD A,C        ; {#REGc-=*#REGhl (X − speed).
+ $6C02 SUB (HL)      ;
+ $6C03 LD C,A        ; }
+ $6C04 JR $6C0C      ; Jump to #R$6C0C.
+@label=RedBirdMove_UpLeft
+*$6C06 LD A,B        ; {#REGb-=*#REGhl (Y − speed).
+ $6C07 SUB (HL)      ;
+ $6C08 LD B,A        ; }
+ $6C09 LD A,C        ; {#REGc-=*#REGhl (X − speed).
+ $6C0A SUB (HL)      ;
+ $6C0B LD C,A        ; }
+; Continue on to #R$6C0C.
+
+; Validate Red Bird Position
+;
+; Used by the routines at #R$69F7, #R$6AF6, #R$6BC8 and #R$74A7.
+; .
+; Validates the red bird's proposed position (#REGb=Y, #REGc=X) against
+; the room's flight path boundary data. Scans through the boundary table at
+; *#R$6CBB looking for a region that contains the position.
+; .
+; Each entry is #N$04 bytes: Y-min, Y-max, X-min, X-max. If a valid region is
+; found, the position is stored and carry is clear. If no valid region is found
+; (entry is #N$00), carry is set.
+;
+;   B Proposed Y position
+;   C Proposed X position
+;   IX Pointer to red bird sprite data
+; O:F Carry clear = valid, carry set = out of bounds
+@label=ValidateRedBirdPosition
+c$6C0C LD HL,($6CBB) ; #REGhl=*#R$6CBB (flight path boundary pointer).
+@label=ValidateRedBirdPosition_Loop
+*$6C0F PUSH HL       ; Stash the boundary pointer on the stack.
+ $6C10 LD A,(HL)     ; #REGa=*#REGhl (Y-min for this region).
+ $6C11 OR A          ; {Jump to #R$6C36 if #REGa is #N$00 (end of boundary
+ $6C12 JR Z,$6C36    ; data).}
+; Check Y-min <= B.
+ $6C14 CP B          ; {Jump to #R$6C2F if #REGb is less than Y-min.
+ $6C15 JR NC,$6C2F   ; }
+; Check B <= Y-max.
+ $6C17 INC HL        ; Advance to Y-max.
+ $6C18 LD A,(HL)     ; #REGa=*#REGhl.
+ $6C19 CP B          ; {Jump to #R$6C2F if #REGb is greater than Y-max.
+ $6C1A JR C,$6C2F    ; }
+; Check X-min <= C.
+ $6C1C INC HL        ; Advance to X-min.
+ $6C1D LD A,(HL)     ; #REGa=*#REGhl.
+ $6C1E CP C          ; {Jump to #R$6C2F if #REGc is less than X-min.
+ $6C1F JR NC,$6C2F   ; }
+; Check C <= X-max.
+ $6C21 INC HL        ; Advance to X-max.
+ $6C22 LD A,(HL)     ; #REGa=*#REGhl.
+ $6C23 CP C          ; {Jump to #R$6C2F if #REGc is greater than X-max.
+ $6C24 JR C,$6C2F    ; }
+; Position is within this region — store it and return success.
+ $6C26 LD (IX+$00),C ; Write #REGc to *#REGix+#N$00 (X position).
+ $6C29 LD (IX+$01),B ; Write #REGb to *#REGix+#N$01 (Y position).
+ $6C2C POP HL        ; Restore the boundary pointer from the stack.
+ $6C2D AND A         ; Clear carry (valid position).
+ $6C2E RET           ; Return.
+; Position is outside this region — try the next one.
+@label=ValidateRedBirdPosition_Next
+*$6C2F POP HL        ; Restore the boundary pointer from the stack.
+ $6C30 INC HL        ; {Advance #REGhl by #N$04 (next boundary entry).
+ $6C31 INC HL        ;
+ $6C32 INC HL        ;
+ $6C33 INC HL        ; }
+ $6C34 JR $6C0F      ; Jump to #R$6C0F.
+; End of boundary data — no valid region found.
+@label=ValidateRedBirdPosition_OutOfBounds
+*$6C36 POP HL        ; Restore the boundary pointer from the stack.
+ $6C37 SCF           ; Set carry (out of bounds).
+ $6C38 RET           ; Return.
 
 ; Routine at 6C39
 ;
-; Used by the routines at #R$69F7, #R$6AF6, #R$6CDD, #R$6E2F and #R$6E5D.
+; Used by the routines at #R$69F7, #R$6AF6, #R$6E2F and #R$6E5D.
 c$6C39 LD A,($6CB7)  ;
  $6C3C LD H,A        ;
  $6C3D LD L,$00      ;
@@ -3396,8 +3557,8 @@ c$6C53 LD A,(IX+$00) ; Load #REGa with the first sprite's X position (from
 
 ; Check Egg Collision
 ;
-; Used by the routines at #R$69F7, #R$6CDD, #R$6E5D, #R$7190, #R$74D6, #R$7512
-; and #R$768C.
+; Used by the routines at #R$69F7, #R$6E5D, #R$7190, #R$74D6, #R$7512 and
+; #R$768C.
 ; .
 ; Checks if an egg overlaps with a sprite by comparing their positions.
 ; The egg is assumed to be #N$10 pixels wide and #N$10 pixels tall, while
@@ -3459,122 +3620,134 @@ c$6CA5 LD HL,$6CB3   ; {Write #N$FF to *#R$6CB3.
  $6CB0 LD (HL),C     ; }
  $6CB1 RET           ; Return.
 
-; Game status buffer entry at 6CB2
+; Red Bird Direction Change Timer
+;
+; Counts down each frame. When it reaches zero, the red bird picks a new
+; random flight direction.
+@label=RedBirdDirectionChangeTimer
 g$6CB2 DEFB $00
- $6CB3 DEFB $00
- $6CB4 DEFB $00
- $6CB5 DEFB $00
- $6CB6 DEFB $00
- $6CB7 DEFB $00,$00,$00,$00,$00,$00,$00,$02
- $6CBF DEFB $02,$03,$04,$04
- $6CC3 DEFB $00,$00,$03,$02,$01,$07,$01,$09
- $6CCB DEFB $01,$04,$02,$0B,$02,$03,$03,$0A
- $6CD3 DEFB $03,$05,$04,$07,$04,$08,$05,$FF
- $6CDB DEFB $FF,$00
 
-; Routine at 6CDD
-c$6CDD LD BC,$DD00     ;
- $6CE0 LD HL,$DAE4     ;
- $6CE3 LD (IX+$03),$00 ;
- $6CE7 LD A,($5FBE)    ;
- $6CEA OR A            ;
- $6CEB CALL NZ,$6D9E   ;
- $6CEE LD A,($5FB3)    ;
- $6CF1 LD B,A          ;
- $6CF2 LD A,($6CC3)    ;
- $6CF5 CP B            ;
- $6CF6 CALL NZ,$6D9E   ;
- $6CF9 LD A,($5FC5)    ;
- $6CFC LD C,A          ;
- $6CFD LD A,($5FB1)    ;
- $6D00 LD B,A          ;
- $6D01 LD HL,$6CC6     ;
-*$6D04 LD A,(HL)       ;
- $6D05 CP $FF          ;
- $6D07 RET Z           ;
- $6D08 CP C            ;
- $6D09 JR NZ,$6D16     ;
- $6D0B INC HL          ;
- $6D0C LD A,(HL)       ;
- $6D0D CP B            ;
- $6D0E JR NZ,$6D17     ;
- $6D10 BIT 7,(HL)      ;
- $6D12 JR NZ,$6D17     ;
- $6D14 JR $6D1A        ;
-*$6D16 INC HL          ;
-*$6D17 INC HL          ;
- $6D18 JR $6D04        ;
-*$6D1A PUSH HL         ;
- $6D1B LD A,$19        ;
- $6D1D OUT ($FE),A     ;
- $6D1F LD A,($5FBB)    ;
- $6D22 OR A            ;
- $6D23 CALL NZ,$6D90   ;
- $6D26 LD A,($6CDE)    ;
- $6D29 LD B,A          ;
- $6D2A LD A,($6CDC)    ;
- $6D2D XOR $01         ;
- $6D2F LD ($6CDC),A    ;
- $6D32 ADD A,$03       ;
- $6D34 BIT 2,B         ;
- $6D36 JR Z,$6D3A      ;
- $6D38 ADD A,$02       ;
-*$6D3A LD (IX+$03),A   ;
- $6D3D LD HL,$6CDD     ;
- $6D40 DEC (HL)        ;
- $6D41 JR NZ,$6D58     ;
-*$6D43 CALL $6C39      ;
- $6D46 PUSH AF         ;
- $6D47 AND $07         ;
- $6D49 LD ($6CDE),A    ;
- $6D4C POP AF          ;
- $6D4D LD HL,$6CDD     ;
- $6D50 RRCA            ;
- $6D51 RRCA            ;
- $6D52 RRCA            ;
- $6D53 AND $0F         ;
- $6D55 OR $01          ;
- $6D57 LD (HL),A       ;
-*$6D58 LD A,($6CDE)    ;
- $6D5B ADD A,A         ;
- $6D5C LD ($6BC9),A    ;
- $6D5F LD HL,$6CC5     ;
- $6D62 LD C,(IX+$00)   ;
- $6D65 LD B,(IX+$01)   ;
- $6D68 CALL $6BC8      ;
- $6D6B JR C,$6D43      ;
- $6D6D LD IY,$DAE4     ;
- $6D71 LD IX,$DAC0     ;
- $6D75 CALL $6C85      ;
- $6D78 JR C,$6D8E      ;
- $6D7A POP HL          ;
- $6D7B SET 7,(HL)      ;
- $6D7D LD B,$60        ;
-*$6D7F PUSH BC         ;
- $6D80 CALL $64CC      ;
- $6D83 POP BC          ;
- $6D84 DJNZ $6D7F      ;
- $6D86 LD A,$02        ;
- $6D88 CALL $67B2      ;
- $6D8B LD B,$09        ;
- $6D8D RET             ;
-*$6D8E POP HL          ;
- $6D8F RET             ;
-*$6D90 CALL $6C39      ;
- $6D93 LD C,A          ;
- $6D94 CALL $6C39      ;
- $6D97 LD B,A          ;
- $6D98 CALL $6C0C      ;
- $6D9B JR C,$6D90      ;
- $6D9D RET             ;
-*$6D9E LD HL,$6CC6     ;
-*$6DA1 LD A,(HL)       ;
- $6DA2 CP $FF          ;
- $6DA4 RET Z           ;
- $6DA5 RES 7,(HL)      ;
- $6DA7 INC HL          ;
- $6DA8 JR $6DA1        ;
- $6DAA RET             ;
+; Red Bird Traversal Direction
+;
+; Controls which direction the red bird traverses across rooms.
+; #N$00=moving left (entering from the right), #N$01=moving right
+; (entering from the left). Toggled when the red bird wraps past the
+; room boundary.
+@label=RedBirdTraversalDirection
+g$6CB3 DEFB $00
+
+; Red Bird Stun Timer
+;
+; When non-zero, the red bird is stunned. Counts down each frame until
+; it reaches #N$01, then the stun ends and a short reappearance delay
+; begins.
+@label=RedBirdStunTimer
+g$6CB4 DEFB $00
+
+; Red Bird Stun Timer Copy
+;
+; Copy of the initial stun timer value, stored when the red bird is
+; first stunned.
+@label=RedBirdStunTimerCopy
+g$6CB5 DEFB $00
+
+; Red Bird Current Room
+;
+; The room number the red bird is currently in. May differ from
+; *#R$5FC5 when the red bird is transitioning between rooms.
+@label=RedBirdCurrentRoom
+g$6CB6 DEFB $00
+
+; Red Bird Animation Seed
+;
+; Seeded from the Memory Refresh Register when the red bird is
+; initialised for each room.
+@label=RedBirdAnimationSeed
+g$6CB7 DEFB $00
+
+; Red Bird Movement Direction
+;
+; The red bird's current movement direction within a room (#N$00-#N$07),
+; indexing into the direction jump table at #R$6BC8. Changes randomly
+; each time the direction change timer at #R$6CB2 expires.
+@label=RedBirdMovementDirection
+g$6CB8 DEFB $00
+
+; Red Bird Flight Speed
+;
+; The red bird's current flight speed, looked up from the per-level speed
+; table at #R$6CBE based on the current level number.
+@label=RedBirdFlightSpeed
+g$6CB9 DEFB $00
+
+; Red Bird Path Counter
+;
+; Counts down to trigger a new flight path setup via #R$6AA1.
+@label=RedBirdPathCounter
+g$6CBA DEFB $00
+
+; Pointer: Red Bird Flightpath Data
+;
+; Pointer to the current room's flight path boundary data at #R$BE00.
+; Each boundary entry is #N$04 bytes: Y-min, Y-max, X-min, X-max.
+@label=Pointer_RedBirdFlightpathData
+g$6CBB DEFW $0000
+
+; Red Bird Appearance Delay
+;
+; Counts down each frame while the red bird is waiting to enter the
+; current room. When it reaches zero, the red bird appears.
+@label=RedBirdAppearanceDelay
+g$6CBD DEFB $00
+
+; Red Bird Speed Table
+;
+; Flight speed for each level. Indexed by zero-based level number.
+@label=RedBirdSpeedTable
+g$6CBE DEFB $02      ; Speed: #N(#PEEK(#PC)).
+ $6CBF DEFB $02      ; Speed: #N(#PEEK(#PC)).
+ $6CC0 DEFB $03      ; Speed: #N(#PEEK(#PC)).
+ $6CC1 DEFB $04      ; Speed: #N(#PEEK(#PC)).
+ $6CC2 DEFB $04      ; Speed: #N(#PEEK(#PC)).
+ $6CC3 DEFB $00
+
+; Red Bird Wing Animation Counter
+;
+; Cycles through #N$00-#N$07 to animate the red bird's wings. Divided
+; by #N$02 and added to the frame base of #N$18 to select the sprite
+; frame.
+@label=RedBirdWingAnimationCounter
+g$6CC4 DEFB $00
+ $6CC5 DEFB $03,$02,$01,$07,$01,$09,$01,$04
+ $6CCD DEFB $02,$0B,$02,$03,$03,$0A,$03,$05
+ $6CD5 DEFB $04,$07,$04,$08,$05,$FF,$FF,$00
+ $6CDD DEFB $01,$00
+*$6CDF DEFB $DD,$21,$E4,$DA,$DD,$36,$03,$00
+ $6CE7 DEFB $3A,$BE,$5F,$B7,$C4,$9E,$6D,$3A
+ $6CEF DEFB $B3,$5F,$47,$3A,$C3,$6C,$B8,$C4
+ $6CF7 DEFB $9E,$6D,$3A,$C5,$5F,$4F,$3A,$B1
+ $6CFF DEFB $5F,$47,$21,$C6,$6C,$7E,$FE,$FF
+ $6D07 DEFB $C8,$B9,$20,$0B,$23,$7E,$B8,$20
+ $6D0F DEFB $07,$CB,$7E,$20,$03,$18,$04,$23
+ $6D17 DEFB $23,$18,$EA,$E5,$3E,$19,$D3,$FE
+ $6D1F DEFB $3A,$BB,$5F,$B7,$C4,$90,$6D,$3A
+ $6D27 DEFB $DE,$6C,$47,$3A,$DC,$6C,$EE,$01
+ $6D2F DEFB $32,$DC,$6C,$C6,$03,$CB,$50,$28
+ $6D37 DEFB $02,$C6,$02,$DD,$77,$03,$21,$DD
+ $6D3F DEFB $6C,$35,$20,$15,$CD,$39,$6C,$F5
+ $6D47 DEFB $E6,$07,$32,$DE,$6C,$F1,$21,$DD
+ $6D4F DEFB $6C,$0F,$0F,$0F,$E6,$0F,$F6,$01
+ $6D57 DEFB $77,$3A,$DE,$6C,$87,$32,$C9,$6B
+ $6D5F DEFB $21,$C5,$6C,$DD,$4E,$00,$DD,$46
+ $6D67 DEFB $01,$CD,$C8,$6B,$38,$D6,$FD,$21
+ $6D6F DEFB $E4,$DA,$DD,$21,$C0,$DA,$CD,$85
+ $6D77 DEFB $6C,$38,$14,$E1,$CB,$FE,$06,$60
+ $6D7F DEFB $C5,$CD,$CC,$64,$C1,$10,$F9,$3E
+ $6D87 DEFB $02,$CD,$B2,$67,$06,$09,$C9,$E1
+ $6D8F DEFB $C9,$CD,$39,$6C,$4F,$CD,$39,$6C
+ $6D97 DEFB $47,$CD,$0C,$6C,$38,$F3,$C9,$21
+ $6D9F DEFB $C6,$6C,$7E,$FE,$FF,$C8,$CB,$BE
+ $6DA7 DEFB $23,$18,$F7,$C9
 
 ; Dispatch Game State
 ;
@@ -4151,9 +4324,10 @@ c$7190 LD A,($5FA9)  ; {Return if *#R$5FA9 is unset.
  $71DD CALL $6F7A    ; Call #R$6F7A.
  $71E0 RET           ; Return.
 
-; Routine at 71E1
+; Cancel Egg Drop
 ;
 ; Used by the routines at #R$69F7, #R$7190, #R$74D6 and #R$7512.
+@label=CancelEggDrop
 c$71E1 XOR A         ; {Write #N$00 to; #LIST
  $71E2 LD ($DAE3),A  ; { *#R$DAE3 }
  $71E5 LD ($5FA9),A  ; { *#R$5FA9 }
@@ -8398,8 +8572,7 @@ c$BD5E LD ($BD82),A  ; Write #REGa to *#R$BD81(#N$BD82).
  $BD83 ADD HL,HL     ; Shift #REGhl left one position.
 @label=DrawSpriteColumn_ShiftLoop
 *$BD84 ADD HL,HL     ; {Shift #REGhl left a further seven positions (eight total from
-; This entry point is used by the routine at #R$BDA6.
-*$BD85 ADD HL,HL     ; #R$BD83, or seven from #R$BD84).
+ $BD85 ADD HL,HL     ; #R$BD83, or seven from #R$BD84).
  $BD86 ADD HL,HL     ;
  $BD87 ADD HL,HL     ;
  $BD88 ADD HL,HL     ;
@@ -8497,7 +8670,7 @@ c$BDA6 LD ($BDC5),A  ;
 *$BDE7 NOP           ;
  $BDE8 NOP           ;
  $BDE9 NOP           ;
-*$BDEA NOP           ;
+ $BDEA NOP           ;
  $BDEB NOP           ;
  $BDEC NOP           ;
  $BDED NOP           ;
@@ -8514,392 +8687,113 @@ c$BDA6 LD ($BDC5),A  ;
  $BDFC LD A,(HL)     ;
  $BDFD AND $F8       ;
  $BDFF OR E          ;
- $BE00 DEC B         ;
- $BE01 LD L,A        ;
- $BE02 DEC B         ;
- $BE03 LD (HL),B     ;
- $BE04 LD C,B        ;
- $BE05 LD (HL),A     ;
- $BE06 LD L,B        ;
- $BE07 SUB A         ;
- $BE08 DEC B         ;
- $BE09 EX AF,AF'     ;
- $BE0A LD E,D        ;
- $BE0B RST $28       ;
- $BE0C NOP           ;
- $BE0D DEC B         ;
- $BE0E LD E,B        ;
- $BE0F DEC B         ;
- $BE10 LD D,A        ;
- $BE11 NOP           ;
-*$BE12 DEC B         ;
- $BE13 LD E,B        ;
- $BE14 LD B,B        ;
- $BE15 ADC A,B       ;
- $BE16 LD B,B        ;
- $BE17 LD D,B        ;
- $BE18 ADC A,B       ;
- $BE19 RST $28       ;
- $BE1A DEC B         ;
- $BE1B LD D,B        ;
- $BE1C RET C         ;
- $BE1D RST $28       ;
- $BE1E NOP           ;
- $BE1F DEC B         ;
- $BE20 JR C,$BE27    ;
- $BE22 JR Z,$BE5C    ;
- $BE24 LD E,B        ;
- $BE25 DEC B         ;
- $BE26 RST $28       ;
-*$BE27 DEC B         ;
- $BE28 JR C,$BDEA    ;
- $BE2A RST $28       ;
- $BE2B NOP           ;
- $BE2C DEC B         ;
- $BE2D LD D,B        ;
- $BE2E ADD A,B       ;
- $BE2F RET C         ;
- $BE30 JR NC,$BE8A   ;
- $BE32 LD D,B        ;
- $BE33 LD A,A        ;
- $BE34 JR NC,$BE6D   ;
- $BE36 DEC B         ;
- $BE37 LD E,D        ;
- $BE38 NOP           ;
- $BE39 LD C,B        ;
- $BE3A ADD A,B       ;
- $BE3B JR $BEA5      ;
- $BE3D JR C,$BE97    ;
- $BE3F LD H,B        ;
- $BE40 RST $28       ;
- $BE41 DEC B         ;
- $BE42 JR C,$BEB4    ;
- $BE44 SBC A,B       ;
- $BE45 NOP           ;
- $BE46 DEC B         ;
- $BE47 LD C,B        ;
- $BE48 LD C,B        ;
- $BE49 XOR B         ;
- $BE4A JR NC,$BEA4   ;
- $BE4C DEC B         ;
- $BE4D LD C,B        ;
-*$BE4E LD C,B        ;
- $BE4F LD D,B        ;
- $BE50 ADC A,B       ;
- $BE51 RST $28       ;
- $BE52 NOP           ;
- $BE53 LD B,B        ;
- $BE54 LD (HL),B     ;
- $BE55 JR $BEBF      ;
- $BE57 DEC B         ;
- $BE58 LD B,(HL)     ;
- $BE59 LD B,B        ;
- $BE5A LD H,B        ;
- $BE5B DEC B         ;
-*$BE5C EX AF,AF'     ;
- $BE5D JR NZ,$BE4E   ;
- $BE5F DEC B         ;
- $BE60 JR NZ,$BE12   ;
- $BE62 RST $28       ;
- $BE63 NOP           ;
- $BE64 DEC B         ;
- $BE65 DJNZ $BE6C    ;
- $BE67 LD (HL),B     ;
- $BE68 DJNZ $BE9A    ;
- $BE6A LD C,B        ;
- $BE6B LD (HL),B     ;
-*$BE6C JR NC,$BEDE   ;
- $BE6E LD C,B        ;
- $BE6F SBC A,B       ;
- $BE70 JR NC,$BEC2   ;
- $BE72 SBC A,B       ;
- $BE73 RST $28       ;
- $BE74 NOP           ;
- $BE75 JR NC,$BEC7   ;
- $BE77 DEC B         ;
- $BE78 LD (HL),B     ;
- $BE79 DEC B         ;
- $BE7A LD D,B        ;
- $BE7B LD L,B        ;
- $BE7C RST $28       ;
- $BE7D LD D,B        ;
- $BE7E LD L,A        ;
- $BE7F JR C,$BEE9    ;
- $BE81 LD (HL),B     ;
- $BE82 LD A,B        ;
- $BE83 DEC B         ;
- $BE84 ADC A,B       ;
- $BE85 NOP           ;
- $BE86 DEC B         ;
- $BE87 EX AF,AF'     ;
- $BE88 DEC B         ;
- $BE89 SUB B         ;
-*$BE8A DEC B         ;
- $BE8B LD D,B        ;
- $BE8C SUB B         ;
- $BE8D RST $28       ;
- $BE8E LD B,C        ;
- $BE8F LD D,B        ;
- $BE90 DEC B         ;
- $BE91 SUB B         ;
- $BE92 NOP           ;
- $BE93 NOP           ;
- $BE94 LD B,$08      ;
-*$BE96 LD A,(DE)     ;
-*$BE97 OR (HL)       ;
- $BE98 LD (HL),A     ;
- $BE99 INC L         ;
-*$BE9A INC DE        ;
- $BE9B LD A,(DE)     ;
- $BE9C OR (HL)       ;
- $BE9D LD (HL),A     ;
- $BE9E DEC L         ;
- $BE9F INC DE        ;
- $BEA0 INC H         ;
- $BEA1 LD A,H        ;
- $BEA2 AND C         ;
- $BEA3 CALL Z,$BD67  ;
- $BEA6 DJNZ $BE96    ;
- $BEA8 LD D,$01      ;
- $BEAA POP HL        ;
- $BEAB LD E,(IX+$00) ;
- $BEAE CALL $BECA    ;
- $BEB1 RET           ;
- $BEB2 LD B,$08      ;
-*$BEB4 LD A,(DE)     ;
- $BEB5 OR (HL)       ;
- $BEB6 LD (HL),A     ;
- $BEB7 INC H         ;
- $BEB8 LD A,H        ;
- $BEB9 AND C         ;
- $BEBA CALL Z,$BD67  ;
- $BEBD INC DE        ;
- $BEBE DJNZ $BEB4    ;
- $BEC0 POP HL        ;
- $BEC1 LD E,(IX+$00) ;
- $BEC4 LD D,$00      ;
- $BEC6 CALL $BECA    ;
- $BEC9 RET           ;
-*$BECA LD C,$58      ;
- $BECC LD A,(IX+$00) ;
- $BECF CP $FF        ;
- $BED1 JR Z,$BED8    ;
- $BED3 PUSH HL       ;
- $BED4 CALL $BEE0    ;
- $BED7 POP HL        ;
-*$BED8 LD C,$F8      ;
- $BEDA LD E,$02      ;
- $BEDC CALL $BEE0    ;
- $BEDF RET           ;
-*$BEE0 LD A,H        ;
- $BEE1 AND $07       ;
- $BEE3 OR A          ;
- $BEE4 JR Z,$BEE8    ;
- $BEE6 SET 1,D       ;
-*$BEE8 LD A,H        ;
-*$BEE9 RRCA          ;
- $BEEA RRCA          ;
- $BEEB RRCA          ;
- $BEEC AND $03       ;
- $BEEE OR C          ;
- $BEEF LD H,A        ;
- $BEF0 BIT 0,D       ;
- $BEF2 JR Z,$BF13    ;
- $BEF4 LD A,(HL)     ;
- $BEF5 AND $F8       ;
- $BEF7 OR E          ;
- $BEF8 LD (HL),A     ;
- $BEF9 INC L         ;
- $BEFA LD A,(HL)     ;
- $BEFB AND $F8       ;
- $BEFD OR E          ;
- $BEFE LD (HL),A     ;
- $BEFF DEC L         ;
- $BF00 BIT 1,D       ;
- $BF02 RET Z         ;
- $BF03 LD BC,$0020   ;
- $BF06 ADD HL,BC     ;
- $BF07 LD A,(HL)     ;
- $BF08 AND $F8       ;
- $BF0A OR E          ;
- $BF0B LD (HL),A     ;
- $BF0C INC L         ;
- $BF0D LD A,(HL)     ;
- $BF0E AND $F8       ;
- $BF10 OR E          ;
- $BF11 LD (HL),A     ;
- $BF12 RET           ;
-*$BF13 LD A,(HL)     ;
- $BF14 AND $F8       ;
-*$BF16 OR E          ;
- $BF17 LD (HL),A     ;
- $BF18 BIT 1,D       ;
- $BF1A RET Z         ;
- $BF1B LD BC,$0020   ;
- $BF1E ADD HL,BC     ;
- $BF1F LD A,(HL)     ;
- $BF20 AND $F8       ;
- $BF22 OR E          ;
- $BF23 LD (HL),A     ;
- $BF24 RET           ;
- $BF25 INC DE        ;
- $BF26 POP AF        ;
- $BF27 POP BC        ;
- $BF28 DJNZ $BF16    ;
- $BF2A POP HL        ;
- $BF2B RET           ;
- $BF2C LD B,$08      ;
-*$BF2E LD A,(DE)     ;
- $BF2F LD (HL),A     ;
- $BF30 INC HL        ;
- $BF31 INC DE        ;
- $BF32 DJNZ $BF2E    ;
- $BF34 RET           ;
- $BF35 PUSH DE       ;
- $BF36 POP IX        ;
- $BF38 LD L,(IX+$00) ;
- $BF3B INC IX        ;
- $BF3D LD H,(IX+$00) ;
- $BF40 PUSH HL       ;
- $BF41 INC IX        ;
- $BF43 LD A,(IX+$00) ;
- $BF46 INC IX        ;
- $BF48 PUSH IX       ;
- $BF4A POP DE        ;
- $BF4B INC DE        ;
- $BF4C LD C,$07      ;
- $BF4E OR A          ;
- $BF4F JR Z,$BF6F    ;
- $BF51 LD B,$08      ;
-*$BF53 LD A,(DE)     ;
- $BF54 OR (HL)       ;
- $BF55 LD (HL),A     ;
- $BF56 INC L         ;
- $BF57 INC DE        ;
- $BF58 LD A,(DE)     ;
- $BF59 OR (HL)       ;
- $BF5A LD (HL),A     ;
- $BF5B DEC L         ;
- $BF5C INC DE        ;
- $BF5D INC H         ;
- $BF5E LD A,H        ;
- $BF5F AND C         ;
- $BF60 CALL Z,$BD85  ;
- $BF63 DJNZ $BF53    ;
- $BF65 LD D,$01      ;
- $BF67 POP HL        ;
- $BF68 LD E,(IX+$00) ;
- $BF6B CALL $BF87    ;
- $BF6E RET           ;
-*$BF6F LD B,$08      ;
-*$BF71 LD A,(DE)     ;
- $BF72 OR (HL)       ;
- $BF73 LD (HL),A     ;
- $BF74 INC H         ;
- $BF75 LD A,H        ;
- $BF76 AND C         ;
- $BF77 CALL Z,$BD85  ;
- $BF7A INC DE        ;
- $BF7B DJNZ $BF71    ;
- $BF7D POP HL        ;
- $BF7E LD E,(IX+$00) ;
- $BF81 LD D,$00      ;
- $BF83 CALL $BF87    ;
- $BF86 RET           ;
-*$BF87 LD C,$58      ;
- $BF89 PUSH HL       ;
- $BF8A CALL $BF94    ;
- $BF8D POP HL        ;
- $BF8E LD C,$F8      ;
- $BF90 CALL $BF94    ;
- $BF93 RET           ;
-*$BF94 LD A,H        ;
- $BF95 AND $07       ;
- $BF97 OR A          ;
- $BF98 JR Z,$BF9C    ;
- $BF9A SET 1,D       ;
-*$BF9C LD A,H        ;
- $BF9D RRCA          ;
- $BF9E RRCA          ;
- $BF9F RRCA          ;
- $BFA0 AND $03       ;
- $BFA2 OR C          ;
- $BFA3 LD H,A        ;
- $BFA4 BIT 0,D       ;
- $BFA6 JR Z,$BFC7    ;
- $BFA8 LD A,(HL)     ;
- $BFA9 AND $F8       ;
- $BFAB OR E          ;
- $BFAC LD (HL),A     ;
- $BFAD INC L         ;
- $BFAE LD A,(HL)     ;
- $BFAF AND $F8       ;
- $BFB1 OR E          ;
- $BFB2 LD (HL),A     ;
- $BFB3 DEC L         ;
- $BFB4 BIT 1,D       ;
- $BFB6 RET Z         ;
- $BFB7 LD BC,$0020   ;
- $BFBA ADD HL,BC     ;
- $BFBB LD A,(HL)     ;
- $BFBC AND $F8       ;
- $BFBE OR E          ;
- $BFBF LD (HL),A     ;
- $BFC0 INC L         ;
- $BFC1 LD A,(HL)     ;
- $BFC2 AND $F8       ;
- $BFC4 OR E          ;
- $BFC5 LD (HL),A     ;
- $BFC6 RET           ;
-*$BFC7 LD A,(HL)     ;
- $BFC8 AND $F8       ;
- $BFCA OR E          ;
- $BFCB LD (HL),A     ;
- $BFCC BIT 1,D       ;
- $BFCE RET Z         ;
- $BFCF LD BC,$0020   ;
- $BFD2 ADD HL,BC     ;
- $BFD3 LD A,(HL)     ;
- $BFD4 AND $F8       ;
- $BFD6 OR E          ;
- $BFD7 LD (HL),A     ;
- $BFD8 RET           ;
- $BFD9 LD C,D        ;
- $BFDA RET Z         ;
- $BFDB LD BC,$0020   ;
- $BFDE ADD HL,BC     ;
- $BFDF LD A,(HL)     ;
- $BFE0 AND $F8       ;
- $BFE2 OR E          ;
- $BFE3 LD (HL),A     ;
- $BFE4 RET           ;
- $BFE5 NOP           ;
- $BFE6 NOP           ;
- $BFE7 NOP           ;
- $BFE8 NOP           ;
- $BFE9 NOP           ;
- $BFEA NOP           ;
- $BFEB NOP           ;
- $BFEC NOP           ;
- $BFED NOP           ;
- $BFEE NOP           ;
- $BFEF NOP           ;
- $BFF0 NOP           ;
- $BFF1 NOP           ;
- $BFF2 NOP           ;
- $BFF3 NOP           ;
- $BFF4 NOP           ;
- $BFF5 NOP           ;
- $BFF6 NOP           ;
- $BFF7 NOP           ;
- $BFF8 NOP           ;
- $BFF9 NOP           ;
- $BFFA NOP           ;
- $BFFB NOP           ;
- $BFFC NOP           ;
- $BFFD NOP           ;
- $BFFE NOP           ;
- $BFFF NOP           ;
+
+; Table: Red Bird Flight Path Data
+;
+; .
+;
+; .
+;
+; Room #N$01.
+@label=Table_RedBirdFlightPath_01
+g$BE00 DEFB $05,$6F,$05,$70,$48,$77,$68,$97
+ $BE08 DEFB $05,$08,$5A,$EF
+ $BE0C DEFB $00                             ; Terminator.
+; Room #N$02.
+@label=Table_RedBirdFlightPath_02
+ $BE0D DEFB $05,$58,$05,$57
+ $BE11 DEFB $00                             ; Terminator.
+; Room #N$03.
+@label=Table_RedBirdFlightPath_03
+ $BE12 DEFB $05,$58,$40,$88,$40,$50,$88,$EF
+ $BE1A DEFB $05,$50,$D8,$EF
+ $BE1E DEFB $00                             ; Terminator.
+; Room #N$04.
+@label=Table_RedBirdFlightPath_04
+ $BE1F DEFB $05,$38,$05,$28,$38,$58,$05,$EF
+ $BE27 DEFB $05,$38,$C0,$EF
+ $BE2B DEFB $00                             ; Terminator.
+; Room #N$05.
+@label=Table_RedBirdFlightPath_05
+ $BE2C DEFB $05,$50,$80,$D8,$30,$58,$50,$7F
+ $BE34 DEFB $30,$37,$05,$5A
+ $BE38 DEFB $00                             ; Terminator.
+; Room #N$06.
+@label=Table_RedBirdFlightPath_06
+ $BE39 DEFB $48,$80,$18,$68,$38,$58,$60,$EF
+ $BE41 DEFB $05,$38,$70,$98
+ $BE45 DEFB $00                             ; Terminator.
+; Room #N$07.
+@label=Table_RedBirdFlightPath_07
+ $BE46 DEFB $05,$48,$48,$A8,$30,$58,$05,$48
+ $BE4E DEFB $48,$50,$88,$EF
+ $BE52 DEFB $00                             ; Terminator.
+; Room #N$08.
+@label=Table_RedBirdFlightPath_08
+ $BE53 DEFB $40,$70,$18,$68,$05,$46,$40,$60
+ $BE5B DEFB $05,$08,$20,$EF,$05,$20,$B0,$EF
+ $BE63 DEFB $00                             ; Terminator.
+; Room #N$09.
+@label=Table_RedBirdFlightPath_09
+ $BE64 DEFB $05,$10,$05,$70,$10,$30,$48,$70
+ $BE6C DEFB $30,$70,$48,$98,$30,$50,$98,$EF
+ $BE74 DEFB $00                             ; Terminator.
+; Room #N$0A.
+@label=Table_RedBirdFlightPath_10
+ $BE75 DEFB $30,$50,$05,$70,$05,$50,$68,$EF
+ $BE7D DEFB $50,$6F,$38,$68,$70,$78,$05,$88
+ $BE85 DEFB $00                             ; Terminator.
+; Room #N$0B.
+@label=Table_RedBirdFlightPath_11
+ $BE86 DEFB $05,$08,$05,$90,$05,$50,$90,$EF
+ $BE8E DEFB $41,$50,$05,$90
+ $BE92 DEFB $00                             ; Terminator.
+ $BE93 DEFB $00,$06,$08,$1A,$B6,$77,$2C,$13
+ $BE9B DEFB $1A,$B6,$77,$2D,$13,$24,$7C,$A1
+ $BEA3 DEFB $CC,$67,$BD,$10,$EE,$16,$01,$E1
+ $BEAB DEFB $DD,$5E,$00,$CD,$CA,$BE,$C9,$06
+ $BEB3 DEFB $08,$1A,$B6,$77,$24,$7C,$A1,$CC
+ $BEBB DEFB $67,$BD,$13,$10,$F4,$E1,$DD,$5E
+ $BEC3 DEFB $00,$16,$00,$CD,$CA,$BE,$C9,$0E
+ $BECB DEFB $58,$DD,$7E,$00,$FE,$FF,$28,$05
+ $BED3 DEFB $E5,$CD,$E0,$BE,$E1,$0E,$F8,$1E
+ $BEDB DEFB $02,$CD,$E0,$BE,$C9,$7C,$E6,$07
+ $BEE3 DEFB $B7,$28,$02,$CB,$CA,$7C,$0F,$0F
+ $BEEB DEFB $0F,$E6,$03,$B1,$67,$CB,$42,$28
+ $BEF3 DEFB $1F,$7E,$E6,$F8,$B3,$77,$2C,$7E
+ $BEFB DEFB $E6,$F8,$B3,$77,$2D,$CB,$4A,$C8
+ $BF03 DEFB $01,$20,$00,$09,$7E,$E6,$F8,$B3
+ $BF0B DEFB $77,$2C,$7E,$E6,$F8,$B3,$77,$C9
+ $BF13 DEFB $7E,$E6,$F8,$B3,$77,$CB,$4A,$C8
+ $BF1B DEFB $01,$20,$00,$09,$7E,$E6,$F8,$B3
+ $BF23 DEFB $77,$C9,$13,$F1,$C1,$10,$EC,$E1
+ $BF2B DEFB $C9,$06,$08,$1A,$77,$23,$13,$10
+ $BF33 DEFB $FA,$C9,$D5,$DD,$E1,$DD,$6E,$00
+ $BF3B DEFB $DD,$23,$DD,$66,$00,$E5,$DD,$23
+ $BF43 DEFB $DD,$7E,$00,$DD,$23,$DD,$E5,$D1
+ $BF4B DEFB $13,$0E,$07,$B7,$28,$1E,$06,$08
+ $BF53 DEFB $1A,$B6,$77,$2C,$13,$1A,$B6,$77
+ $BF5B DEFB $2D,$13,$24,$7C,$A1,$CC,$85,$BD
+ $BF63 DEFB $10,$EE,$16,$01,$E1,$DD,$5E,$00
+ $BF6B DEFB $CD,$87,$BF,$C9,$06,$08,$1A,$B6
+ $BF73 DEFB $77,$24,$7C,$A1,$CC,$85,$BD,$13
+ $BF7B DEFB $10,$F4,$E1,$DD,$5E,$00,$16,$00
+ $BF83 DEFB $CD,$87,$BF,$C9,$0E,$58,$E5,$CD
+ $BF8B DEFB $94,$BF,$E1,$0E,$F8,$CD,$94,$BF
+ $BF93 DEFB $C9,$7C,$E6,$07,$B7,$28,$02,$CB
+ $BF9B DEFB $CA,$7C,$0F,$0F,$0F,$E6,$03,$B1
+ $BFA3 DEFB $67,$CB,$42,$28,$1F,$7E,$E6,$F8
+ $BFAB DEFB $B3,$77,$2C,$7E,$E6,$F8,$B3,$77
+ $BFB3 DEFB $2D,$CB,$4A,$C8,$01,$20,$00,$09
+ $BFBB DEFB $7E,$E6,$F8,$B3,$77,$2C,$7E,$E6
+ $BFC3 DEFB $F8,$B3,$77,$C9,$7E,$E6,$F8,$B3
+ $BFCB DEFB $77,$CB,$4A,$C8,$01,$20,$00,$09
+ $BFD3 DEFB $7E,$E6,$F8,$B3,$77,$C9,$4A,$C8
+ $BFDB DEFB $01,$20,$00,$09,$7E,$E6,$F8,$B3
+ $BFE3 DEFB $77,$C9,$00,$00,$00,$00,$00,$00
+ $BFEB DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $BFF3 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $BFFB DEFB $00,$00,$00,$00,$00
 
 ; Room Buffer
 @label=RoomBuffer

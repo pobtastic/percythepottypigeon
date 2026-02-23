@@ -712,21 +712,21 @@ M $609E,$04 Jump to #R$60A4 if W is not being pressed.
   $60A2,$02 Reset bit 3 of #REGe (right active).
 @ $60A4 label=MainGameLoop_Keyboard_Store
   $60A4,$04 Write #REGe to *#R$5FA2.
-N $60A8 Handle Percy's special "flying up to collect item" state. If *#R$5FA9
-. is set, Percy is currently flying upward to collect an item.
-@ $60A8 label=MainGameLoop_HandleItemCollection
-  $60A8,$06 Jump to #R$60D9 if *#R$5FA9 is unset (no item to collect).
-N $60AE Percy is flying upward so advance the Y position.
+N $60A8 Handle Percy's egg drop state. If *#R$5FA9 is set, Percy has dropped
+. an egg and it is currently in flight.
+@ $60A8 label=MainGameLoop_HandleEggDrop
+  $60A8,$06 Jump to #R$60D9 if *#R$5FA9 is unset (no egg active).
+N $60AE Egg is in flight — advance its Y position.
   $60AE,$03 #REGa=*#REGix+#N$21.
   $60B1,$02 #REGa+=#N$04.
-  $60B3,$02 Has Percy reached Y position #N$A8?
+  $60B3,$02 Has the egg reached Y position #N$A8?
   $60B5,$02 Jump to #R$60BF if not yet reached.
-N $60B7 Percy has reached the target so end the collection state.
+N $60B7 Egg has reached its target — end the egg drop state.
   $60B7,$04 Write #N$00 to *#REGix+#N$23.
-  $60BB,$04 Unset *#R$5FA9 (the item has been collected).
-@ $60BF label=MainGameLoop_UpdateCollectionY
+  $60BB,$04 Write #N$00 to *#R$5FA9 (egg drop complete).
+@ $60BF label=MainGameLoop_UpdateEggY
   $60BF,$03 Write #REGa to *#REGix+#N$21.
-N $60C2 Play a rising sound effect during item collection.
+N $60C2 Play a rising sound effect while the egg is in flight.
   $60C2,$02 Stash #REGix on the stack.
   $60C4,$03 #REGhl=*#R$5FB7.
   $60C7,$04 #REGhl+=#N$0010.
@@ -736,27 +736,26 @@ N $60C2 Play a rising sound effect during item collection.
   $60D4,$01 Disable interrupts.
   $60D5,$02 Restore #REGix from the stack.
   $60D7,$02 Jump to #R$610E.
-N $60D9 Check if fire is pressed and conditions are met to start collecting
-. an item.
+N $60D9 Check if fire is pressed and conditions are met to drop an egg.
 @ $60D9 label=MainGameLoop_TestFirePressed
   $60D9,$07 Jump to #R$610E if *#R$5FA2 states that fire has not been pressed.
   $60E0,$06 Jump to #R$610E if *#R$5FAD is set.
-N $60E6 Percy must be below Y position #N$84 to collect items.
-  $60E6,$07 Jump to #R$610E if Percy's Y position (*#REGix+#N$01) states that
-. Percy is too high to collect items (greater than or equal to #N$84).
-N $60ED Start the item collection sequence and set Percy's target Y position and
-. collection state.
+N $60E6 Percy must be below Y position #N$84 to drop an egg.
+  $60E6,$07 Jump to #R$610E if Percy's Y position (*#REGix+#N$01) is greater
+. than or equal to #N$84 (too high to drop an egg).
+N $60ED Start the egg drop sequence — set the egg's target position and
+. activate the egg state.
   $60ED,$02 #REGa+=#N$10.
   $60EF,$01 Stash #REGaf on the stack.
-  $60F0,$03 Call #R$679C to find and remove the collectible item.
+  $60F0,$03 Call #R$679C.
   $60F3,$01 Restore #REGaf from the stack.
-  $60F4,$03 Write #REGa to *#REGix+#N$21 (collection target Y).
+  $60F4,$03 Write #REGa to *#REGix+#N$21 (egg target Y).
   $60F7,$04 Write #N$0F to *#REGix+#N$23.
   $60FB,$03 #REGa=*#REGix+#N$00 (Percy's X position).
   $60FE,$02 #REGa+=#N$05.
-  $6100,$03 Write #REGa to *#REGix+#N$20 (collection target X).
+  $6100,$03 Write #REGa to *#REGix+#N$20 (egg target X).
   $6103,$02,b$01 #REGa=#N$FF.
-  $6105,$03 Write #N$FF to *#R$5FA9 (collection in progress).
+  $6105,$03 Write #N$FF to *#R$5FA9 (egg drop in progress).
   $6108,$06 Write #N($0064,$04,$04) to *#R$5FB7 (initial beep pitch).
 N $610E Apply the direction input to Percy's movement. First ensure fire
 . is flagged as released, then dispatch to the appropriate movement handler for
@@ -1976,10 +1975,379 @@ N $69AC Clear the frame IDs for: #FOR$00,$07||n|#R($DAC7+(n*$04))|, | and ||.
   $69F2,$04 Restore #REGiy and #REGix from the stack.
   $69F6,$01 Return.
 
-c $69F7 Load Level Data
-@ $69F7 label=Load_Level_Data
+c $69F7 Handler: Red Bird
+@ $69F7 label=Handler_RedBird
+D $69F7 Handles the red bird — a thief that steals worms Percy is carrying.
+. Percy can stun the red bird by hitting it with an egg. The red bird's
+. flight path data is stored at #R$BE00 with entries separated by #N$00
+. terminators for each room.
+  $69F7,$06 Jump to #R$6A1C if *#R$5FBB is not set.
+N $69FD Initialise the red bird for the current room. Scan through the flight
+. path data at #R$BE00, skipping past #N$00 terminators until the entry for the
+. current room is found.
+  $69FD,$03 Point #REGhl at #R$BE00.
+  $6A00,$04 Load #REGa and #REGe with *#R$5FC5.
+  $6A04,$02 Set a room counter in #REGb starting at #N$01.
+  $6A06,$03 Jump to #R$6A14 if this is room #N$01 (data starts here).
+N $6A09 Scan through the flightpath data to find the current room.
+@ $6A09 label=HandleRedBird_ScanLoop
+  $6A09,$01 #REGa=*#REGhl.
+  $6A0A,$01 Advance the data pointer.
+  $6A0B,$04 Jump back to #R$6A09 if this byte isn't the terminator (#N$00).
+N $6A0F Found a #N$00 terminator so move to the data for the next room.
+  $6A0F,$01 Increment the room counter.
+  $6A10,$04 Jump back to #R$6A09 if this isn't at the target room yet.
+N $6A14 Found the correct room's data — store the flight path pointer.
+@ $6A14 label=HandleRedBird_InitPath
+  $6A14,$03 Write #REGhl to *#R$6CBB (current flight path pointer).
+N $6A17 Seed the random animation state from the Memory Refresh Register.
+  $6A17,$05 Write the contents of the Memory Refresh Register to *#R$6CB7.
+N $6A1C Update the red bird's position and check for collisions.
+@ $6A1C label=HandleRedBird_Update
+  $6A1C,$03 Call #R$6AF6.
+N $6A1F Check if the red bird has stolen Percy's worm.
+  $6A1F,$06 Jump to #R$6A60 if *#R$6CB4 is set so the red bird is already
+. stunned/ caught.
+  $6A25,$06 Jump to #R$6A60 if *#R$5FAA is unset.
+N $6A2B Check collision between Percy and the red bird.
+  $6A2B,$04 #REGix=#R$DAC0 (Percy's sprite data).
+  $6A2F,$04 #REGiy=#R$DAC4 (red bird sprite data).
+  $6A33,$03 Call #R$6C53.
+  $6A36,$02 Jump to #R$6A60 if no collision.
+N $6A38 Check the red bird has a valid frame (is visible).
+  $6A38,$06 Jump to #R$6A60 if *#REGiy+#N$03 is unset, so the red bird frame is
+. #N$00 (i.e. not visible).
+N $6A3E Red bird stole Percy's worm — return the worm to the room and play a
+. sound.
+  $6A3E,$03 Call #R$679C.
+  $6A41,$03 #REGde=#N($0003,$04,$04).
+  $6A44,$03 #REGhl=#N($00C8,$04,$04) (initial beep pitch).
+  $6A47,$02 Set a sound step counter in #REGb of #N$0A steps.
+@ $6A49 label=HandleRedBird_StolenSound
+  $6A49,$03 Stash the step counter, pitch and duration on the stack.
+  $6A4C,$04 #HTML(#REGiy=<a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/5C3D.html">ERR_SP</a>.)
+  $6A50,$03 #HTML(Call <a rel="noopener nofollow" href="https://skoolkid.github.io/rom/asm/03B5.html">BEEP</a>.)
+  $6A53,$01 Disable interrupts.
+  $6A54,$02 Restore the duration and pitch from the stack.
+  $6A56,$04 #REGhl=#N($0012,$04,$04) (raise the pitch for the next step).
+  $6A5A,$01 Restore the step counter from the stack.
+  $6A5B,$02 Decrease the step counter by one and loop back to #R$6A49 until the
+. sound is complete.
+  $6A5D,$03 No operation.
+N $6A60 Check if Percy's egg has hit the red bird.
+@ $6A60 label=HandleRedBird_CheckEgg
+  $6A60,$03 #REGa=*#R$5FA9.
+  $6A63,$03 Jump to #R$6A9D if no egg is active.
+  $6A66,$04 #REGiy=#R$DAE0.
+  $6A6A,$04 #REGix=#R$DAC4.
+N $6A6E Only check collision if the red bird is in the same room as the egg.
+  $6A6E,$04 #REGb=*#R$6CB6.
+  $6A72,$03 #REGa=*#R$5FC5.
+  $6A75,$03 Jump to #R$6A9D if the red bird is not in the same room.
+  $6A78,$03 Call #R$6C85.
+  $6A7B,$02 Jump to #R$6A9D if no collision.
+N $6A7D Egg hit the red bird — check if already stunned.
+  $6A7D,$06 Jump to #R$6A9A if *#R$6CB4 is set so the red bird is already
+. stunned.
+N $6A83 Stun the red bird — set a random stun timer and award points.
+  $6A83,$03 Call #R$6C39.
+  $6A86,$02,b$01 Set bit 6 (ensure a minimum stun duration).
+  $6A88,$03 Write #REGa to *#R$6CB4.
+  $6A8B,$03 Write #REGa to *#R$6CB5.
+  $6A8E,$04 Write #N$01 to *#REGix+#N$02 (stunned colour: blue).
+  $6A92,$05 Call #R$67B2 to add #N$14 points to the score.
+  $6A97,$03 Call #R$6F7A.
+N $6A9A Cancel the egg.
+@ $6A9A label=HandleRedBird_CancelEgg
+  $6A9A,$03 Call #R$71E1.
+@ $6A9D label=HandleRedBird_Done
+  $6A9D,$03 Call #R$6CDF.
+  $6AA0,$01 Return.
 
-c $6AF6
+N $6AA1 Calculates the red bird's next room and flight direction when it crosses
+. a room boundary. Also looks up the flight speed for the current level and
+. finds a valid starting position.
+@ $6AA1 label=HandleRedBird_SetupFlight
+  $6AA1,$04 #REGb=*#R$5FC5.
+  $6AA5,$03 #REGa=*#R$6CB6.
+N $6AA8 Check if the combined value wraps past room #N$0B.
+  $6AA8,$01 #REGa+=#REGb.
+  $6AA9,$04 Jump to #R$6AB5 if the combined value doesn't wrap past room #N$0B.
+N $6AAD Wrap point reached — flip the red bird's flight direction.
+  $6AAD,$03 #REGa=*#R$6CB3.
+  $6AB0,$02,b$01 Toggle bit 0 (flip direction).
+  $6AB2,$03 Write #REGa to *#R$6CB3.
+N $6AB5 Look up the flight speed for the current level from the table at
+. #R$6CBE.
+@ $6AB5 label=HandleRedBird_LookupSpeed
+  $6AB5,$03 #REGhl=#R$6CBE.
+  $6AB8,$03 #REGa=*#R$5FB1 (current level).
+  $6ABB,$01 Decrement to make zero-indexed.
+  $6ABC,$01 #REGe=#REGa.
+  $6ABD,$02 #REGd=#N$00.
+  $6ABF,$01 #REGhl+=#REGde.
+  $6AC0,$01 #REGa=*#REGhl (flight speed for this level).
+  $6AC1,$03 Write #REGa to *#R$6CB9.
+N $6AC4 Set up the starting position based on the flight direction.
+  $6AC4,$03 #REGa=*#R$6CB3.
+  $6AC7,$02 #REGc=#N$E6 (starting X for rightward flight).
+  $6AC9,$02 #REGb=#N$06 (starting Y).
+  $6ACB,$03 Jump to #R$6AD0 if flying right (direction is non-zero).
+  $6ACE,$02 #REGc=#N$06 (starting X for leftward flight).
+N $6AD0 Search for a valid Y position that doesn't collide with scenery.
+@ $6AD0 label=HandleRedBird_FindPosition
+  $6AD0,$03 Call #R$6C0C.
+  $6AD3,$01 Return if no collision (valid position found).
+N $6AD4 Position blocked — try the next row down.
+  $6AD4,$04 Increment #REGb by #N$04.
+  $6AD8,$01 #REGa=#REGb.
+  $6AD9,$04 Jump back to #R$6AD0 until the bottom of search area is reached.
+N $6ADD Reached the bottom — wrap back to the top and shift X inward.
+  $6ADD,$02 #REGb=#N$04 (reset Y to the top).
+  $6ADF,$03 #REGa=*#R$6CB3 (flight direction).
+  $6AE2,$03 Jump to #R$6AED if flying right.
+N $6AE5 Flying left — shift the starting X position rightward.
+  $6AE5,$06 Increment #REGc by #N$06.
+  $6AEB,$02 Jump to #R$6AD0 to try again.
+N $6AED Flying right — shift the starting X position leftward.
+@ $6AED label=HandleRedBird_ShiftLeft
+  $6AED,$06 Decrement #REGc by #N$06.
+  $6AF3,$02 Jump to #R$6AD0 to try again.
+  $6AF5,$01 Return.
+
+c $6AF6 Update Red Bird Movement
+@ $6AF6 label=UpdateRedBirdMovement
+D $6AF6 Updates the red bird's position and animation. Handles the red bird's
+. movement along its flight path, stun recovery, room transitions, and wing
+. animation.
+  $6AF6,$04 #REGix=#R$DAC4 (red bird sprite data).
+N $6AFA Reset the red bird's frame and colour to defaults.
+  $6AFA,$04 Write #N$00 to *#REGix+#N$03 (clear frame — invisible).
+  $6AFE,$04 Write #INK$02 to *#REGix+#N$02.
+N $6B02 If the red bird is stunned, handle stun recovery instead.
+  $6B02,$07 Jump to #R$6B9B if *#R$6CB4 is set indicating the red bird is
+. stunned.
+N $6B09 If the room is being initialised, set a random appearance delay.
+  $6B09,$06 Jump to #R$6B19 if *#R$5FBB is unset.
+  $6B0F,$03 Call #R$6C39.
+  $6B12,$02,b$01 Set bit 0 (ensure an odd value).
+  $6B14,$02,b$01 Keep only bits 0-5 (cap at #N$3F).
+  $6B16,$03 Write #REGa to *#R$6CBD.
+N $6B19 If an appearance delay is active, the red bird is waiting to enter the
+. current room — count down and handle the transition.
+@ $6B19 label=UpdateRedBirdMovement_CheckDelay
+  $6B19,$06 Jump to #R$6B6E if *#R$6CBD is active.
+N $6B1F Red bird is active in the current room — update its flight path.
+  $6B1F,$06 Write *#R$5FC5 to *#R$6CB6 (store the red bird's current room).
+N $6B25 Decrement the direction change timer.
+  $6B25,$03 #REGhl=#R$6CB2.
+  $6B28,$01 Decrement *#REGhl.
+  $6B29,$02 Jump to #R$6B4A if the timer hasn't expired.
+N $6B2B Timer expired — choose a new flight direction.
+  $6B2B,$04 Write #N$00 to *#R$6CBA.
+  $6B2F,$03 #REGhl=#R$6CBA.
+  $6B32,$01 Decrement *#REGhl.
+  $6B33,$03 Call #R$6AA1 if *#REGhl reached zero (find a new flight path).
+N $6B36 Pick a new random direction and duration.
+  $6B36,$03 Call #R$6C39.
+  $6B39,$01 Stash #REGaf on the stack.
+  $6B3A,$02,b$01 Keep only bits 0-2 (random direction #N$00-#N$07).
+  $6B3C,$03 Write #REGa to *#R$6CB8.
+  $6B3F,$01 Restore #REGaf from the stack.
+N $6B40 Calculate the direction change timer from the random value.
+  $6B40,$03 Rotate right three positions.
+  $6B43,$02,b$01 Keep only bit 6.
+  $6B45,$02,b$01 Set bit 2.
+  $6B47,$03 Write #REGa to *#R$6CB2.
+N $6B4A Move the red bird in its current direction. The direction is doubled
+. and self-modified into the jump table at #R$6BC8.
+@ $6B4A label=UpdateRedBirdMovement_Move
+  $6B4A,$03 Load #REGa with *#R$6CB8.
+  $6B4D,$01 Double it (each jump table entry is #N$02 bytes).
+  $6B4E,$03 Write #REGa to *#R$6BC8(#N$6BC9) (self-modify the jump offset).
+  $6B51,$03 #REGc=*#REGix+#N$00 (red bird's X position).
+  $6B54,$03 #REGb=*#REGix+#N$01 (red bird's Y position).
+  $6B57,$03 #REGhl=#R$6CB9.
+  $6B5A,$03 Call #R$6BC8.
+  $6B5D,$02 Jump to #R$6B2F if the carry flag is set (red bird left the valid
+. area).
+N $6B5F Update the red bird's wing animation frame.
+@ $6B5F label=UpdateRedBirdMovement_Animate
+  $6B5F,$03 #REGhl=#R$6CC4.
+  $6B62,$01 #REGa=*#REGhl.
+  $6B63,$01 Increment the animation counter.
+  $6B64,$02,b$01 Keep only bits 0-2 (cycle through #N$00-#N$07).
+  $6B66,$01 Write back to *#REGhl.
+  $6B67,$01 Rotate right (divide by #N$02).
+  $6B68,$02 #REGa+=#N$18 (red bird animation frame base).
+  $6B6A,$03 Write #REGa to *#R$DAC7 (red bird frame).
+  $6B6D,$01 Return.
+N $6B6E Red bird is waiting to appear. Count down the delay timer and handle
+. the room transition when it expires.
+@ $6B6E label=UpdateRedBirdMovement_WaitToAppear
+  $6B6E,$04 #REGb=*#R$5FC5.
+  $6B72,$03 #REGa=*#R$6CB6 (red bird's current room).
+  $6B75,$01 Is the red bird in the same room as Percy?
+  $6B76,$02 Jump to #R$6B7E if not.
+N $6B78 Red bird has arrived in Percy's room — clear the delay and animate.
+  $6B78,$04 Write #N$00 to *#R$6CBD.
+  $6B7C,$02 Jump to #R$6B5F.
+N $6B7E Still waiting — decrement the appearance delay.
+@ $6B7E label=UpdateRedBirdMovement_Countdown
+  $6B7E,$03 #REGhl=#R$6CBD.
+  $6B81,$01 Decrement *#REGhl.
+  $6B82,$01 Return if the delay hasn't expired yet.
+N $6B83 Delay expired — determine which direction the red bird should enter from
+. based on which room it's coming from relative to Percy's room.
+  $6B83,$04 Write #N$00 to *#R$6CB3 (default: flying left).
+  $6B87,$04 #REGb=*#R$5FC5.
+  $6B8B,$03 #REGa=*#R$6CB6.
+  $6B8E,$03 Jump to #R$6B96 if the red bird is coming from a lower numbered room.
+N $6B91 Red bird is coming from a higher room — enter flying right.
+  $6B91,$05 Write #N$01 to *#R$6CB3 (flying right).
+@ $6B96 label=UpdateRedBirdMovement_EnterRoom
+  $6B96,$03 Call #R$6AA1.
+  $6B99,$02 Jump to #R$6B5F.
+N $6B9B Handle the red bird's stun recovery. The stun timer counts down, and
+. the red bird flashes blue while stunned. When the timer expires, the red bird
+. becomes active again with a short appearance delay.
+@ $6B9B label=UpdateRedBirdMovement_StunRecovery
+  $6B9B,$03 #REGhl=#R$6CB4 (stun timer).
+  $6B9E,$05 Write #INK$01 to *#R$DAC6.
+  $6BA3,$01 Decrement the stun timer.
+  $6BA4,$01 #REGa=*#REGhl.
+  $6BA5,$04 Jump to #R$6BC0 if the stun is about to end.
+N $6BA9 Still stunned — only draw if the red bird is in the current room.
+  $6BA9,$04 #REGb=*#R$6CB6.
+  $6BAD,$03 #REGa=*#R$5FC5.
+  $6BB0,$02 Return if the red bird is not in the same room as Percy.
+N $6BB2 Red bird is stunned and visible — move it downward slowly (falling).
+  $6BB2,$03 #REGc=*#REGix+#N$00 (red bird's X position).
+  $6BB5,$03 #REGa=*#REGix+#N$01 (red bird's Y position).
+  $6BB8,$02 #REGa+=#N$03 (drift downward).
+  $6BBA,$01 Store the result in #REGb.
+  $6BBB,$03 Call #R$6C0C.
+  $6BBE,$02 Jump to #R$6B5F.
+N $6BC0 Stun ending — clear the timer and set a short reappearance delay.
+@ $6BC0 label=UpdateRedBirdMovement_StunEnd
+  $6BC0,$01 Clear the stun timer to #N$00.
+N $6BC1 Set a short reappearance delay.
+  $6BC1,$05 Write #N$04 to *#R$6CBD.
+  $6BC6,$02 Jump to #R$6B6E.
+
+c $6BC8 Red Bird Direction Jump Table
+@ $6BC8 label=RedBirdDirectionJumpTable
+D $6BC8 Movement direction jump table. The entry point is self-modified at
+. #R$6BC8(#N$6BC9) to jump to one of 8 directional movement handlers. Each
+. handler adjusts #REGb (Y) and/or #REGc (X) by the flight speed value at
+. *#REGhl, then falls through to #R$6C0C to validate the position.
+. #TABLE(default,centre,centre,centre,centre)
+. { =h Direction | =h Index | =h X | =h Y }
+. { Up | 0 | — | −speed }
+. { Up-right | 1 | +speed | −speed }
+. { Right | 2 | +speed | — }
+. { Down-right | 3 | +speed | +speed }
+. { Down | 4 | — | +speed }
+. { Down-left | 5 | −speed | +speed }
+. { Left | 6 | −speed | — }
+. { Up-left | 7 | −speed | −speed }
+. TABLE#
+E $6BC8 Continue on to #R$6C0C.
+  $6BC8,$02 Self-modified jump — offset written by #R$6B4E.
+@ $6BCA label=RedBirdDirection_Up
+  $6BCA,$02 Jump to #R$6BDA (up).
+@ $6BCC label=RedBirdDirection_UpRight
+  $6BCC,$02 Jump to #R$6BDF (up-right).
+@ $6BCE label=RedBirdDirection_Right
+  $6BCE,$02 Jump to #R$6BE7 (right).
+@ $6BD0 label=RedBirdDirection_DownRight
+  $6BD0,$02 Jump to #R$6BEC (down-right).
+@ $6BD2 label=RedBirdDirection_Down
+  $6BD2,$02 Jump to #R$6BF4 (down).
+@ $6BD4 label=RedBirdDirection_DownLeft
+  $6BD4,$02 Jump to #R$6BF9 (down-left).
+@ $6BD6 label=RedBirdDirection_Left
+  $6BD6,$02 Jump to #R$6C01 (left).
+@ $6BD8 label=RedBirdDirection_UpLeft
+  $6BD8,$02 Jump to #R$6C06 (up-left).
+N $6BDA Movement handlers. Each adjusts #REGb and/or #REGc by the speed
+. value at *#REGhl, then falls through to #R$6C0C.
+@ $6BDA label=RedBirdMove_Up
+  $6BDA,$03 #REGb-=*#REGhl (subtract speed from Y).
+  $6BDD,$02 Jump to #R$6C0C.
+@ $6BDF label=RedBirdMove_UpRight
+  $6BDF,$03 #REGb-=*#REGhl (Y − speed).
+  $6BE2,$03 #REGc+=*#REGhl (X + speed).
+  $6BE5,$02 Jump to #R$6C0C.
+@ $6BE7 label=RedBirdMove_Right
+  $6BE7,$03 #REGc+=*#REGhl (X + speed).
+  $6BEA,$02 Jump to #R$6C0C.
+@ $6BEC label=RedBirdMove_DownRight
+  $6BEC,$03 #REGc+=*#REGhl (X + speed).
+  $6BEF,$03 #REGb+=*#REGhl (Y + speed).
+  $6BF2,$02 Jump to #R$6C0C.
+@ $6BF4 label=RedBirdMove_Down
+  $6BF4,$03 #REGb+=*#REGhl (Y + speed).
+  $6BF7,$02 Jump to #R$6C0C.
+@ $6BF9 label=RedBirdMove_DownLeft
+  $6BF9,$03 #REGb+=*#REGhl (Y + speed).
+  $6BFC,$03 #REGc-=*#REGhl (X − speed).
+  $6BFF,$02 Jump to #R$6C0C.
+@ $6C01 label=RedBirdMove_Left
+  $6C01,$03 #REGc-=*#REGhl (X − speed).
+  $6C04,$02 Jump to #R$6C0C.
+@ $6C06 label=RedBirdMove_UpLeft
+  $6C06,$03 #REGb-=*#REGhl (Y − speed).
+  $6C09,$03 #REGc-=*#REGhl (X − speed).
+
+c $6C0C Validate Red Bird Position
+@ $6C0C label=ValidateRedBirdPosition
+D $6C0C Validates the red bird's proposed position (#REGb=Y, #REGc=X) against
+. the room's flight path boundary data. Scans through the boundary table at
+. *#R$6CBB looking for a region that contains the position.
+.
+. Each entry is #N$04 bytes: Y-min, Y-max, X-min, X-max. If a valid region is
+. found, the position is stored and carry is clear. If no valid region is found
+. (entry is #N$00), carry is set.
+R $6C0C B Proposed Y position
+R $6C0C C Proposed X position
+R $6C0C IX Pointer to red bird sprite data
+R $6C0C O:F Carry clear = valid, carry set = out of bounds
+  $6C0C,$03 #REGhl=*#R$6CBB (flight path boundary pointer).
+@ $6C0F label=ValidateRedBirdPosition_Loop
+  $6C0F,$01 Stash the boundary pointer on the stack.
+  $6C10,$01 #REGa=*#REGhl (Y-min for this region).
+  $6C11,$03 Jump to #R$6C36 if #REGa is #N$00 (end of boundary data).
+N $6C14 Check Y-min <= B.
+  $6C14,$03 Jump to #R$6C2F if #REGb is less than Y-min.
+N $6C17 Check B <= Y-max.
+  $6C17,$01 Advance to Y-max.
+  $6C18,$01 #REGa=*#REGhl.
+  $6C19,$03 Jump to #R$6C2F if #REGb is greater than Y-max.
+N $6C1C Check X-min <= C.
+  $6C1C,$01 Advance to X-min.
+  $6C1D,$01 #REGa=*#REGhl.
+  $6C1E,$03 Jump to #R$6C2F if #REGc is less than X-min.
+N $6C21 Check C <= X-max.
+  $6C21,$01 Advance to X-max.
+  $6C22,$01 #REGa=*#REGhl.
+  $6C23,$03 Jump to #R$6C2F if #REGc is greater than X-max.
+N $6C26 Position is within this region — store it and return success.
+  $6C26,$03 Write #REGc to *#REGix+#N$00 (X position).
+  $6C29,$03 Write #REGb to *#REGix+#N$01 (Y position).
+  $6C2C,$01 Restore the boundary pointer from the stack.
+  $6C2D,$01 Clear carry (valid position).
+  $6C2E,$01 Return.
+N $6C2F Position is outside this region — try the next one.
+@ $6C2F label=ValidateRedBirdPosition_Next
+  $6C2F,$01 Restore the boundary pointer from the stack.
+  $6C30,$04 Advance #REGhl by #N$04 (next boundary entry).
+  $6C34,$02 Jump to #R$6C0F.
+N $6C36 End of boundary data — no valid region found.
+@ $6C36 label=ValidateRedBirdPosition_OutOfBounds
+  $6C36,$01 Restore the boundary pointer from the stack.
+  $6C37,$01 Set carry (out of bounds).
+  $6C38,$01 Return.
 
 c $6C39
 
@@ -2074,13 +2442,91 @@ c $6CA5
   $6CAF,$02 Write #N$FF to *#R$6CB6.
   $6CB1,$01 Return.
 
-g $6CB2
+g $6CB2 Red Bird Direction Change Timer
+@ $6CB2 label=RedBirdDirectionChangeTimer
+D $6CB2 Counts down each frame. When it reaches zero, the red bird picks a new
+. random flight direction.
 B $6CB2,$01
-B $6CB3,$04,$01
+
+g $6CB3 Red Bird Traversal Direction
+@ $6CB3 label=RedBirdTraversalDirection
+D $6CB3 Controls which direction the red bird traverses across rooms.
+. #N$00=moving left (entering from the right), #N$01=moving right
+. (entering from the left). Toggled when the red bird wraps past the
+. room boundary.
+B $6CB3,$01
+
+g $6CB4 Red Bird Stun Timer
+@ $6CB4 label=RedBirdStunTimer
+D $6CB4 When non-zero, the red bird is stunned. Counts down each frame until
+. it reaches #N$01, then the stun ends and a short reappearance delay
+. begins.
+B $6CB4,$01
+
+g $6CB5 Red Bird Stun Timer Copy
+@ $6CB5 label=RedBirdStunTimerCopy
+D $6CB5 Copy of the initial stun timer value, stored when the red bird is
+. first stunned.
+B $6CB5,$01
+
+g $6CB6 Red Bird Current Room
+@ $6CB6 label=RedBirdCurrentRoom
+D $6CB6 The room number the red bird is currently in. May differ from
+. *#R$5FC5 when the red bird is transitioning between rooms.
+B $6CB6,$01
+
+g $6CB7 Red Bird Animation Seed
+@ $6CB7 label=RedBirdAnimationSeed
+D $6CB7 Seeded from the Memory Refresh Register when the red bird is
+. initialised for each room.
+B $6CB7,$01
+
+g $6CB8 Red Bird Movement Direction
+@ $6CB8 label=RedBirdMovementDirection
+D $6CB8 The red bird's current movement direction within a room (#N$00-#N$07),
+. indexing into the direction jump table at #R$6BC8. Changes randomly
+. each time the direction change timer at #R$6CB2 expires.
+B $6CB8,$01
+
+g $6CB9 Red Bird Flight Speed
+@ $6CB9 label=RedBirdFlightSpeed
+D $6CB9 The red bird's current flight speed, looked up from the per-level speed
+. table at #R$6CBE based on the current level number.
+B $6CB9,$01
+
+g $6CBA Red Bird Path Counter
+@ $6CBA label=RedBirdPathCounter
+D $6CBA Counts down to trigger a new flight path setup via #R$6AA1.
+B $6CBA,$01
+
+g $6CBB Pointer: Red Bird Flightpath Data
+@ $6CBB label=Pointer_RedBirdFlightpathData
+D $6CBB Pointer to the current room's flight path boundary data at #R$BE00.
+. Each boundary entry is #N$04 bytes: Y-min, Y-max, X-min, X-max.
+W $6CBB,$02
+
+g $6CBD Red Bird Appearance Delay
+@ $6CBD label=RedBirdAppearanceDelay
+D $6CBD Counts down each frame while the red bird is waiting to enter the
+. current room. When it reaches zero, the red bird appears.
+B $6CBD,$01
+
+g $6CBE Red Bird Speed Table
+@ $6CBE label=RedBirdSpeedTable
+D $6CBE Flight speed for each level. Indexed by zero-based level number.
+B $6CBE,$01 Speed: #N(#PEEK(#PC)).
+L $6CBE,$01,$05
 
   $6CC3
 
-c $6CDD
+g $6CC4 Red Bird Wing Animation Counter
+@ $6CC4 label=RedBirdWingAnimationCounter
+D $6CC4 Cycles through #N$00-#N$07 to animate the red bird's wings. Divided
+. by #N$02 and added to the frame base of #N$18 to select the sprite
+. frame.
+B $6CC4,$01
+
+  $6CDF
 
 c $6DAB Dispatch Game State
 @ $6DAB label=Dispatch_Game_State
@@ -2187,7 +2633,8 @@ N $71CE Stun the second frog and award points.
   $71DD,$03 Call #R$6F7A.
   $71E0,$01 Return.
 
-c $71E1
+c $71E1 Cancel Egg Drop
+@ $71E1 label=CancelEggDrop
   $71E1,$07 Write #N$00 to; #LIST
 . { *#R$DAE3 }
 . { *#R$5FA9 }
@@ -3362,6 +3809,52 @@ N $BDA0 Move to the next column in the screen buffer and loop.
   $BDA5,$01 Return.
 
 c $BDA6
+
+g $BE00 Table: Red Bird Flight Path Data
+@ $BE00 label=Table_RedBirdFlightPath_01
+N $BE00 Room #N$01.
+  $BE00,$0C
+  $BE0C,$01 Terminator.
+@ $BE0D label=Table_RedBirdFlightPath_02
+N $BE0D Room #N$02.
+  $BE0D,$04
+  $BE11,$01 Terminator.
+@ $BE12 label=Table_RedBirdFlightPath_03
+N $BE12 Room #N$03.
+  $BE12,$0C
+  $BE1E,$01 Terminator.
+@ $BE1F label=Table_RedBirdFlightPath_04
+N $BE1F Room #N$04.
+  $BE1F,$0C
+  $BE2B,$01 Terminator.
+@ $BE2C label=Table_RedBirdFlightPath_05
+N $BE2C Room #N$05.
+  $BE2C,$0C
+  $BE38,$01 Terminator.
+@ $BE39 label=Table_RedBirdFlightPath_06
+N $BE39 Room #N$06.
+  $BE39,$0C
+  $BE45,$01 Terminator.
+@ $BE46 label=Table_RedBirdFlightPath_07
+N $BE46 Room #N$07.
+  $BE46,$0C
+  $BE52,$01 Terminator.
+@ $BE53 label=Table_RedBirdFlightPath_08
+N $BE53 Room #N$08.
+  $BE53,$10
+  $BE63,$01 Terminator.
+@ $BE64 label=Table_RedBirdFlightPath_09
+N $BE64 Room #N$09.
+  $BE64,$10
+  $BE74,$01 Terminator.
+@ $BE75 label=Table_RedBirdFlightPath_10
+N $BE75 Room #N$0A.
+  $BE75,$10
+  $BE85,$01 Terminator.
+@ $BE86 label=Table_RedBirdFlightPath_11
+N $BE86 Room #N$0B.
+  $BE86,$0C
+  $BE92,$01 Terminator.
 
 g $C000 Room Buffer
 @ $C000 label=RoomBuffer
