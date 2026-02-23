@@ -1287,53 +1287,82 @@ R $6456 HL Pointer to the room buffer row
   $647A,$05 Copy #N($0020,$04,$04) bytes to the attribute buffer.
   $647F,$01 Return.
 
-c $6480 Handle Title Screen
-@ $6480 label=Handle_Title_Screen
-D $6480 #R$5FA7 countdown or init; IX+1 compare; #R$5FAB counter. Called from
-. #R$5FE9 when Z.
-  $6480,$03 #REGhl=#N$52EC (screen buffer location).
+c $6480 Update Energy Bar
+@ $6480 label=UpdateEnergyBar
+  $6480,$03 #REGhl=#N$52EC (screen buffer location for the energy bar).
+D $6480 Animates Percy's energy bar at the bottom of the screen. The bar
+. depletes when Percy is airborne and refills when Percy is on the ground. If
+. the bar fully depletes, Percy enters the falling state.
+N $6483 If *#R$5FA7 is non-zero, it's acting as a cooldown timer — decrement
+. it and return.
   $6483,$03 #REGa=*#R$5FA7.
-  $6486,$03 Jump to #R$648E if #REGa is zero.
-  $6489,$01 Decrease #REGa by one.
+  $6486,$03 Jump to #R$648E if *#R$5FA7 is zero (Percy isn't falling).
+  $6489,$01 Decrement the cooldown timer.
   $648A,$03 Write #REGa to *#R$5FA7.
   $648D,$01 Return.
-
-  $648E,$07 Jump to #R$64BE if *#REGix+#N$01 is greater than or equal to #N$90.
+N $648E Check if Percy is on the ground (Y >= #N$90). If so, the energy bar
+N $648E refills. Otherwise it depletes.
+@ $648E label=UpdateEnergyBar_CheckPosition
+  $648E,$03 Load #REGa with Percy's Y position (from *#REGix+#N$01).
+  $6491,$04 Jump to #R$64BE if Percy is at, or below the ground level (#N$90).
+N $6495 Percy is airborne — deplete the energy bar. Uses a slower frame delay
+. of #N$07 frames between each step.
   $6495,$03 #REGa=*#R$5FAB.
-  $6498,$01 Increment #REGa by one.
-  $6499,$03 Write #REGa to *#R$5FAB.
-  $649C,$03 Return if #REGa is not equal to #N$07.
+  $6498,$01 Increment the frame delay counter.
+  $6499,$03 Write #REGa back to *#R$5FAB.
+  $649C,$03 Return if it's not yet time to update the energy bar.
+N $649F Reset the frame counter and check if Percy is on a platform (energy
+. doesn't deplete while landed).
   $649F,$04 Write #N$00 to *#R$5FAB.
-  $64A3,$05 Return if *#R$5FAD is non-zero.
-  $64A8,$04 Jump to #R$64B6 if *#REGhl is zero.
-  $64AC,$02 Shift *#REGhl left (with carry).
+  $64A3,$05 Return if *#R$5FAD is set, indicating Percy is landed on a platform.
+N $64A8 Deplete the energy bar by shifting pixels left. Scans rightward from
+. the current position to find the rightmost filled byte, then shifts it left
+. by one pixel.
+@ $64A8 label=UpdateEnergyBar_Deplete_FindByte
+  $64A8,$04 Jump to #R$64B6 if *#REGhl is zero (no pixels here).
+  $64AC,$02 Shift *#REGhl left one pixel (remove one pixel of energy).
+N $64AE Copy the updated byte to the three pixel rows below to give the
+. energy bar its height.
+@ $64AE label=UpdateEnergyBar_CopyRows
   $64AE,$01 #REGa=*#REGhl.
-  $64AF,$01 Increment #REGh by one.
-  $64B0,$01 Write #REGa to *#REGhl.
-  $64B1,$01 Increment #REGh by one.
-  $64B2,$01 Write #REGa to *#REGhl.
-  $64B3,$01 Increment #REGh by one.
-  $64B4,$01 Write #REGa to *#REGhl.
+  $64AF,$02 Copy to the first row below.
+  $64B1,$02 Copy to the second row below.
+  $64B3,$02 Copy to the third row below.
   $64B5,$01 Return.
-
-  $64B6,$01 Decrease #REGl by one.
-  $64B7,$05 Jump to #R$64E1 if #REGl is equal to #N$E0.
-  $64BC,$02 Jump to #R$64A8.
-
+N $64B6 Current byte is empty — scan leftward for the next filled byte.
+@ $64B6 label=UpdateEnergyBar_Deplete_ScanLeft
+  $64B6,$01 Move one byte to the left.
+  $64B7,$05 Jump to #R$64E1 if the energy bar is fully depleted (reached #N$E0,
+. the left edge of the bar).
+  $64BC,$02 Jump to #R$64A8 to check this byte.
+N $64BE Percy is on the ground — refill the energy bar. Uses a faster frame
+. delay of #N$03 frames between each step.
+@ $64BE label=UpdateEnergyBar_Refill
   $64BE,$03 #REGa=*#R$5FAB.
-  $64C1,$01 Increment #REGa by one.
-  $64C2,$03 Write #REGa to *#R$5FAB.
-  $64C5,$03 Return if #REGa is less than #N$03.
+  $64C1,$01 Increment the frame delay counter.
+  $64C2,$03 Write #REGa back to *#R$5FAB.
+  $64C5,$03 Return if not yet time to update the bar.
   $64C8,$04 Write #N$00 to *#R$5FAB.
-  $64CC,$03 #REGhl=#N$52E1 (screen buffer location).
-  $64CF,$05 Jump to #R$64DA if *#REGhl is equal to #N$FF.
-  $64D4,$02 Shift *#REGhl right.
-  $64D6,$02 Set bit 7 of *#REGhl.
-  $64D8,$02 Jump to #R$64AE.
-
-  $64DA,$01 Increment #REGl by one.
-  $64DB,$04 Return if #REGl is equal to #N$ED.
-  $64DF,$02 Jump to #R$64CF.
+N $64CC Refill the energy bar by shifting pixels right (filling from the left).
+. Scans leftward to find the first non-full byte and fills it one pixel at a
+. time.
+@ $64CC label=UpdateEnergyBar_Refill_Shift
+  $64CC,$03 #REGhl=#N$52E1 (left edge of the energy bar).
+@ $64CF label=UpdateEnergyBar_Refill_FindByte
+  $64CF,$01 #REGa=*#REGhl.
+  $64D0,$04 Jump to #R$64DA if this byte is full (scan next byte).
+  $64D4,$02 Shift *#REGhl right one pixel.
+  $64D6,$02 Set bit 7 of *#REGhl (fill from the left).
+  $64D8,$02 Jump to #R$64AE to copy the result to the rows below.
+N $64DA Current byte is fully filled — scan rightward for the next byte to
+. fill.
+@ $64DA label=UpdateEnergyBar_Refill_ScanRight
+  $64DA,$01 Move one byte to the right.
+  $64DB,$04 Return if the bar is fully refilled (the scan reached #N$ED which
+. is the right edge of the bar).
+  $64DF,$02 Jump to #R$64CF to check this byte.
+N $64E1 Energy bar has fully depleted — set Percy to the falling state.
+@ $64E1 label=UpdateEnergyBar_Depleted
   $64E1,$05 Write #N$FF to *#R$5FA7.
   $64E6,$01 Return.
 
@@ -1403,9 +1432,13 @@ c $655C Start Level
 @ $6562 label=SetUpNewLevel
   $6562,$05 Write #N$06 to *#R$5FC5.
   $6567,$03 Call #R$5E24.
-  $656A,$02 #REGb=#N$60.
+  $656A,$02 Set a counter in #REGb for #N$60 loops (enough to fill the energy
+. bar completely).
+@ $656C label=FillEnergyBar_Loop
   $656C,$03 Call #R$64CC.
-  $656F,$02 Decrease counter by one and loop back to #R$656C until counter is zero.
+  $656F,$02 Decrease the energy bar loop counter by one and loop back to
+. #R$656C until the energy bar is completely full.
+N $6571 Initialise Percy's starting position and INK colour.
   $6571,$05 Write #N$38 to *#R$DAC0.
   $6576,$03 Write #N$9E to *#R$DAC1.
   $6579,$03 Write #INK$07 to *#R$DAC2.
@@ -1665,66 +1698,97 @@ g $682C Score Buffer
 D $682C Workspace for scoring calculations.
 B $682C,$06
 
-c $6832 Update State Counters?
-@ $6832 label=Update_State_Counters
+c $6832 Animate Snapdragons
+@ $6832 label=AnimateSnapdragons
+D $6832 Animates the snapdragons in the current room. Each snapdragon has a
+. 3-frame snapping animation and faces toward Percy based on his horizontal
+. position.
+.
+. Snapdragon definitions are stored in a table at #R$689F.
   $6832,$03 #REGhl=#R$689F.
   $6835,$04 #REGb=*#R$5FC5.
-  $6839,$01 #REGa=*#REGhl.
-  $683A,$03 Return if #REGa is equal to #N$FF.
-  $683D,$04 Call #R$6847 if #REGa is equal to #REGb.
-  $6841,$04 Increment #REGhl by four.
-  $6845,$02 Jump to #R$6839.
+@ $6839 label=AnimateSnapdragons_Loop
+  $6839,$01 Fetch the room number for this snapdragon.
+  $683A,$02 Return if the terminator has been reached (this is the end of the
+. table).
+  $683D,$04 Call #R$6847 if this snapdragon is in the current room.
+N $6841 Advance to the next table entry (#N$04 bytes per snapdragon).
+  $6841,$04 Advance #REGhl by four.
+  $6845,$02 Jump to #R$6839 to process the next entry.
 
-  $6847,$01 Stash #REGhl on the stack.
-  $6848,$01 Increment #REGhl by one.
-  $6849,$01 Increment *#REGhl by one.
+N $6847 Processes a single snapdragon. Cycles the animation frame, determines
+. whether the snapdragon should face left or right based on Percy's position,
+. looks up the graphic data and draws the snapdragon to the screen.
+@ $6847 label=AnimateSnapdragon
+  $6847,$01 Stash the snapdragon table pointer on the stack.
+N $6848 Advance to the animation counter and cycle it through #N$00-#N$02.
+  $6848,$01 Advance to the animation counter byte.
+  $6849,$01 Increment the animation counter.
   $684A,$01 #REGa=*#REGhl.
-  $684B,$04 Jump to #R$6851 if #REGa is not equal to #N$03.
-  $684F,$02 Write #N$00 to *#REGhl.
-  $6851,$01 Stash #REGaf on the stack.
-  $6852,$03 #REGa=*#R$DAC0.
-  $6855,$03 RRCA.
-  $6858,$02,b$01 Keep only bits 0-4.
-  $685A,$01 #REGc=#REGa.
-  $685B,$01 Increment #REGhl by one.
+  $684B,$04 Jump to #R$6851 if the animation counter hasn't reached #N$03 yet.
+  $684F,$02 Reset the animation counter back to #N$00.
+N $6851 Determine whether the snapdragon should face toward Percy based on his
+. character column position. If Percy is to the right, #N$03 is added to the
+. frame index to use the right-facing set.
+@ $6851 label=AnimateSnapdragon_CheckDirection
+  $6851,$01 Stash the animation frame on the stack.
+N $6852 Calculate Percy's character column (X position / 8).
+  $6852,$03 #REGa=*#R$DAC0 (Percy's X position).
+  $6855,$03 Rotate right three positions (divide by #N$08).
+  $6858,$02,b$01 Keep only bits 0-4 (character column #N$00-#N$1F).
+  $685A,$01 Store the result in #REGc.
+N $685B Compare Percy's column with the snapdragon's column from the table.
+  $685B,$01 Advance to the snapdragon's position byte.
   $685C,$01 #REGa=*#REGhl.
-  $685D,$02,b$01 Keep only bits 0-4.
-  $685F,$03 Jump to #R$6867 if #REGa is greater than or equal to #REGc.
-  $6862,$01 Restore #REGaf from the stack.
+  $685D,$02,b$01 Keep only bits 0-4 (snapdragon's character column).
+  $685F,$03 Jump to #R$6867 if Percy is to the left of the snapdragon.
+N $6862 Percy is to the right — add #N$03 to use the right-facing frames.
+  $6862,$01 Restore the animation frame from the stack.
   $6863,$02 #REGa+=#N$03.
   $6865,$02 Jump to #R$6868.
-  $6867,$01 Restore #REGaf from the stack.
-  $6868,$03 #REGde=#R$AD5B.
+@ $6867 label=AnimateSnapdragon_FacingLeft
+  $6867,$01 Restore the animation frame from the stack.
+N $6868 Look up the graphic data for the current frame. Each frame is #N$20
+. bytes, stored from #R$AD5B onwards. Frames #N$00-#N$02 face left, frames
+. #N$03-#N$05 face right.
+@ $6868 label=AnimateSnapdragon_LookupGraphic
+  $6868,$03 #REGde=#R$AD5B (snapdragon graphic data).
   $686B,$02 #REGh=#N$00.
   $686D,$01 #REGl=#REGa.
-  $686E,$05 Multiply #REGhl by #N$20.
-  $6873,$01 #REGhl+=#REGde.
-  $6874,$01 Exchange the #REGde and #REGhl registers.
-  $6875,$01 Restore #REGhl from the stack.
-  $6876,$01 Stash #REGhl on the stack.
-  $6877,$02 Increment #REGhl by two.
-  $6879,$01 #REGc=*#REGhl.
-  $687A,$01 Increment #REGhl by one.
-  $687B,$01 #REGb=*#REGhl.
-  $687C,$02 Copy #REGbc into #REGhl on the stack.
-  $687E,$02 Stash #REGhl and #REGhl on the stack.
-  $6880,$03 Call #R$6692.
-  $6883,$01 Restore #REGhl from the stack.
-  $6884,$04 #REGhl+=#N($0020,$04,$04).
-  $6888,$03 Call #R$6692.
-  $688B,$01 Restore #REGhl from the stack.
-  $688C,$01 Increment #REGl by one.
-  $688D,$01 Stash #REGhl on the stack.
-  $688E,$03 Call #R$6692.
-  $6891,$01 Restore #REGhl from the stack.
-  $6892,$04 #REGhl+=#N($0020,$04,$04).
-  $6896,$03 Call #R$6692.
-  $6899,$01 Restore #REGhl from the stack.
+  $686E,$05 Multiply #REGhl by #N$20 (bytes per frame).
+  $6873,$01 Add the graphic data base address.
+  $6874,$01 Exchange so #REGde points to the graphic data.
+N $6875 Retrieve the snapdragon's screen position from the table and draw it as
+. a 2x2 character cell graphic.
+  $6875,$01 Restore the snapdragon table pointer from the stack.
+  $6876,$01 Keep a copy of the snapdragons table pointer on the stack.
+  $6877,$02 Advance to the screen position bytes.
+  $6879,$05 Load the screen position into #REGhl (using the stack).
+N $687E Draw the top-left and bottom-left cells.
+  $687E,$02 Stash the screen position twice on the stack.
+  $6880,$03 Call #R$6692 to draw the top-left cell.
+  $6883,$01 Restore the screen position from the stack.
+  $6884,$04 Add #N($0020,$04,$04) to move down one character row.
+  $6888,$03 Call #R$6692 to draw the bottom-left cell.
+N $688B Draw the top-right and bottom-right cells.
+  $688B,$01 Restore the screen position from the stack.
+  $688C,$01 Move one character column to the right.
+  $688D,$01 Stash the adjusted position on the stack.
+  $688E,$03 Call #R$6692 to draw the top-right cell.
+  $6891,$01 Restore the position from the stack.
+  $6892,$04 Add #N($0020,$04,$04) to move down one character row.
+  $6896,$03 Call #R$6692 to draw the bottom-right cell.
+N $6899 Restore the snapdragon table pointer and reload the current room number.
+  $6899,$01 Restore the snapdragon table pointer from the stack.
   $689A,$04 #REGb=*#R$5FC5.
   $689E,$01 Return.
 
-b $689F
-  $689F,$04
+g $689F Table: Snapdragon Definition
+@ $689F label=Table_SnapdragonDefinition
+N $689F Snapdragon #N($01+(#PC-$689F)/$04):
+  $689F,$01 Room #N(#PEEK(#PC)).
+  $68A0,$01 Snapdragon frame #N(#PEEK(#PC)).
+  $68A1,$02 Screen position: #N(#PEEK(#PC)) x #N(#PEEK(#PC+$01)).
 L $689F,$04,$06
   $68B7,$01 Terminator.
 
@@ -1964,7 +2028,44 @@ N $6C7C First sprite is below so check if the second sprite's bottom edge
   $6C81,$04 Return (with; carry clear meaning a collision, and carry set
 . meaning no collision).
 
-c $6C85
+c $6C85 Check Egg Collision
+@ $6C85 label=CheckEggCollision
+D $6C85 Checks if an egg overlaps with a sprite by comparing their positions.
+. The egg is assumed to be #N$10 pixels wide and #N$10 pixels tall, while
+. the target point is offset by #N$04 pixels in X and #N$06 pixels in Y
+. to check against the centre of the target sprite.
+R $6C85 IX Pointer to sprite data
+R $6C85 IY Pointer to egg sprite data
+R $6C85 O:F Carry set = no collision, carry clear = collision
+N $6C85 First check horizontal overlap. The egg's centre point (X + #N$04)
+. is compared against the sprite's horizontal range.
+  $6C85,$06 Load #REGb with the egg's X position (from *#REGiy+#N$00) + #N$04
+. (offset to the egg's centre).
+  $6C8B,$03 Load #REGa with the sprite's X position (from *#REGix+#N$00).
+  $6C8E,$01 Compare with the egg's centre X position.
+  $6C8F,$01 Complement the carry flag.
+  $6C90,$01 Return if the sprite is to the right of the egg (no overlap; carry
+. is set).
+N $6C91 Sprite is to the left so check if its right edge reaches the egg's
+. centre.
+  $6C91,$02 Add #N$10 to the sprite's X position (add sprite width).
+  $6C93,$01 Compare this with the egg's centre X position.
+  $6C94,$01 Return (with; carry clear meaning a collision, and carry set meaning
+. no collision).
+N $6C95 The two overlap horizontally; now check vertical overlap. The egg's
+. centre point (Y + #N$06) is compared against the sprite's vertical
+. range.
+  $6C95,$06 Load #REGb with the egg's Y position (from *#REGiy+#N$01) + #N$06
+. (offset to the egg's centre).
+  $6C9B,$03 Load #REGa with the sprite's Y position (from *#REGix+#N$01).
+  $6C9E,$01 Compare this with the egg's centre Y position.
+  $6C9F,$01 Complement the carry flag.
+  $6CA0,$01 Return if the sprite is below the egg (no overlap; carry is set).
+N $6CA1 Sprite is above so check if its bottom edge reaches the egg's centre.
+  $6CA1,$02 Add #N$10 to the sprite's Y position (add sprite height).
+  $6CA3,$01 Compare this with the egg's centre Y position.
+  $6CA4,$01 Return (with; carry clear meaning a collision, and carry set meaning
+. no collision).
 
 c $6CA5
   $6CA5,$06 Write #N$FF to *#R$6CB3.
