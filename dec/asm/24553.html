@@ -767,7 +767,7 @@ Read Q-T row for left (Q, bit 0) and right (W, bit 1).
 <span id="24744"></span>
 <div class="comments">
 <div class="paragraph">
-Handle Percy's special "flying up to collect item" state. If *<a href="24489.html">ItemCollectionState</a> is set, Percy is currently flying upward to collect an item.
+Handle Percy's special "flying up to collect item" state. If *<a href="24489.html">EggDropState</a> is set, Percy is currently flying upward to collect an item.
 </div>
 </div>
 </td>
@@ -776,7 +776,7 @@ Handle Percy's special "flying up to collect item" state. If *<a href="24489.htm
 <td class="asm-label">MainGameLoop_HandleItemCollection</td>
 <td class="address-2"><span id="24744"></span>24744</td>
 <td class="instruction">LD A,(24489)</td>
-<td class="comment-1" rowspan="3">Jump to <a href="24553.html#24793">MainGameLoop_TestFirePressed</a> if *<a href="24489.html">ItemCollectionState</a> is unset (no item to collect).</td>
+<td class="comment-1" rowspan="3">Jump to <a href="24553.html#24793">MainGameLoop_TestFirePressed</a> if *<a href="24489.html">EggDropState</a> is unset (no item to collect).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -842,7 +842,7 @@ Percy has reached the target so end the collection state.
 <td class="asm-label"></td>
 <td class="address-1"><span id="24763"></span>24763</td>
 <td class="instruction">XOR A</td>
-<td class="comment-1" rowspan="2">Unset *<a href="24489.html">ItemCollectionState</a> (the item has been collected).</td>
+<td class="comment-1" rowspan="2">Unset *<a href="24489.html">EggDropState</a> (the item has been collected).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -1066,7 +1066,7 @@ Start the item collection sequence and set Percy's target Y position and collect
 <td class="asm-label"></td>
 <td class="address-1"><span id="24837"></span>24837</td>
 <td class="instruction">LD (24489),A</td>
-<td class="comment-1" rowspan="1">Write 255 to *<a href="24489.html">ItemCollectionState</a> (collection in progress).</td>
+<td class="comment-1" rowspan="1">Write 255 to *<a href="24489.html">EggDropState</a> (collection in progress).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>

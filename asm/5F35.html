@@ -361,7 +361,7 @@ Attribute overlay command 24: end of attribute data. Finalises the room setup by
 <td class="asm-label">FillAttributes_End</td>
 <td class="address-2"><span id="5f74"></span>5F74</td>
 <td class="instruction">LD A,($5FA9)</td>
-<td class="comment-1" rowspan="3">Jump to <a href="5F35.html#5f83">FillAttributes_SetAttributeBase</a> if *<a href="5FA9.html">ItemCollectionState</a> is zero.</td>
+<td class="comment-1" rowspan="3">Jump to <a href="5F35.html#5f83">FillAttributes_SetAttributeBase</a> if *<a href="5FA9.html">EggDropState</a> is zero.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -377,7 +377,7 @@ Attribute overlay command 24: end of attribute data. Finalises the room setup by
 <td class="asm-label"></td>
 <td class="address-1"><span id="5f7a"></span>5F7A</td>
 <td class="instruction">XOR A</td>
-<td class="comment-1" rowspan="2">Write 00 to *<a href="5FA9.html">ItemCollectionState</a>.</td>
+<td class="comment-1" rowspan="2">Write 00 to *<a href="5FA9.html">EggDropState</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -400,7 +400,7 @@ Attribute overlay command 24: end of attribute data. Finalises the room setup by
 <td class="asm-label"></td>
 <td class="address-1"><span id="5f80"></span>5F80</td>
 <td class="instruction">LD ($DAE3),A</td>
-<td class="comment-1" rowspan="1">Write 00 to *<a href="DAE3.html">DAE3</a>.</td>
+<td class="comment-1" rowspan="1">Write 00 to *<a href="DAE0.html#dae3">DAE3</a>.</td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">

@@ -1,0 +1,1473 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Percy the Potty Pigeon: Routine at 768C</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-dark.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-wide.css" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-75RERFCHBG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-75RERFCHBG');
+</script>
+</head>
+<body class="Asm-c">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html"><img alt="logo" src="../images/logo.png" /></a></td>
+<td class="page-header">Routines</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="7680.html">7680</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#768c">Map</a></td>
+<td class="next">
+Next: <a href="7893.html">7893</a>
+</td>
+</tr>
+</table>
+<div class="description">768C: Update Plane FlightPath</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="5">
+<div class="details">
+<div class="paragraph">
+Used by the routine at <a href="7680.html">Handler_Plane</a>.
+</div>
+</div>
+<table class="input">
+<tr class="asm-input-header">
+<th colspan="2">Input</th>
+</tr>
+<tr>
+<td class="register">IX</td>
+<td class="register-desc">Pointer to plane sprite data</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td class="asm-label">UpdatePlaneFlightPath</td>
+<td class="address-2"><span id="768c"></span>768C</td>
+<td class="instruction">LD IY,$77AF</td>
+<td class="comment-1" rowspan="1"><span class="register">IY</span>=<a href="768C.html#77af">Plane_X_Position</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7690"></span>7690</td>
+<td class="instruction">LD C,$04</td>
+<td class="comment-1" rowspan="1"><span class="register">C</span>=04.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7692"></span>7692</td>
+<td class="instruction">LD B,$38</td>
+<td class="comment-1" rowspan="1"><span class="register">B</span>=38.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7694"></span>7694</td>
+<td class="instruction">LD A,($5FC5)</td>
+<td class="comment-1" rowspan="3">Jump to <a href="768C.html#769e">UpdatePlaneFlightPath_0</a> if *<a href="5FC5.html">CurrentRoom</a> is not equal to 03.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7697"></span>7697</td>
+<td class="instruction">CP $03</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7699"></span>7699</td>
+<td class="instruction">JR NZ,<a href="768C.html#769e">UpdatePlaneFlightPath_0</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="769b"></span>769B</td>
+<td class="instruction">LD C,$40</td>
+<td class="comment-1" rowspan="1"><span class="register">C</span>=40.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="769d"></span>769D</td>
+<td class="instruction">LD B,C</td>
+<td class="comment-1" rowspan="1"><span class="register">B</span>=<span class="register">C</span>.</td>
+</tr>
+<tr>
+<td class="asm-label">UpdatePlaneFlightPath_0</td>
+<td class="address-2"><span id="769e"></span>769E</td>
+<td class="instruction">LD A,($5FBB)</td>
+<td class="comment-1" rowspan="3">Jump to <a href="768C.html#76e5">UpdatePlaneFlightPath_5</a> if *<a href="5FBB.html">RoomBufferFlag</a> is set.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="76a1"></span>76A1</td>
+<td class="instruction">OR A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="76a2"></span>76A2</td>
+<td class="instruction">JP NZ,<a href="768C.html#76e5">UpdatePlaneFlightPath_5</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="76a5"></span>76A5</td>
+<td class="instruction">LD A,(IY+$02)</td>
+<td class="comment-1" rowspan="3">Jump to <a href="768C.html#76de">UpdatePlaneFlightPath_4</a> if *<span class="register">IY</span>+02 is zero.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="76a8"></span>76A8</td>
+<td class="instruction">OR A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="76a9"></span>76A9</td>
+<td class="instruction">JR Z,<a href="768C.html#76de">UpdatePlaneFlightPath_4</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="76ab"></span>76AB</td>
+<td class="instruction">BIT 7,(IY+$00)</td>
+<td class="comment-1" rowspan="2">Jump to <a href="74B9.html">74B9</a> if  bit 7 of *<span class="register">IY</span>+00 is set.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="76af"></span>76AF</td>
+<td class="instruction">JP NZ,<a href="74B9.html">$74B9</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="76b2"></span>76B2</td>
+<td class="instruction">LD HL,$77B3</td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="768C.html#77b3">77B3</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="76b5"></span>76B5</td>
+<td class="instruction">LD A,(IX+$00)</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">IX</span>+00.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="76b8"></span>76B8</td>
+<td class="instruction">BIT 7,(IY+$01)</td>
+<td class="comment-1" rowspan="1">Test bit 7 of *<span class="register">IY</span>+01.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="76bc"></span>76BC</td>
+<td class="instruction">JR NZ,<a href="768C.html#76c8">UpdatePlaneFlightPath_1</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="768C.html#76c8">UpdatePlaneFlightPath_1</a> if <span class="register">A</span> is not equal to <span class="register">A</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="76be"></span>76BE</td>
+<td class="instruction">ADD A,(HL)</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>+=*<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="76bf"></span>76BF</td>
+<td class="instruction">CP $EE</td>
+<td class="comment-1" rowspan="2">Jump to <a href="768C.html#770d">UpdatePlaneFlightPath_6</a> if <span class="register">A</span> is greater than or equal to EE.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="76c1"></span>76C1</td>
+<td class="instruction">JR NC,<a href="768C.html#770d">UpdatePlaneFlightPath_6</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="76c3"></span>76C3</td>
+<td class="instruction">LD (IX+$00),A</td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">IX</span>+00.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="76c6"></span>76C6</td>
+<td class="instruction">JR <a href="768C.html#76cf">UpdatePlaneFlightPath_2</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="768C.html#76cf">UpdatePlaneFlightPath_2</a>.</td>
+</tr>
+<tr>
+<td class="asm-label">UpdatePlaneFlightPath_1</td>
+<td class="address-2"><span id="76c8"></span>76C8</td>
+<td class="instruction">SUB (HL)</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>-=*<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="76c9"></span>76C9</td>
+<td class="instruction">CP C</td>
+<td class="comment-1" rowspan="2">Jump to <a href="768C.html#770d">UpdatePlaneFlightPath_6</a> if <span class="register">A</span> is less than <span class="register">C</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="76ca"></span>76CA</td>
+<td class="instruction">JR C,<a href="768C.html#770d">UpdatePlaneFlightPath_6</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="76cc"></span>76CC</td>
+<td class="instruction">LD (IX+$00),A</td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">IX</span>+00.</td>
+</tr>
+<tr>
+<td class="asm-label">UpdatePlaneFlightPath_2</td>
+<td class="address-2"><span id="76cf"></span>76CF</td>
+<td class="instruction">LD A,$4D</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=4D.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="76d1"></span>76D1</td>
+<td class="instruction">BIT 7,(IY+$01)</td>
+<td class="comment-1" rowspan="2">Jump to <a href="768C.html#76d8">UpdatePlaneFlightPath_3</a> if bit 7 of *<span class="register">IY</span>+01 is set.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="76d5"></span>76D5</td>
+<td class="instruction">JR NZ,<a href="768C.html#76d8">UpdatePlaneFlightPath_3</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="76d7"></span>76D7</td>
+<td class="instruction">INC A</td>
+<td class="comment-1" rowspan="1">Increment <span class="register">A</span> by one.</td>
+</tr>
+<tr>
+<td class="asm-label">UpdatePlaneFlightPath_3</td>
+<td class="address-2"><span id="76d8"></span>76D8</td>
+<td class="instruction">LD (IX+$03),A</td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">IX</span>+03.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="76db"></span>76DB</td>
+<td class="instruction">JP <a href="74D6.html">$74D6</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="74D6.html">74D6</a>.</td>
+</tr>
+<tr>
+<td class="asm-label">UpdatePlaneFlightPath_4</td>
+<td class="address-2"><span id="76de"></span>76DE</td>
+<td class="instruction">LD A,R</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=the contents of the Memory Refresh Register.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="76e0"></span>76E0</td>
+<td class="instruction">AND %01111111</td>
+<td class="comment-1" rowspan="1">Keep only bits 0-6.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="76e2"></span>76E2</td>
+<td class="instruction">CP $7F</td>
+<td class="comment-1" rowspan="2">Return if <span class="register">A</span> is not equal to 7F.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="76e4"></span>76E4</td>
+<td class="instruction">RET NZ</td>
+</tr>
+<tr>
+<td class="asm-label">UpdatePlaneFlightPath_5</td>
+<td class="address-2"><span id="76e5"></span>76E5</td>
+<td class="instruction">SET 7,(IY+$02)</td>
+<td class="comment-1" rowspan="1">Set bit 7 of *<span class="register">IY</span>+02.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="76e9"></span>76E9</td>
+<td class="instruction">XOR A</td>
+<td class="comment-1" rowspan="8">Write 00 to; <ul class="">
+<li>*<a href="768C.html#77ae">77AE</a></li>
+<li>*<span class="register">IY</span>+03</li>
+<li>*<span class="register">IY</span>+01</li>
+<li>*<span class="register">IX</span>+00</li>
+<li>*<span class="register">IX</span>+02</li>
+<li>*<span class="register">IX</span>+01</li>
+<li>*<span class="register">IY</span>+00</li>
+</ul></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="76ea"></span>76EA</td>
+<td class="instruction">LD ($77AE),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="76ed"></span>76ED</td>
+<td class="instruction">LD (IY+$03),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="76f0"></span>76F0</td>
+<td class="instruction">LD (IY+$01),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="76f3"></span>76F3</td>
+<td class="instruction">LD (IX+$00),C</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="76f6"></span>76F6</td>
+<td class="instruction">LD (IX+$02),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="76f9"></span>76F9</td>
+<td class="instruction">LD (IX+$01),B</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="76fc"></span>76FC</td>
+<td class="instruction">LD (IY+$00),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="76ff"></span>76FF</td>
+<td class="instruction">LD A,R</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=the contents of the Memory Refresh Register.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7701"></span>7701</td>
+<td class="instruction">AND %00000001</td>
+<td class="comment-1" rowspan="1">Keep only bit 0.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7703"></span>7703</td>
+<td class="instruction">RET Z</td>
+<td class="comment-1" rowspan="1">Return if <span class="register">A</span> is equal to 7F.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7704"></span>7704</td>
+<td class="instruction">LD (IX+$00),$EE</td>
+<td class="comment-1" rowspan="1">Write EE to *<span class="register">IX</span>+00.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7708"></span>7708</td>
+<td class="instruction">SET 7,(IY+$01)</td>
+<td class="comment-1" rowspan="1">Set bit 7 of *<span class="register">IY</span>+01.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="770c"></span>770C</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
+</tr>
+<tr>
+<td class="asm-label">UpdatePlaneFlightPath_6</td>
+<td class="address-2"><span id="770d"></span>770D</td>
+<td class="instruction">LD (IY+$02),$00</td>
+<td class="comment-1" rowspan="1">Write 00 to *<span class="register">IY</span>+02.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7711"></span>7711</td>
+<td class="instruction">JR <a href="768C.html#76de">UpdatePlaneFlightPath_4</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="768C.html#76de">UpdatePlaneFlightPath_4</a>.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="7713"></span>
+<div class="comments">
+<div class="paragraph">
+This entry point is used by the routine at <a href="7680.html">Handler_Plane</a>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">UpdatePlaneFlightPath_7</td>
+<td class="address-2"><span id="7713"></span>7713</td>
+<td class="instruction">LD A,($77AE)</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="768C.html#77ae">77AE</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7716"></span>7716</td>
+<td class="instruction">OR A</td>
+<td class="comment-1" rowspan="2">Jump to <a href="768C.html#774d">UpdatePlaneFlightPath_8</a> if <span class="register">A</span> is non-zero.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7717"></span>7717</td>
+<td class="instruction">JR NZ,<a href="768C.html#774d">UpdatePlaneFlightPath_8</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7719"></span>7719</td>
+<td class="instruction">BIT 7,(IY+$03)</td>
+<td class="comment-1" rowspan="2">Jump to <a href="768C.html#776f">UpdatePlaneFlightPath_11</a> if bit 7 of *<span class="register">IY</span>+03 not set.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="771d"></span>771D</td>
+<td class="instruction">JR Z,<a href="768C.html#776f">UpdatePlaneFlightPath_11</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="771f"></span>771F</td>
+<td class="instruction">LD IX,$DAF0</td>
+<td class="comment-1" rowspan="1"><span class="register">IX</span>=<a href="DAF0.html">DAF0</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7723"></span>7723</td>
+<td class="instruction">LD (IX+$03),$14</td>
+<td class="comment-1" rowspan="1">Write 14 to *<span class="register">IX</span>+03.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7727"></span>7727</td>
+<td class="instruction">LD A,(IX+$01)</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">IX</span>+01.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="772a"></span>772A</td>
+<td class="instruction">ADD A,$03</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>+=03.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="772c"></span>772C</td>
+<td class="instruction">CP $A0</td>
+<td class="comment-1" rowspan="2">Jump to <a href="768C.html#776a">UpdatePlaneFlightPath_10</a> if <span class="register">A</span> is greater than or equal to A0.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="772e"></span>772E</td>
+<td class="instruction">JR NC,<a href="768C.html#776a">UpdatePlaneFlightPath_10</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7730"></span>7730</td>
+<td class="instruction">LD (IX+$01),A</td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">IX</span>+01.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7733"></span>7733</td>
+<td class="instruction">PUSH IY</td>
+<td class="comment-1" rowspan="1">Stash <span class="register">IY</span> on the stack.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7735"></span>7735</td>
+<td class="instruction">LD IX,$DAC0</td>
+<td class="comment-1" rowspan="1"><span class="register">IX</span>=<a href="DAC0.html">Percy_X_Position</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7739"></span>7739</td>
+<td class="instruction">LD IY,$DAF0</td>
+<td class="comment-1" rowspan="1"><span class="register">IY</span>=<a href="DAF0.html">DAF0</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="773d"></span>773D</td>
+<td class="instruction">CALL <a href="6C85.html">$6C85</a></td>
+<td class="comment-1" rowspan="1">Call <a href="6C85.html">6C85</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7740"></span>7740</td>
+<td class="instruction">POP IY</td>
+<td class="comment-1" rowspan="1">Restore <span class="register">IY</span> from the stack.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7742"></span>7742</td>
+<td class="instruction">RET C</td>
+<td class="comment-1" rowspan="1">Return if <span class="register">A</span> is less than A0.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7743"></span>7743</td>
+<td class="instruction">LD (IY+$03),$00</td>
+<td class="comment-1" rowspan="1">Write 00 to *<span class="register">IY</span>+03.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7747"></span>7747</td>
+<td class="instruction">LD A,$07</td>
+<td class="comment-1" rowspan="2">Write 07 to *<a href="768C.html#77ae">77AE</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7749"></span>7749</td>
+<td class="instruction">LD ($77AE),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="774c"></span>774C</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
+</tr>
+<tr>
+<td class="asm-label">UpdatePlaneFlightPath_8</td>
+<td class="address-2"><span id="774d"></span>774D</td>
+<td class="instruction">DEC A</td>
+<td class="comment-1" rowspan="1">Decrease <span class="register">A</span> by one.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="774e"></span>774E</td>
+<td class="instruction">LD ($77AE),A</td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<a href="768C.html#77ae">77AE</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7751"></span>7751</td>
+<td class="instruction">OR A</td>
+<td class="comment-1" rowspan="2">Jump to <a href="768C.html#7764">UpdatePlaneFlightPath_9</a> if <span class="register">A</span> is zero.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7752"></span>7752</td>
+<td class="instruction">JR Z,<a href="768C.html#7764">UpdatePlaneFlightPath_9</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7754"></span>7754</td>
+<td class="instruction">RRA</td>
+<td class="comment-1" rowspan="1">RRA.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7755"></span>7755</td>
+<td class="instruction">ADD A,$36</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>+=36.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7757"></span>7757</td>
+<td class="instruction">LD ($DAC3),A</td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<a href="DAC0.html#dac3">Percy_Frame_ID</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="775a"></span>775A</td>
+<td class="instruction">LD A,R</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=the contents of the Memory Refresh Register.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="775c"></span>775C</td>
+<td class="instruction">AND %00000111</td>
+<td class="comment-1" rowspan="1">Keep only bits 0-2.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="775e"></span>775E</td>
+<td class="instruction">LD ($DAC2),A</td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<a href="DAC0.html#dac2">Percy_Colour</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7761"></span>7761</td>
+<td class="instruction">JP <a href="6E5D.html#6f7a">$6F7A</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="6E5D.html#6f7a">6F7A</a>.</td>
+</tr>
+<tr>
+<td class="asm-label">UpdatePlaneFlightPath_9</td>
+<td class="address-2"><span id="7764"></span>7764</td>
+<td class="instruction">LD A,$FF</td>
+<td class="comment-1" rowspan="2">Write FF to *<a href="5FA7.html">FallingState</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7766"></span>7766</td>
+<td class="instruction">LD ($5FA7),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7769"></span>7769</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
+</tr>
+<tr>
+<td class="asm-label">UpdatePlaneFlightPath_10</td>
+<td class="address-2"><span id="776a"></span>776A</td>
+<td class="instruction">LD (IY+$03),$00</td>
+<td class="comment-1" rowspan="1">Write 00 to *<span class="register">IY</span>+03.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="776e"></span>776E</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
+</tr>
+<tr>
+<td class="asm-label">UpdatePlaneFlightPath_11</td>
+<td class="address-2"><span id="776f"></span>776F</td>
+<td class="instruction">LD A,R</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=the contents of the Memory Refresh Register.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7771"></span>7771</td>
+<td class="instruction">AND %00000001</td>
+<td class="comment-1" rowspan="1">Keep only bits 0.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7773"></span>7773</td>
+<td class="instruction">RET NZ</td>
+<td class="comment-1" rowspan="1">Return if <span class="register">A</span> is not equal to <span class="register">A</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7774"></span>7774</td>
+<td class="instruction">LD A,($DAC1)</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="DAC0.html#dac1">Percy_Y_Position</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7777"></span>7777</td>
+<td class="instruction">ADD A,$0A</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>+=0A.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7779"></span>7779</td>
+<td class="instruction">CP (IX+$01)</td>
+<td class="comment-1" rowspan="1">Compare <span class="register">A</span> with *<span class="register">IX</span>+01.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="777c"></span>777C</td>
+<td class="instruction">RET C</td>
+<td class="comment-1" rowspan="1">Return if <span class="register">A</span> is less than <span class="register">A</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="777d"></span>777D</td>
+<td class="instruction">LD A,($DAC0)</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="DAC0.html">Percy_X_Position</a>.</td>
+</tr>
+<tr>
+<td class="asm-label">Plane_Y_Position</td>
+<td class="address-1"><span id="7780"></span>7780</td>
+<td class="instruction">DEFB $E6</td>
+<td class="comment-1" rowspan="1">Plane Y position.</td>
+</tr>
+<tr>
+<td class="asm-label">Plane_Colour</td>
+<td class="address-1"><span id="7781"></span>7781</td>
+<td class="instruction">DEFB $FC</td>
+<td class="comment-1" rowspan="1">Plane INK colour.</td>
+</tr>
+<tr>
+<td class="asm-label">Plane_Frame_ID</td>
+<td class="address-1"><span id="7782"></span>7782</td>
+<td class="instruction">DEFB $47</td>
+<td class="comment-1" rowspan="1">Plane frame ID.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7783"></span>7783</td>
+<td class="instruction">DEFB $DD</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7784"></span>7784</td>
+<td class="instruction">LD A,(HL)</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7785"></span>7785</td>
+<td class="instruction">NOP</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7786"></span>7786</td>
+<td class="instruction">AND %11111100</td>
+<td class="comment-1" rowspan="1">Keep only bits 2-7.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7788"></span>7788</td>
+<td class="instruction">CP B</td>
+<td class="comment-1" rowspan="2">Return if <span class="register">A</span> is not equal to <span class="register">B</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7789"></span>7789</td>
+<td class="instruction">RET NZ</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="778a"></span>778A</td>
+<td class="instruction">BIT 7,(IY+$02)</td>
+<td class="comment-1" rowspan="1">Test bit 7 of *<span class="register">IY</span>+02.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="778e"></span>778E</td>
+<td class="instruction">RET Z</td>
+<td class="comment-1" rowspan="1">Return if <span class="register">A</span> is equal to <span class="register">B</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="778f"></span>778F</td>
+<td class="instruction">BIT 7,(IY+$00)</td>
+<td class="comment-1" rowspan="1">Test bit 7 of *<span class="register">IY</span>+00.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7793"></span>7793</td>
+<td class="instruction">RET NZ</td>
+<td class="comment-1" rowspan="1">Return if <span class="register">A</span> is not equal to <span class="register">B</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7794"></span>7794</td>
+<td class="instruction">LD A,(IX+$01)</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">IX</span>+01.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7797"></span>7797</td>
+<td class="instruction">ADD A,$0A</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>+=0A.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7799"></span>7799</td>
+<td class="instruction">LD ($DAF1),A</td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<a href="DAF0.html#daf1">DAF1</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="779c"></span>779C</td>
+<td class="instruction">LD A,(IX+$00)</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">IX</span>+00.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="779f"></span>779F</td>
+<td class="instruction">LD ($DAF0),A</td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<a href="DAF0.html">DAF0</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77a2"></span>77A2</td>
+<td class="instruction">LD A,$FF</td>
+<td class="comment-1" rowspan="1">Write FF to *<a href="DAF0.html#daf2">DAF2</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77a4"></span>77A4</td>
+<td class="instruction">LD ($DAF2),A</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77a7"></span>77A7</td>
+<td class="instruction">SET 7,(IY+$03)</td>
+<td class="comment-1" rowspan="1">Set bit 7 of *<span class="register">IY</span>+03.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77ab"></span>77AB</td>
+<td class="instruction">JP <a href="6E5D.html#6f7a">$6F7A</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="6E5D.html#6f7a">6F7A</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77ae"></span>77AE</td>
+<td class="instruction">DEFB $00</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="77af"></span>
+<div class="comments">
+<div class="paragraph">
+Plane States.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Plane_X_Position</td>
+<td class="address-1"><span id="77af"></span>77AF</td>
+<td class="instruction">DEFB $00</td>
+<td class="comment-1" rowspan="1">Plane X position.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77b0"></span>77B0</td>
+<td class="instruction">NOP</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77b1"></span>77B1</td>
+<td class="instruction">NOP</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77b2"></span>77B2</td>
+<td class="instruction">NOP</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77b3"></span>77B3</td>
+<td class="instruction">LD (BC),A</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77b4"></span>77B4</td>
+<td class="instruction">LD IY,$7B04</td>
+<td class="comment-1" rowspan="1"><span class="register">IY</span>=<a href="7AC3.html#7b04">7B04</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77b8"></span>77B8</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="77b9"></span>
+<div class="comments">
+<div class="paragraph">
+This entry point is used by the routines at <a href="723F.html">Handler_Room01</a>, <a href="72BD.html">Handler_Room04</a>, <a href="7367.html">Handler_Room07</a>, <a href="73A4.html">Handler_Room08</a>, <a href="73FA.html">Handler_Room10</a> and <a href="7413.html">Handler_Room11</a>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">UpdatePlaneFlightPath_12</td>
+<td class="address-2"><span id="77b9"></span>77B9</td>
+<td class="instruction">LD A,($5FBB)</td>
+<td class="comment-1" rowspan="3">Jump to <a href="768C.html#784f">UpdatePlaneFlightPath_21</a> if *<a href="5FBB.html">RoomBufferFlag</a> is non-zero.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77bc"></span>77BC</td>
+<td class="instruction">OR A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77bd"></span>77BD</td>
+<td class="instruction">JP NZ,<a href="768C.html#784f">UpdatePlaneFlightPath_21</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77c0"></span>77C0</td>
+<td class="instruction">LD HL,$7891</td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="768C.html#7891">7891</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77c3"></span>77C3</td>
+<td class="instruction">LD A,($7892)</td>
+<td class="comment-1" rowspan="3">Jump to <a href="768C.html#7855">UpdatePlaneFlightPath_22</a> if *<a href="768C.html#7892">7892</a> is non-zero.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77c6"></span>77C6</td>
+<td class="instruction">OR A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77c7"></span>77C7</td>
+<td class="instruction">JP NZ,<a href="768C.html#7855">UpdatePlaneFlightPath_22</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77ca"></span>77CA</td>
+<td class="instruction">LD A,R</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=the contents of the Memory Refresh Register.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77cc"></span>77CC</td>
+<td class="instruction">AND %01111111</td>
+<td class="comment-1" rowspan="1">Keep only bits 0-6.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77ce"></span>77CE</td>
+<td class="instruction">CP $7F</td>
+<td class="comment-1" rowspan="2">Jump to <a href="768C.html#77d5">UpdatePlaneFlightPath_13</a> if <span class="register">A</span> is not equal to 7F.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77d0"></span>77D0</td>
+<td class="instruction">JR NZ,<a href="768C.html#77d5">UpdatePlaneFlightPath_13</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77d2"></span>77D2</td>
+<td class="instruction">LD A,(HL)</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77d3"></span>77D3</td>
+<td class="instruction">CPL</td>
+<td class="comment-1" rowspan="1">Invert the bits in <span class="register">A</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77d4"></span>77D4</td>
+<td class="instruction">LD (HL),A</td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label">UpdatePlaneFlightPath_13</td>
+<td class="address-2"><span id="77d5"></span>77D5</td>
+<td class="instruction">LD A,(HL)</td>
+<td class="comment-1" rowspan="3">Jump to <a href="768C.html#77e7">UpdatePlaneFlightPath_14</a> if *<span class="register">HL</span> is non-zero.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77d6"></span>77D6</td>
+<td class="instruction">OR A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77d7"></span>77D7</td>
+<td class="instruction">JR NZ,<a href="768C.html#77e7">UpdatePlaneFlightPath_14</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77d9"></span>77D9</td>
+<td class="instruction">LD A,(IX+$00)</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">IX</span>+00.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77dc"></span>77DC</td>
+<td class="instruction">ADD A,$01</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>+=01.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77de"></span>77DE</td>
+<td class="instruction">CP $EE</td>
+<td class="comment-1" rowspan="2">Jump to <a href="768C.html#7847">UpdatePlaneFlightPath_19</a> if <span class="register">A</span> is greater than or equal to EE.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77e0"></span>77E0</td>
+<td class="instruction">JR NC,<a href="768C.html#7847">UpdatePlaneFlightPath_19</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77e2"></span>77E2</td>
+<td class="instruction">LD (IX+$00),A</td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">IX</span>+00.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77e5"></span>77E5</td>
+<td class="instruction">JR <a href="768C.html#77f3">UpdatePlaneFlightPath_15</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="768C.html#77f3">UpdatePlaneFlightPath_15</a>.</td>
+</tr>
+<tr>
+<td class="asm-label">UpdatePlaneFlightPath_14</td>
+<td class="address-2"><span id="77e7"></span>77E7</td>
+<td class="instruction">LD A,(IX+$00)</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">IX</span>+00.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77ea"></span>77EA</td>
+<td class="instruction">SUB $01</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>-=01.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77ec"></span>77EC</td>
+<td class="instruction">CP $04</td>
+<td class="comment-1" rowspan="2">Jump to <a href="768C.html#784b">UpdatePlaneFlightPath_20</a> if <span class="register">A</span> is less than 04.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77ee"></span>77EE</td>
+<td class="instruction">JR C,<a href="768C.html#784b">UpdatePlaneFlightPath_20</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77f0"></span>77F0</td>
+<td class="instruction">LD (IX+$00),A</td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">IX</span>+00.</td>
+</tr>
+<tr>
+<td class="asm-label">UpdatePlaneFlightPath_15</td>
+<td class="address-2"><span id="77f3"></span>77F3</td>
+<td class="instruction">CALL <a href="7930.html">$7930</a></td>
+<td class="comment-1" rowspan="1">Call <a href="7930.html">7930</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77f6"></span>77F6</td>
+<td class="instruction">AND %00000011</td>
+<td class="comment-1" rowspan="1">Keep only bits 0-1.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77f8"></span>77F8</td>
+<td class="instruction">CP $03</td>
+<td class="comment-1" rowspan="2">Jump to <a href="768C.html#7821">UpdatePlaneFlightPath_17</a> if <span class="register">A</span> is not equal to 03.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77fa"></span>77FA</td>
+<td class="instruction">JR NZ,<a href="768C.html#7821">UpdatePlaneFlightPath_17</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77fc"></span>77FC</td>
+<td class="instruction">LD A,R</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=the contents of the Memory Refresh Register.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77fe"></span>77FE</td>
+<td class="instruction">LD B,A</td>
+<td class="comment-1" rowspan="1"><span class="register">B</span>=<span class="register">A</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77ff"></span>77FF</td>
+<td class="instruction">BIT 6,A</td>
+<td class="comment-1" rowspan="2">Jump to <a href="768C.html#7812">UpdatePlaneFlightPath_16</a> if bit 6 of <span class="register">A</span> is set.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7801"></span>7801</td>
+<td class="instruction">JR NZ,<a href="768C.html#7812">UpdatePlaneFlightPath_16</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7803"></span>7803</td>
+<td class="instruction">LD A,B</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=<span class="register">B</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7804"></span>7804</td>
+<td class="instruction">AND %00000001</td>
+<td class="comment-1" rowspan="1">Keep only bit 0.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7806"></span>7806</td>
+<td class="instruction">ADD A,(IX+$01)</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>+=*<span class="register">IX</span>+01.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7809"></span>7809</td>
+<td class="instruction">CP $70</td>
+<td class="comment-1" rowspan="2">Jump to <a href="768C.html#7821">UpdatePlaneFlightPath_17</a> if <span class="register">A</span> is greater than or equal to 70.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="780b"></span>780B</td>
+<td class="instruction">JR NC,<a href="768C.html#7821">UpdatePlaneFlightPath_17</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="780d"></span>780D</td>
+<td class="instruction">LD (IX+$01),A</td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">IX</span>+01.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7810"></span>7810</td>
+<td class="instruction">JR <a href="768C.html#7821">UpdatePlaneFlightPath_17</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="768C.html#7821">UpdatePlaneFlightPath_17</a>.</td>
+</tr>
+<tr>
+<td class="asm-label">UpdatePlaneFlightPath_16</td>
+<td class="address-2"><span id="7812"></span>7812</td>
+<td class="instruction">LD A,B</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=<span class="register">B</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7813"></span>7813</td>
+<td class="instruction">AND %00000001</td>
+<td class="comment-1" rowspan="1">Keep only bit 0.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7815"></span>7815</td>
+<td class="instruction">LD B,A</td>
+<td class="comment-1" rowspan="1"><span class="register">B</span>=<span class="register">A</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7816"></span>7816</td>
+<td class="instruction">LD A,(IX+$01)</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">IX</span>+01.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7819"></span>7819</td>
+<td class="instruction">SUB B</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>-=<span class="register">B</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="781a"></span>781A</td>
+<td class="instruction">CP $18</td>
+<td class="comment-1" rowspan="2">Jump to <a href="768C.html#7821">UpdatePlaneFlightPath_17</a> if <span class="register">A</span> is less than 18.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="781c"></span>781C</td>
+<td class="instruction">JR C,<a href="768C.html#7821">UpdatePlaneFlightPath_17</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="781e"></span>781E</td>
+<td class="instruction">LD (IX+$01),A</td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">IX</span>+01.</td>
+</tr>
+<tr>
+<td class="asm-label">UpdatePlaneFlightPath_17</td>
+<td class="address-2"><span id="7821"></span>7821</td>
+<td class="instruction">LD (IX+$03),$49</td>
+<td class="comment-1" rowspan="1">Write 49 to *<span class="register">IX</span>+03.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7825"></span>7825</td>
+<td class="instruction">LD IY,$DAC0</td>
+<td class="comment-1" rowspan="1"><span class="register">IY</span>=<a href="DAC0.html">Percy_X_Position</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7829"></span>7829</td>
+<td class="instruction">CALL <a href="6C53.html">CheckSpriteCollision</a></td>
+<td class="comment-1" rowspan="1">Call <a href="6C53.html">CheckSpriteCollision</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="782c"></span>782C</td>
+<td class="instruction">JR C,<a href="768C.html#7831">UpdatePlaneFlightPath_18</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="768C.html#7831">UpdatePlaneFlightPath_18</a> if <span class="register">A</span> is less than 18.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="782e"></span>782E</td>
+<td class="instruction">JP <a href="74D6.html#74e3">$74E3</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="74D6.html#74e3">74E3</a>.</td>
+</tr>
+<tr>
+<td class="asm-label">UpdatePlaneFlightPath_18</td>
+<td class="address-2"><span id="7831"></span>7831</td>
+<td class="instruction">LD A,($5FA9)</td>
+<td class="comment-1" rowspan="3">Return if *<a href="5FA9.html">EggDropState</a> is unset.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7834"></span>7834</td>
+<td class="instruction">OR A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7835"></span>7835</td>
+<td class="instruction">RET Z</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7836"></span>7836</td>
+<td class="instruction">LD IY,$DAE0</td>
+<td class="comment-1" rowspan="1"><span class="register">IY</span>=<a href="DAE0.html">Egg_States</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="783a"></span>783A</td>
+<td class="instruction">CALL <a href="6C85.html">$6C85</a></td>
+<td class="comment-1" rowspan="1">Call <a href="6C85.html">6C85</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="783d"></span>783D</td>
+<td class="instruction">RET C</td>
+<td class="comment-1" rowspan="1">Return if <span class="register">A</span> is less than <span class="register">A</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="783e"></span>783E</td>
+<td class="instruction">LD A,$01</td>
+<td class="comment-1" rowspan="2">Write 01 to *<a href="768C.html#7892">7892</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7840"></span>7840</td>
+<td class="instruction">LD ($7892),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7843"></span>7843</td>
+<td class="instruction">JP <a href="74D6.html#74ff">$74FF</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="74D6.html#74ff">74FF</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7846"></span>7846</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
+</tr>
+<tr>
+<td class="asm-label">UpdatePlaneFlightPath_19</td>
+<td class="address-2"><span id="7847"></span>7847</td>
+<td class="instruction">LD (HL),$FF</td>
+<td class="comment-1" rowspan="1">Write FF to *<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7849"></span>7849</td>
+<td class="instruction">JR <a href="768C.html#7821">UpdatePlaneFlightPath_17</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="768C.html#7821">UpdatePlaneFlightPath_17</a>.</td>
+</tr>
+<tr>
+<td class="asm-label">UpdatePlaneFlightPath_20</td>
+<td class="address-2"><span id="784b"></span>784B</td>
+<td class="instruction">LD (HL),$00</td>
+<td class="comment-1" rowspan="1">Write 00 to *<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="784d"></span>784D</td>
+<td class="instruction">JR <a href="768C.html#7821">UpdatePlaneFlightPath_17</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="768C.html#7821">UpdatePlaneFlightPath_17</a>.</td>
+</tr>
+<tr>
+<td class="asm-label">UpdatePlaneFlightPath_21</td>
+<td class="address-2"><span id="784f"></span>784F</td>
+<td class="instruction">LD A,$B9</td>
+<td class="comment-1" rowspan="2">Write B9 to *<a href="768C.html#7892">7892</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7851"></span>7851</td>
+<td class="instruction">LD ($7892),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7854"></span>7854</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
+</tr>
+<tr>
+<td class="asm-label">UpdatePlaneFlightPath_22</td>
+<td class="address-2"><span id="7855"></span>7855</td>
+<td class="instruction">LD HL,$7892</td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="768C.html#7892">7892</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7858"></span>7858</td>
+<td class="instruction">LD A,(HL)</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7859"></span>7859</td>
+<td class="instruction">CP $04</td>
+<td class="comment-1" rowspan="2">Jump to <a href="768C.html#7870">UpdatePlaneFlightPath_23</a> if <span class="register">A</span> is greater than or equal to 04.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="785b"></span>785B</td>
+<td class="instruction">JR NC,<a href="768C.html#7870">UpdatePlaneFlightPath_23</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="785d"></span>785D</td>
+<td class="instruction">INC A</td>
+<td class="comment-1" rowspan="1">Increment <span class="register">A</span> by one.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="785e"></span>785E</td>
+<td class="instruction">LD (HL),A</td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="785f"></span>785F</td>
+<td class="instruction">ADD A,$48</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>+=48.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7861"></span>7861</td>
+<td class="instruction">LD (IX+$03),A</td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">IX</span>+03.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7864"></span>7864</td>
+<td class="instruction">CALL <a href="7930.html">$7930</a></td>
+<td class="comment-1" rowspan="1">Call <a href="7930.html">7930</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7867"></span>7867</td>
+<td class="instruction">AND %00000111</td>
+<td class="comment-1" rowspan="1">Keep only bits 0-2.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7869"></span>7869</td>
+<td class="instruction">LD (IX+$02),A</td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">IX</span>+02.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="786c"></span>786C</td>
+<td class="instruction">CALL <a href="6E5D.html#6f7a">$6F7A</a></td>
+<td class="comment-1" rowspan="1">Call <a href="6E5D.html#6f7a">6F7A</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="786f"></span>786F</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
+</tr>
+<tr>
+<td class="asm-label">UpdatePlaneFlightPath_23</td>
+<td class="address-2"><span id="7870"></span>7870</td>
+<td class="instruction">INC A</td>
+<td class="comment-1" rowspan="1">Increment <span class="register">A</span> by one.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7871"></span>7871</td>
+<td class="instruction">LD (HL),A</td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7872"></span>7872</td>
+<td class="instruction">CP $C8</td>
+<td class="comment-1" rowspan="2">Return if <span class="register">A</span> is not equal to C8.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7874"></span>7874</td>
+<td class="instruction">RET NZ</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7875"></span>7875</td>
+<td class="instruction">LD (IX+$01),$38</td>
+<td class="comment-1" rowspan="1">Write 38 to *<span class="register">IX</span>+01.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7879"></span>7879</td>
+<td class="instruction">LD (IX+$02),$07</td>
+<td class="comment-1" rowspan="1">Write 07 to *<span class="register">IX</span>+02.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="787d"></span>787D</td>
+<td class="instruction">LD HL,$7892</td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="768C.html#7892">7892</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7880"></span>7880</td>
+<td class="instruction">LD (HL),$00</td>
+<td class="comment-1" rowspan="1">Write 00 to *<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7882"></span>7882</td>
+<td class="instruction">LD (IX+$00),$EE</td>
+<td class="comment-1" rowspan="1">Write EE to *<span class="register">IX</span>+00.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7886"></span>7886</td>
+<td class="instruction">CALL <a href="7930.html">$7930</a></td>
+<td class="comment-1" rowspan="1">Call <a href="7930.html">7930</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7889"></span>7889</td>
+<td class="instruction">BIT 0,A</td>
+<td class="comment-1" rowspan="2">Return if bit 0 of <span class="register">A</span> is not set.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="788b"></span>788B</td>
+<td class="instruction">RET Z</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="788c"></span>788C</td>
+<td class="instruction">LD (IX+$00),$04</td>
+<td class="comment-1" rowspan="1">Write 04 to *<span class="register">IX</span>+00.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7890"></span>7890</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7891"></span>7891</td>
+<td class="instruction">DEFB $00</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7892"></span>7892</td>
+<td class="instruction">DEFB $00</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="7680.html">7680</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#768c">Map</a></td>
+<td class="next">
+Next: <a href="7893.html">7893</a>
+</td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
+<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
+<div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
+<div><a href="../dec/asm/30348.html">Switch to decimal</a>.</div>
+</footer>
+</body>
+</html>

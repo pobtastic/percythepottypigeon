@@ -33,7 +33,7 @@ Next: <a href="DAD8.html">DAD8</a>
 </td>
 </tr>
 </table>
-<div class="description">DAD4: Game status buffer entry at DAD4</div>
+<div class="description">DAD4: Car 3 States</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
@@ -42,9 +42,28 @@ Next: <a href="DAD8.html">DAD8</a>
 </td>
 </tr>
 <tr>
+<td class="asm-label">Car03_X_Position</td>
 <td class="address-1"><span id="dad4"></span>DAD4</td>
-<td class="instruction">DEFB $00,$00,$00,$00</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">DEFB $00</td>
+<td class="comment-1" rowspan="1">Car 3 X position.</td>
+</tr>
+<tr>
+<td class="asm-label">Car03_Y_Position</td>
+<td class="address-1"><span id="dad5"></span>DAD5</td>
+<td class="instruction">DEFB $00</td>
+<td class="comment-1" rowspan="1">Car 3 Y position.</td>
+</tr>
+<tr>
+<td class="asm-label">Car03_Colour</td>
+<td class="address-1"><span id="dad6"></span>DAD6</td>
+<td class="instruction">DEFB $00</td>
+<td class="comment-1" rowspan="1">Car 3 INK colour.</td>
+</tr>
+<tr>
+<td class="asm-label">Car03_Frame_ID</td>
+<td class="address-1"><span id="dad7"></span>DAD7</td>
+<td class="instruction">DEFB $00</td>
+<td class="comment-1" rowspan="1">Car 3 frame ID.</td>
 </tr>
 </table>
 <table class="asm-navigation">

@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Percy the Potty Pigeon: Routine at 7190</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-dark.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-wide.css" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-75RERFCHBG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-75RERFCHBG');
+</script>
+</head>
+<body class="Asm-c">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html"><img alt="logo" src="../images/logo.png" /></a></td>
+<td class="page-header">Routines</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="70DB.html">70DB</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#7190">Map</a></td>
+<td class="next">
+Next: <a href="71E1.html">71E1</a>
+</td>
+</tr>
+</table>
+<div class="description">7190: Handler: Frogs Check Egg Collision</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="5">
+<div class="details">
+<div class="paragraph">
+Used by the routine at <a href="7082.html">Handler_Frogs</a>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="7190"></span>
+<div class="comments">
+<div class="paragraph">
+Return if an egg isn't being dropped at this point.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">HandlerFrog01_CheckEggCollision</td>
+<td class="address-2"><span id="7190"></span>7190</td>
+<td class="instruction">LD A,($5FA9)</td>
+<td class="comment-1" rowspan="3">Return if *<a href="5FA9.html">EggDropState</a> is unset.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7193"></span>7193</td>
+<td class="instruction">OR A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7194"></span>7194</td>
+<td class="instruction">RET Z</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="7195"></span>
+<div class="comments">
+<div class="paragraph">
+Check the first frog.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7195"></span>7195</td>
+<td class="instruction">LD HL,$71E9</td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="71E9.html">Frog1_StateData</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7198"></span>7198</td>
+<td class="instruction">LD IY,$DAE0</td>
+<td class="comment-1" rowspan="1"><span class="register">IY</span>=<a href="DAE0.html">Egg_States</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="719c"></span>719C</td>
+<td class="instruction">LD IX,$DAC8</td>
+<td class="comment-1" rowspan="1"><span class="register">IX</span>=<a href="DAC8.html">Sprite02_X_Position</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="71a0"></span>71A0</td>
+<td class="instruction">CALL <a href="6C85.html">$6C85</a></td>
+<td class="comment-1" rowspan="1">Call <a href="6C85.html">6C85</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="71a3"></span>71A3</td>
+<td class="instruction">JR C,<a href="7190.html#71b9">HandlerFrog02_CheckEggCollision</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="7190.html#71b9">HandlerFrog02_CheckEggCollision</a> if the egg isn't colliding with the first frog.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="71a5"></span>
+<div class="comments">
+<div class="paragraph">
+Item hit the first frog.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="71a5"></span>71A5</td>
+<td class="instruction">LD A,(HL)</td>
+<td class="comment-1" rowspan="3">Jump to <a href="7190.html#71b6">HandlerEggCollision_Destroy01</a> if the frog is already stunned.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="71a6"></span>71A6</td>
+<td class="instruction">OR A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="71a7"></span>71A7</td>
+<td class="instruction">JR NZ,<a href="7190.html#71b6">HandlerEggCollision_Destroy01</a></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="71a9"></span>
+<div class="comments">
+<div class="paragraph">
+Stun the frog — set a random stun timer and award points.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="71a9"></span>71A9</td>
+<td class="instruction">LD A,R</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=the contents of the Memory Refresh Register.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="71ab"></span>71AB</td>
+<td class="instruction">OR %01000000</td>
+<td class="comment-1" rowspan="1">Set bit 6 (ensure a minimum stun duration).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="71ad"></span>71AD</td>
+<td class="instruction">LD (HL),A</td>
+<td class="comment-1" rowspan="1">Write the stun duration to the first frogs stun countdown.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="71ae"></span>71AE</td>
+<td class="instruction">LD A,$0A</td>
+<td class="comment-1" rowspan="2">Call <a href="67B2.html">AddToScore</a> to add 0A points to the score.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="71b0"></span>71B0</td>
+<td class="instruction">CALL <a href="67B2.html">AddToScore</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="71b3"></span>71B3</td>
+<td class="instruction">CALL <a href="6E5D.html#6f7a">$6F7A</a></td>
+<td class="comment-1" rowspan="1">Call <a href="6E5D.html#6f7a">6F7A</a>.</td>
+</tr>
+<tr>
+<td class="asm-label">HandlerEggCollision_Destroy01</td>
+<td class="address-2"><span id="71b6"></span>71B6</td>
+<td class="instruction">CALL <a href="71E1.html">$71E1</a></td>
+<td class="comment-1" rowspan="1">Call <a href="71E1.html">71E1</a>.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="71b9"></span>
+<div class="comments">
+<div class="paragraph">
+Check if the second frog is active (level above 01).
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">HandlerFrog02_CheckEggCollision</td>
+<td class="address-2"><span id="71b9"></span>71B9</td>
+<td class="instruction">LD A,($5FB1)</td>
+<td class="comment-1" rowspan="3">Return if *<a href="5FB1.html">CurrentLevel</a> is equal to 01.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="71bc"></span>71BC</td>
+<td class="instruction">CP $01</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="71be"></span>71BE</td>
+<td class="instruction">RET Z</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="71bf"></span>
+<div class="comments">
+<div class="paragraph">
+Check the second frog.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="71bf"></span>71BF</td>
+<td class="instruction">LD IX,$DACC</td>
+<td class="comment-1" rowspan="1"><span class="register">IX</span>=<a href="DACC.html">Sprite03_X_Position</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="71c3"></span>71C3</td>
+<td class="instruction">LD HL,$71EC</td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="71EC.html">Frog2_StateData</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="71c6"></span>71C6</td>
+<td class="instruction">CALL <a href="6C85.html">$6C85</a></td>
+<td class="comment-1" rowspan="1">Call <a href="6C85.html">6C85</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="71c9"></span>71C9</td>
+<td class="instruction">RET C</td>
+<td class="comment-1" rowspan="1">Return if the egg isn't colliding with the second frog.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="71ca"></span>
+<div class="comments">
+<div class="paragraph">
+Item hit the second frog.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="71ca"></span>71CA</td>
+<td class="instruction">LD A,(HL)</td>
+<td class="comment-1" rowspan="3">Jump to <a href="7190.html#71da">HandlerEggCollision_Destroy02</a> if the frog is already stunned.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="71cb"></span>71CB</td>
+<td class="instruction">OR A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="71cc"></span>71CC</td>
+<td class="instruction">JR NZ,<a href="7190.html#71da">HandlerEggCollision_Destroy02</a></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="71ce"></span>
+<div class="comments">
+<div class="paragraph">
+Stun the second frog and award points.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="71ce"></span>71CE</td>
+<td class="instruction">LD A,R</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=the contents of the Memory Refresh Register.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="71d0"></span>71D0</td>
+<td class="instruction">OR %00011111</td>
+<td class="comment-1" rowspan="1">Set bits 0-4 (ensure minimum stun duration).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="71d2"></span>71D2</td>
+<td class="instruction">AND %01111111</td>
+<td class="comment-1" rowspan="1">Clear bit 7 (cap the maximum duration).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="71d4"></span>71D4</td>
+<td class="instruction">LD (HL),A</td>
+<td class="comment-1" rowspan="1">Write the stun duration to the second frogs stun countdown.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="71d5"></span>71D5</td>
+<td class="instruction">LD A,$0A</td>
+<td class="comment-1" rowspan="2">Call <a href="67B2.html">AddToScore</a> to add 0A points to the score.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="71d7"></span>71D7</td>
+<td class="instruction">CALL <a href="67B2.html">AddToScore</a></td>
+</tr>
+<tr>
+<td class="asm-label">HandlerEggCollision_Destroy02</td>
+<td class="address-2"><span id="71da"></span>71DA</td>
+<td class="instruction">CALL <a href="71E1.html">$71E1</a></td>
+<td class="comment-1" rowspan="1">Call <a href="71E1.html">71E1</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="71dd"></span>71DD</td>
+<td class="instruction">CALL <a href="6E5D.html#6f7a">$6F7A</a></td>
+<td class="comment-1" rowspan="1">Call <a href="6E5D.html#6f7a">6F7A</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="71e0"></span>71E0</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="70DB.html">70DB</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#7190">Map</a></td>
+<td class="next">
+Next: <a href="71E1.html">71E1</a>
+</td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
+<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
+<div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
+<div><a href="../dec/asm/29072.html">Switch to decimal</a>.</div>
+</footer>
+</body>
+</html>

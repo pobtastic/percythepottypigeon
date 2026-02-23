@@ -62,6 +62,16 @@ Used by the routine at <a href="6992.html">Run_Game_Frame</a>.
 <td class="instruction">PUSH IY</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="69ac"></span>
+<div class="comments">
+<div class="paragraph">
+Clear the frame IDs for: <a href="DAC4.html#dac7">Sprite01_Frame_ID</a>, <a href="DAC8.html#dacb">Sprite02_Frame_ID</a>, <a href="DACC.html#dacf">Sprite03_Frame_ID</a>, <a href="DAD0.html#dad3">Car02_Frame_ID</a>, <a href="DAD4.html#dad7">Car03_Frame_ID</a>, <a href="DAD8.html#dadb">DADB</a>, <a href="DADC.html#dadf">DADF</a> and <a href="DAE0.html#dae3">DAE3</a>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="69ac"></span>69AC</td>
 <td class="instruction">LD B,$07</td>
@@ -71,7 +81,7 @@ Used by the routine at <a href="6992.html">Run_Game_Frame</a>.
 <td class="asm-label"></td>
 <td class="address-1"><span id="69ae"></span>69AE</td>
 <td class="instruction">LD HL,$DAC7</td>
-<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="DAC7.html">DAC7</a>.</td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="DAC4.html#dac7">Sprite01_Frame_ID</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -116,7 +126,7 @@ Used by the routine at <a href="6992.html">Run_Game_Frame</a>.
 <td class="asm-label"></td>
 <td class="address-1"><span id="69ba"></span>69BA</td>
 <td class="instruction">LD HL,$DAEB</td>
-<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="DAE3.html#daeb">DAEB</a>.</td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="DAE8.html#daeb">DAEB</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -195,7 +205,7 @@ Used by the routine at <a href="6992.html">Run_Game_Frame</a>.
 <td class="asm-label"></td>
 <td class="address-1"><span id="69d6"></span>69D6</td>
 <td class="instruction">LD A,($5FC5)</td>
-<td class="comment-1" rowspan="3">Call <a href="6E5D.html#7082">7082</a> if *<a href="5FC5.html">CurrentRoom</a> is equal to 04.</td>
+<td class="comment-1" rowspan="3">Call <a href="7082.html">Handler_Frogs</a> if *<a href="5FC5.html">CurrentRoom</a> is equal to 04.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -205,13 +215,13 @@ Used by the routine at <a href="6992.html">Run_Game_Frame</a>.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="69db"></span>69DB</td>
-<td class="instruction">CALL Z,<a href="6E5D.html#7082">$7082</a></td>
+<td class="instruction">CALL Z,<a href="7082.html">Handler_Frogs</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="69de"></span>69DE</td>
 <td class="instruction">LD A,($5FAD)</td>
-<td class="comment-1" rowspan="3">Call <a href="6480.html#64be">Handle_Title_Screen_4</a> if *<a href="5FAD.html">LandedOnPlatformFlag</a> is non-zero.</td>
+<td class="comment-1" rowspan="3">Call <a href="6480.html#64be">Handle_Title_Screen_4</a> if *<a href="5FAD.html">LandedOnPlatformFlag</a> is set.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -249,13 +259,12 @@ Used by the routine at <a href="6992.html">Run_Game_Frame</a>.
 <td class="asm-label"></td>
 <td class="address-1"><span id="69ef"></span>69EF</td>
 <td class="instruction">INC A</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">A</span> by one.</td>
+<td class="comment-1" rowspan="2">Set border to BLUE.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="69f0"></span>69F0</td>
 <td class="instruction">OUT ($FE),A</td>
-<td class="comment-1" rowspan="1">Set border to the colour held by <span class="register">A</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>

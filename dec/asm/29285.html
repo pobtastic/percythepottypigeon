@@ -38,98 +38,109 @@ Next: <a href="29318.html">29318</a>
 <tr>
 <td class="routine-comment" colspan="5">
 <div class="details">
+<div class="paragraph">
+Handles room 2 logic. The phase counter in <span class="register">B</span> controls which objects are initialised or updated on each pass.
 </div>
+</div>
+<table class="input">
+<tr class="asm-input-header">
+<th colspan="2">Input</th>
+</tr>
+<tr>
+<td class="register">B</td>
+<td class="register-desc">Room phase counter (from *<a href="24497.html">CurrentLevel</a>)</td>
+</tr>
+</table>
 </td>
 </tr>
 <tr>
 <td class="asm-label">Handler_Room02</td>
 <td class="address-2"><span id="29285"></span>29285</td>
 <td class="instruction">LD A,B</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=<span class="register">B</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29286"></span>29286</td>
 <td class="instruction">LD IX,56016</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">IX</span>=<a href="56016.html">Car02_X_Position</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29290"></span>29290</td>
 <td class="instruction">CP 2</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Compare <span class="register">A</span> with 2.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29292"></span>29292</td>
 <td class="instruction">PUSH AF</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Stash the phase counter on the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29293"></span>29293</td>
 <td class="instruction">CALL NZ,<a href="29970.html">29970</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Call <a href="29970.html">29970</a> if the phase counter is not equal to 2.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29296"></span>29296</td>
 <td class="instruction">POP AF</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Restore the phase counter from the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29297"></span>29297</td>
 <td class="instruction">LD IX,56024</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">IX</span>=<a href="56024.html">56024</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29301"></span>29301</td>
 <td class="instruction">PUSH AF</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Stash the phase counter on the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29302"></span>29302</td>
 <td class="instruction">CP 4</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Compare the phase counter with 4.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29304"></span>29304</td>
 <td class="instruction">CALL NC,<a href="31186.html">31186</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Call <a href="31186.html">31186</a> if the phase counter is greater than 4.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29307"></span>29307</td>
 <td class="instruction">POP AF</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Restore the phase counter from the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29308"></span>29308</td>
 <td class="instruction">LD IX,56020</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">IX</span>=<a href="56020.html">Car03_X_Position</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29312"></span>29312</td>
 <td class="instruction">CP 3</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Call <a href="29753.html">29753</a> if the phase counter is greater than 3.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29314"></span>29314</td>
 <td class="instruction">CALL NC,<a href="29753.html">29753</a></td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29317"></span>29317</td>
 <td class="instruction">RET</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Return.</td>
 </tr>
 </table>
 <table class="asm-navigation">

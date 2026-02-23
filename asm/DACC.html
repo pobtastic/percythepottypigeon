@@ -33,18 +33,40 @@ Next: <a href="DAD0.html">DAD0</a>
 </td>
 </tr>
 </table>
-<div class="description">DACC: Game status buffer entry at DACC</div>
+<div class="description">DACC: Sprite 3 Data States</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
 <div class="details">
+<div class="paragraph">
+Used by Frog 2.
+</div>
 </div>
 </td>
 </tr>
 <tr>
+<td class="asm-label">Sprite03_X_Position</td>
 <td class="address-1"><span id="dacc"></span>DACC</td>
-<td class="instruction">DEFB $00,$00,$00,$00</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">DEFB $00</td>
+<td class="comment-1" rowspan="1">Sprite 3 X position.</td>
+</tr>
+<tr>
+<td class="asm-label">Sprite03_Y_Position</td>
+<td class="address-1"><span id="dacd"></span>DACD</td>
+<td class="instruction">DEFB $00</td>
+<td class="comment-1" rowspan="1">Sprite 3 Y position.</td>
+</tr>
+<tr>
+<td class="asm-label">Sprite03_Colour</td>
+<td class="address-1"><span id="dace"></span>DACE</td>
+<td class="instruction">DEFB $00</td>
+<td class="comment-1" rowspan="1">Sprite 3 INK colour.</td>
+</tr>
+<tr>
+<td class="asm-label">Sprite03_Frame_ID</td>
+<td class="address-1"><span id="dacf"></span>DACF</td>
+<td class="instruction">DEFB $00</td>
+<td class="comment-1" rowspan="1">Sprite 3 frame ID.</td>
 </tr>
 </table>
 <table class="asm-navigation">

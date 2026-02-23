@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Percy the Potty Pigeon: Routine at 7082</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-dark.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-wide.css" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-75RERFCHBG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-75RERFCHBG');
+</script>
+</head>
+<body class="Asm-c">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html"><img alt="logo" src="../images/logo.png" /></a></td>
+<td class="page-header">Routines</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="6E5D.html">6E5D</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#7082">Map</a></td>
+<td class="next">
+Next: <a href="70DB.html">70DB</a>
+</td>
+</tr>
+</table>
+<div class="description">7082: Handler: Frogs</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="5">
+<div class="details">
+<div class="paragraph">
+Used by the routine at <a href="69A7.html">Run_Main_Loop_Body</a>.
+</div>
+<div class="paragraph">
+Handles the frog enemies. Each frog sits on the ground and periodically jumps upward in an arc, making a croaking sound.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="7082"></span>
+<div class="comments">
+<div class="paragraph">
+Set up the first frog.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Handler_Frogs</td>
+<td class="address-2"><span id="7082"></span>7082</td>
+<td class="instruction">LD IX,$DAC8</td>
+<td class="comment-1" rowspan="1"><span class="register">IX</span>=<a href="DAC8.html">Sprite02_X_Position</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7086"></span>7086</td>
+<td class="instruction">LD A,($5FBB)</td>
+<td class="comment-1" rowspan="3">Jump to <a href="7082.html#7093">Handler_Frog01</a> if *<a href="5FBB.html">RoomBufferFlag</a> is zero.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7089"></span>7089</td>
+<td class="instruction">OR A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="708a"></span>708A</td>
+<td class="instruction">JR Z,<a href="7082.html#7093">Handler_Frog01</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="708c"></span>708C</td>
+<td class="instruction">XOR A</td>
+<td class="comment-1" rowspan="3">Write 00; <ul class="">
+<li>*<a href="71E9.html">Frog1_StateData</a></li>
+<li>*<a href="71EC.html">Frog2_StateData</a></li>
+</ul></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="708d"></span>708D</td>
+<td class="instruction">LD ($71E9),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7090"></span>7090</td>
+<td class="instruction">LD ($71EC),A</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="7093"></span>
+<div class="comments">
+<div class="paragraph">
+Update the first frog.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Handler_Frog01</td>
+<td class="address-2"><span id="7093"></span>7093</td>
+<td class="instruction">LD HL,$71E9</td>
+<td class="comment-1" rowspan="1">Point <span class="register">HL</span> at <a href="71E9.html">Frog1_StateData</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7096"></span>7096</td>
+<td class="instruction">LD B,$88</td>
+<td class="comment-1" rowspan="1">Load <span class="register">B</span> with the first frogs ground Y position (88).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7098"></span>7098</td>
+<td class="instruction">LD C,$3C</td>
+<td class="comment-1" rowspan="1">Load <span class="register">C</span> with the first frogs ground X position (3C).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="709a"></span>709A</td>
+<td class="instruction">CALL <a href="70DB.html">UpdateFrog</a></td>
+<td class="comment-1" rowspan="1">Call <a href="70DB.html">UpdateFrog</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="709d"></span>709D</td>
+<td class="instruction">LD IY,$DAC8</td>
+<td class="comment-1" rowspan="3">Call <a href="6C53.html">CheckSpriteCollision</a> with first sprite: <a href="DAC0.html">Percy_X_Position</a> against second sprite: <a href="DAC8.html">Sprite02_X_Position</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="70a1"></span>70A1</td>
+<td class="instruction">LD IX,$DAC0</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="70a5"></span>70A5</td>
+<td class="instruction">CALL <a href="6C53.html">CheckSpriteCollision</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="70a8"></span>70A8</td>
+<td class="instruction">JR C,<a href="7082.html#70af">Handler_Frog02</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="7082.html#70af">Handler_Frog02</a> if Percy isn't colliding with the second sprite.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="70aa"></span>
+<div class="comments">
+<div class="paragraph">
+Percy has collided with the first frog.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="70aa"></span>70AA</td>
+<td class="instruction">LD A,$FF</td>
+<td class="comment-1" rowspan="2">Write FF to *<a href="5FA7.html">FallingState</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="70ac"></span>70AC</td>
+<td class="instruction">LD ($5FA7),A</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="70af"></span>
+<div class="comments">
+<div class="paragraph">
+The first level only has a single frog and subsequent levels have two.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Handler_Frog02</td>
+<td class="address-2"><span id="70af"></span>70AF</td>
+<td class="instruction">LD A,($5FB1)</td>
+<td class="comment-1" rowspan="3">Jump to <a href="7190.html">HandlerFrog01_CheckEggCollision</a> if *<a href="5FB1.html">CurrentLevel</a> is equal to 01.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="70b2"></span>70B2</td>
+<td class="instruction">CP $01</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="70b4"></span>70B4</td>
+<td class="instruction">JP Z,<a href="7190.html">HandlerFrog01_CheckEggCollision</a></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="70b7"></span>
+<div class="comments">
+<div class="paragraph">
+Update the second frog.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="70b7"></span>70B7</td>
+<td class="instruction">LD HL,$71EC</td>
+<td class="comment-1" rowspan="1">Point <span class="register">HL</span> at <a href="71EC.html">Frog2_StateData</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="70ba"></span>70BA</td>
+<td class="instruction">LD IX,$DACC</td>
+<td class="comment-1" rowspan="1"><span class="register">IX</span>=<a href="DACC.html">Sprite03_X_Position</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="70be"></span>70BE</td>
+<td class="instruction">LD B,$78</td>
+<td class="comment-1" rowspan="1">Load <span class="register">B</span> with the second frogs ground Y position (78).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="70c0"></span>70C0</td>
+<td class="instruction">LD C,$48</td>
+<td class="comment-1" rowspan="1">Load <span class="register">C</span> with the second frogs ground X position (48).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="70c2"></span>70C2</td>
+<td class="instruction">CALL <a href="70DB.html">UpdateFrog</a></td>
+<td class="comment-1" rowspan="1">Call <a href="70DB.html">UpdateFrog</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="70c5"></span>70C5</td>
+<td class="instruction">LD IX,$DAC0</td>
+<td class="comment-1" rowspan="3">Call <a href="6C53.html">CheckSpriteCollision</a> with first sprite: <a href="DAC0.html">Percy_X_Position</a> against second sprite: <a href="DACC.html">Sprite03_X_Position</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="70c9"></span>70C9</td>
+<td class="instruction">LD IY,$DACC</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="70cd"></span>70CD</td>
+<td class="instruction">CALL <a href="6C53.html">CheckSpriteCollision</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="70d0"></span>70D0</td>
+<td class="instruction">JP C,<a href="7190.html">HandlerFrog01_CheckEggCollision</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="7190.html">HandlerFrog01_CheckEggCollision</a> if Percy isn't colliding with the second sprite.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="70d3"></span>
+<div class="comments">
+<div class="paragraph">
+Percy has collided with the second frog.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="70d3"></span>70D3</td>
+<td class="instruction">LD A,$FF</td>
+<td class="comment-1" rowspan="2">Write FF to *<a href="5FA7.html">FallingState</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="70d5"></span>70D5</td>
+<td class="instruction">LD ($5FA7),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="70d8"></span>70D8</td>
+<td class="instruction">JP <a href="7190.html">HandlerFrog01_CheckEggCollision</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="7190.html">HandlerFrog01_CheckEggCollision</a>.</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="6E5D.html">6E5D</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#7082">Map</a></td>
+<td class="next">
+Next: <a href="70DB.html">70DB</a>
+</td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
+<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
+<div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
+<div><a href="../dec/asm/28802.html">Switch to decimal</a>.</div>
+</footer>
+</body>
+</html>

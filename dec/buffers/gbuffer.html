@@ -185,10 +185,10 @@ Set to 1 when Percy has collided with scenery and the move was rejected.
 <td class="map-g"><span id="24489"></span><a href="../asm/24489.html">24489</a></td>
 <td class="map-length">1</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24489.html">Item Collection State</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24489.html">Egg State</a></div>
 <div class="map-entry-desc">
 <div class="paragraph">
-Set to 255 when Percy is flying upward to collect an item. Cleared to 0 when the collection is complete.
+Set to 255 when Percy is dropping an egg, and cleared to 0 when the egg routine is complete.
 </div>
 </div>
 </td>
@@ -449,6 +449,45 @@ Workspace for scoring calculations.
 </td>
 </tr>
 <tr>
+<td class="map-g"><span id="29161"></span><a href="../asm/29161.html">29161</a></td>
+<td class="map-length">3</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/29161.html">Frog 1 State Data</a></div>
+<div class="map-entry-desc">
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="29164"></span><a href="../asm/29164.html">29164</a></td>
+<td class="map-length">3</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/29164.html">Frog 2 State Data</a></div>
+<div class="map-entry-desc">
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="29167"></span><a href="../asm/29167.html">29167</a></td>
+<td class="map-length">25</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/29167.html">Table: Frog Jump Height</a></div>
+<div class="map-entry-desc">
+<div class="paragraph">
+Jump height lookup table. Each entry is the Y offset from ground level for one step of the frog's jump arc. The values rise to a peak of 34 at the midpoint then fall back to 0 forming a smooth parabolic arc over 24 steps.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="29192"></span><a href="../asm/29192.html">29192</a></td>
+<td class="map-length">7</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/29192.html">Game status buffer entry at 7208</a></div>
+<div class="map-entry-desc">
+</div>
+</td>
+</tr>
+<tr>
 <td class="map-g"><span id="29960"></span><a href="../asm/29960.html">29960</a></td>
 <td class="map-length">10</td>
 <td class="map-g-desc">
@@ -504,7 +543,7 @@ Workspace for scoring calculations.
 </tr>
 <tr>
 <td class="map-g"><span id="56000"></span><a href="../asm/56000.html">56000</a></td>
-<td class="map-length">7</td>
+<td class="map-length">4</td>
 <td class="map-g-desc">
 <div class="map-entry-title-11"><a class="map-entry-title" href="../asm/56000.html">Percy States</a></div>
 <div class="map-entry-desc">
@@ -512,11 +551,14 @@ Workspace for scoring calculations.
 </td>
 </tr>
 <tr>
-<td class="map-g"><span id="56007"></span><a href="../asm/56007.html">56007</a></td>
-<td class="map-length">1</td>
+<td class="map-g"><span id="56004"></span><a href="../asm/56004.html">56004</a></td>
+<td class="map-length">4</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/56007.html">Game status buffer entry at DAC7</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/56004.html">Sprite 1 Data States</a></div>
 <div class="map-entry-desc">
+<div class="paragraph">
+Used by the Red Bird.
+</div>
 </div>
 </td>
 </tr>
@@ -524,8 +566,11 @@ Workspace for scoring calculations.
 <td class="map-g"><span id="56008"></span><a href="../asm/56008.html">56008</a></td>
 <td class="map-length">4</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/56008.html">Spider States</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/56008.html">Sprite 2 Data States</a></div>
 <div class="map-entry-desc">
+<div class="paragraph">
+Used by Frog 1.
+</div>
 </div>
 </td>
 </tr>
@@ -533,8 +578,11 @@ Workspace for scoring calculations.
 <td class="map-g"><span id="56012"></span><a href="../asm/56012.html">56012</a></td>
 <td class="map-length">4</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/56012.html">Game status buffer entry at DACC</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/56012.html">Sprite 3 Data States</a></div>
 <div class="map-entry-desc">
+<div class="paragraph">
+Used by Frog 2.
+</div>
 </div>
 </td>
 </tr>
@@ -542,7 +590,7 @@ Workspace for scoring calculations.
 <td class="map-g"><span id="56016"></span><a href="../asm/56016.html">56016</a></td>
 <td class="map-length">4</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/56016.html">Game status buffer entry at DAD0</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/56016.html">Car 2 States</a></div>
 <div class="map-entry-desc">
 </div>
 </td>
@@ -551,7 +599,7 @@ Workspace for scoring calculations.
 <td class="map-g"><span id="56020"></span><a href="../asm/56020.html">56020</a></td>
 <td class="map-length">4</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/56020.html">Game status buffer entry at DAD4</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/56020.html">Car 3 States</a></div>
 <div class="map-entry-desc">
 </div>
 </td>
@@ -567,7 +615,7 @@ Workspace for scoring calculations.
 </tr>
 <tr>
 <td class="map-g"><span id="56028"></span><a href="../asm/56028.html">56028</a></td>
-<td class="map-length">7</td>
+<td class="map-length">4</td>
 <td class="map-g-desc">
 <div class="map-entry-title-11"><a class="map-entry-title" href="../asm/56028.html">Game status buffer entry at DADC</a></div>
 <div class="map-entry-desc">
@@ -575,23 +623,95 @@ Workspace for scoring calculations.
 </td>
 </tr>
 <tr>
-<td class="map-g"><span id="56035"></span><a href="../asm/56035.html">56035</a></td>
-<td class="map-length">29</td>
+<td class="map-g"><span id="56032"></span><a href="../asm/56032.html">56032</a></td>
+<td class="map-length">4</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/56035.html">Game status buffer entry at DAE3</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/56032.html">Egg States?</a></div>
+<div class="map-entry-desc">
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="56036"></span><a href="../asm/56036.html">56036</a></td>
+<td class="map-length">4</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/56036.html">Game status buffer entry at DAE4</a></div>
+<div class="map-entry-desc">
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="56040"></span><a href="../asm/56040.html">56040</a></td>
+<td class="map-length">4</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/56040.html">Game status buffer entry at DAE8</a></div>
+<div class="map-entry-desc">
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="56044"></span><a href="../asm/56044.html">56044</a></td>
+<td class="map-length">4</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/56044.html">Game status buffer entry at DAEC</a></div>
+<div class="map-entry-desc">
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="56048"></span><a href="../asm/56048.html">56048</a></td>
+<td class="map-length">4</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/56048.html">Game status buffer entry at DAF0</a></div>
+<div class="map-entry-desc">
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="56052"></span><a href="../asm/56052.html">56052</a></td>
+<td class="map-length">4</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/56052.html">Game status buffer entry at DAF4</a></div>
+<div class="map-entry-desc">
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="56056"></span><a href="../asm/56056.html">56056</a></td>
+<td class="map-length">4</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/56056.html">Game status buffer entry at DAF8</a></div>
+<div class="map-entry-desc">
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="56060"></span><a href="../asm/56060.html">56060</a></td>
+<td class="map-length">4</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/56060.html">Game status buffer entry at DAFC</a></div>
 <div class="map-entry-desc">
 </div>
 </td>
 </tr>
 <tr>
 <td class="map-g"><span id="56064"></span><a href="../asm/56064.html">56064</a></td>
-<td class="map-length">926</td>
+<td class="map-length">12</td>
 <td class="map-g-desc">
 <div class="map-entry-title-11"><a class="map-entry-title" href="../asm/56064.html">Percy Previous X Position</a></div>
 <div class="map-entry-desc">
 <div class="paragraph">
 Stores Percy's X position from the previous frame, used to detect horizontal movement for the wing flap animation.
 </div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="56076"></span><a href="../asm/56076.html">56076</a></td>
+<td class="map-length">914</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/56076.html">Game status buffer entry at DB0C</a></div>
+<div class="map-entry-desc">
 </div>
 </td>
 </tr>
