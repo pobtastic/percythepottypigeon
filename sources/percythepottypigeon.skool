@@ -755,11 +755,11 @@ g$5FA7 DEFB $00
 @label=CollisionFlag
 g$5FA8 DEFB $00
 
-; Item Collection State
+; Egg State
 ;
-; Set to #N$FF when Percy is flying upward to collect an item. Cleared
-; to #N$00 when the collection is complete.
-@label=ItemCollectionState
+; Set to #N$FF when Percy is dropping an egg, and cleared to #N$00 when
+; the egg routine is complete.
+@label=EggDropState
 g$5FA9 DEFB $00
 
 ; Game Mode Flag
@@ -1530,16 +1530,16 @@ c$62D8 LD A,($5FA2)  ; {Jump to #R$62ED if *#R$5FA4 is the same as *#R$5FA2.
  $62E0 JR Z,$62ED    ; }
 ; Input changed so decelerate.
  $62E2 LD A,($5FAE)  ; #REGa=*#R$5FAE.
- $62E5 CP $01        ; Return if already at minimum speed (#N$01).
- $62E7 RET Z         ;
+ $62E5 CP $01        ; {Return if already at minimum speed (#N$01).
+ $62E7 RET Z         ; }
  $62E8 DEC A         ; Decrease speed by one.
  $62E9 LD ($5FAE),A  ; Write #REGa to *#R$5FAE.
  $62EC RET           ; Return.
 ; Input is the same so accelerate.
 @label=UpdateMovementSpeed_Accelerate
 *$62ED LD A,($5FAE)  ; #REGa=*#R$5FAE.
- $62F0 CP $04        ; Return if already at maximum speed (#N$04).
- $62F2 RET Z         ;
+ $62F0 CP $04        ; {Return if already at maximum speed (#N$04).
+ $62F2 RET Z         ; }
  $62F3 INC A         ; Increase speed by one.
  $62F4 LD ($5FAE),A  ; Write #REGa to *#R$5FAE.
  $62F7 RET           ; Return.
@@ -1548,8 +1548,8 @@ c$62D8 LD A,($5FA2)  ; {Jump to #R$62ED if *#R$5FA4 is the same as *#R$5FA2.
 ; No input so decelerate movement speed towards minimum.
 @label=UpdateMovementSpeed_Decelerate
 *$62F8 LD A,($5FAE)  ; #REGa=*#R$5FAE.
- $62FB CP $01        ; Return if already at minimum speed (#N$01).
- $62FD RET Z         ;
+ $62FB CP $01        ; {Return if already at minimum speed (#N$01).
+ $62FD RET Z         ; }
  $62FE DEC A         ; Decrease speed by one.
  $62FF LD ($5FAE),A  ; Write #REGa to *#R$5FAE.
  $6302 LD A,($5FA4)  ; {#REGe=*#R$5FA4 (use the previous direction for
@@ -2430,8 +2430,8 @@ c$679C LD BC,$0160   ; #REGbc=#N$0160 (number of attribute cells to search).
 
 ; Add To Score
 ;
-; Used by the routines at #R$662B, #R$693B, #R$69F7, #R$6CDD, #R$6E5D and
-; #R$74D6.
+; Used by the routines at #R$662B, #R$693B, #R$69F7, #R$6CDD, #R$6E5D, #R$7190
+; and #R$74D6.
 ; .
 ; Converts a binary score value in #REGa into three decimal digits and
 ; adds them to the current score. The digits are stored in the score buffer at
@@ -2854,6 +2854,7 @@ c$6992 CALL $662B    ; Call #R$662B.
 c$69A7 DI            ; Disable interrupts.
  $69A8 PUSH IX       ; {Stash #REGix and #REGiy on the stack.
  $69AA PUSH IY       ; }
+; Clear the frame IDs for: #FOR$00,$07||n|#R($DAC7+(n*$04))|, | and ||.
  $69AC LD B,$07      ; #REGb=#N$07.
  $69AE LD HL,$DAC7   ; #REGhl=#R$DAC7.
  $69B1 LD C,$00      ; #REGc=#N$00.
@@ -2882,15 +2883,15 @@ c$69A7 DI            ; Disable interrupts.
  $69D6 LD A,($5FC5)  ; {Call #R$7082 if *#R$5FC5 is equal to #N$04.
  $69D9 CP $04        ;
  $69DB CALL Z,$7082  ; }
- $69DE LD A,($5FAD)  ; {Call #R$64BE if *#R$5FAD is non-zero.
+ $69DE LD A,($5FAD)  ; {Call #R$64BE if *#R$5FAD is set.
  $69E1 OR A          ;
  $69E2 CALL NZ,$64BE ; }
  $69E5 LD A,($5FB3)  ; {Write *#R$5FB3 to *#R$6CC3.
  $69E8 LD ($6CC3),A  ; }
  $69EB XOR A         ; {Write #N$00 to *#R$5FBE.
  $69EC LD ($5FBE),A  ; }
- $69EF INC A         ; Increment #REGa by one.
- $69F0 OUT ($FE),A   ; Set border to the colour held by #REGa.
+ $69EF INC A         ; {Set border to #INK$01.
+ $69F0 OUT ($FE),A   ; }
  $69F2 POP IY        ; {Restore #REGiy and #REGix from the stack.
  $69F4 POP IX        ; }
  $69F6 RET           ; Return.
@@ -3240,37 +3241,67 @@ c$6C39 LD A,($6CB7)  ;
 *$6C4F LD ($6CB7),A  ;
  $6C52 RET           ;
 
-; Routine at 6C53
+; Check Sprite Collision
 ;
-; Used by the routines at #R$69F7, #R$6E5D, #R$74D6, #R$7512, #R$7680 and
-; #R$794A.
-c$6C53 LD A,(IX+$00) ;
- $6C56 CP (IY+$00)   ;
- $6C59 JR NC,$6C63   ;
- $6C5B ADD A,$10     ;
- $6C5D CP (IY+$00)   ;
- $6C60 JR NC,$6C6E   ;
- $6C62 RET           ;
-*$6C63 LD A,(IY+$00) ;
- $6C66 ADD A,$10     ;
- $6C68 CP (IX+$00)   ;
- $6C6B JR NC,$6C6E   ;
- $6C6D RET           ;
-*$6C6E LD A,(IX+$01) ;
- $6C71 CP (IY+$01)   ;
- $6C74 JR NC,$6C7C   ;
- $6C76 ADD A,$0C     ;
- $6C78 CP (IY+$01)   ;
- $6C7B RET           ;
-*$6C7C LD A,(IY+$01) ;
- $6C7F ADD A,$0C     ;
- $6C81 CP (IX+$01)   ;
- $6C84 RET           ;
+; Used by the routines at #R$69F7, #R$6E5D, #R$7082, #R$74D6, #R$7512, #R$768C
+; and #R$794A.
+; .
+; Checks if two sprites overlap by comparing their X and Y positions.
+; Each sprite is assumed to be #N$10 pixels wide and #N$0C pixels tall.
+;
+;   IX Pointer to first sprite data
+;   IY Pointer to second sprite data
+; O:F Carry set = no collision, carry clear = collision
+;
+; First check horizontal overlap. The two sprites overlap in X if
+; neither sprite's left edge is beyond the other's right edge.
+@label=CheckSpriteCollision
+c$6C53 LD A,(IX+$00) ; Load #REGa with the first sprite's X position (from
+                     ; *#REGix+#N$00).
+ $6C56 CP (IY+$00)   ; {Jump to #R$6C63 if the first sprite is to the right of the second
+ $6C59 JR NC,$6C63   ; sprite (checking against *#REGiy+#N$00/ the second sprites X position).
+                     ; }
+; First sprite is to the left so check if its right edge reaches the
+; second sprite.
+ $6C5B ADD A,$10     ; Add #N$10 to the first sprite's X position (add assumed sprite
+                     ; width).
+ $6C5D CP (IY+$00)   ; {Jump to #R$6C6E if the two sprites overlap
+ $6C60 JR NC,$6C6E   ; horizontally.}
+ $6C62 RET           ; Return (there's no horizontal overlap; carry is set).
+; First sprite is to the right so check if the second sprite's right
+; edge reaches the first sprite.
+@label=CheckSpriteCollision_TestRight
+*$6C63 LD A,(IY+$00) ; {Load #REGa with the second sprite's X position (from *#REGiy+#N$00)
+ $6C66 ADD A,$10     ; + #N$10 (adding the sprite width).}
+ $6C68 CP (IX+$00)   ; {Jump to #R$6C6E if the two sprites overlap
+ $6C6B JR NC,$6C6E   ; horizontally.}
+ $6C6D RET           ; Return (there's no horizontal overlap; carry is set).
+; The two sprites overlap horizontally; now check if there's any vertical
+; overlap.
+@label=CheckSpriteCollision_TestVertical
+*$6C6E LD A,(IX+$01) ; Load #REGa with the first sprite's Y position
+                     ; (*#REGix+#N$01).
+ $6C71 CP (IY+$01)   ; {Jump to #R$6C7C if the first sprite is below the second sprite
+ $6C74 JR NC,$6C7C   ; (checking against *#REGiy+#N$01/ the second sprites Y position).
+                     ; }
+; First sprite is above so check if its bottom edge reaches the second
+; sprite.
+ $6C76 ADD A,$0C     ; Add #N$0C to the first sprite's Y position (add assumed sprite
+                     ; height).
+ $6C78 CP (IY+$01)   ; {Return (with; carry clear meaning a collision, and carry set
+ $6C7B RET           ; meaning no collision).}
+; First sprite is below so check if the second sprite's bottom edge
+; reaches the first sprite.
+@label=CheckSpriteCollision_TestBelow
+*$6C7C LD A,(IY+$01) ; {Load #REGa with the second sprite's Y position (from *#REGiy+#N$01)
+ $6C7F ADD A,$0C     ; + #N$0C (adding the sprite height).}
+ $6C81 CP (IX+$01)   ; {Return (with; carry clear meaning a collision, and carry set
+ $6C84 RET           ; meaning no collision).}
 
 ; Routine at 6C85
 ;
-; Used by the routines at #R$69F7, #R$6CDD, #R$6E5D, #R$74D6, #R$7512 and
-; #R$7680.
+; Used by the routines at #R$69F7, #R$6CDD, #R$6E5D, #R$7190, #R$74D6, #R$7512
+; and #R$768C.
 c$6C85 LD A,(IY+$00) ;
  $6C88 ADD A,$04     ;
  $6C8A LD B,A        ;
@@ -3637,8 +3668,8 @@ c$6E5D LD IX,$DAC8     ;
  $6F74 LD (BC),A       ;
  $6F75 LD A,$0F        ;
  $6F77 CALL $67B2      ;
-; This entry point is used by the routines at #R$69F7, #R$74B9, #R$74D6 and
-; #R$7680.
+; This entry point is used by the routines at #R$69F7, #R$7190, #R$74B9,
+; #R$74D6 and #R$768C.
 *$6F7A LD B,$00        ;
 *$6F7C CALL $6C39      ;
  $6F7F AND $18         ;
@@ -3759,50 +3790,88 @@ c$6E5D LD IX,$DAC8     ;
  $707A LD (IX+$06),A   ;
  $707D LD A,$28        ;
  $707F JP $6FB0        ;
-; This entry point is used by the routine at #R$69A7.
-*$7082 LD IX,$DAC8     ;
- $7086 LD A,($5FBB)    ;
- $7089 OR A            ;
- $708A JR Z,$7093      ;
- $708C XOR A           ;
- $708D LD ($71E9),A    ;
- $7090 LD ($71EC),A    ;
-*$7093 LD HL,$71E9     ;
- $7096 LD B,$88        ;
- $7098 LD C,$3C        ;
- $709A CALL $70DB      ;
- $709D LD IY,$DAC8     ;
- $70A1 LD IX,$DAC0     ;
- $70A5 CALL $6C53      ;
- $70A8 JR C,$70AF      ;
- $70AA LD A,$FF        ;
- $70AC LD ($5FA7),A    ;
-*$70AF LD A,($5FB1)    ;
- $70B2 CP $01          ;
- $70B4 JP Z,$7190      ;
- $70B7 LD HL,$71EC     ;
- $70BA LD IX,$DACC     ;
- $70BE LD B,$78        ;
- $70C0 LD C,$48        ;
- $70C2 CALL $70DB      ;
- $70C5 LD IX,$DAC0     ;
- $70C9 LD IY,$DACC     ;
- $70CD CALL $6C53      ;
- $70D0 JP C,$7190      ;
- $70D3 LD A,$FF        ;
- $70D5 LD ($5FA7),A    ;
- $70D8 JP $7190        ;
-*$70DB LD A,(HL)       ;
- $70DC OR A            ;
- $70DD JR Z,$70ED      ;
- $70DF DEC (HL)        ;
- $70E0 JR Z,$70ED      ;
- $70E2 LD A,(IX+$02)   ;
- $70E5 INC A           ;
- $70E6 AND $03         ;
- $70E8 LD (IX+$02),A   ;
- $70EB JR $70F1        ;
-*$70ED LD (IX+$02),$06 ;
+
+; Handler: Frogs
+;
+; Used by the routine at #R$69A7.
+; .
+; Handles the frog enemies. Each frog sits on the ground and periodically
+; jumps upward in an arc, making a croaking sound.
+;
+; .
+;
+; Set up the first frog.
+@label=Handler_Frogs
+c$7082 LD IX,$DAC8   ; #REGix=#R$DAC8.
+ $7086 LD A,($5FBB)  ; {Jump to #R$7093 if *#R$5FBB is zero.
+ $7089 OR A          ;
+ $708A JR Z,$7093    ; }
+ $708C XOR A         ; {Write #N$00; #LIST
+ $708D LD ($71E9),A  ; { *#R$71E9 }
+ $7090 LD ($71EC),A  ; { *#R$71EC }
+                     ; LIST#}
+; Update the first frog.
+@label=Handler_Frog01
+*$7093 LD HL,$71E9   ; Point #REGhl at #R$71E9.
+ $7096 LD B,$88      ; Load #REGb with the first frogs ground Y position
+                     ; (#N$88).
+ $7098 LD C,$3C      ; Load #REGc with the first frogs ground X position
+                     ; (#N$3C).
+ $709A CALL $70DB    ; Call #R$70DB.
+ $709D LD IY,$DAC8   ; {Call #R$6C53 with first sprite: #R$DAC0 against second sprite:
+ $70A1 LD IX,$DAC0   ; #R$DAC8.
+ $70A5 CALL $6C53    ; }
+ $70A8 JR C,$70AF    ; Jump to #R$70AF if Percy isn't colliding with the second
+                     ; sprite.
+; Percy has collided with the first frog.
+ $70AA LD A,$FF      ; {Write #N$FF to *#R$5FA7.
+ $70AC LD ($5FA7),A  ; }
+; The first level only has a single frog and subsequent levels have two.
+@label=Handler_Frog02
+*$70AF LD A,($5FB1)  ; {Jump to #R$7190 if *#R$5FB1 is equal to #N$01.
+ $70B2 CP $01        ;
+ $70B4 JP Z,$7190    ; }
+; Update the second frog.
+ $70B7 LD HL,$71EC   ; Point #REGhl at #R$71EC.
+ $70BA LD IX,$DACC   ; #REGix=#R$DACC.
+ $70BE LD B,$78      ; Load #REGb with the second frogs ground Y position
+                     ; (#N$78).
+ $70C0 LD C,$48      ; Load #REGc with the second frogs ground X position
+                     ; (#N$48).
+ $70C2 CALL $70DB    ; Call #R$70DB.
+ $70C5 LD IX,$DAC0   ; {Call #R$6C53 with first sprite: #R$DAC0 against second sprite:
+ $70C9 LD IY,$DACC   ; #R$DACC.
+ $70CD CALL $6C53    ; }
+ $70D0 JP C,$7190    ; Jump to #R$7190 if Percy isn't colliding with the second
+                     ; sprite.
+; Percy has collided with the second frog.
+ $70D3 LD A,$FF      ; {Write #N$FF to *#R$5FA7.
+ $70D5 LD ($5FA7),A  ; }
+ $70D8 JP $7190      ; Jump to #R$7190.
+
+; Update Frog
+;
+; Used by the routine at #R$7082.
+; .
+; Updates a single frog's behaviour through the jump cycle.
+;
+; BC Ground position
+; HL Pointer to frog state data
+; IX Pointer to frog sprite data
+@label=UpdateFrog
+c$70DB LD A,(HL)       ; Fetch the timer value for the frog.
+ $70DC OR A            ; {Jump to #R$70ED if the timer is zero (the frog is
+ $70DD JR Z,$70ED      ; idle).}
+ $70DF DEC (HL)        ; Decrement the timer by one.
+ $70E0 JR Z,$70ED      ; Jump to #R$70ED if the timer has now reached zero.
+; This Frog is mid-jump, cycle through the animation frames.
+ $70E2 LD A,(IX+$02)   ; #REGa=*#REGix+#N$02.
+ $70E5 INC A           ; Increment #REGa.
+ $70E6 AND %00000011   ; Keep only bits 0-1 (cycle through #N$00-#N$03).
+ $70E8 LD (IX+$02),A   ; Write #REGa to *#REGix+#N$02.
+ $70EB JR $70F1        ; Jump to #R$70F1.
+@label=UpdateFrog_SetIdle
+*$70ED LD (IX+$02),$06 ; Write #N$06 to *#REGix+#N$02.
 *$70F1 INC HL          ;
  $70F2 LD A,(HL)       ;
  $70F3 OR A            ;
@@ -3900,59 +3969,98 @@ c$6E5D LD IX,$DAC8     ;
  $7187 LD (IX+$00),A   ;
  $718A LD (IX+$03),$2C ;
  $718E JR $717A        ;
-*$7190 LD A,($5FA9)    ;
- $7193 OR A            ;
- $7194 RET Z           ;
- $7195 LD HL,$71E9     ;
- $7198 LD IY,$DAE0     ;
- $719C LD IX,$DAC8     ;
- $71A0 CALL $6C85      ;
- $71A3 JR C,$71B9      ;
- $71A5 LD A,(HL)       ;
- $71A6 OR A            ;
- $71A7 JR NZ,$71B6     ;
- $71A9 LD A,R          ;
- $71AB OR $40          ;
- $71AD LD (HL),A       ;
- $71AE LD A,$0A        ;
- $71B0 CALL $67B2      ;
- $71B3 CALL $6F7A      ;
-*$71B6 CALL $71E1      ;
-*$71B9 LD A,($5FB1)    ;
- $71BC CP $01          ;
- $71BE RET Z           ;
- $71BF LD IX,$DACC     ;
- $71C3 LD HL,$71EC     ;
- $71C6 CALL $6C85      ;
- $71C9 RET C           ;
- $71CA LD A,(HL)       ;
- $71CB OR A            ;
- $71CC JR NZ,$71DA     ;
- $71CE LD A,R          ;
- $71D0 OR $1F          ;
- $71D2 AND $7F         ;
- $71D4 LD (HL),A       ;
- $71D5 LD A,$0A        ;
- $71D7 CALL $67B2      ;
-*$71DA CALL $71E1      ;
- $71DD CALL $6F7A      ;
- $71E0 RET             ;
+
+; Handler: Frogs Check Egg Collision
+;
+; Used by the routine at #R$7082.
+;
+; .
+;
+; Return if an egg isn't being dropped at this point.
+@label=HandlerFrog01_CheckEggCollision
+c$7190 LD A,($5FA9)  ; {Return if *#R$5FA9 is unset.
+ $7193 OR A          ;
+ $7194 RET Z         ; }
+; Check the first frog.
+ $7195 LD HL,$71E9   ; #REGhl=#R$71E9.
+ $7198 LD IY,$DAE0   ; #REGiy=#R$DAE0.
+ $719C LD IX,$DAC8   ; #REGix=#R$DAC8.
+ $71A0 CALL $6C85    ; Call #R$6C85.
+ $71A3 JR C,$71B9    ; Jump to #R$71B9 if the egg isn't colliding with the
+                     ; first frog.
+; Item hit the first frog.
+ $71A5 LD A,(HL)     ; {Jump to #R$71B6 if the frog is already stunned.
+ $71A6 OR A          ;
+ $71A7 JR NZ,$71B6   ; }
+; Stun the frog — set a random stun timer and award points.
+ $71A9 LD A,R        ; #REGa=the contents of the Memory Refresh Register.
+ $71AB OR %01000000  ; Set bit 6 (ensure a minimum stun duration).
+ $71AD LD (HL),A     ; Write the stun duration to the first frogs stun
+                     ; countdown.
+ $71AE LD A,$0A      ; {Call #R$67B2 to add #N$0A points to the score.
+ $71B0 CALL $67B2    ; }
+ $71B3 CALL $6F7A    ; Call #R$6F7A.
+@label=HandlerEggCollision_Destroy01
+*$71B6 CALL $71E1    ; Call #R$71E1.
+; Check if the second frog is active (level above #N$01).
+@label=HandlerFrog02_CheckEggCollision
+*$71B9 LD A,($5FB1)  ; {Return if *#R$5FB1 is equal to #N$01.
+ $71BC CP $01        ;
+ $71BE RET Z         ; }
+; Check the second frog.
+ $71BF LD IX,$DACC   ; #REGix=#R$DACC.
+ $71C3 LD HL,$71EC   ; #REGhl=#R$71EC.
+ $71C6 CALL $6C85    ; Call #R$6C85.
+ $71C9 RET C         ; Return if the egg isn't colliding with the second frog.
+; Item hit the second frog.
+ $71CA LD A,(HL)     ; {Jump to #R$71DA if the frog is already stunned.
+ $71CB OR A          ;
+ $71CC JR NZ,$71DA   ; }
+; Stun the second frog and award points.
+ $71CE LD A,R        ; #REGa=the contents of the Memory Refresh Register.
+ $71D0 OR %00011111  ; Set bits 0-4 (ensure minimum stun duration).
+ $71D2 AND %01111111 ; Clear bit 7 (cap the maximum duration).
+ $71D4 LD (HL),A     ; Write the stun duration to the second frogs stun
+                     ; countdown.
+ $71D5 LD A,$0A      ; {Call #R$67B2 to add #N$0A points to the score.
+ $71D7 CALL $67B2    ; }
+@label=HandlerEggCollision_Destroy02
+*$71DA CALL $71E1    ; Call #R$71E1.
+ $71DD CALL $6F7A    ; Call #R$6F7A.
+ $71E0 RET           ; Return.
 
 ; Routine at 71E1
 ;
-; Used by the routines at #R$69F7, #R$6E5D, #R$74D6 and #R$7512.
+; Used by the routines at #R$69F7, #R$7190, #R$74D6 and #R$7512.
 c$71E1 XOR A         ; {Write #N$00 to; #LIST
  $71E2 LD ($DAE3),A  ; { *#R$DAE3 }
  $71E5 LD ($5FA9),A  ; { *#R$5FA9 }
                      ; LIST#}
  $71E8 RET           ; Return.
 
-; Data block at 71E9
-b$71E9 DEFB $00,$00,$00,$00,$00,$00,$05,$08
- $71F1 DEFB $0B,$0E,$10,$12,$16,$18,$1B,$1D
- $71F9 DEFB $20,$21,$22,$21,$20,$1D,$1B,$18
- $7201 DEFB $16,$12,$10,$0E,$0B,$08,$05,$00
- $7209 DEFB $00,$00,$00,$00,$00,$00
+; Frog 1 State Data
+@label=Frog1_StateData
+g$71E9 DEFB $00      ; Stun countdown.
+ $71EA DEFB $00,$00
+
+; Frog 2 State Data
+@label=Frog2_StateData
+g$71EC DEFB $00      ; Stun countdown.
+ $71ED DEFB $00,$00
+
+; Table: Frog Jump Height
+;
+; Jump height lookup table. Each entry is the Y offset from ground level
+; for one step of the frog's jump arc. The values rise to a peak of #N$22 at
+; the midpoint then fall back to #N$00, forming a smooth parabolic arc over
+; #N$18 steps.
+@label=Table_FrogJumpHeight
+g$71EF DEFB $05,$08,$0B,$0E,$10,$12,$16,$18,$1B,$1D,$20,$21
+ $71FB DEFB $22
+ $71FC DEFB $21,$20,$1D,$1B,$18,$16,$12,$10,$0E,$0B,$08,$05
+
+; Game status buffer entry at 7208
+g$7208 DEFB $00,$00,$00,$00,$00,$00,$00
 
 ; Room Handler Dispatch
 ;
@@ -4026,22 +4134,27 @@ c$723F LD A,B        ; #REGa=#REGb.
  $7264 RET           ; Return.
 
 ; Handler: Room #N$02
+;
+; Handles room #N$02 logic. The phase counter in #REGb controls which
+; objects are initialised or updated on each pass.
+;
+; B Room phase counter (from *#R$5FB1)
 @label=Handler_Room02
-c$7265 LD A,B        ;
- $7266 LD IX,$DAD0   ;
- $726A CP $02        ;
- $726C PUSH AF       ;
- $726D CALL NZ,$7512 ;
- $7270 POP AF        ;
- $7271 LD IX,$DAD8   ;
- $7275 PUSH AF       ;
- $7276 CP $04        ;
- $7278 CALL NC,$79D2 ;
- $727B POP AF        ;
- $727C LD IX,$DAD4   ;
- $7280 CP $03        ;
- $7282 CALL NC,$7439 ;
- $7285 RET           ;
+c$7265 LD A,B        ; #REGa=#REGb.
+ $7266 LD IX,$DAD0   ; #REGix=#R$DAD0.
+ $726A CP $02        ; Compare #REGa with #N$02.
+ $726C PUSH AF       ; Stash the phase counter on the stack.
+ $726D CALL NZ,$7512 ; Call #R$7512 if the phase counter is not equal to #N$02.
+ $7270 POP AF        ; Restore the phase counter from the stack.
+ $7271 LD IX,$DAD8   ; #REGix=#R$DAD8.
+ $7275 PUSH AF       ; Stash the phase counter on the stack.
+ $7276 CP $04        ; Compare the phase counter with #N$04.
+ $7278 CALL NC,$79D2 ; Call #R$79D2 if the phase counter is greater than #N$04.
+ $727B POP AF        ; Restore the phase counter from the stack.
+ $727C LD IX,$DAD4   ; #REGix=#R$DAD4.
+ $7280 CP $03        ; {Call #R$7439 if the phase counter is greater than
+ $7282 CALL NC,$7439 ; #N$03.}
+ $7285 RET           ; Return.
 
 ; Handler: Room #N$03
 @label=Handler_Room03
@@ -4137,8 +4250,8 @@ c$730E LD A,B        ; #REGa=#REGb.
  $7323 POP AF        ; Restore the phase counter from the stack.
 ; Second object; return early if still in phase #N$01.
  $7324 LD IX,$DACC   ; #REGix=#R$DACC.
- $7328 CP $01        ; Return if the phase counter is #N$01.
- $732A RET Z         ;
+ $7328 CP $01        ; {Return if the phase counter is #N$01.
+ $732A RET Z         ; }
  $732B PUSH AF       ; Stash the phase counter on the stack.
  $732C CALL $7512    ; Call #R$7512.
  $732F POP AF        ; Restore the phase counter from the stack.
@@ -4355,7 +4468,7 @@ c$74A7 CALL $7930     ;
 
 ; Routine at 74B9
 ;
-; Used by the routines at #R$7439, #R$7512, #R$7680, #R$7893 and #R$79D2.
+; Used by the routines at #R$7439, #R$7512, #R$768C, #R$7893 and #R$79D2.
 c$74B9 LD A,(IY+$00) ;
  $74BC CP $85        ;
  $74BE RET Z         ;
@@ -4372,13 +4485,13 @@ c$74B9 LD A,(IY+$00) ;
 
 ; Routine at 74D6
 ;
-; Used by the routines at #R$7439, #R$7512, #R$7680 and #R$79D2.
+; Used by the routines at #R$7439, #R$7512, #R$768C and #R$79D2.
 c$74D6 PUSH IY         ;
  $74D8 LD IY,$DAC0     ;
  $74DC CALL $6C53      ;
  $74DF POP IY          ;
  $74E1 JR C,$74EA      ;
-; This entry point is used by the routines at #R$7680 and #R$794A.
+; This entry point is used by the routines at #R$768C and #R$794A.
 *$74E3 LD ($5FA7),A    ;
  $74E6 CALL $6F7A      ;
  $74E9 RET             ;
@@ -4391,7 +4504,7 @@ c$74D6 PUSH IY         ;
  $74F8 POP IY          ;
  $74FA RET C           ;
  $74FB LD (IY+$00),$80 ;
-; This entry point is used by the routine at #R$7680.
+; This entry point is used by the routine at #R$768C.
 *$74FF CALL $71E1      ;
  $7502 LD A,$14        ;
  $7504 JP $67B2        ;
@@ -4413,34 +4526,34 @@ g$7508 DEFB $00
 ;
 ; Used by the routines at #R$7265, #R$7286, #R$72E1, #R$730E, #R$7367 and
 ; #R$73A4.
-c$7512 LD IY,$7AC8    ;
- $7516 LD HL,$7589    ;
- $7519 LD BC,$0739    ;
-*$751C LD A,($5FC5)   ;
+c$7512 LD IY,$7AC8    ; #REGiy=#R$7AC8.
+ $7516 LD HL,$7589    ; #REGhl=#R$7589.
+ $7519 LD BC,$0739    ; #REGbc=#N$0739.
+*$751C LD A,($5FC5)   ; {#REGe=(*#R$5FC5 - #N$01) * #N$04.
  $751F DEC A          ;
  $7520 ADD A,A        ;
  $7521 ADD A,A        ;
- $7522 LD E,A         ;
- $7523 LD D,$00       ;
- $7525 ADD IY,DE      ;
+ $7522 LD E,A         ; }
+ $7523 LD D,$00       ; #REGd=#N$00.
+ $7525 ADD IY,DE      ; #REGiy+=#REGde.
 ; This entry point is used by the routine at #R$7893.
-*$7527 LD A,($5FBB)   ;
+*$7527 LD A,($5FBB)   ; {Call #R$7574 if *#R$5FBB is non-zero.
  $752A OR A           ;
- $752B CALL NZ,$7574  ;
- $752E BIT 7,(IY+$00) ;
- $7532 JR NZ,$74B9    ;
- $7534 LD A,(HL)      ;
- $7535 BIT 7,A        ;
- $7537 INC HL         ;
- $7538 JR NZ,$754E    ;
- $753A LD A,(IX+$00)  ;
- $753D ADD A,(HL)     ;
- $753E CP (IY+$03)    ;
- $7541 DEC HL         ;
- $7542 JR C,$7549     ;
- $7544 LD A,$80       ;
- $7546 LD (HL),A      ;
- $7547 JR $755F       ;
+ $752B CALL NZ,$7574  ; }
+ $752E BIT 7,(IY+$00) ; Test bit 7 of *#REGiy+#N$00.
+ $7532 JR NZ,$74B9    ; Jump to #R$74B9 if #REGa is not equal to #REGa.
+ $7534 LD A,(HL)      ; #REGa=*#REGhl.
+ $7535 BIT 7,A        ; Test bit 7 of #REGa.
+ $7537 INC HL         ; Increment #REGhl by one.
+ $7538 JR NZ,$754E    ; Jump to #R$754E if #REGhl is not equal to #REGa.
+ $753A LD A,(IX+$00)  ; #REGa=*#REGix+#N$00.
+ $753D ADD A,(HL)     ; #REGa+=*#REGhl.
+ $753E CP (IY+$03)    ; Compare #REGa with *#REGiy+#N$03.
+ $7541 DEC HL         ; Decrease #REGhl by one.
+ $7542 JR C,$7549     ; Jump to #R$7549 if #REGhl is less than #REGa.
+ $7544 LD A,$80       ; {Write #N$80 to *#REGhl.
+ $7546 LD (HL),A      ; }
+ $7547 JR $755F       ; Jump to #R$755F.
 *$7549 LD (IX+$00),A  ;
  $754C JR $755F       ;
 *$754E LD A,(IX+$00)  ;
@@ -4601,249 +4714,271 @@ c$7512 LD IY,$7AC8    ;
 ; Game status buffer entry at 7679
 g$7679 DEFB $00,$00,$02,$00,$00,$00,$0E
 
-; Routine at 7680
+; Handler: Plane
 ;
 ; Used by the routines at #R$7286, #R$72BD, #R$72E1 and #R$730E.
-c$7680 PUSH AF         ;
- $7681 CALL $768C      ;
- $7684 POP AF          ;
- $7685 CP $04          ;
- $7687 RET C           ;
- $7688 CALL $7713      ;
- $768B RET             ;
-*$768C LD IY,$77AF     ;
- $7690 LD C,$04        ;
- $7692 LD B,$38        ;
- $7694 LD A,($5FC5)    ;
+;
+; A Phase counter
+; IX Pointer to plane sprite data
+@label=Handler_Plane
+c$7680 PUSH AF       ; Stash the phase counter on the stack.
+ $7681 CALL $768C    ; Call #R$768C.
+ $7684 POP AF        ; Restore the phase counter from the stack.
+; The plane can only deploy paratroopers from phase #N$04 onwards.
+ $7685 CP $04        ; {Return if the phase counter is less than #N$04.
+ $7687 RET C         ; }
+ $7688 CALL $7713    ; Call #R$7713.
+ $768B RET           ; Return.
+
+; Update Plane FlightPath
+;
+; Used by the routine at #R$7680.
+;
+; IX Pointer to plane sprite data
+@label=UpdatePlaneFlightPath
+c$768C LD IY,$77AF     ; #REGiy=#R$77AF.
+ $7690 LD C,$04        ; #REGc=#N$04.
+ $7692 LD B,$38        ; #REGb=#N$38.
+ $7694 LD A,($5FC5)    ; {Jump to #R$769E if *#R$5FC5 is not equal to #N$03.
  $7697 CP $03          ;
- $7699 JR NZ,$769E     ;
- $769B LD C,$40        ;
- $769D LD B,C          ;
-*$769E LD A,($5FBB)    ;
+ $7699 JR NZ,$769E     ; }
+ $769B LD C,$40        ; #REGc=#N$40.
+ $769D LD B,C          ; #REGb=#REGc.
+*$769E LD A,($5FBB)    ; {Jump to #R$76E5 if *#R$5FBB is set.
  $76A1 OR A            ;
- $76A2 JP NZ,$76E5     ;
- $76A5 LD A,(IY+$02)   ;
+ $76A2 JP NZ,$76E5     ; }
+ $76A5 LD A,(IY+$02)   ; {Jump to #R$76DE if *#REGiy+#N$02 is zero.
  $76A8 OR A            ;
- $76A9 JR Z,$76DE      ;
- $76AB BIT 7,(IY+$00)  ;
- $76AF JP NZ,$74B9     ;
- $76B2 LD HL,$77B3     ;
- $76B5 LD A,(IX+$00)   ;
- $76B8 BIT 7,(IY+$01)  ;
- $76BC JR NZ,$76C8     ;
- $76BE ADD A,(HL)      ;
- $76BF CP $EE          ;
- $76C1 JR NC,$770D     ;
- $76C3 LD (IX+$00),A   ;
- $76C6 JR $76CF        ;
-*$76C8 SUB (HL)        ;
- $76C9 CP C            ;
- $76CA JR C,$770D      ;
- $76CC LD (IX+$00),A   ;
-*$76CF LD A,$4D        ;
- $76D1 BIT 7,(IY+$01)  ;
- $76D5 JR NZ,$76D8     ;
- $76D7 INC A           ;
-*$76D8 LD (IX+$03),A   ;
- $76DB JP $74D6        ;
-*$76DE LD A,R          ;
- $76E0 AND $7F         ;
- $76E2 CP $7F          ;
- $76E4 RET NZ          ;
-*$76E5 SET 7,(IY+$02)  ;
- $76E9 XOR A           ;
- $76EA LD ($77AE),A    ;
- $76ED LD (IY+$03),A   ;
- $76F0 LD (IY+$01),A   ;
- $76F3 LD (IX+$00),C   ;
- $76F6 LD (IX+$02),A   ;
- $76F9 LD (IX+$01),B   ;
- $76FC LD (IY+$00),A   ;
- $76FF LD A,R          ;
- $7701 AND $01         ;
- $7703 RET Z           ;
- $7704 LD (IX+$00),$EE ;
- $7708 SET 7,(IY+$01)  ;
- $770C RET             ;
-*$770D LD (IY+$02),$00 ;
- $7711 JR $76DE        ;
-*$7713 LD A,($77AE)    ;
- $7716 OR A            ;
- $7717 JR NZ,$774D     ;
- $7719 BIT 7,(IY+$03)  ;
- $771D JR Z,$776F      ;
- $771F LD IX,$DAF0     ;
- $7723 LD (IX+$03),$14 ;
- $7727 LD A,(IX+$01)   ;
- $772A ADD A,$03       ;
- $772C CP $A0          ;
- $772E JR NC,$776A     ;
- $7730 LD (IX+$01),A   ;
- $7733 PUSH IY         ;
- $7735 LD IX,$DAC0     ;
- $7739 LD IY,$DAF0     ;
- $773D CALL $6C85      ;
- $7740 POP IY          ;
- $7742 RET C           ;
- $7743 LD (IY+$03),$00 ;
- $7747 LD A,$07        ;
- $7749 LD ($77AE),A    ;
- $774C RET             ;
-*$774D DEC A           ;
- $774E LD ($77AE),A    ;
- $7751 OR A            ;
- $7752 JR Z,$7764      ;
- $7754 RRA             ;
- $7755 ADD A,$36       ;
- $7757 LD ($DAC3),A    ;
- $775A LD A,R          ;
- $775C AND $07         ;
- $775E LD ($DAC2),A    ;
- $7761 JP $6F7A        ;
-*$7764 LD A,$FF        ;
- $7766 LD ($5FA7),A    ;
- $7769 RET             ;
-*$776A LD (IY+$03),$00 ;
- $776E RET             ;
-*$776F LD A,R          ;
- $7771 AND $01         ;
- $7773 RET NZ          ;
- $7774 LD A,($DAC1)    ;
- $7777 ADD A,$0A       ;
- $7779 CP (IX+$01)     ;
- $777C RET C           ;
- $777D LD A,($DAC0)    ;
- $7780 AND $FC         ;
- $7782 LD B,A          ;
- $7783 LD A,(IX+$00)   ;
- $7786 AND $FC         ;
- $7788 CP B            ;
- $7789 RET NZ          ;
- $778A BIT 7,(IY+$02)  ;
- $778E RET Z           ;
- $778F BIT 7,(IY+$00)  ;
- $7793 RET NZ          ;
- $7794 LD A,(IX+$01)   ;
- $7797 ADD A,$0A       ;
- $7799 LD ($DAF1),A    ;
- $779C LD A,(IX+$00)   ;
- $779F LD ($DAF0),A    ;
- $77A2 LD A,$FF        ;
+ $76A9 JR Z,$76DE      ; }
+ $76AB BIT 7,(IY+$00)  ; {Jump to #R$74B9 if  bit 7 of *#REGiy+#N$00 is set.
+ $76AF JP NZ,$74B9     ; }
+ $76B2 LD HL,$77B3     ; #REGhl=#R$77B3.
+ $76B5 LD A,(IX+$00)   ; #REGa=*#REGix+#N$00.
+ $76B8 BIT 7,(IY+$01)  ; Test bit 7 of *#REGiy+#N$01.
+ $76BC JR NZ,$76C8     ; Jump to #R$76C8 if #REGa is not equal to #REGa.
+ $76BE ADD A,(HL)      ; #REGa+=*#REGhl.
+ $76BF CP $EE          ; {Jump to #R$770D if #REGa is greater than or equal to
+ $76C1 JR NC,$770D     ; #N$EE.}
+ $76C3 LD (IX+$00),A   ; Write #REGa to *#REGix+#N$00.
+ $76C6 JR $76CF        ; Jump to #R$76CF.
+*$76C8 SUB (HL)        ; #REGa-=*#REGhl.
+ $76C9 CP C            ; {Jump to #R$770D if #REGa is less than #REGc.
+ $76CA JR C,$770D      ; }
+ $76CC LD (IX+$00),A   ; Write #REGa to *#REGix+#N$00.
+*$76CF LD A,$4D        ; #REGa=#N$4D.
+ $76D1 BIT 7,(IY+$01)  ; {Jump to #R$76D8 if bit 7 of *#REGiy+#N$01 is set.
+ $76D5 JR NZ,$76D8     ; }
+ $76D7 INC A           ; Increment #REGa by one.
+*$76D8 LD (IX+$03),A   ; Write #REGa to *#REGix+#N$03.
+ $76DB JP $74D6        ; Jump to #R$74D6.
+*$76DE LD A,R          ; #REGa=the contents of the Memory Refresh Register.
+ $76E0 AND %01111111   ; Keep only bits 0-6.
+ $76E2 CP $7F          ; {Return if #REGa is not equal to #N$7F.
+ $76E4 RET NZ          ; }
+*$76E5 SET 7,(IY+$02)  ; Set bit 7 of *#REGiy+#N$02.
+ $76E9 XOR A           ; {Write #N$00 to; #LIST
+ $76EA LD ($77AE),A    ; { *#R$77AE }
+ $76ED LD (IY+$03),A   ; { *#REGiy+#N$03 }
+ $76F0 LD (IY+$01),A   ; { *#REGiy+#N$01 }
+ $76F3 LD (IX+$00),C   ; { *#REGix+#N$00 }
+ $76F6 LD (IX+$02),A   ; { *#REGix+#N$02 }
+ $76F9 LD (IX+$01),B   ; { *#REGix+#N$01 }
+ $76FC LD (IY+$00),A   ; { *#REGiy+#N$00 }
+                       ; LIST#}
+ $76FF LD A,R          ; #REGa=the contents of the Memory Refresh Register.
+ $7701 AND %00000001   ; Keep only bit 0.
+ $7703 RET Z           ; Return if #REGa is equal to #N$7F.
+ $7704 LD (IX+$00),$EE ; Write #N$EE to *#REGix+#N$00.
+ $7708 SET 7,(IY+$01)  ; Set bit 7 of *#REGiy+#N$01.
+ $770C RET             ; Return.
+*$770D LD (IY+$02),$00 ; Write #N$00 to *#REGiy+#N$02.
+ $7711 JR $76DE        ; Jump to #R$76DE.
+; This entry point is used by the routine at #R$7680.
+*$7713 LD A,($77AE)    ; #REGa=*#R$77AE.
+ $7716 OR A            ; {Jump to #R$774D if #REGa is non-zero.
+ $7717 JR NZ,$774D     ; }
+ $7719 BIT 7,(IY+$03)  ; {Jump to #R$776F if bit 7 of *#REGiy+#N$03 not set.
+ $771D JR Z,$776F      ; }
+ $771F LD IX,$DAF0     ; #REGix=#R$DAF0.
+ $7723 LD (IX+$03),$14 ; Write #N$14 to *#REGix+#N$03.
+ $7727 LD A,(IX+$01)   ; #REGa=*#REGix+#N$01.
+ $772A ADD A,$03       ; #REGa+=#N$03.
+ $772C CP $A0          ; {Jump to #R$776A if #REGa is greater than or equal to
+ $772E JR NC,$776A     ; #N$A0.}
+ $7730 LD (IX+$01),A   ; Write #REGa to *#REGix+#N$01.
+ $7733 PUSH IY         ; Stash #REGiy on the stack.
+ $7735 LD IX,$DAC0     ; #REGix=#R$DAC0.
+ $7739 LD IY,$DAF0     ; #REGiy=#R$DAF0.
+ $773D CALL $6C85      ; Call #R$6C85.
+ $7740 POP IY          ; Restore #REGiy from the stack.
+ $7742 RET C           ; Return if #REGa is less than #N$A0.
+ $7743 LD (IY+$03),$00 ; Write #N$00 to *#REGiy+#N$03.
+ $7747 LD A,$07        ; {Write #N$07 to *#R$77AE.
+ $7749 LD ($77AE),A    ; }
+ $774C RET             ; Return.
+*$774D DEC A           ; Decrease #REGa by one.
+ $774E LD ($77AE),A    ; Write #REGa to *#R$77AE.
+ $7751 OR A            ; {Jump to #R$7764 if #REGa is zero.
+ $7752 JR Z,$7764      ; }
+ $7754 RRA             ; RRA.
+ $7755 ADD A,$36       ; #REGa+=#N$36.
+ $7757 LD ($DAC3),A    ; Write #REGa to *#R$DAC3.
+ $775A LD A,R          ; #REGa=the contents of the Memory Refresh Register.
+ $775C AND %00000111   ; Keep only bits 0-2.
+ $775E LD ($DAC2),A    ; Write #REGa to *#R$DAC2.
+ $7761 JP $6F7A        ; Jump to #R$6F7A.
+*$7764 LD A,$FF        ; {Write #N$FF to *#R$5FA7.
+ $7766 LD ($5FA7),A    ; }
+ $7769 RET             ; Return.
+*$776A LD (IY+$03),$00 ; Write #N$00 to *#REGiy+#N$03.
+ $776E RET             ; Return.
+*$776F LD A,R          ; #REGa=the contents of the Memory Refresh Register.
+ $7771 AND %00000001   ; Keep only bits 0.
+ $7773 RET NZ          ; Return if #REGa is not equal to #REGa.
+ $7774 LD A,($DAC1)    ; #REGa=*#R$DAC1.
+ $7777 ADD A,$0A       ; #REGa+=#N$0A.
+ $7779 CP (IX+$01)     ; Compare #REGa with *#REGix+#N$01.
+ $777C RET C           ; Return if #REGa is less than #REGa.
+ $777D LD A,($DAC0)    ; #REGa=*#R$DAC0.
+@label=Plane_Y_Position
+ $7780 DEFB $E6        ; Plane Y position.
+@label=Plane_Colour
+ $7781 DEFB $FC        ; Plane INK colour.
+@label=Plane_Frame_ID
+ $7782 DEFB $47        ; Plane frame ID.
+ $7783 DEFB $DD        ;
+ $7784 LD A,(HL)       ;
+ $7785 NOP             ;
+ $7786 AND %11111100   ; Keep only bits 2-7.
+ $7788 CP B            ; {Return if #REGa is not equal to #REGb.
+ $7789 RET NZ          ; }
+ $778A BIT 7,(IY+$02)  ; Test bit 7 of *#REGiy+#N$02.
+ $778E RET Z           ; Return if #REGa is equal to #REGb.
+ $778F BIT 7,(IY+$00)  ; Test bit 7 of *#REGiy+#N$00.
+ $7793 RET NZ          ; Return if #REGa is not equal to #REGb.
+ $7794 LD A,(IX+$01)   ; #REGa=*#REGix+#N$01.
+ $7797 ADD A,$0A       ; #REGa+=#N$0A.
+ $7799 LD ($DAF1),A    ; Write #REGa to *#R$DAF1.
+ $779C LD A,(IX+$00)   ; #REGa=*#REGix+#N$00.
+ $779F LD ($DAF0),A    ; Write #REGa to *#R$DAF0.
+ $77A2 LD A,$FF        ; Write #N$FF to *#R$DAF2.
  $77A4 LD ($DAF2),A    ;
- $77A7 SET 7,(IY+$03)  ;
- $77AB JP $6F7A        ;
- $77AE NOP             ;
- $77AF NOP             ;
+ $77A7 SET 7,(IY+$03)  ; Set bit 7 of *#REGiy+#N$03.
+ $77AB JP $6F7A        ; Jump to #R$6F7A.
+ $77AE DEFB $00        ;
+; Plane States.
+@label=Plane_X_Position
+ $77AF DEFB $00        ; Plane X position.
  $77B0 NOP             ;
  $77B1 NOP             ;
  $77B2 NOP             ;
  $77B3 LD (BC),A       ;
- $77B4 LD IY,$7B04     ;
- $77B8 RET             ;
+ $77B4 LD IY,$7B04     ; #REGiy=#R$7B04.
+ $77B8 RET             ; Return.
 ; This entry point is used by the routines at #R$723F, #R$72BD, #R$7367,
 ; #R$73A4, #R$73FA and #R$7413.
-*$77B9 LD A,($5FBB)    ;
+*$77B9 LD A,($5FBB)    ; {Jump to #R$784F if *#R$5FBB is non-zero.
  $77BC OR A            ;
- $77BD JP NZ,$784F     ;
- $77C0 LD HL,$7891     ;
- $77C3 LD A,($7892)    ;
+ $77BD JP NZ,$784F     ; }
+ $77C0 LD HL,$7891     ; #REGhl=#R$7891.
+ $77C3 LD A,($7892)    ; {Jump to #R$7855 if *#R$7892 is non-zero.
  $77C6 OR A            ;
- $77C7 JP NZ,$7855     ;
- $77CA LD A,R          ;
- $77CC AND $7F         ;
- $77CE CP $7F          ;
- $77D0 JR NZ,$77D5     ;
- $77D2 LD A,(HL)       ;
- $77D3 CPL             ;
- $77D4 LD (HL),A       ;
-*$77D5 LD A,(HL)       ;
+ $77C7 JP NZ,$7855     ; }
+ $77CA LD A,R          ; #REGa=the contents of the Memory Refresh Register.
+ $77CC AND %01111111   ; Keep only bits 0-6.
+ $77CE CP $7F          ; {Jump to #R$77D5 if #REGa is not equal to #N$7F.
+ $77D0 JR NZ,$77D5     ; }
+ $77D2 LD A,(HL)       ; #REGa=*#REGhl.
+ $77D3 CPL             ; Invert the bits in #REGa.
+ $77D4 LD (HL),A       ; Write #REGa to *#REGhl.
+*$77D5 LD A,(HL)       ; {Jump to #R$77E7 if *#REGhl is non-zero.
  $77D6 OR A            ;
- $77D7 JR NZ,$77E7     ;
- $77D9 LD A,(IX+$00)   ;
- $77DC ADD A,$01       ;
- $77DE CP $EE          ;
- $77E0 JR NC,$7847     ;
- $77E2 LD (IX+$00),A   ;
- $77E5 JR $77F3        ;
-*$77E7 LD A,(IX+$00)   ;
- $77EA SUB $01         ;
- $77EC CP $04          ;
- $77EE JR C,$784B      ;
- $77F0 LD (IX+$00),A   ;
-*$77F3 CALL $7930      ;
- $77F6 AND $03         ;
- $77F8 CP $03          ;
- $77FA JR NZ,$7821     ;
- $77FC LD A,R          ;
- $77FE LD B,A          ;
- $77FF BIT 6,A         ;
- $7801 JR NZ,$7812     ;
- $7803 LD A,B          ;
- $7804 AND $01         ;
- $7806 ADD A,(IX+$01)  ;
- $7809 CP $70          ;
- $780B JR NC,$7821     ;
- $780D LD (IX+$01),A   ;
- $7810 JR $7821        ;
-*$7812 LD A,B          ;
- $7813 AND $01         ;
- $7815 LD B,A          ;
- $7816 LD A,(IX+$01)   ;
- $7819 SUB B           ;
- $781A CP $18          ;
- $781C JR C,$7821      ;
- $781E LD (IX+$01),A   ;
-*$7821 LD (IX+$03),$49 ;
- $7825 LD IY,$DAC0     ;
- $7829 CALL $6C53      ;
- $782C JR C,$7831      ;
- $782E JP $74E3        ;
-*$7831 LD A,($5FA9)    ;
+ $77D7 JR NZ,$77E7     ; }
+ $77D9 LD A,(IX+$00)   ; #REGa=*#REGix+#N$00.
+ $77DC ADD A,$01       ; #REGa+=#N$01.
+ $77DE CP $EE          ; {Jump to #R$7847 if #REGa is greater than or equal to
+ $77E0 JR NC,$7847     ; #N$EE.}
+ $77E2 LD (IX+$00),A   ; Write #REGa to *#REGix+#N$00.
+ $77E5 JR $77F3        ; Jump to #R$77F3.
+*$77E7 LD A,(IX+$00)   ; #REGa=*#REGix+#N$00.
+ $77EA SUB $01         ; #REGa-=#N$01.
+ $77EC CP $04          ; {Jump to #R$784B if #REGa is less than #N$04.
+ $77EE JR C,$784B      ; }
+ $77F0 LD (IX+$00),A   ; Write #REGa to *#REGix+#N$00.
+*$77F3 CALL $7930      ; Call #R$7930.
+ $77F6 AND %00000011   ; Keep only bits 0-1.
+ $77F8 CP $03          ; {Jump to #R$7821 if #REGa is not equal to #N$03.
+ $77FA JR NZ,$7821     ; }
+ $77FC LD A,R          ; #REGa=the contents of the Memory Refresh Register.
+ $77FE LD B,A          ; #REGb=#REGa.
+ $77FF BIT 6,A         ; {Jump to #R$7812 if bit 6 of #REGa is set.
+ $7801 JR NZ,$7812     ; }
+ $7803 LD A,B          ; #REGa=#REGb.
+ $7804 AND %00000001   ; Keep only bit 0.
+ $7806 ADD A,(IX+$01)  ; #REGa+=*#REGix+#N$01.
+ $7809 CP $70          ; {Jump to #R$7821 if #REGa is greater than or equal to
+ $780B JR NC,$7821     ; #N$70.}
+ $780D LD (IX+$01),A   ; Write #REGa to *#REGix+#N$01.
+ $7810 JR $7821        ; Jump to #R$7821.
+*$7812 LD A,B          ; #REGa=#REGb.
+ $7813 AND %00000001   ; Keep only bit 0.
+ $7815 LD B,A          ; #REGb=#REGa.
+ $7816 LD A,(IX+$01)   ; #REGa=*#REGix+#N$01.
+ $7819 SUB B           ; #REGa-=#REGb.
+ $781A CP $18          ; {Jump to #R$7821 if #REGa is less than #N$18.
+ $781C JR C,$7821      ; }
+ $781E LD (IX+$01),A   ; Write #REGa to *#REGix+#N$01.
+*$7821 LD (IX+$03),$49 ; Write #N$49 to *#REGix+#N$03.
+ $7825 LD IY,$DAC0     ; #REGiy=#R$DAC0.
+ $7829 CALL $6C53      ; Call #R$6C53.
+ $782C JR C,$7831      ; Jump to #R$7831 if #REGa is less than #N$18.
+ $782E JP $74E3        ; Jump to #R$74E3.
+*$7831 LD A,($5FA9)    ; {Return if *#R$5FA9 is unset.
  $7834 OR A            ;
- $7835 RET Z           ;
- $7836 LD IY,$DAE0     ;
- $783A CALL $6C85      ;
- $783D RET C           ;
- $783E LD A,$01        ;
- $7840 LD ($7892),A    ;
- $7843 JP $74FF        ;
- $7846 RET             ;
-*$7847 LD (HL),$FF     ;
- $7849 JR $7821        ;
-*$784B LD (HL),$00     ;
- $784D JR $7821        ;
-*$784F LD A,$B9        ;
- $7851 LD ($7892),A    ;
- $7854 RET             ;
-*$7855 LD HL,$7892     ;
- $7858 LD A,(HL)       ;
- $7859 CP $04          ;
- $785B JR NC,$7870     ;
- $785D INC A           ;
- $785E LD (HL),A       ;
- $785F ADD A,$48       ;
- $7861 LD (IX+$03),A   ;
- $7864 CALL $7930      ;
- $7867 AND $07         ;
- $7869 LD (IX+$02),A   ;
- $786C CALL $6F7A      ;
- $786F RET             ;
-*$7870 INC A           ;
- $7871 LD (HL),A       ;
- $7872 CP $C8          ;
- $7874 RET NZ          ;
- $7875 LD (IX+$01),$38 ;
- $7879 LD (IX+$02),$07 ;
- $787D LD HL,$7892     ;
- $7880 LD (HL),$00     ;
- $7882 LD (IX+$00),$EE ;
- $7886 CALL $7930      ;
- $7889 BIT 0,A         ;
- $788B RET Z           ;
- $788C LD (IX+$00),$04 ;
- $7890 RET             ;
- $7891 NOP             ;
- $7892 NOP             ;
+ $7835 RET Z           ; }
+ $7836 LD IY,$DAE0     ; #REGiy=#R$DAE0.
+ $783A CALL $6C85      ; Call #R$6C85.
+ $783D RET C           ; Return if #REGa is less than #REGa.
+ $783E LD A,$01        ; {Write #N$01 to *#R$7892.
+ $7840 LD ($7892),A    ; }
+ $7843 JP $74FF        ; Jump to #R$74FF.
+ $7846 RET             ; Return.
+*$7847 LD (HL),$FF     ; Write #N$FF to *#REGhl.
+ $7849 JR $7821        ; Jump to #R$7821.
+*$784B LD (HL),$00     ; Write #N$00 to *#REGhl.
+ $784D JR $7821        ; Jump to #R$7821.
+*$784F LD A,$B9        ; {Write #N$B9 to *#R$7892.
+ $7851 LD ($7892),A    ; }
+ $7854 RET             ; Return.
+*$7855 LD HL,$7892     ; #REGhl=#R$7892.
+ $7858 LD A,(HL)       ; #REGa=*#REGhl.
+ $7859 CP $04          ; {Jump to #R$7870 if #REGa is greater than or equal to
+ $785B JR NC,$7870     ; #N$04.}
+ $785D INC A           ; Increment #REGa by one.
+ $785E LD (HL),A       ; Write #REGa to *#REGhl.
+ $785F ADD A,$48       ; #REGa+=#N$48.
+ $7861 LD (IX+$03),A   ; Write #REGa to *#REGix+#N$03.
+ $7864 CALL $7930      ; Call #R$7930.
+ $7867 AND %00000111   ; Keep only bits 0-2.
+ $7869 LD (IX+$02),A   ; Write #REGa to *#REGix+#N$02.
+ $786C CALL $6F7A      ; Call #R$6F7A.
+ $786F RET             ; Return.
+*$7870 INC A           ; Increment #REGa by one.
+ $7871 LD (HL),A       ; Write #REGa to *#REGhl.
+ $7872 CP $C8          ; {Return if #REGa is not equal to #N$C8.
+ $7874 RET NZ          ; }
+ $7875 LD (IX+$01),$38 ; Write #N$38 to *#REGix+#N$01.
+ $7879 LD (IX+$02),$07 ; Write #N$07 to *#REGix+#N$02.
+ $787D LD HL,$7892     ; #REGhl=#R$7892.
+ $7880 LD (HL),$00     ; Write #N$00 to *#REGhl.
+ $7882 LD (IX+$00),$EE ; Write #N$EE to *#REGix+#N$00.
+ $7886 CALL $7930      ; Call #R$7930.
+ $7889 BIT 0,A         ; {Return if bit 0 of #REGa is not set.
+ $788B RET Z           ; }
+ $788C LD (IX+$00),$04 ; Write #N$04 to *#REGix+#N$00.
+ $7890 RET             ; Return.
+ $7891 DEFB $00        ;
+ $7892 DEFB $00        ;
 
 ; Routine at 7893
 ;
@@ -4925,7 +5060,7 @@ g$7924 DEFB $00,$00,$01,$00,$00,$00,$00,$00
 
 ; Routine at 7930
 ;
-; Used by the routines at #R$7439, #R$74A7, #R$74B9, #R$7512 and #R$7680.
+; Used by the routines at #R$7439, #R$74A7, #R$74B9, #R$7512 and #R$768C.
 c$7930 LD A,($7AC7)  ;
  $7933 LD H,A        ;
  $7934 LD L,$00      ;
@@ -5126,20 +5261,21 @@ c$79D2 LD A,($5FBB)    ;
  $7AC2 RET             ;
 
 ; Data block at 7AC3
-b$7AC3 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $7ACB DEFB $00,$00,$A0,$48,$EF,$00,$88,$70
- $7AD3 DEFB $EF,$00,$00,$00,$00,$00,$A0,$04
- $7ADB DEFB $EF,$00,$90,$32,$99,$00,$A0,$39
- $7AE3 DEFB $A0,$00,$A0,$04,$50,$00,$00,$00
- $7AEB DEFB $00,$00,$00,$00,$00,$00,$78,$70
- $7AF3 DEFB $EF,$00,$00,$00,$00,$00,$00,$00
- $7AFB DEFB $00,$00,$00,$00,$00,$00,$90,$90
- $7B03 DEFB $EF,$00,$38,$00,$00,$00,$00,$00
- $7B0B DEFB $A0,$AA,$00,$00,$00,$00,$00,$00
- $7B13 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $7B1B DEFB $00,$00,$00,$68,$50,$78,$00,$88
- $7B23 DEFB $BC,$EF,$00,$00,$00,$00,$00,$98
- $7B2B DEFB $78,$EF,$00
+b$7AC3 DEFB $00,$00,$00,$00,$00
+ $7AC8 DEFB $00,$00,$00,$00,$00,$A0,$48,$EF
+ $7AD0 DEFB $00,$88,$70,$EF,$00,$00,$00,$00
+ $7AD8 DEFB $00,$A0,$04,$EF,$00,$90,$32,$99
+ $7AE0 DEFB $00,$A0,$39,$A0,$00,$A0,$04,$50
+ $7AE8 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7AF0 DEFB $00,$78,$70,$EF,$00,$00,$00,$00
+ $7AF8 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7B00 DEFB $00,$90,$90,$EF
+ $7B04 DEFB $00,$38,$00,$00,$00,$00,$00,$A0
+ $7B0C DEFB $AA,$00,$00,$00,$00,$00,$00,$00
+ $7B14 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7B1C DEFB $00,$00,$68,$50,$78,$00,$88,$BC
+ $7B24 DEFB $EF,$00,$00,$00,$00,$00,$98,$78
+ $7B2C DEFB $EF,$00
 
 ; Jump Table: Room Handlers
 @label=JumpTable_RoomHandler
@@ -7258,6 +7394,8 @@ b$AB3B DEFB $00,$01,$01,$03,$03,$37,$57,$FF ; {#UDGTABLE { =h Sprite ID: #N($01+
  $B42B DEFB $00,$00,$00,$01,$03,$FE,$FC,$FE ;   #UDG(#PC+$08*($02*$x+$y))(*udg)
  $B433 DEFB $FE,$FE,$DE,$0F,$9B,$91,$B1,$83 ;   udg
                                             ; ) } TABLE#}
+; Paratrooper.
+; .
 ; Plane: flying left.
 @label=Sprite_49
  $B43B DEFB $01,$07,$0F,$0F,$1F,$1F,$0F,$0F ; {#UDGTABLE { =h Sprite ID: #N($01+(#PC-$AB3B)/$20) }
@@ -7283,13 +7421,13 @@ b$AB3B DEFB $00,$01,$01,$03,$03,$37,$57,$FF ; {#UDGTABLE { =h Sprite ID: #N($01+
  $B4AB DEFB $E0,$F0,$30,$D8,$FE,$F7,$7B,$3B ;   #UDG(#PC+$08*($02*$x+$y))(*udg)
  $B4B3 DEFB $3B,$76,$FC,$EC,$F6,$AE,$9C,$F8 ;   udg
                                             ; ) } TABLE#}
-@label=Sprite_4D
  $B4BB DEFB $00,$00,$00,$00,$0E,$13,$F7,$FF ; {#UDGTABLE { =h Sprite ID: #N($01+(#PC-$AB3B)/$20) }
  $B4C3 DEFB $70,$1F,$00,$00,$00,$00,$00,$00 ; { #UDGS$02,$02(udg#PC-56x4)(
  $B4CB DEFB $00,$00,$00,$03,$07,$0F,$F9,$FF ;   #UDG(#PC+$08*($02*$x+$y))(*udg)
  $B4D3 DEFB $78,$C0,$00,$00,$00,$00,$00,$00 ;   udg
                                             ; ) } TABLE#}
 ; Plane: flying right.
+@label=Sprite_4D
 @label=Sprite_4E
  $B4DB DEFB $00,$00,$00,$C0,$E0,$F0,$9F,$FF ; {#UDGTABLE { =h Sprite ID: #N($01+(#PC-$AB3B)/$20) }
  $B4E3 DEFB $1E,$03,$00,$00,$00,$00,$00,$00 ; { #UDGS$02,$02(udg#PC-56x4)(
@@ -7832,7 +7970,7 @@ c$BC52 LD C,$58      ; Set the attribute base to #N$58 (i.e. the attribute buffe
 ; E Attribute value to write (ink bits 0-2)
 ; HL Screen buffer address
 ;
-; Check if the Y position crosses a character boundary — if so, an extra
+; Check if the Y position crosses a character boundary; if so, an extra
 ; row of attributes is needed.
 @label=WriteAttributeBlock3Wide
 c$BC74 LD A,H        ; #REGa=#REGh.
@@ -8861,48 +8999,130 @@ g$C000 DEFB $00,$3D,$20,$FD,$A7,$04,$C8,$3E,$7F,$DB,$FE,$1F,$A9,$E6,$20,$28,$F4,
 
 ; Percy States
 @label=Percy_X_Position
-g$DAC0 DEFB $00         ; Percy X position.
+g$DAC0 DEFB $00      ; Percy X position.
 @label=Percy_Y_Position
- $DAC1 DEFB $00         ; Percy Y position.
+ $DAC1 DEFB $00      ; Percy Y position.
 @label=Percy_Colour
- $DAC2 DEFB $00         ; Percy INK colour.
+ $DAC2 DEFB $00      ; Percy INK colour.
 @label=Percy_Frame_ID
- $DAC3 DEFB $00         ; Percy frame ID.
- $DAC4 DEFB $00,$00,$00
+ $DAC3 DEFB $00      ; Percy frame ID.
 
-; Game status buffer entry at DAC7
-g$DAC7 DEFB $00
+; Sprite 1 Data States
+;
+; Used by the Red Bird.
+@label=Sprite01_X_Position
+g$DAC4 DEFB $00      ; Sprite 1 X position.
+@label=Sprite01_Y_Position
+ $DAC5 DEFB $00      ; Sprite 1 Y position.
+@label=Sprite01_Colour
+ $DAC6 DEFB $00      ; Sprite 1 INK colour.
+@label=Sprite01_Frame_ID
+ $DAC7 DEFB $00      ; Sprite 1 frame ID.
 
-; Spider States
-@label=Spider_X_Position
-g$DAC8 DEFB $00      ; Spider X position.
-@label=Spider_Y_Position
- $DAC9 DEFB $00      ; Spider Y position.
-@label=Spider_Colour
- $DACA DEFB $00      ; Spider INK colour.
-@label=Spider_Frame_ID
- $DACB DEFB $00      ; Spider frame ID.
+; Sprite 2 Data States
+;
+; Used by Frog 1.
+@label=Sprite02_X_Position
+g$DAC8 DEFB $00      ; Sprite 2 X position.
+@label=Sprite02_Y_Position
+ $DAC9 DEFB $00      ; Sprite 2 Y position.
+@label=Sprite02_Colour
+ $DACA DEFB $00      ; Sprite 2 INK colour.
+@label=Sprite02_Frame_ID
+ $DACB DEFB $00      ; Sprite 2 frame ID.
 
-; Game status buffer entry at DACC
-g$DACC DEFB $00,$00,$00,$00
+; Sprite 3 Data States
+;
+; Used by Frog 2.
+@label=Sprite03_X_Position
+g$DACC DEFB $00      ; Sprite 3 X position.
+@label=Sprite03_Y_Position
+ $DACD DEFB $00      ; Sprite 3 Y position.
+@label=Sprite03_Colour
+ $DACE DEFB $00      ; Sprite 3 INK colour.
+@label=Sprite03_Frame_ID
+ $DACF DEFB $00      ; Sprite 3 frame ID.
 
-; Game status buffer entry at DAD0
-g$DAD0 DEFB $00,$00,$00,$00
+; Car 2 States
+@label=Car02_X_Position
+g$DAD0 DEFB $00      ; Car 2 X position.
+@label=Car02_Y_Position
+ $DAD1 DEFB $00      ; Car 2 Y position.
+@label=Car02_Colour
+ $DAD2 DEFB $00      ; Car 2 INK colour.
+@label=Car02_Frame_ID
+ $DAD3 DEFB $00      ; Car 2 frame ID.
 
-; Game status buffer entry at DAD4
-g$DAD4 DEFB $00,$00,$00,$00
+; Car 3 States
+@label=Car03_X_Position
+g$DAD4 DEFB $00      ; Car 3 X position.
+@label=Car03_Y_Position
+ $DAD5 DEFB $00      ; Car 3 Y position.
+@label=Car03_Colour
+ $DAD6 DEFB $00      ; Car 3 INK colour.
+@label=Car03_Frame_ID
+ $DAD7 DEFB $00      ; Car 3 frame ID.
 
 ; Game status buffer entry at DAD8
-g$DAD8 DEFB $00,$00,$00,$00
+g$DAD8 DEFB $00
+ $DAD9 DEFB $00
+ $DADA DEFB $00
+ $DADB DEFB $00
 
 ; Game status buffer entry at DADC
-g$DADC DEFB $00,$00,$00,$00,$00,$00,$00
+g$DADC DEFB $00
+ $DADD DEFB $00
+ $DADE DEFB $00
+ $DADF DEFB $00
 
-; Game status buffer entry at DAE3
-g$DAE3 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DAEB DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DAF3 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DAFB DEFB $00,$00,$00,$00,$00
+; Egg States?
+@label=Egg_States
+g$DAE0 DEFB $00
+ $DAE1 DEFB $00
+ $DAE2 DEFB $00
+ $DAE3 DEFB $00
+
+; Game status buffer entry at DAE4
+g$DAE4 DEFB $00
+ $DAE5 DEFB $00
+ $DAE6 DEFB $00
+ $DAE7 DEFB $00
+
+; Game status buffer entry at DAE8
+g$DAE8 DEFB $00
+ $DAE9 DEFB $00
+ $DAEA DEFB $00
+ $DAEB DEFB $00
+
+; Game status buffer entry at DAEC
+g$DAEC DEFB $00
+ $DAED DEFB $00
+ $DAEE DEFB $00
+ $DAEF DEFB $00
+
+; Game status buffer entry at DAF0
+g$DAF0 DEFB $00
+ $DAF1 DEFB $00
+ $DAF2 DEFB $00
+ $DAF3 DEFB $00
+
+; Game status buffer entry at DAF4
+g$DAF4 DEFB $00
+ $DAF5 DEFB $00
+ $DAF6 DEFB $00
+ $DAF7 DEFB $00
+
+; Game status buffer entry at DAF8
+g$DAF8 DEFB $00
+ $DAF9 DEFB $00
+ $DAFA DEFB $00
+ $DAFB DEFB $00
+
+; Game status buffer entry at DAFC
+g$DAFC DEFB $00
+ $DAFD DEFB $00
+ $DAFE DEFB $00
+ $DAFF DEFB $00
 
 ; Percy Previous X Position
 ;
@@ -8911,121 +9131,124 @@ g$DAE3 DEFB $00,$00,$00,$00,$00,$00,$00,$00
 @label=PercyPreviousXPosition
 g$DB00 DEFB $00
  $DB01 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DB09 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DB11 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DB19 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DB21 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DB29 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DB31 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DB39 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DB41 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DB49 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DB51 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DB59 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DB61 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DB69 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DB71 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DB79 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DB81 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DB89 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DB91 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DB99 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DBA1 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DBA9 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DBB1 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DBB9 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DBC1 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DBC9 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DBD1 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DBD9 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DBE1 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DBE9 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DBF1 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DBF9 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DC01 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DC09 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DC11 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DC19 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DC21 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DC29 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DC31 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DC39 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DC41 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DC49 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DC51 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DC59 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DC61 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DC69 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DC71 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DC79 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DC81 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DC89 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DC91 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DC99 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DCA1 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DCA9 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DCB1 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DCB9 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DCC1 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DCC9 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DCD1 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DCD9 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DCE1 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DCE9 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DCF1 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DCF9 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DD01 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DD09 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DD11 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DD19 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DD21 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DD29 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DD31 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DD39 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DD41 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DD49 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DD51 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DD59 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DD61 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DD69 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DD71 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DD79 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DD81 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DD89 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DD91 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DD99 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DDA1 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DDA9 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DDB1 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DDB9 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DDC1 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DDC9 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DDD1 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DDD9 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DDE1 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DDE9 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DDF1 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DDF9 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DE01 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DE09 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DE11 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DE19 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DE21 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DE29 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DE31 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DE39 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DE41 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DE49 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DE51 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DE59 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DE61 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DE69 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DE71 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DE79 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DE81 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DE89 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DE91 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $DE99 DEFB $00,$00,$00,$00,$00
+ $DB09 DEFB $00,$00,$00
+
+; Game status buffer entry at DB0C
+g$DB0C DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DB14 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DB1C DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DB24 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DB2C DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DB34 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DB3C DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DB44 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DB4C DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DB54 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DB5C DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DB64 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DB6C DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DB74 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DB7C DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DB84 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DB8C DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DB94 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DB9C DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DBA4 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DBAC DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DBB4 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DBBC DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DBC4 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DBCC DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DBD4 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DBDC DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DBE4 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DBEC DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DBF4 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DBFC DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DC04 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DC0C DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DC14 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DC1C DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DC24 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DC2C DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DC34 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DC3C DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DC44 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DC4C DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DC54 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DC5C DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DC64 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DC6C DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DC74 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DC7C DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DC84 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DC8C DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DC94 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DC9C DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DCA4 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DCAC DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DCB4 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DCBC DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DCC4 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DCCC DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DCD4 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DCDC DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DCE4 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DCEC DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DCF4 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DCFC DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DD04 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DD0C DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DD14 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DD1C DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DD24 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DD2C DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DD34 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DD3C DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DD44 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DD4C DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DD54 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DD5C DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DD64 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DD6C DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DD74 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DD7C DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DD84 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DD8C DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DD94 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DD9C DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DDA4 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DDAC DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DDB4 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DDBC DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DDC4 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DDCC DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DDD4 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DDDC DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DDE4 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DDEC DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DDF4 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DDFC DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DE04 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DE0C DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DE14 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DE1C DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DE24 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DE2C DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DE34 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DE3C DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DE44 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DE4C DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DE54 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DE5C DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DE64 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DE6C DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DE74 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DE7C DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DE84 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DE8C DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DE94 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $DE9C DEFB $00,$00
 
 ; Data block at DE9E
 b$DE9E DEFB $00,$00,$09,$82,$00,$00,$03,$65

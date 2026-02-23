@@ -424,10 +424,10 @@ D $5FA8 Set to #N$01 when Percy has collided with scenery and the move was
 . rejected.
 B $5FA8,$01
 
-g $5FA9 Item Collection State
-@ $5FA9 label=ItemCollectionState
-D $5FA9 Set to #N$FF when Percy is flying upward to collect an item. Cleared
-. to #N$00 when the collection is complete.
+g $5FA9 Egg State
+@ $5FA9 label=EggDropState
+D $5FA9 Set to #N$FF when Percy is dropping an egg, and cleared to #N$00 when
+. the egg routine is complete.
 B $5FA9,$01
 
 g $5FAA Game Mode Flag
@@ -1045,7 +1045,7 @@ D $62D8 Update Percy's movement speed.
   $62D8,$0A Jump to #R$62ED if *#R$5FA4 is the same as *#R$5FA2.
 N $62E2 Input changed so decelerate.
   $62E2,$03 #REGa=*#R$5FAE.
-  $62E5,$02 Return if already at minimum speed (#N$01).
+  $62E5,$03 Return if already at minimum speed (#N$01).
   $62E8,$01 Decrease speed by one.
   $62E9,$03 Write #REGa to *#R$5FAE.
   $62EC,$01 Return.
@@ -1053,7 +1053,7 @@ N $62E2 Input changed so decelerate.
 N $62ED Input is the same so accelerate.
 @ $62ED label=UpdateMovementSpeed_Accelerate
   $62ED,$03 #REGa=*#R$5FAE.
-  $62F0,$02 Return if already at maximum speed (#N$04).
+  $62F0,$03 Return if already at maximum speed (#N$04).
   $62F3,$01 Increase speed by one.
   $62F4,$03 Write #REGa to *#R$5FAE.
   $62F7,$01 Return.
@@ -1061,7 +1061,7 @@ N $62ED Input is the same so accelerate.
 N $62F8 No input so decelerate movement speed towards minimum.
 @ $62F8 label=UpdateMovementSpeed_Decelerate
   $62F8,$03 #REGa=*#R$5FAE.
-  $62FB,$02 Return if already at minimum speed (#N$01).
+  $62FB,$03 Return if already at minimum speed (#N$01).
   $62FE,$01 Decrease speed by one.
   $62FF,$03 Write #REGa to *#R$5FAE.
   $6302,$04 #REGe=*#R$5FA4 (use the previous direction for animation).
@@ -1888,6 +1888,7 @@ c $69A7 Run Main Loop Body
 @ $69A7 label=Run_Main_Loop_Body
   $69A7,$01 Disable interrupts.
   $69A8,$04 Stash #REGix and #REGiy on the stack.
+N $69AC Clear the frame IDs for: #FOR$00,$07||n|#R($DAC7+(n*$04))|, | and ||.
   $69AC,$02 #REGb=#N$07.
   $69AE,$03 #REGhl=#R$DAC7.
   $69B1,$02 #REGc=#N$00.
@@ -1904,11 +1905,10 @@ c $69A7 Run Main Loop Body
   $69D0,$03 Call #R$6DAB.
   $69D3,$03 Call #R$720F.
   $69D6,$08 Call #R$7082 if *#R$5FC5 is equal to #N$04.
-  $69DE,$07 Call #R$64BE if *#R$5FAD is non-zero.
+  $69DE,$07 Call #R$64BE if *#R$5FAD is set.
   $69E5,$06 Write *#R$5FB3 to *#R$6CC3.
   $69EB,$04 Write #N$00 to *#R$5FBE.
-  $69EF,$01 Increment #REGa by one.
-  $69F0,$02 Set border to the colour held by #REGa.
+  $69EF,$03 Set border to #INK$01.
   $69F2,$04 Restore #REGiy and #REGix from the stack.
   $69F6,$01 Return.
 
@@ -1919,7 +1919,50 @@ c $6AF6
 
 c $6C39
 
-c $6C53
+c $6C53 Check Sprite Collision
+D $6C53 Checks if two sprites overlap by comparing their X and Y positions.
+. Each sprite is assumed to be #N$10 pixels wide and #N$0C pixels tall.
+@ $6C53 label=CheckSpriteCollision
+R $6C53 IX Pointer to first sprite data
+R $6C53 IY Pointer to second sprite data
+R $6C53 O:F Carry set = no collision, carry clear = collision
+N $6C53 First check horizontal overlap. The two sprites overlap in X if
+. neither sprite's left edge is beyond the other's right edge.
+  $6C53,$03 Load #REGa with the first sprite's X position (from *#REGix+#N$00).
+  $6C56,$05 Jump to #R$6C63 if the first sprite is to the right of the second
+. sprite (checking against *#REGiy+#N$00/ the second sprites X position).
+N $6C5B First sprite is to the left so check if its right edge reaches the
+. second sprite.
+  $6C5B,$02 Add #N$10 to the first sprite's X position (add assumed sprite
+. width).
+  $6C5D,$05 Jump to #R$6C6E if the two sprites overlap horizontally.
+  $6C62,$01 Return (there's no horizontal overlap; carry is set).
+N $6C63 First sprite is to the right so check if the second sprite's right
+. edge reaches the first sprite.
+@ $6C63 label=CheckSpriteCollision_TestRight
+  $6C63,$05 Load #REGa with the second sprite's X position (from *#REGiy+#N$00)
+. + #N$10 (adding the sprite width).
+  $6C68,$05 Jump to #R$6C6E if the two sprites overlap horizontally.
+  $6C6D,$01 Return (there's no horizontal overlap; carry is set).
+N $6C6E The two sprites overlap horizontally; now check if there's any vertical
+. overlap.
+@ $6C6E label=CheckSpriteCollision_TestVertical
+  $6C6E,$03 Load #REGa with the first sprite's Y position (*#REGix+#N$01).
+  $6C71,$05 Jump to #R$6C7C if the first sprite is below the second sprite
+. (checking against *#REGiy+#N$01/ the second sprites Y position).
+N $6C76 First sprite is above so check if its bottom edge reaches the second
+. sprite.
+  $6C76,$02 Add #N$0C to the first sprite's Y position (add assumed sprite
+. height).
+  $6C78,$04 Return (with; carry clear meaning a collision, and carry set
+. meaning no collision).
+N $6C7C First sprite is below so check if the second sprite's bottom edge
+. reaches the first sprite.
+@ $6C7C label=CheckSpriteCollision_TestBelow
+  $6C7C,$05 Load #REGa with the second sprite's Y position (from *#REGiy+#N$01)
+. + #N$0C (adding the sprite height).
+  $6C81,$04 Return (with; carry clear meaning a collision, and carry set
+. meaning no collision).
 
 c $6C85
 
@@ -1945,6 +1988,104 @@ c $6E2F
 
 c $6E5D
 
+c $7082 Handler: Frogs
+@ $7082 label=Handler_Frogs
+D $7082 Handles the frog enemies. Each frog sits on the ground and periodically
+. jumps upward in an arc, making a croaking sound.
+N $7082 Set up the first frog.
+  $7082,$04 #REGix=#R$DAC8.
+  $7086,$06 Jump to #R$7093 if *#R$5FBB is zero.
+  $708C,$07 Write #N$00; #LIST
+. { *#R$71E9 }
+. { *#R$71EC }
+. LIST#
+N $7093 Update the first frog.
+@ $7093 label=Handler_Frog01
+  $7093,$03 Point #REGhl at #R$71E9.
+  $7096,$02 Load #REGb with the first frogs ground Y position (#N$88).
+  $7098,$02 Load #REGc with the first frogs ground X position (#N$3C).
+  $709A,$03 Call #R$70DB.
+  $709D,$0B Call #R$6C53 with first sprite: #R$DAC0 against second sprite:
+. #R$DAC8.
+  $70A8,$02 Jump to #R$70AF if Percy isn't colliding with the second sprite.
+N $70AA Percy has collided with the first frog.
+  $70AA,$05 Write #N$FF to *#R$5FA7.
+N $70AF The first level only has a single frog and subsequent levels have two.
+@ $70AF label=Handler_Frog02
+  $70AF,$08 Jump to #R$7190 if *#R$5FB1 is equal to #N$01.
+N $70B7 Update the second frog.
+  $70B7,$03 Point #REGhl at #R$71EC.
+  $70BA,$04 #REGix=#R$DACC.
+  $70BE,$02 Load #REGb with the second frogs ground Y position (#N$78).
+  $70C0,$02 Load #REGc with the second frogs ground X position (#N$48).
+  $70C2,$03 Call #R$70DB.
+  $70C5,$0B Call #R$6C53 with first sprite: #R$DAC0 against second sprite:
+. #R$DACC.
+  $70D0,$03 Jump to #R$7190 if Percy isn't colliding with the second sprite.
+N $70D3 Percy has collided with the second frog.
+  $70D3,$05 Write #N$FF to *#R$5FA7.
+  $70D8,$03 Jump to #R$7190.
+
+c $70DB Update Frog
+@ $70DB label=UpdateFrog
+D $70DB Updates a single frog's behaviour through the jump cycle.
+R $70DB BC Ground position
+R $70DB HL Pointer to frog state data
+R $70DB IX Pointer to frog sprite data
+  $70DB,$01 Fetch the timer value for the frog.
+  $70DC,$03 Jump to #R$70ED if the timer is zero (the frog is idle).
+  $70DF,$01 Decrement the timer by one.
+  $70E0,$02 Jump to #R$70ED if the timer has now reached zero.
+N $70E2 This Frog is mid-jump, cycle through the animation frames.
+  $70E2,$03 #REGa=*#REGix+#N$02.
+  $70E5,$01 Increment #REGa.
+  $70E6,$02,b$01 Keep only bits 0-1 (cycle through #N$00-#N$03).
+  $70E8,$03 Write #REGa to *#REGix+#N$02.
+  $70EB,$02 Jump to #R$70F1.
+@ $70ED label=UpdateFrog_SetIdle
+  $70ED,$04 Write #N$06 to *#REGix+#N$02.
+
+c $7190 Handler: Frogs Check Egg Collision
+@ $7190 label=HandlerFrog01_CheckEggCollision
+N $7190 Return if an egg isn't being dropped at this point.
+  $7190,$05 Return if *#R$5FA9 is unset.
+N $7195 Check the first frog.
+  $7195,$03 #REGhl=#R$71E9.
+  $7198,$04 #REGiy=#R$DAE0.
+  $719C,$04 #REGix=#R$DAC8.
+  $71A0,$03 Call #R$6C85.
+  $71A3,$02 Jump to #R$71B9 if the egg isn't colliding with the first frog.
+N $71A5 Item hit the first frog.
+  $71A5,$04 Jump to #R$71B6 if the frog is already stunned.
+N $71A9 Stun the frog — set a random stun timer and award points.
+  $71A9,$02 #REGa=the contents of the Memory Refresh Register.
+  $71AB,$02,b$01 Set bit 6 (ensure a minimum stun duration).
+  $71AD,$01 Write the stun duration to the first frogs stun countdown.
+  $71AE,$05 Call #R$67B2 to add #N$0A points to the score.
+  $71B3,$03 Call #R$6F7A.
+@ $71B6 label=HandlerEggCollision_Destroy01
+  $71B6,$03 Call #R$71E1.
+N $71B9 Check if the second frog is active (level above #N$01).
+@ $71B9 label=HandlerFrog02_CheckEggCollision
+  $71B9,$06 Return if *#R$5FB1 is equal to #N$01.
+N $71BF Check the second frog.
+  $71BF,$04 #REGix=#R$DACC.
+  $71C3,$03 #REGhl=#R$71EC.
+  $71C6,$03 Call #R$6C85.
+  $71C9,$01 Return if the egg isn't colliding with the second frog.
+N $71CA Item hit the second frog.
+  $71CA,$04 Jump to #R$71DA if the frog is already stunned.
+N $71CE Stun the second frog and award points.
+  $71CE,$02 #REGa=the contents of the Memory Refresh Register.
+  $71D0,$02,b$01 Set bits 0-4 (ensure minimum stun duration).
+  $71D2,$02,b$01 Clear bit 7 (cap the maximum duration).
+  $71D4,$01 Write the stun duration to the second frogs stun countdown.
+  $71D5,$05 Call #R$67B2 to add #N$0A points to the score.
+@ $71DA label=HandlerEggCollision_Destroy02
+  $71DA,$03 Call #R$71E1.
+  $71DD,$03 Call #R$6F7A.
+  $71E0,$01 Return.
+
 c $71E1
   $71E1,$07 Write #N$00 to; #LIST
 . { *#R$DAE3 }
@@ -1952,7 +2093,25 @@ c $71E1
 . LIST#
   $71E8,$01 Return.
 
-b $71E9
+g $71E9 Frog 1 State Data
+@ $71E9 label=Frog1_StateData
+  $71E9,$01 Stun countdown.
+  $71EA,$02
+
+g $71EC Frog 2 State Data
+@ $71EC label=Frog2_StateData
+  $71EC,$01 Stun countdown.
+  $71ED,$02
+
+g $71EF Table: Frog Jump Height
+@ $71EF label=Table_FrogJumpHeight
+D $71EF Jump height lookup table. Each entry is the Y offset from ground level
+. for one step of the frog's jump arc. The values rise to a peak of #N$22 at
+. the midpoint then fall back to #N$00, forming a smooth parabolic arc over
+. #N$18 steps.
+  $71EF,$19,$0C,$01,$0C
+
+g $7208
 
 c $720F Room Handler Dispatch
 @ $720F label=RoomHandlerDispatch
@@ -2008,6 +2167,23 @@ N $725F From phase #N$04 onwards, call #R$77B9.
 
 c $7265 Handler: Room #N$02
 @ $7265 label=Handler_Room02
+D $7265 Handles room #N$02 logic. The phase counter in #REGb controls which
+. objects are initialised or updated on each pass.
+R $7265 B Room phase counter (from *#R$5FB1)
+  $7265,$01 #REGa=#REGb.
+  $7266,$04 #REGix=#R$DAD0.
+  $726A,$02 Compare #REGa with #N$02.
+  $726C,$01 Stash the phase counter on the stack.
+  $726D,$03 Call #R$7512 if the phase counter is not equal to #N$02.
+  $7270,$01 Restore the phase counter from the stack.
+  $7271,$04 #REGix=#R$DAD8.
+  $7275,$01 Stash the phase counter on the stack.
+  $7276,$02 Compare the phase counter with #N$04.
+  $7278,$03 Call #R$79D2 if the phase counter is greater than #N$04.
+  $727B,$01 Restore the phase counter from the stack.
+  $727C,$04 #REGix=#R$DAD4.
+  $7280,$05 Call #R$7439 if the phase counter is greater than #N$03.
+  $7285,$01 Return.
 
 c $7286 Handler: Room #N$03
 @ $7286 label=Handler_Room03
@@ -2032,7 +2208,7 @@ N $730F First object; initialised during phases #N$01, #N$03 and #N$04.
   $7323,$01 Restore the phase counter from the stack.
 N $7324 Second object; return early if still in phase #N$01.
   $7324,$04 #REGix=#R$DACC.
-  $7328,$02 Return if the phase counter is #N$01.
+  $7328,$03 Return if the phase counter is #N$01.
   $732B,$01 Stash the phase counter on the stack.
   $732C,$03 Call #R$7512.
   $732F,$01 Restore the phase counter from the stack.
@@ -2094,11 +2270,260 @@ g $7508
 B $7508,$0A,$01
 
 c $7512
+  $7512,$04 #REGiy=#R$7AC8.
+  $7516,$03 #REGhl=#R$7589.
+  $7519,$03 #REGbc=#N$0739.
+  $751C,$07 #REGe=(*#R$5FC5 - #N$01) * #N$04.
+  $7523,$02 #REGd=#N$00.
+  $7525,$02 #REGiy+=#REGde.
+  $7527,$07 Call #R$7574 if *#R$5FBB is non-zero.
+  $752E,$04 Test bit 7 of *#REGiy+#N$00.
+  $7532,$02 Jump to #R$74B9 if #REGa is not equal to #REGa.
+  $7534,$01 #REGa=*#REGhl.
+  $7535,$02 Test bit 7 of #REGa.
+  $7537,$01 Increment #REGhl by one.
+  $7538,$02 Jump to #R$754E if #REGhl is not equal to #REGa.
+  $753A,$03 #REGa=*#REGix+#N$00.
+  $753D,$01 #REGa+=*#REGhl.
+  $753E,$03 Compare #REGa with *#REGiy+#N$03.
+  $7541,$01 Decrease #REGhl by one.
+  $7542,$02 Jump to #R$7549 if #REGhl is less than #REGa.
+  $7544,$03 Write #N$80 to *#REGhl.
+  $7547,$02 Jump to #R$755F.
 
 g $7679
 B $7679,$07
 
-c $7680
+c $7680 Handler: Plane
+@ $7680 label=Handler_Plane
+R $7680 A Phase counter
+R $7680 IX Pointer to plane sprite data
+  $7680,$01 Stash the phase counter on the stack.
+  $7681,$03 Call #R$768C.
+  $7684,$01 Restore the phase counter from the stack.
+N $7685 The plane can only deploy paratroopers from phase #N$04 onwards.
+  $7685,$03 Return if the phase counter is less than #N$04.
+  $7688,$03 Call #R$7713.
+  $768B,$01 Return.
+
+c $768C Update Plane FlightPath
+@ $768C label=UpdatePlaneFlightPath
+R $768C IX Pointer to plane sprite data
+  $768C,$04 #REGiy=#R$77AF.
+  $7690,$02 #REGc=#N$04.
+  $7692,$02 #REGb=#N$38.
+  $7694,$07 Jump to #R$769E if *#R$5FC5 is not equal to #N$03.
+  $769B,$02 #REGc=#N$40.
+  $769D,$01 #REGb=#REGc.
+  $769E,$07 Jump to #R$76E5 if *#R$5FBB is set.
+  $76A5,$06 Jump to #R$76DE if *#REGiy+#N$02 is zero.
+  $76AB,$07 Jump to #R$74B9 if  bit 7 of *#REGiy+#N$00 is set.
+  $76B2,$03 #REGhl=#R$77B3.
+  $76B5,$03 #REGa=*#REGix+#N$00.
+  $76B8,$04 Test bit 7 of *#REGiy+#N$01.
+  $76BC,$02 Jump to #R$76C8 if #REGa is not equal to #REGa.
+  $76BE,$01 #REGa+=*#REGhl.
+  $76BF,$04 Jump to #R$770D if #REGa is greater than or equal to #N$EE.
+  $76C3,$03 Write #REGa to *#REGix+#N$00.
+  $76C6,$02 Jump to #R$76CF.
+
+  $76C8,$01 #REGa-=*#REGhl.
+  $76C9,$03 Jump to #R$770D if #REGa is less than #REGc.
+  $76CC,$03 Write #REGa to *#REGix+#N$00.
+  $76CF,$02 #REGa=#N$4D.
+  $76D1,$06 Jump to #R$76D8 if bit 7 of *#REGiy+#N$01 is set.
+  $76D7,$01 Increment #REGa by one.
+  $76D8,$03 Write #REGa to *#REGix+#N$03.
+  $76DB,$03 Jump to #R$74D6.
+
+  $76DE,$02 #REGa=the contents of the Memory Refresh Register.
+  $76E0,$02,b$01 Keep only bits 0-6.
+  $76E2,$03 Return if #REGa is not equal to #N$7F.
+  $76E5,$04 Set bit 7 of *#REGiy+#N$02.
+  $76E9,$16 Write #N$00 to; #LIST
+. { *#R$77AE }
+. { *#REGiy+#N$03 }
+. { *#REGiy+#N$01 }
+. { *#REGix+#N$00 }
+. { *#REGix+#N$02 }
+. { *#REGix+#N$01 }
+. { *#REGiy+#N$00 }
+. LIST#
+  $76FF,$02 #REGa=the contents of the Memory Refresh Register.
+  $7701,$02,b$01 Keep only bit 0.
+  $7703,$01 Return if #REGa is equal to #N$7F.
+  $7704,$04 Write #N$EE to *#REGix+#N$00.
+  $7708,$04 Set bit 7 of *#REGiy+#N$01.
+  $770C,$01 Return.
+
+  $770D,$04 Write #N$00 to *#REGiy+#N$02.
+  $7711,$02 Jump to #R$76DE.
+
+  $7713,$03 #REGa=*#R$77AE.
+  $7716,$03 Jump to #R$774D if #REGa is non-zero.
+  $7719,$06 Jump to #R$776F if bit 7 of *#REGiy+#N$03 not set.
+  $771F,$04 #REGix=#R$DAF0.
+  $7723,$04 Write #N$14 to *#REGix+#N$03.
+  $7727,$03 #REGa=*#REGix+#N$01.
+  $772A,$02 #REGa+=#N$03.
+  $772C,$04 Jump to #R$776A if #REGa is greater than or equal to #N$A0.
+  $7730,$03 Write #REGa to *#REGix+#N$01.
+  $7733,$02 Stash #REGiy on the stack.
+  $7735,$04 #REGix=#R$DAC0.
+  $7739,$04 #REGiy=#R$DAF0.
+  $773D,$03 Call #R$6C85.
+  $7740,$02 Restore #REGiy from the stack.
+  $7742,$01 Return if #REGa is less than #N$A0.
+  $7743,$04 Write #N$00 to *#REGiy+#N$03.
+  $7747,$05 Write #N$07 to *#R$77AE.
+  $774C,$01 Return.
+
+  $774D,$01 Decrease #REGa by one.
+  $774E,$03 Write #REGa to *#R$77AE.
+  $7751,$03 Jump to #R$7764 if #REGa is zero.
+  $7754,$01 RRA.
+  $7755,$02 #REGa+=#N$36.
+  $7757,$03 Write #REGa to *#R$DAC3.
+  $775A,$02 #REGa=the contents of the Memory Refresh Register.
+  $775C,$02,b$01 Keep only bits 0-2.
+  $775E,$03 Write #REGa to *#R$DAC2.
+  $7761,$03 Jump to #R$6F7A.
+
+  $7764,$05 Write #N$FF to *#R$5FA7.
+  $7769,$01 Return.
+
+  $776A,$04 Write #N$00 to *#REGiy+#N$03.
+  $776E,$01 Return.
+
+  $776F,$02 #REGa=the contents of the Memory Refresh Register.
+  $7771,$02,b$01 Keep only bits 0.
+  $7773,$01 Return if #REGa is not equal to #REGa.
+  $7774,$03 #REGa=*#R$DAC1.
+  $7777,$02 #REGa+=#N$0A.
+  $7779,$03 Compare #REGa with *#REGix+#N$01.
+  $777C,$01 Return if #REGa is less than #REGa.
+  $777D,$03 #REGa=*#R$DAC0.
+  $7780,$02,b$01 Keep only bits 2-7.
+  $7782,$01 #REGb=#REGa.
+  $7783,$03 #REGa=*#REGix+#N$00.
+  $7786,$02,b$01 Keep only bits 2-7.
+  $7788,$02 Return if #REGa is not equal to #REGb.
+  $778A,$04 Test bit 7 of *#REGiy+#N$02.
+  $778E,$01 Return if #REGa is equal to #REGb.
+  $778F,$04 Test bit 7 of *#REGiy+#N$00.
+  $7793,$01 Return if #REGa is not equal to #REGb.
+  $7794,$03 #REGa=*#REGix+#N$01.
+  $7797,$02 #REGa+=#N$0A.
+  $7799,$03 Write #REGa to *#R$DAF1.
+  $779C,$03 #REGa=*#REGix+#N$00.
+  $779F,$03 Write #REGa to *#R$DAF0.
+  $77A2,$02 Write #N$FF to *#R$DAF2.
+  $77A7,$04 Set bit 7 of *#REGiy+#N$03.
+  $77AB,$03 Jump to #R$6F7A.
+B $77AE,$01
+N $77AF Plane States.
+@ $77AF label=Plane_X_Position
+B $77AF,$01 Plane X position.
+@ $7780 label=Plane_Y_Position
+B $7780,$01 Plane Y position.
+@ $7781 label=Plane_Colour
+B $7781,$01 Plane INK colour.
+@ $7782 label=Plane_Frame_ID
+B $7782,$01 Plane frame ID.
+B $7783,$01
+  $77B4,$04 #REGiy=#R$7B04.
+  $77B8,$01 Return.
+
+  $77B9,$07 Jump to #R$784F if *#R$5FBB is non-zero.
+  $77C0,$03 #REGhl=#R$7891.
+  $77C3,$07 Jump to #R$7855 if *#R$7892 is non-zero.
+  $77CA,$02 #REGa=the contents of the Memory Refresh Register.
+  $77CC,$02,b$01 Keep only bits 0-6.
+  $77CE,$04 Jump to #R$77D5 if #REGa is not equal to #N$7F.
+  $77D2,$01 #REGa=*#REGhl.
+  $77D3,$01 Invert the bits in #REGa.
+  $77D4,$01 Write #REGa to *#REGhl.
+  $77D5,$04 Jump to #R$77E7 if *#REGhl is non-zero.
+  $77D9,$03 #REGa=*#REGix+#N$00.
+  $77DC,$02 #REGa+=#N$01.
+  $77DE,$04 Jump to #R$7847 if #REGa is greater than or equal to #N$EE.
+  $77E2,$03 Write #REGa to *#REGix+#N$00.
+  $77E5,$02 Jump to #R$77F3.
+
+  $77E7,$03 #REGa=*#REGix+#N$00.
+  $77EA,$02 #REGa-=#N$01.
+  $77EC,$04 Jump to #R$784B if #REGa is less than #N$04.
+  $77F0,$03 Write #REGa to *#REGix+#N$00.
+  $77F3,$03 Call #R$7930.
+  $77F6,$02,b$01 Keep only bits 0-1.
+  $77F8,$04 Jump to #R$7821 if #REGa is not equal to #N$03.
+  $77FC,$02 #REGa=the contents of the Memory Refresh Register.
+  $77FE,$01 #REGb=#REGa.
+  $77FF,$04 Jump to #R$7812 if bit 6 of #REGa is set.
+  $7803,$01 #REGa=#REGb.
+  $7804,$02,b$01 Keep only bit 0.
+  $7806,$03 #REGa+=*#REGix+#N$01.
+  $7809,$04 Jump to #R$7821 if #REGa is greater than or equal to #N$70.
+  $780D,$03 Write #REGa to *#REGix+#N$01.
+  $7810,$02 Jump to #R$7821.
+
+  $7812,$01 #REGa=#REGb.
+  $7813,$02,b$01 Keep only bit 0.
+  $7815,$01 #REGb=#REGa.
+  $7816,$03 #REGa=*#REGix+#N$01.
+  $7819,$01 #REGa-=#REGb.
+  $781A,$04 Jump to #R$7821 if #REGa is less than #N$18.
+  $781E,$03 Write #REGa to *#REGix+#N$01.
+  $7821,$04 Write #N$49 to *#REGix+#N$03.
+  $7825,$04 #REGiy=#R$DAC0.
+  $7829,$03 Call #R$6C53.
+  $782C,$02 Jump to #R$7831 if #REGa is less than #N$18.
+  $782E,$03 Jump to #R$74E3.
+
+  $7831,$05 Return if *#R$5FA9 is unset.
+  $7836,$04 #REGiy=#R$DAE0.
+  $783A,$03 Call #R$6C85.
+  $783D,$01 Return if #REGa is less than #REGa.
+  $783E,$05 Write #N$01 to *#R$7892.
+  $7843,$03 Jump to #R$74FF.
+  $7846,$01 Return.
+
+  $7847,$02 Write #N$FF to *#REGhl.
+  $7849,$02 Jump to #R$7821.
+
+  $784B,$02 Write #N$00 to *#REGhl.
+  $784D,$02 Jump to #R$7821.
+
+  $784F,$05 Write #N$B9 to *#R$7892.
+  $7854,$01 Return.
+
+  $7855,$03 #REGhl=#R$7892.
+  $7858,$01 #REGa=*#REGhl.
+  $7859,$04 Jump to #R$7870 if #REGa is greater than or equal to #N$04.
+  $785D,$01 Increment #REGa by one.
+  $785E,$01 Write #REGa to *#REGhl.
+  $785F,$02 #REGa+=#N$48.
+  $7861,$03 Write #REGa to *#REGix+#N$03.
+  $7864,$03 Call #R$7930.
+  $7867,$02,b$01 Keep only bits 0-2.
+  $7869,$03 Write #REGa to *#REGix+#N$02.
+  $786C,$03 Call #R$6F7A.
+  $786F,$01 Return.
+
+  $7870,$01 Increment #REGa by one.
+  $7871,$01 Write #REGa to *#REGhl.
+  $7872,$03 Return if #REGa is not equal to #N$C8.
+  $7875,$04 Write #N$38 to *#REGix+#N$01.
+  $7879,$04 Write #N$07 to *#REGix+#N$02.
+  $787D,$03 #REGhl=#R$7892.
+  $7880,$02 Write #N$00 to *#REGhl.
+  $7882,$04 Write #N$EE to *#REGix+#N$00.
+  $7886,$03 Call #R$7930.
+  $7889,$03 Return if bit 0 of #REGa is not set.
+  $788C,$04 Write #N$04 to *#REGix+#N$00.
+  $7890,$01 Return.
+B $7891,$01
+B $7892,$01
 
 c $7893
 
@@ -2130,6 +2555,8 @@ B $79D1,$01
 c $79D2
 
 b $7AC3
+  $7AC8
+  $7B04
 
 g $7B2E Jump Table: Room Handlers
 @ $7B2E label=JumpTable_RoomHandler
@@ -2329,13 +2756,13 @@ N $B3BB Dog: walking left.
 @ $B3DB label=Sprite_46
 @ $B3FB label=Sprite_47
 @ $B41B label=Sprite_48
-N $B43B
+N $B43B Paratrooper.
 @ $B43B label=Sprite_49
 @ $B45B label=Sprite_4A
 @ $B47B label=Sprite_4B
 @ $B49B label=Sprite_4C
 N $B43B Plane: flying left.
-@ $B4BB label=Sprite_4D
+@ $B4DB label=Sprite_4D
 N $B4DB Plane: flying right.
 @ $B4DB label=Sprite_4E
 N $B4FB UFO.
@@ -2581,7 +3008,7 @@ R $BC74 C Attribute base high byte (#N$58 for screen, #N$F8 for room)
 R $BC74 D Bit 0: extra column needed, Bit 1: extra row needed
 R $BC74 E Attribute value to write (ink bits 0-2)
 R $BC74 HL Screen buffer address
-N $BC74 Check if the Y position crosses a character boundary — if so, an extra
+N $BC74 Check if the Y position crosses a character boundary; if so, an extra
 . row of attributes is needed.
   $BC74,$01 #REGa=#REGh.
   $BC75,$02,b$01 Keep only bits 0-2 (sub-character Y offset).
@@ -2851,35 +3278,127 @@ B $DAC2,$01 Percy INK colour.
 @ $DAC3 label=Percy_Frame_ID
 B $DAC3,$01 Percy frame ID.
 
-g $DAC7
+g $DAC4 Sprite 1 Data States
+@ $DAC4 label=Sprite01_X_Position
+D $DAC4 Used by the Red Bird.
+B $DAC4,$01 Sprite 1 X position.
+@ $DAC5 label=Sprite01_Y_Position
+B $DAC5,$01 Sprite 1 Y position.
+@ $DAC6 label=Sprite01_Colour
+B $DAC6,$01 Sprite 1 INK colour.
+@ $DAC7 label=Sprite01_Frame_ID
+B $DAC7,$01 Sprite 1 frame ID.
 
-g $DAC8 Spider States
-@ $DAC8 label=Spider_X_Position
-B $DAC8,$01 Spider X position.
-@ $DAC9 label=Spider_Y_Position
-B $DAC9,$01 Spider Y position.
-@ $DACA label=Spider_Colour
-B $DACA,$01 Spider INK colour.
-@ $DACB label=Spider_Frame_ID
-B $DACB,$01 Spider frame ID.
+g $DAC8 Sprite 2 Data States
+@ $DAC8 label=Sprite02_X_Position
+D $DAC8 Used by Frog 1.
+B $DAC8,$01 Sprite 2 X position.
+@ $DAC9 label=Sprite02_Y_Position
+B $DAC9,$01 Sprite 2 Y position.
+@ $DACA label=Sprite02_Colour
+B $DACA,$01 Sprite 2 INK colour.
+@ $DACB label=Sprite02_Frame_ID
+B $DACB,$01 Sprite 2 frame ID.
 
-g $DACC
+g $DACC Sprite 3 Data States
+@ $DACC label=Sprite03_X_Position
+D $DACC Used by Frog 2.
+B $DACC,$01 Sprite 3 X position.
+@ $DACD label=Sprite03_Y_Position
+B $DACD,$01 Sprite 3 Y position.
+@ $DACE label=Sprite03_Colour
+B $DACE,$01 Sprite 3 INK colour.
+@ $DACF label=Sprite03_Frame_ID
+B $DACF,$01 Sprite 3 frame ID.
 
-g $DAD0
+g $DAD0 Car 2 States
+@ $DAD0 label=Car02_X_Position
+B $DAD0,$01 Car 2 X position.
+@ $DAD1 label=Car02_Y_Position
+B $DAD1,$01 Car 2 Y position.
+@ $DAD2 label=Car02_Colour
+B $DAD2,$01 Car 2 INK colour.
+@ $DAD3 label=Car02_Frame_ID
+B $DAD3,$01 Car 2 frame ID.
 
-g $DAD4
+g $DAD4 Car 3 States
+@ $DAD4 label=Car03_X_Position
+B $DAD4,$01 Car 3 X position.
+@ $DAD5 label=Car03_Y_Position
+B $DAD5,$01 Car 3 Y position.
+@ $DAD6 label=Car03_Colour
+B $DAD6,$01 Car 3 INK colour.
+@ $DAD7 label=Car03_Frame_ID
+B $DAD7,$01 Car 3 frame ID.
 
 g $DAD8
+B $DAD8,$01
+B $DAD9,$01
+B $DADA,$01
+B $DADB,$01
 
 g $DADC
+B $DADC,$01
+B $DADD,$01
+B $DADE,$01
+B $DADF,$01
 
-g $DAE3
+g $DAE0 Egg States?
+@ $DAE0 label=Egg_States
+B $DAE0,$01
+B $DAE1,$01
+B $DAE2,$01
+B $DAE3,$01
+
+g $DAE4
+B $DAE4,$01
+B $DAE5,$01
+B $DAE6,$01
+B $DAE7,$01
+
+g $DAE8
+B $DAE8,$01
+B $DAE9,$01
+B $DAEA,$01
+B $DAEB,$01
+
+g $DAEC
+B $DAEC,$01
+B $DAED,$01
+B $DAEE,$01
+B $DAEF,$01
+
+g $DAF0
+B $DAF0,$01
+B $DAF1,$01
+B $DAF2,$01
+B $DAF3,$01
+
+g $DAF4
+B $DAF4,$01
+B $DAF5,$01
+B $DAF6,$01
+B $DAF7,$01
+
+g $DAF8
+B $DAF8,$01
+B $DAF9,$01
+B $DAFA,$01
+B $DAFB,$01
+
+g $DAFC
+B $DAFC,$01
+B $DAFD,$01
+B $DAFE,$01
+B $DAFF,$01
 
 g $DB00 Percy Previous X Position
 @ $DB00 label=PercyPreviousXPosition
 D $DB00 Stores Percy's X position from the previous frame, used to detect
 . horizontal movement for the wing flap animation.
 B $DB00,$01
+
+g $DB0C
 
 b $DE9E
 
