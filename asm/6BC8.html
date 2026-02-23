@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Percy the Potty Pigeon: Routine at 6BC8</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-dark.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-wide.css" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-75RERFCHBG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-75RERFCHBG');
+</script>
+</head>
+<body class="Asm-c">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html"><img alt="logo" src="../images/logo.png" /></a></td>
+<td class="page-header">Routines</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="6AF6.html">6AF6</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#6bc8">Map</a></td>
+<td class="next">
+Next: <a href="6C0C.html">6C0C</a>
+</td>
+</tr>
+</table>
+<div class="description">6BC8: Red Bird Direction Jump Table</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="5">
+<div class="details">
+<div class="paragraph">
+Used by the routines at <a href="6AF6.html">UpdateRedBirdMovement</a>, <a href="7439.html">7439</a> and <a href="7512.html">7512</a>.
+</div>
+<div class="paragraph">
+Movement direction jump table. The entry point is self-modified at <a href="6BC8.html">6BC9</a> to jump to one of 8 directional movement handlers. Each handler adjusts <span class="register">B</span> (Y) and/or <span class="register">C</span> (X) by the flight speed value at *<span class="register">HL</span>, then falls through to <a href="6C0C.html">ValidateRedBirdPosition</a> to validate the position. <table class="default">
+<tr>
+<th colspan="1" rowspan="1">Direction</th>
+<th colspan="1" rowspan="1">Index</th>
+<th colspan="1" rowspan="1">X</th>
+<th colspan="1" rowspan="1">Y</th>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">Up</td>
+<td class="centre" colspan="1" rowspan="1">0</td>
+<td class="centre" colspan="1" rowspan="1">—</td>
+<td class="centre" colspan="1" rowspan="1">−speed</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">Up-right</td>
+<td class="centre" colspan="1" rowspan="1">1</td>
+<td class="centre" colspan="1" rowspan="1">+speed</td>
+<td class="centre" colspan="1" rowspan="1">−speed</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">Right</td>
+<td class="centre" colspan="1" rowspan="1">2</td>
+<td class="centre" colspan="1" rowspan="1">+speed</td>
+<td class="centre" colspan="1" rowspan="1">—</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">Down-right</td>
+<td class="centre" colspan="1" rowspan="1">3</td>
+<td class="centre" colspan="1" rowspan="1">+speed</td>
+<td class="centre" colspan="1" rowspan="1">+speed</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">Down</td>
+<td class="centre" colspan="1" rowspan="1">4</td>
+<td class="centre" colspan="1" rowspan="1">—</td>
+<td class="centre" colspan="1" rowspan="1">+speed</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">Down-left</td>
+<td class="centre" colspan="1" rowspan="1">5</td>
+<td class="centre" colspan="1" rowspan="1">−speed</td>
+<td class="centre" colspan="1" rowspan="1">+speed</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">Left</td>
+<td class="centre" colspan="1" rowspan="1">6</td>
+<td class="centre" colspan="1" rowspan="1">−speed</td>
+<td class="centre" colspan="1" rowspan="1">—</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">Up-left</td>
+<td class="centre" colspan="1" rowspan="1">7</td>
+<td class="centre" colspan="1" rowspan="1">−speed</td>
+<td class="centre" colspan="1" rowspan="1">−speed</td>
+</tr>
+</table>
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">RedBirdDirectionJumpTable</td>
+<td class="address-2"><span id="6bc8"></span>6BC8</td>
+<td class="instruction">JR <a href="6BC8.html#6bca">RedBirdDirection_Up</a></td>
+<td class="comment-1" rowspan="1">Self-modified jump — offset written by <a href="6AF6.html#6b4e">6B4E</a>.</td>
+</tr>
+<tr>
+<td class="asm-label">RedBirdDirection_Up</td>
+<td class="address-2"><span id="6bca"></span>6BCA</td>
+<td class="instruction">JR <a href="6BC8.html#6bda">RedBirdMove_Up</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="6BC8.html#6bda">RedBirdMove_Up</a> (up).</td>
+</tr>
+<tr>
+<td class="asm-label">RedBirdDirection_UpRight</td>
+<td class="address-1"><span id="6bcc"></span>6BCC</td>
+<td class="instruction">JR <a href="6BC8.html#6bdf">RedBirdMove_UpRight</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="6BC8.html#6bdf">RedBirdMove_UpRight</a> (up-right).</td>
+</tr>
+<tr>
+<td class="asm-label">RedBirdDirection_Right</td>
+<td class="address-1"><span id="6bce"></span>6BCE</td>
+<td class="instruction">JR <a href="6BC8.html#6be7">RedBirdMove_Right</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="6BC8.html#6be7">RedBirdMove_Right</a> (right).</td>
+</tr>
+<tr>
+<td class="asm-label">RedBirdDirection_DownRight</td>
+<td class="address-1"><span id="6bd0"></span>6BD0</td>
+<td class="instruction">JR <a href="6BC8.html#6bec">RedBirdMove_DownRight</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="6BC8.html#6bec">RedBirdMove_DownRight</a> (down-right).</td>
+</tr>
+<tr>
+<td class="asm-label">RedBirdDirection_Down</td>
+<td class="address-1"><span id="6bd2"></span>6BD2</td>
+<td class="instruction">JR <a href="6BC8.html#6bf4">RedBirdMove_Down</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="6BC8.html#6bf4">RedBirdMove_Down</a> (down).</td>
+</tr>
+<tr>
+<td class="asm-label">RedBirdDirection_DownLeft</td>
+<td class="address-1"><span id="6bd4"></span>6BD4</td>
+<td class="instruction">JR <a href="6BC8.html#6bf9">RedBirdMove_DownLeft</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="6BC8.html#6bf9">RedBirdMove_DownLeft</a> (down-left).</td>
+</tr>
+<tr>
+<td class="asm-label">RedBirdDirection_Left</td>
+<td class="address-1"><span id="6bd6"></span>6BD6</td>
+<td class="instruction">JR <a href="6BC8.html#6c01">RedBirdMove_Left</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="6BC8.html#6c01">RedBirdMove_Left</a> (left).</td>
+</tr>
+<tr>
+<td class="asm-label">RedBirdDirection_UpLeft</td>
+<td class="address-1"><span id="6bd8"></span>6BD8</td>
+<td class="instruction">JR <a href="6BC8.html#6c06">RedBirdMove_UpLeft</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="6BC8.html#6c06">RedBirdMove_UpLeft</a> (up-left).</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="6bda"></span>
+<div class="comments">
+<div class="paragraph">
+Movement handlers. Each adjusts <span class="register">B</span> and/or <span class="register">C</span> by the speed value at *<span class="register">HL</span>, then falls through to <a href="6C0C.html">ValidateRedBirdPosition</a>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">RedBirdMove_Up</td>
+<td class="address-2"><span id="6bda"></span>6BDA</td>
+<td class="instruction">LD A,B</td>
+<td class="comment-1" rowspan="3"><span class="register">B</span>-=*<span class="register">HL</span> (subtract speed from Y).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6bdb"></span>6BDB</td>
+<td class="instruction">SUB (HL)</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6bdc"></span>6BDC</td>
+<td class="instruction">LD B,A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6bdd"></span>6BDD</td>
+<td class="instruction">JR <a href="6C0C.html">ValidateRedBirdPosition</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="6C0C.html">ValidateRedBirdPosition</a>.</td>
+</tr>
+<tr>
+<td class="asm-label">RedBirdMove_UpRight</td>
+<td class="address-2"><span id="6bdf"></span>6BDF</td>
+<td class="instruction">LD A,B</td>
+<td class="comment-1" rowspan="3"><span class="register">B</span>-=*<span class="register">HL</span> (Y − speed).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6be0"></span>6BE0</td>
+<td class="instruction">SUB (HL)</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6be1"></span>6BE1</td>
+<td class="instruction">LD B,A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6be2"></span>6BE2</td>
+<td class="instruction">LD A,C</td>
+<td class="comment-1" rowspan="3"><span class="register">C</span>+=*<span class="register">HL</span> (X + speed).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6be3"></span>6BE3</td>
+<td class="instruction">ADD A,(HL)</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6be4"></span>6BE4</td>
+<td class="instruction">LD C,A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6be5"></span>6BE5</td>
+<td class="instruction">JR <a href="6C0C.html">ValidateRedBirdPosition</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="6C0C.html">ValidateRedBirdPosition</a>.</td>
+</tr>
+<tr>
+<td class="asm-label">RedBirdMove_Right</td>
+<td class="address-2"><span id="6be7"></span>6BE7</td>
+<td class="instruction">LD A,C</td>
+<td class="comment-1" rowspan="3"><span class="register">C</span>+=*<span class="register">HL</span> (X + speed).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6be8"></span>6BE8</td>
+<td class="instruction">ADD A,(HL)</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6be9"></span>6BE9</td>
+<td class="instruction">LD C,A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6bea"></span>6BEA</td>
+<td class="instruction">JR <a href="6C0C.html">ValidateRedBirdPosition</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="6C0C.html">ValidateRedBirdPosition</a>.</td>
+</tr>
+<tr>
+<td class="asm-label">RedBirdMove_DownRight</td>
+<td class="address-2"><span id="6bec"></span>6BEC</td>
+<td class="instruction">LD A,C</td>
+<td class="comment-1" rowspan="3"><span class="register">C</span>+=*<span class="register">HL</span> (X + speed).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6bed"></span>6BED</td>
+<td class="instruction">ADD A,(HL)</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6bee"></span>6BEE</td>
+<td class="instruction">LD C,A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6bef"></span>6BEF</td>
+<td class="instruction">LD A,B</td>
+<td class="comment-1" rowspan="3"><span class="register">B</span>+=*<span class="register">HL</span> (Y + speed).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6bf0"></span>6BF0</td>
+<td class="instruction">ADD A,(HL)</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6bf1"></span>6BF1</td>
+<td class="instruction">LD B,A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6bf2"></span>6BF2</td>
+<td class="instruction">JR <a href="6C0C.html">ValidateRedBirdPosition</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="6C0C.html">ValidateRedBirdPosition</a>.</td>
+</tr>
+<tr>
+<td class="asm-label">RedBirdMove_Down</td>
+<td class="address-2"><span id="6bf4"></span>6BF4</td>
+<td class="instruction">LD A,B</td>
+<td class="comment-1" rowspan="3"><span class="register">B</span>+=*<span class="register">HL</span> (Y + speed).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6bf5"></span>6BF5</td>
+<td class="instruction">ADD A,(HL)</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6bf6"></span>6BF6</td>
+<td class="instruction">LD B,A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6bf7"></span>6BF7</td>
+<td class="instruction">JR <a href="6C0C.html">ValidateRedBirdPosition</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="6C0C.html">ValidateRedBirdPosition</a>.</td>
+</tr>
+<tr>
+<td class="asm-label">RedBirdMove_DownLeft</td>
+<td class="address-2"><span id="6bf9"></span>6BF9</td>
+<td class="instruction">LD A,B</td>
+<td class="comment-1" rowspan="3"><span class="register">B</span>+=*<span class="register">HL</span> (Y + speed).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6bfa"></span>6BFA</td>
+<td class="instruction">ADD A,(HL)</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6bfb"></span>6BFB</td>
+<td class="instruction">LD B,A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6bfc"></span>6BFC</td>
+<td class="instruction">LD A,C</td>
+<td class="comment-1" rowspan="3"><span class="register">C</span>-=*<span class="register">HL</span> (X − speed).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6bfd"></span>6BFD</td>
+<td class="instruction">SUB (HL)</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6bfe"></span>6BFE</td>
+<td class="instruction">LD C,A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6bff"></span>6BFF</td>
+<td class="instruction">JR <a href="6C0C.html">ValidateRedBirdPosition</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="6C0C.html">ValidateRedBirdPosition</a>.</td>
+</tr>
+<tr>
+<td class="asm-label">RedBirdMove_Left</td>
+<td class="address-2"><span id="6c01"></span>6C01</td>
+<td class="instruction">LD A,C</td>
+<td class="comment-1" rowspan="3"><span class="register">C</span>-=*<span class="register">HL</span> (X − speed).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6c02"></span>6C02</td>
+<td class="instruction">SUB (HL)</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6c03"></span>6C03</td>
+<td class="instruction">LD C,A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6c04"></span>6C04</td>
+<td class="instruction">JR <a href="6C0C.html">ValidateRedBirdPosition</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="6C0C.html">ValidateRedBirdPosition</a>.</td>
+</tr>
+<tr>
+<td class="asm-label">RedBirdMove_UpLeft</td>
+<td class="address-2"><span id="6c06"></span>6C06</td>
+<td class="instruction">LD A,B</td>
+<td class="comment-1" rowspan="3"><span class="register">B</span>-=*<span class="register">HL</span> (Y − speed).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6c07"></span>6C07</td>
+<td class="instruction">SUB (HL)</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6c08"></span>6C08</td>
+<td class="instruction">LD B,A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6c09"></span>6C09</td>
+<td class="instruction">LD A,C</td>
+<td class="comment-1" rowspan="3"><span class="register">C</span>-=*<span class="register">HL</span> (X − speed).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6c0a"></span>6C0A</td>
+<td class="instruction">SUB (HL)</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6c0b"></span>6C0B</td>
+<td class="instruction">LD C,A</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<div class="comments">
+<div class="paragraph">
+Continue on to <a href="6C0C.html">ValidateRedBirdPosition</a>.
+</div>
+</div>
+</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="6AF6.html">6AF6</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#6bc8">Map</a></td>
+<td class="next">
+Next: <a href="6C0C.html">6C0C</a>
+</td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
+<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
+<div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
+<div><a href="../dec/asm/27592.html">Switch to decimal</a>.</div>
+</footer>
+</body>
+</html>

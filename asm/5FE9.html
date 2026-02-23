@@ -196,8 +196,8 @@ Read the Kempston joystick port to check for input.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6018"></span>6018</td>
-<td class="instruction">JP <a href="5FE9.html#60a8">MainGameLoop_HandleItemCollection</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="5FE9.html#60a8">MainGameLoop_HandleItemCollection</a>.</td>
+<td class="instruction">JP <a href="5FE9.html#60a8">MainGameLoop_HandleEggDrop</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="5FE9.html#60a8">MainGameLoop_HandleEggDrop</a>.</td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
@@ -503,8 +503,8 @@ Read the Kempston joystick and remap the direction bits into the game's internal
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6069"></span>6069</td>
-<td class="instruction">JR <a href="5FE9.html#60a8">MainGameLoop_HandleItemCollection</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="5FE9.html#60a8">MainGameLoop_HandleItemCollection</a>.</td>
+<td class="instruction">JR <a href="5FE9.html#60a8">MainGameLoop_HandleEggDrop</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="5FE9.html#60a8">MainGameLoop_HandleEggDrop</a>.</td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
@@ -767,16 +767,16 @@ Read Q-T row for left (Q, bit 0) and right (W, bit 1).
 <span id="60a8"></span>
 <div class="comments">
 <div class="paragraph">
-Handle Percy's special "flying up to collect item" state. If *<a href="5FA9.html">EggDropState</a> is set, Percy is currently flying upward to collect an item.
+Handle Percy's egg drop state. If *<a href="5FA9.html">EggDropState</a> is set, Percy has dropped an egg and it is currently in flight.
 </div>
 </div>
 </td>
 </tr>
 <tr>
-<td class="asm-label">MainGameLoop_HandleItemCollection</td>
+<td class="asm-label">MainGameLoop_HandleEggDrop</td>
 <td class="address-2"><span id="60a8"></span>60A8</td>
 <td class="instruction">LD A,($5FA9)</td>
-<td class="comment-1" rowspan="3">Jump to <a href="5FE9.html#60d9">MainGameLoop_TestFirePressed</a> if *<a href="5FA9.html">EggDropState</a> is unset (no item to collect).</td>
+<td class="comment-1" rowspan="3">Jump to <a href="5FE9.html#60d9">MainGameLoop_TestFirePressed</a> if *<a href="5FA9.html">EggDropState</a> is unset (no egg active).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -793,7 +793,7 @@ Handle Percy's special "flying up to collect item" state. If *<a href="5FA9.html
 <span id="60ae"></span>
 <div class="comments">
 <div class="paragraph">
-Percy is flying upward so advance the Y position.
+Egg is in flight — advance its Y position.
 </div>
 </div>
 </td>
@@ -814,20 +814,20 @@ Percy is flying upward so advance the Y position.
 <td class="asm-label"></td>
 <td class="address-1"><span id="60b3"></span>60B3</td>
 <td class="instruction">CP $A8</td>
-<td class="comment-1" rowspan="1">Has Percy reached Y position A8?</td>
+<td class="comment-1" rowspan="1">Has the egg reached Y position A8?</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="60b5"></span>60B5</td>
-<td class="instruction">JR C,<a href="5FE9.html#60bf">MainGameLoop_UpdateCollectionY</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="5FE9.html#60bf">MainGameLoop_UpdateCollectionY</a> if not yet reached.</td>
+<td class="instruction">JR C,<a href="5FE9.html#60bf">MainGameLoop_UpdateEggY</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="5FE9.html#60bf">MainGameLoop_UpdateEggY</a> if not yet reached.</td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
 <span id="60b7"></span>
 <div class="comments">
 <div class="paragraph">
-Percy has reached the target so end the collection state.
+Egg has reached its target — end the egg drop state.
 </div>
 </div>
 </td>
@@ -842,7 +842,7 @@ Percy has reached the target so end the collection state.
 <td class="asm-label"></td>
 <td class="address-1"><span id="60bb"></span>60BB</td>
 <td class="instruction">XOR A</td>
-<td class="comment-1" rowspan="2">Unset *<a href="5FA9.html">EggDropState</a> (the item has been collected).</td>
+<td class="comment-1" rowspan="2">Write 00 to *<a href="5FA9.html">EggDropState</a> (egg drop complete).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -850,7 +850,7 @@ Percy has reached the target so end the collection state.
 <td class="instruction">LD ($5FA9),A</td>
 </tr>
 <tr>
-<td class="asm-label">MainGameLoop_UpdateCollectionY</td>
+<td class="asm-label">MainGameLoop_UpdateEggY</td>
 <td class="address-2"><span id="60bf"></span>60BF</td>
 <td class="instruction">LD (IX+$21),A</td>
 <td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">IX</span>+21.</td>
@@ -860,7 +860,7 @@ Percy has reached the target so end the collection state.
 <span id="60c2"></span>
 <div class="comments">
 <div class="paragraph">
-Play a rising sound effect during item collection.
+Play a rising sound effect while the egg is in flight.
 </div>
 </div>
 </td>
@@ -929,7 +929,7 @@ Play a rising sound effect during item collection.
 <span id="60d9"></span>
 <div class="comments">
 <div class="paragraph">
-Check if fire is pressed and conditions are met to start collecting an item.
+Check if fire is pressed and conditions are met to drop an egg.
 </div>
 </div>
 </td>
@@ -971,7 +971,7 @@ Check if fire is pressed and conditions are met to start collecting an item.
 <span id="60e6"></span>
 <div class="comments">
 <div class="paragraph">
-Percy must be below Y position 84 to collect items.
+Percy must be below Y position 84 to drop an egg.
 </div>
 </div>
 </td>
@@ -980,7 +980,7 @@ Percy must be below Y position 84 to collect items.
 <td class="asm-label"></td>
 <td class="address-1"><span id="60e6"></span>60E6</td>
 <td class="instruction">LD A,(IX+$01)</td>
-<td class="comment-1" rowspan="3">Jump to <a href="5FE9.html#610e">MainGameLoop_ApplyMovement</a> if Percy's Y position (*<span class="register">IX</span>+01) states that Percy is too high to collect items (greater than or equal to 84).</td>
+<td class="comment-1" rowspan="3">Jump to <a href="5FE9.html#610e">MainGameLoop_ApplyMovement</a> if Percy's Y position (*<span class="register">IX</span>+01) is greater than or equal to 84 (too high to drop an egg).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -997,7 +997,7 @@ Percy must be below Y position 84 to collect items.
 <span id="60ed"></span>
 <div class="comments">
 <div class="paragraph">
-Start the item collection sequence and set Percy's target Y position and collection state.
+Start the egg drop sequence — set the egg's target position and activate the egg state.
 </div>
 </div>
 </td>
@@ -1018,7 +1018,7 @@ Start the item collection sequence and set Percy's target Y position and collect
 <td class="asm-label"></td>
 <td class="address-1"><span id="60f0"></span>60F0</td>
 <td class="instruction">CALL <a href="679C.html">CollectItem</a></td>
-<td class="comment-1" rowspan="1">Call <a href="679C.html">CollectItem</a> to find and remove the collectible item.</td>
+<td class="comment-1" rowspan="1">Call <a href="679C.html">CollectItem</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -1030,7 +1030,7 @@ Start the item collection sequence and set Percy's target Y position and collect
 <td class="asm-label"></td>
 <td class="address-1"><span id="60f4"></span>60F4</td>
 <td class="instruction">LD (IX+$21),A</td>
-<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">IX</span>+21 (collection target Y).</td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">IX</span>+21 (egg target Y).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -1054,7 +1054,7 @@ Start the item collection sequence and set Percy's target Y position and collect
 <td class="asm-label"></td>
 <td class="address-1"><span id="6100"></span>6100</td>
 <td class="instruction">LD (IX+$20),A</td>
-<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">IX</span>+20 (collection target X).</td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">IX</span>+20 (egg target X).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -1066,7 +1066,7 @@ Start the item collection sequence and set Percy's target Y position and collect
 <td class="asm-label"></td>
 <td class="address-1"><span id="6105"></span>6105</td>
 <td class="instruction">LD ($5FA9),A</td>
-<td class="comment-1" rowspan="1">Write FF to *<a href="5FA9.html">EggDropState</a> (collection in progress).</td>
+<td class="comment-1" rowspan="1">Write FF to *<a href="5FA9.html">EggDropState</a> (egg drop in progress).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>

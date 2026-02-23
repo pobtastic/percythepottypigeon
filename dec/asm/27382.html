@@ -29,955 +29,800 @@ Prev: <a href="27127.html">27127</a>
 </td>
 <td class="up">Up: <a href="../maps/all.html#27382">Map</a></td>
 <td class="next">
-Next: <a href="27705.html">27705</a>
+Next: <a href="27592.html">27592</a>
 </td>
 </tr>
 </table>
-<div class="description">27382: Routine at 6AF6</div>
+<div class="description">27382: Update Red Bird Movement</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
 <div class="details">
 <div class="paragraph">
-Used by the routine at <a href="27127.html">Load_Level_Data</a>.
+Used by the routine at <a href="27127.html">Handler_RedBird</a>.
+</div>
+<div class="paragraph">
+Updates the red bird's position and animation. Handles the red bird's movement along its flight path, stun recovery, room transitions, and wing animation.
 </div>
 </div>
 </td>
 </tr>
 <tr>
+<td class="asm-label">UpdateRedBirdMovement</td>
 <td class="address-2"><span id="27382"></span>27382</td>
 <td class="instruction">LD IX,56004</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">IX</span>=<a href="56004.html">Sprite01_X_Position</a> (red bird sprite data).</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="27386"></span>
+<div class="comments">
+<div class="paragraph">
+Reset the red bird's frame and colour to defaults.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27386"></span>27386</td>
 <td class="instruction">LD (IX+3),0</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write 0 to *<span class="register">IX</span>+3 (clear frame — invisible).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27390"></span>27390</td>
 <td class="instruction">LD (IX+2),2</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write RED to *<span class="register">IX</span>+2.</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="27394"></span>
+<div class="comments">
+<div class="paragraph">
+If the red bird is stunned, handle stun recovery instead.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27394"></span>27394</td>
 <td class="instruction">LD A,(27828)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Jump to <a href="27382.html#27547">UpdateRedBirdMovement_StunRecovery</a> if *<a href="27828.html">RedBirdStunTimer</a> is set indicating the red bird is stunned.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27397"></span>27397</td>
 <td class="instruction">OR A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27398"></span>27398</td>
-<td class="instruction">JP NZ,<a href="27382.html#27547">27547</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JP NZ,<a href="27382.html#27547">UpdateRedBirdMovement_StunRecovery</a></td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="27401"></span>
+<div class="comments">
+<div class="paragraph">
+If the room is being initialised, set a random appearance delay.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27401"></span>27401</td>
 <td class="instruction">LD A,(24507)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Jump to <a href="27382.html#27417">UpdateRedBirdMovement_CheckDelay</a> if *<a href="24507.html">RoomBufferFlag</a> is unset.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27404"></span>27404</td>
 <td class="instruction">OR A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27405"></span>27405</td>
-<td class="instruction">JR Z,<a href="27382.html#27417">27417</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR Z,<a href="27382.html#27417">UpdateRedBirdMovement_CheckDelay</a></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27407"></span>27407</td>
 <td class="instruction">CALL <a href="27705.html">27705</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Call <a href="27705.html">27705</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27410"></span>27410</td>
-<td class="instruction">OR 1</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">OR %00000001</td>
+<td class="comment-1" rowspan="1">Set bit 0 (ensure an odd value).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27412"></span>27412</td>
-<td class="instruction">AND 63</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">AND %00111111</td>
+<td class="comment-1" rowspan="1">Keep only bits 0-5 (cap at 63).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27414"></span>27414</td>
 <td class="instruction">LD (27837),A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<a href="27837.html">RedBirdAppearanceDelay</a>.</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="27417"></span>
+<div class="comments">
+<div class="paragraph">
+If an appearance delay is active, the red bird is waiting to enter the current room — count down and handle the transition.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">UpdateRedBirdMovement_CheckDelay</td>
 <td class="address-2"><span id="27417"></span>27417</td>
 <td class="instruction">LD A,(27837)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Jump to <a href="27382.html#27502">UpdateRedBirdMovement_WaitToAppear</a> if *<a href="27837.html">RedBirdAppearanceDelay</a> is active.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27420"></span>27420</td>
 <td class="instruction">OR A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27421"></span>27421</td>
-<td class="instruction">JR NZ,<a href="27382.html#27502">27502</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR NZ,<a href="27382.html#27502">UpdateRedBirdMovement_WaitToAppear</a></td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="27423"></span>
+<div class="comments">
+<div class="paragraph">
+Red bird is active in the current room — update its flight path.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27423"></span>27423</td>
 <td class="instruction">LD A,(24517)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Write *<a href="24517.html">CurrentRoom</a> to *<a href="27830.html">RedBirdCurrentRoom</a> (store the red bird's current room).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27426"></span>27426</td>
 <td class="instruction">LD (27830),A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="27429"></span>
+<div class="comments">
+<div class="paragraph">
+Decrement the direction change timer.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27429"></span>27429</td>
 <td class="instruction">LD HL,27826</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="27826.html">RedBirdDirectionChangeTimer</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27432"></span>27432</td>
 <td class="instruction">DEC (HL)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Decrement *<span class="register">HL</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27433"></span>27433</td>
-<td class="instruction">JR NZ,<a href="27382.html#27466">27466</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR NZ,<a href="27382.html#27466">UpdateRedBirdMovement_Move</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="27382.html#27466">UpdateRedBirdMovement_Move</a> if the timer hasn't expired.</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="27435"></span>
+<div class="comments">
+<div class="paragraph">
+Timer expired — choose a new flight direction.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27435"></span>27435</td>
 <td class="instruction">XOR A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Write 0 to *<a href="27834.html">RedBirdPathCounter</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27436"></span>27436</td>
 <td class="instruction">LD (27834),A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label">UpdateRedBirdMovement_0</td>
 <td class="address-2"><span id="27439"></span>27439</td>
 <td class="instruction">LD HL,27834</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="27834.html">RedBirdPathCounter</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27442"></span>27442</td>
 <td class="instruction">DEC (HL)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Decrement *<span class="register">HL</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27443"></span>27443</td>
-<td class="instruction">CALL Z,<a href="27127.html#27297">Load_Level_Data_7</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">CALL Z,<a href="27127.html#27297">HandleRedBird_SetupFlight</a></td>
+<td class="comment-1" rowspan="1">Call <a href="27127.html#27297">HandleRedBird_SetupFlight</a> if *<span class="register">HL</span> reached zero (find a new flight path).</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="27446"></span>
+<div class="comments">
+<div class="paragraph">
+Pick a new random direction and duration.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27446"></span>27446</td>
 <td class="instruction">CALL <a href="27705.html">27705</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Call <a href="27705.html">27705</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27449"></span>27449</td>
 <td class="instruction">PUSH AF</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Stash <span class="register">AF</span> on the stack.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27450"></span>27450</td>
-<td class="instruction">AND 7</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">AND %00000111</td>
+<td class="comment-1" rowspan="1">Keep only bits 0-2 (random direction 0-7).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27452"></span>27452</td>
 <td class="instruction">LD (27832),A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<a href="27832.html">RedBirdMovementDirection</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27455"></span>27455</td>
 <td class="instruction">POP AF</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Restore <span class="register">AF</span> from the stack.</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="27456"></span>
+<div class="comments">
+<div class="paragraph">
+Calculate the direction change timer from the random value.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27456"></span>27456</td>
 <td class="instruction">RRCA</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Rotate right three positions.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27457"></span>27457</td>
 <td class="instruction">RRCA</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27458"></span>27458</td>
 <td class="instruction">RRCA</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27459"></span>27459</td>
-<td class="instruction">AND 64</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">AND %01000000</td>
+<td class="comment-1" rowspan="1">Keep only bit 6.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27461"></span>27461</td>
-<td class="instruction">OR 4</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">OR %00000100</td>
+<td class="comment-1" rowspan="1">Set bit 2.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27463"></span>27463</td>
 <td class="instruction">LD (27826),A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<a href="27826.html">RedBirdDirectionChangeTimer</a>.</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="27466"></span>
+<div class="comments">
+<div class="paragraph">
+Move the red bird in its current direction. The direction is doubled and self-modified into the jump table at <a href="27592.html">RedBirdDirectionJumpTable</a>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">UpdateRedBirdMovement_Move</td>
 <td class="address-2"><span id="27466"></span>27466</td>
 <td class="instruction">LD A,(27832)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Load <span class="register">A</span> with *<a href="27832.html">RedBirdMovementDirection</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27469"></span>27469</td>
 <td class="instruction">ADD A,A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Double it (each jump table entry is 2 bytes).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27470"></span>27470</td>
 <td class="instruction">LD (27593),A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<a href="27592.html">27593</a> (self-modify the jump offset).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27473"></span>27473</td>
 <td class="instruction">LD C,(IX+0)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">C</span>=*<span class="register">IX</span>+0 (red bird's X position).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27476"></span>27476</td>
 <td class="instruction">LD B,(IX+1)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">B</span>=*<span class="register">IX</span>+1 (red bird's Y position).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27479"></span>27479</td>
 <td class="instruction">LD HL,27833</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="27833.html">RedBirdFlightSpeed</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27482"></span>27482</td>
-<td class="instruction">CALL <a href="27382.html#27592">27592</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">CALL <a href="27592.html">RedBirdDirectionJumpTable</a></td>
+<td class="comment-1" rowspan="1">Call <a href="27592.html">RedBirdDirectionJumpTable</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27485"></span>27485</td>
-<td class="instruction">JR C,<a href="27382.html#27439">27439</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR C,<a href="27382.html#27439">UpdateRedBirdMovement_0</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="27382.html#27439">UpdateRedBirdMovement_0</a> if the carry flag is set (red bird left the valid area).</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="27487"></span>
+<div class="comments">
+<div class="paragraph">
+Update the red bird's wing animation frame.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">UpdateRedBirdMovement_Animate</td>
 <td class="address-2"><span id="27487"></span>27487</td>
 <td class="instruction">LD HL,27844</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="27844.html">RedBirdWingAnimationCounter</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27490"></span>27490</td>
 <td class="instruction">LD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">HL</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27491"></span>27491</td>
 <td class="instruction">INC A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Increment the animation counter.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27492"></span>27492</td>
-<td class="instruction">AND 7</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">AND %00000111</td>
+<td class="comment-1" rowspan="1">Keep only bits 0-2 (cycle through 0-7).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27494"></span>27494</td>
 <td class="instruction">LD (HL),A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write back to *<span class="register">HL</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27495"></span>27495</td>
 <td class="instruction">RRA</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Rotate right (divide by 2).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27496"></span>27496</td>
 <td class="instruction">ADD A,24</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>+=24 (red bird animation frame base).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27498"></span>27498</td>
 <td class="instruction">LD (56007),A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<a href="56004.html#56007">Sprite01_Frame_ID</a> (red bird frame).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27501"></span>27501</td>
 <td class="instruction">RET</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Return.</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="27502"></span>
+<div class="comments">
+<div class="paragraph">
+Red bird is waiting to appear. Count down the delay timer and handle the room transition when it expires.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">UpdateRedBirdMovement_WaitToAppear</td>
 <td class="address-2"><span id="27502"></span>27502</td>
 <td class="instruction">LD A,(24517)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2"><span class="register">B</span>=*<a href="24517.html">CurrentRoom</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27505"></span>27505</td>
 <td class="instruction">LD B,A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27506"></span>27506</td>
 <td class="instruction">LD A,(27830)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="27830.html">RedBirdCurrentRoom</a> (red bird's current room).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27509"></span>27509</td>
 <td class="instruction">CP B</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Is the red bird in the same room as Percy?</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27510"></span>27510</td>
-<td class="instruction">JR NZ,<a href="27382.html#27518">27518</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR NZ,<a href="27382.html#27518">UpdateRedBirdMovement_Countdown</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="27382.html#27518">UpdateRedBirdMovement_Countdown</a> if not.</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="27512"></span>
+<div class="comments">
+<div class="paragraph">
+Red bird has arrived in Percy's room — clear the delay and animate.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27512"></span>27512</td>
 <td class="instruction">XOR A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Write 0 to *<a href="27837.html">RedBirdAppearanceDelay</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27513"></span>27513</td>
 <td class="instruction">LD (27837),A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27516"></span>27516</td>
-<td class="instruction">JR <a href="27382.html#27487">27487</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR <a href="27382.html#27487">UpdateRedBirdMovement_Animate</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="27382.html#27487">UpdateRedBirdMovement_Animate</a>.</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="27518"></span>
+<div class="comments">
+<div class="paragraph">
+Still waiting — decrement the appearance delay.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">UpdateRedBirdMovement_Countdown</td>
 <td class="address-2"><span id="27518"></span>27518</td>
 <td class="instruction">LD HL,27837</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="27837.html">RedBirdAppearanceDelay</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27521"></span>27521</td>
 <td class="instruction">DEC (HL)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Decrement *<span class="register">HL</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27522"></span>27522</td>
 <td class="instruction">RET NZ</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Return if the delay hasn't expired yet.</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="27523"></span>
+<div class="comments">
+<div class="paragraph">
+Delay expired — determine which direction the red bird should enter from based on which room it's coming from relative to Percy's room.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27523"></span>27523</td>
 <td class="instruction">XOR A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Write 0 to *<a href="27827.html">RedBirdTraversalDirection</a> (default: flying left).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27524"></span>27524</td>
 <td class="instruction">LD (27827),A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27527"></span>27527</td>
 <td class="instruction">LD A,(24517)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2"><span class="register">B</span>=*<a href="24517.html">CurrentRoom</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27530"></span>27530</td>
 <td class="instruction">LD B,A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27531"></span>27531</td>
 <td class="instruction">LD A,(27830)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="27830.html">RedBirdCurrentRoom</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27534"></span>27534</td>
 <td class="instruction">CP B</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Jump to <a href="27382.html#27542">UpdateRedBirdMovement_EnterRoom</a> if the red bird is coming from a lower numbered room.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27535"></span>27535</td>
-<td class="instruction">JR C,<a href="27382.html#27542">27542</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR C,<a href="27382.html#27542">UpdateRedBirdMovement_EnterRoom</a></td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="27537"></span>
+<div class="comments">
+<div class="paragraph">
+Red bird is coming from a higher room — enter flying right.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27537"></span>27537</td>
 <td class="instruction">LD A,1</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Write 1 to *<a href="27827.html">RedBirdTraversalDirection</a> (flying right).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27539"></span>27539</td>
 <td class="instruction">LD (27827),A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label">UpdateRedBirdMovement_EnterRoom</td>
 <td class="address-2"><span id="27542"></span>27542</td>
-<td class="instruction">CALL <a href="27127.html#27297">Load_Level_Data_7</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">CALL <a href="27127.html#27297">HandleRedBird_SetupFlight</a></td>
+<td class="comment-1" rowspan="1">Call <a href="27127.html#27297">HandleRedBird_SetupFlight</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27545"></span>27545</td>
-<td class="instruction">JR <a href="27382.html#27487">27487</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR <a href="27382.html#27487">UpdateRedBirdMovement_Animate</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="27382.html#27487">UpdateRedBirdMovement_Animate</a>.</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="27547"></span>
+<div class="comments">
+<div class="paragraph">
+Handle the red bird's stun recovery. The stun timer counts down, and the red bird flashes blue while stunned. When the timer expires, the red bird becomes active again with a short appearance delay.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">UpdateRedBirdMovement_StunRecovery</td>
 <td class="address-2"><span id="27547"></span>27547</td>
 <td class="instruction">LD HL,27828</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="27828.html">RedBirdStunTimer</a> (stun timer).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27550"></span>27550</td>
 <td class="instruction">LD A,1</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Write BLUE to *<a href="56004.html#56006">Sprite01_Colour</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27552"></span>27552</td>
 <td class="instruction">LD (56006),A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27555"></span>27555</td>
 <td class="instruction">DEC (HL)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Decrement the stun timer.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27556"></span>27556</td>
 <td class="instruction">LD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">HL</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27557"></span>27557</td>
 <td class="instruction">CP 1</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Jump to <a href="27382.html#27584">UpdateRedBirdMovement_StunEnd</a> if the stun is about to end.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27559"></span>27559</td>
-<td class="instruction">JR Z,<a href="27382.html#27584">27584</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR Z,<a href="27382.html#27584">UpdateRedBirdMovement_StunEnd</a></td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="27561"></span>
+<div class="comments">
+<div class="paragraph">
+Still stunned — only draw if the red bird is in the current room.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27561"></span>27561</td>
 <td class="instruction">LD A,(27830)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2"><span class="register">B</span>=*<a href="27830.html">RedBirdCurrentRoom</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27564"></span>27564</td>
 <td class="instruction">LD B,A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27565"></span>27565</td>
 <td class="instruction">LD A,(24517)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="24517.html">CurrentRoom</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27568"></span>27568</td>
 <td class="instruction">CP B</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Return if the red bird is not in the same room as Percy.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27569"></span>27569</td>
 <td class="instruction">RET NZ</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="27570"></span>
+<div class="comments">
+<div class="paragraph">
+Red bird is stunned and visible — move it downward slowly (falling).
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27570"></span>27570</td>
 <td class="instruction">LD C,(IX+0)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">C</span>=*<span class="register">IX</span>+0 (red bird's X position).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27573"></span>27573</td>
 <td class="instruction">LD A,(IX+1)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">IX</span>+1 (red bird's Y position).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27576"></span>27576</td>
 <td class="instruction">ADD A,3</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>+=3 (drift downward).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27578"></span>27578</td>
 <td class="instruction">LD B,A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Store the result in <span class="register">B</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27579"></span>27579</td>
-<td class="instruction">CALL <a href="27382.html#27660">27660</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">CALL <a href="27660.html">ValidateRedBirdPosition</a></td>
+<td class="comment-1" rowspan="1">Call <a href="27660.html">ValidateRedBirdPosition</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27582"></span>27582</td>
-<td class="instruction">JR <a href="27382.html#27487">27487</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR <a href="27382.html#27487">UpdateRedBirdMovement_Animate</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="27382.html#27487">UpdateRedBirdMovement_Animate</a>.</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="27584"></span>
+<div class="comments">
+<div class="paragraph">
+Stun ending — clear the timer and set a short reappearance delay.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">UpdateRedBirdMovement_StunEnd</td>
 <td class="address-2"><span id="27584"></span>27584</td>
 <td class="instruction">DEC (HL)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Clear the stun timer to 0.</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="27585"></span>
+<div class="comments">
+<div class="paragraph">
+Set a short reappearance delay.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27585"></span>27585</td>
 <td class="instruction">LD A,4</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Write 4 to *<a href="27837.html">RedBirdAppearanceDelay</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27587"></span>27587</td>
 <td class="instruction">LD (27837),A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27590"></span>27590</td>
-<td class="instruction">JR <a href="27382.html#27502">27502</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="routine-comment" colspan="5">
-<span id="27592"></span>
-<div class="comments">
-<div class="paragraph">
-This entry point is used by the routines at <a href="27869.html">27869</a>, <a href="29753.html">29753</a> and <a href="29970.html">29970</a>.
-</div>
-</div>
-</td>
-</tr>
-<tr>
-<td class="address-2"><span id="27592"></span>27592</td>
-<td class="instruction">JR <a href="27382.html#27594">27594</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-2"><span id="27594"></span>27594</td>
-<td class="instruction">JR <a href="27382.html#27610">27610</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27596"></span>27596</td>
-<td class="instruction">JR <a href="27382.html#27615">27615</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27598"></span>27598</td>
-<td class="instruction">JR <a href="27382.html#27623">27623</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27600"></span>27600</td>
-<td class="instruction">JR <a href="27382.html#27628">27628</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27602"></span>27602</td>
-<td class="instruction">JR <a href="27382.html#27636">27636</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27604"></span>27604</td>
-<td class="instruction">JR <a href="27382.html#27641">27641</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27606"></span>27606</td>
-<td class="instruction">JR <a href="27382.html#27649">27649</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27608"></span>27608</td>
-<td class="instruction">JR <a href="27382.html#27654">27654</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-2"><span id="27610"></span>27610</td>
-<td class="instruction">LD A,B</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27611"></span>27611</td>
-<td class="instruction">SUB (HL)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27612"></span>27612</td>
-<td class="instruction">LD B,A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27613"></span>27613</td>
-<td class="instruction">JR <a href="27382.html#27660">27660</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-2"><span id="27615"></span>27615</td>
-<td class="instruction">LD A,B</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27616"></span>27616</td>
-<td class="instruction">SUB (HL)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27617"></span>27617</td>
-<td class="instruction">LD B,A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27618"></span>27618</td>
-<td class="instruction">LD A,C</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27619"></span>27619</td>
-<td class="instruction">ADD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27620"></span>27620</td>
-<td class="instruction">LD C,A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27621"></span>27621</td>
-<td class="instruction">JR <a href="27382.html#27660">27660</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-2"><span id="27623"></span>27623</td>
-<td class="instruction">LD A,C</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27624"></span>27624</td>
-<td class="instruction">ADD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27625"></span>27625</td>
-<td class="instruction">LD C,A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27626"></span>27626</td>
-<td class="instruction">JR <a href="27382.html#27660">27660</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-2"><span id="27628"></span>27628</td>
-<td class="instruction">LD A,C</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27629"></span>27629</td>
-<td class="instruction">ADD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27630"></span>27630</td>
-<td class="instruction">LD C,A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27631"></span>27631</td>
-<td class="instruction">LD A,B</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27632"></span>27632</td>
-<td class="instruction">ADD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27633"></span>27633</td>
-<td class="instruction">LD B,A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27634"></span>27634</td>
-<td class="instruction">JR <a href="27382.html#27660">27660</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-2"><span id="27636"></span>27636</td>
-<td class="instruction">LD A,B</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27637"></span>27637</td>
-<td class="instruction">ADD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27638"></span>27638</td>
-<td class="instruction">LD B,A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27639"></span>27639</td>
-<td class="instruction">JR <a href="27382.html#27660">27660</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-2"><span id="27641"></span>27641</td>
-<td class="instruction">LD A,B</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27642"></span>27642</td>
-<td class="instruction">ADD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27643"></span>27643</td>
-<td class="instruction">LD B,A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27644"></span>27644</td>
-<td class="instruction">LD A,C</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27645"></span>27645</td>
-<td class="instruction">SUB (HL)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27646"></span>27646</td>
-<td class="instruction">LD C,A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27647"></span>27647</td>
-<td class="instruction">JR <a href="27382.html#27660">27660</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-2"><span id="27649"></span>27649</td>
-<td class="instruction">LD A,C</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27650"></span>27650</td>
-<td class="instruction">SUB (HL)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27651"></span>27651</td>
-<td class="instruction">LD C,A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27652"></span>27652</td>
-<td class="instruction">JR <a href="27382.html#27660">27660</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-2"><span id="27654"></span>27654</td>
-<td class="instruction">LD A,B</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27655"></span>27655</td>
-<td class="instruction">SUB (HL)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27656"></span>27656</td>
-<td class="instruction">LD B,A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27657"></span>27657</td>
-<td class="instruction">LD A,C</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27658"></span>27658</td>
-<td class="instruction">SUB (HL)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27659"></span>27659</td>
-<td class="instruction">LD C,A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="routine-comment" colspan="5">
-<span id="27660"></span>
-<div class="comments">
-<div class="paragraph">
-This entry point is used by the routines at <a href="27127.html">Load_Level_Data</a>, <a href="27869.html">27869</a> and <a href="29863.html">29863</a>.
-</div>
-</div>
-</td>
-</tr>
-<tr>
-<td class="address-2"><span id="27660"></span>27660</td>
-<td class="instruction">LD HL,(27835)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-2"><span id="27663"></span>27663</td>
-<td class="instruction">PUSH HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27664"></span>27664</td>
-<td class="instruction">LD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27665"></span>27665</td>
-<td class="instruction">OR A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27666"></span>27666</td>
-<td class="instruction">JR Z,<a href="27382.html#27702">27702</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27668"></span>27668</td>
-<td class="instruction">CP B</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27669"></span>27669</td>
-<td class="instruction">JR NC,<a href="27382.html#27695">27695</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27671"></span>27671</td>
-<td class="instruction">INC HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27672"></span>27672</td>
-<td class="instruction">LD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27673"></span>27673</td>
-<td class="instruction">CP B</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27674"></span>27674</td>
-<td class="instruction">JR C,<a href="27382.html#27695">27695</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27676"></span>27676</td>
-<td class="instruction">INC HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27677"></span>27677</td>
-<td class="instruction">LD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27678"></span>27678</td>
-<td class="instruction">CP C</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27679"></span>27679</td>
-<td class="instruction">JR NC,<a href="27382.html#27695">27695</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27681"></span>27681</td>
-<td class="instruction">INC HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27682"></span>27682</td>
-<td class="instruction">LD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27683"></span>27683</td>
-<td class="instruction">CP C</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27684"></span>27684</td>
-<td class="instruction">JR C,<a href="27382.html#27695">27695</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27686"></span>27686</td>
-<td class="instruction">LD (IX+0),C</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27689"></span>27689</td>
-<td class="instruction">LD (IX+1),B</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27692"></span>27692</td>
-<td class="instruction">POP HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27693"></span>27693</td>
-<td class="instruction">AND A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27694"></span>27694</td>
-<td class="instruction">RET</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-2"><span id="27695"></span>27695</td>
-<td class="instruction">POP HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27696"></span>27696</td>
-<td class="instruction">INC HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27697"></span>27697</td>
-<td class="instruction">INC HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27698"></span>27698</td>
-<td class="instruction">INC HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27699"></span>27699</td>
-<td class="instruction">INC HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27700"></span>27700</td>
-<td class="instruction">JR <a href="27382.html#27663">27663</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-2"><span id="27702"></span>27702</td>
-<td class="instruction">POP HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27703"></span>27703</td>
-<td class="instruction">SCF</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="27704"></span>27704</td>
-<td class="instruction">RET</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR <a href="27382.html#27502">UpdateRedBirdMovement_WaitToAppear</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="27382.html#27502">UpdateRedBirdMovement_WaitToAppear</a>.</td>
 </tr>
 </table>
 <table class="asm-navigation">
@@ -987,7 +832,7 @@ Prev: <a href="27127.html">27127</a>
 </td>
 <td class="up">Up: <a href="../maps/all.html#27382">Map</a></td>
 <td class="next">
-Next: <a href="27705.html">27705</a>
+Next: <a href="27592.html">27592</a>
 </td>
 </tr>
 </table>

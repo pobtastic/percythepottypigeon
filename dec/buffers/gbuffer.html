@@ -450,10 +450,157 @@ Workspace for scoring calculations.
 </tr>
 <tr>
 <td class="map-g"><span id="27826"></span><a href="../asm/27826.html">27826</a></td>
-<td class="map-length">43</td>
+<td class="map-length">1</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/27826.html">Game status buffer entry at 6CB2</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/27826.html">Red Bird Direction Change Timer</a></div>
 <div class="map-entry-desc">
+<div class="paragraph">
+Counts down each frame. When it reaches zero, the red bird picks a new random flight direction.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="27827"></span><a href="../asm/27827.html">27827</a></td>
+<td class="map-length">1</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/27827.html">Red Bird Traversal Direction</a></div>
+<div class="map-entry-desc">
+<div class="paragraph">
+Controls which direction the red bird traverses across rooms. 0=moving left (entering from the right), 1=moving right (entering from the left). Toggled when the red bird wraps past the room boundary.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="27828"></span><a href="../asm/27828.html">27828</a></td>
+<td class="map-length">1</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/27828.html">Red Bird Stun Timer</a></div>
+<div class="map-entry-desc">
+<div class="paragraph">
+When non-zero, the red bird is stunned. Counts down each frame until it reaches 1 then the stun ends and a short reappearance delay begins.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="27829"></span><a href="../asm/27829.html">27829</a></td>
+<td class="map-length">1</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/27829.html">Red Bird Stun Timer Copy</a></div>
+<div class="map-entry-desc">
+<div class="paragraph">
+Copy of the initial stun timer value, stored when the red bird is first stunned.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="27830"></span><a href="../asm/27830.html">27830</a></td>
+<td class="map-length">1</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/27830.html">Red Bird Current Room</a></div>
+<div class="map-entry-desc">
+<div class="paragraph">
+The room number the red bird is currently in. May differ from *<a href="../asm/24517.html">CurrentRoom</a> when the red bird is transitioning between rooms.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="27831"></span><a href="../asm/27831.html">27831</a></td>
+<td class="map-length">1</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/27831.html">Red Bird Animation Seed</a></div>
+<div class="map-entry-desc">
+<div class="paragraph">
+Seeded from the Memory Refresh Register when the red bird is initialised for each room.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="27832"></span><a href="../asm/27832.html">27832</a></td>
+<td class="map-length">1</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/27832.html">Red Bird Movement Direction</a></div>
+<div class="map-entry-desc">
+<div class="paragraph">
+The red bird's current movement direction within a room (0-7), indexing into the direction jump table at <a href="../asm/27592.html">RedBirdDirectionJumpTable</a>. Changes randomly each time the direction change timer at <a href="../asm/27826.html">RedBirdDirectionChangeTimer</a> expires.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="27833"></span><a href="../asm/27833.html">27833</a></td>
+<td class="map-length">1</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/27833.html">Red Bird Flight Speed</a></div>
+<div class="map-entry-desc">
+<div class="paragraph">
+The red bird's current flight speed, looked up from the per-level speed table at <a href="../asm/27838.html">RedBirdSpeedTable</a> based on the current level number.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="27834"></span><a href="../asm/27834.html">27834</a></td>
+<td class="map-length">1</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/27834.html">Red Bird Path Counter</a></div>
+<div class="map-entry-desc">
+<div class="paragraph">
+Counts down to trigger a new flight path setup via <a href="../asm/27127.html#27297">HandleRedBird_SetupFlight</a>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="27835"></span><a href="../asm/27835.html">27835</a></td>
+<td class="map-length">2</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/27835.html">Pointer: Red Bird Flightpath Data</a></div>
+<div class="map-entry-desc">
+<div class="paragraph">
+Pointer to the current room's flight path boundary data at <a href="../asm/48640.html">Table_RedBirdFlightPath_01</a>. Each boundary entry is 4 bytes: Y-min, Y-max, X-min, X-max.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="27837"></span><a href="../asm/27837.html">27837</a></td>
+<td class="map-length">1</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/27837.html">Red Bird Appearance Delay</a></div>
+<div class="map-entry-desc">
+<div class="paragraph">
+Counts down each frame while the red bird is waiting to enter the current room. When it reaches zero, the red bird appears.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="27838"></span><a href="../asm/27838.html">27838</a></td>
+<td class="map-length">6</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/27838.html">Red Bird Speed Table</a></div>
+<div class="map-entry-desc">
+<div class="paragraph">
+Flight speed for each level. Indexed by zero-based level number.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="27844"></span><a href="../asm/27844.html">27844</a></td>
+<td class="map-length">231</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/27844.html">Red Bird Wing Animation Counter</a></div>
+<div class="map-entry-desc">
+<div class="paragraph">
+Cycles through 0-7 to animate the red bird's wings. Divided by 2 and added to the frame base of 24 to select the sprite frame.
+</div>
 </div>
 </td>
 </tr>
@@ -537,6 +684,15 @@ Jump height lookup table. Each entry is the Y offset from ground level for one s
 <td class="map-length">22</td>
 <td class="map-g-desc">
 <div class="map-entry-title-11"><a class="map-entry-title" href="../asm/31534.html">Jump Table: Room Handlers</a></div>
+<div class="map-entry-desc">
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="48640"></span><a href="../asm/48640.html">48640</a></td>
+<td class="map-length">512</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/48640.html">Table: Red Bird Flight Path Data</a></div>
 <div class="map-entry-desc">
 </div>
 </td>

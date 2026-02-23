@@ -33,18 +33,19 @@ Next: <a href="71E9.html">71E9</a>
 </td>
 </tr>
 </table>
-<div class="description">71E1: Routine at 71E1</div>
+<div class="description">71E1: Cancel Egg Drop</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
 <div class="details">
 <div class="paragraph">
-Used by the routines at <a href="69F7.html">Load_Level_Data</a>, <a href="7190.html">HandlerFrog01_CheckEggCollision</a>, <a href="74D6.html">74D6</a> and <a href="7512.html">7512</a>.
+Used by the routines at <a href="69F7.html">Handler_RedBird</a>, <a href="7190.html">HandlerFrog01_CheckEggCollision</a>, <a href="74D6.html">74D6</a> and <a href="7512.html">7512</a>.
 </div>
 </div>
 </td>
 </tr>
 <tr>
+<td class="asm-label">CancelEggDrop</td>
 <td class="address-2"><span id="71e1"></span>71E1</td>
 <td class="instruction">XOR A</td>
 <td class="comment-1" rowspan="3">Write 00 to; <ul class="">
@@ -53,14 +54,17 @@ Used by the routines at <a href="69F7.html">Load_Level_Data</a>, <a href="7190.h
 </ul></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="71e2"></span>71E2</td>
 <td class="instruction">LD ($DAE3),A</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="71e5"></span>71E5</td>
 <td class="instruction">LD ($5FA9),A</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="71e8"></span>71E8</td>
 <td class="instruction">RET</td>
 <td class="comment-1" rowspan="1">Return.</td>
