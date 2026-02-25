@@ -76,7 +76,7 @@ Move Percy right. Checks screen boundary and handles room transitions.
 <span id="25254"></span>
 <div class="comments">
 <div class="paragraph">
-If *<a href="24490.html">GameModeFlag</a> is non-zero, apply an extra boundary check.
+If *<a href="24490.html">CarryingWormFlag</a> is set, apply an extra boundary check.
 </div>
 </div>
 </td>
@@ -85,7 +85,7 @@ If *<a href="24490.html">GameModeFlag</a> is non-zero, apply an extra boundary c
 <td class="asm-label"></td>
 <td class="address-1"><span id="25254"></span>25254</td>
 <td class="instruction">LD A,(24490)</td>
-<td class="comment-1" rowspan="3">Jump to <a href="25250.html#25270">MovePercyRight_Apply</a> if *<a href="24490.html">GameModeFlag</a> is unset.</td>
+<td class="comment-1" rowspan="3">Jump to <a href="25250.html#25270">MovePercyRight_Apply</a> if *<a href="24490.html">CarryingWormFlag</a> is unset.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>

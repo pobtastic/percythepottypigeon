@@ -41,6 +41,9 @@ Next: <a href="69F7.html">69F7</a>
 <div class="paragraph">
 Used by the routine at <a href="6992.html">Run_Game_Frame</a>.
 </div>
+<div class="paragraph">
+Processes one frame of the main game loop. Clears all sprite frame IDs, then calls the various game handlers for Percy, hazards and level-specific logic. Resets the lives backup flag and restores the border colour before returning.
+</div>
 </div>
 </td>
 </tr>
@@ -66,7 +69,7 @@ Used by the routine at <a href="6992.html">Run_Game_Frame</a>.
 <span id="69ac"></span>
 <div class="comments">
 <div class="paragraph">
-Clear the frame IDs for: <a href="DAC4.html#dac7">Sprite01_Frame_ID</a>, <a href="DAC8.html#dacb">Sprite02_Frame_ID</a>, <a href="DACC.html#dacf">Sprite03_Frame_ID</a>, <a href="DAD0.html#dad3">Car02_Frame_ID</a>, <a href="DAD4.html#dad7">Car03_Frame_ID</a>, <a href="DAD8.html#dadb">DADB</a>, <a href="DADC.html#dadf">DADF</a> and <a href="DAE0.html#dae3">DAE3</a>.
+Clear the sprite frame IDs for: <a href="DAC4.html#dac7">Sprite01_3Wide_Frame_ID</a>, <a href="DAC8.html#dacb">Sprite02_3Wide_Frame_ID</a>, <a href="DACC.html#dacf">Sprite03_3Wide_Frame_ID</a>, <a href="DAD0.html#dad3">Sprite04_3Wide_Frame_ID</a>, <a href="DAD4.html#dad7">Sprite05_3Wide_Frame_ID</a>, <a href="DAD8.html#dadb">Sprite06_3Wide_Frame_ID</a> and <a href="DADC.html#dadf">Sprite07_3Wide_Frame_ID</a> (the eight 3-wide sprites).
 </div>
 </div>
 </td>
@@ -75,31 +78,31 @@ Clear the frame IDs for: <a href="DAC4.html#dac7">Sprite01_Frame_ID</a>, <a href
 <td class="asm-label"></td>
 <td class="address-1"><span id="69ac"></span>69AC</td>
 <td class="instruction">LD B,$07</td>
-<td class="comment-1" rowspan="1"><span class="register">B</span>=07.</td>
+<td class="comment-1" rowspan="1">Set the sprite counter to 07 in <span class="register">B</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="69ae"></span>69AE</td>
 <td class="instruction">LD HL,$DAC7</td>
-<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="DAC4.html#dac7">Sprite01_Frame_ID</a>.</td>
+<td class="comment-1" rowspan="1">Point <span class="register">HL</span> at <a href="DAC4.html#dac7">Sprite01_3Wide_Frame_ID</a> (first 3-wide sprite frame ID).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="69b1"></span>69B1</td>
 <td class="instruction">LD C,$00</td>
-<td class="comment-1" rowspan="1"><span class="register">C</span>=00.</td>
+<td class="comment-1" rowspan="1">Set the clear value in <span class="register">C</span> to 00.</td>
 </tr>
 <tr>
-<td class="asm-label">Run_Main_Loop_Body_0</td>
+<td class="asm-label">Clear_3Wide_Frames_Loop</td>
 <td class="address-2"><span id="69b3"></span>69B3</td>
 <td class="instruction">LD (HL),C</td>
-<td class="comment-1" rowspan="1">Write <span class="register">C</span> to *<span class="register">HL</span>.</td>
+<td class="comment-1" rowspan="1">Write 00 to the sprite frame ID at *<span class="register">HL</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="69b4"></span>69B4</td>
 <td class="instruction">INC HL</td>
-<td class="comment-1" rowspan="4">Increment <span class="register">HL</span> by four.</td>
+<td class="comment-1" rowspan="4">Advance <span class="register">HL</span> by four bytes to the next sprite entry.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -119,32 +122,42 @@ Clear the frame IDs for: <a href="DAC4.html#dac7">Sprite01_Frame_ID</a>, <a href
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="69b8"></span>69B8</td>
-<td class="instruction">DJNZ <a href="69A7.html#69b3">Run_Main_Loop_Body_0</a></td>
-<td class="comment-1" rowspan="1">Decrease counter by one and loop back to <a href="69A7.html#69b3">Run_Main_Loop_Body_0</a> until counter is zero.</td>
+<td class="instruction">DJNZ <a href="69A7.html#69b3">Clear_3Wide_Frames_Loop</a></td>
+<td class="comment-1" rowspan="1">Decrease the counter and loop back to <a href="69A7.html#69b3">Clear_3Wide_Frames_Loop</a> until all seven 3-wide sprite frame IDs are cleared.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="69ba"></span>
+<div class="comments">
+<div class="paragraph">
+Clear the sprite frame IDs for: <a href="DAE8.html#daeb">Sprite01_2WideFrame_ID</a>, <a href="DAEC.html#daef">Sprite02_2WideFrame_ID</a>, <a href="DAF0.html#daf3">Sprite03_2WideFrame_ID</a>, <a href="DAF4.html#daf7">Sprite04_2WideFrame_ID</a>, <a href="DAF8.html#dafb">Sprite05_2WideFrame_ID</a> and <a href="DAFC.html#daff">Sprite06_2WideFrame_ID</a> (the six 2-wide sprites).
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="69ba"></span>69BA</td>
 <td class="instruction">LD HL,$DAEB</td>
-<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="DAE8.html#daeb">DAEB</a>.</td>
+<td class="comment-1" rowspan="1">Point <span class="register">HL</span> at <a href="DAE8.html#daeb">Sprite01_2WideFrame_ID</a> (first 2-wide sprite frame ID).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="69bd"></span>69BD</td>
 <td class="instruction">LD B,$06</td>
-<td class="comment-1" rowspan="1"><span class="register">B</span>=06.</td>
+<td class="comment-1" rowspan="1">Set the sprite counter to 06 in <span class="register">B</span>.</td>
 </tr>
 <tr>
-<td class="asm-label">Run_Main_Loop_Body_1</td>
+<td class="asm-label">Clear_2Wide_Frames_Loop</td>
 <td class="address-2"><span id="69bf"></span>69BF</td>
 <td class="instruction">LD (HL),C</td>
-<td class="comment-1" rowspan="1">Write <span class="register">C</span> to *<span class="register">HL</span>.</td>
+<td class="comment-1" rowspan="1">Write 00 to the sprite frame ID at *<span class="register">HL</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="69c0"></span>69C0</td>
 <td class="instruction">INC HL</td>
-<td class="comment-1" rowspan="4">Increment <span class="register">HL</span> by four.</td>
+<td class="comment-1" rowspan="4">Advance <span class="register">HL</span> by four bytes to the next sprite entry.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -164,14 +177,24 @@ Clear the frame IDs for: <a href="DAC4.html#dac7">Sprite01_Frame_ID</a>, <a href
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="69c4"></span>69C4</td>
-<td class="instruction">DJNZ <a href="69A7.html#69bf">Run_Main_Loop_Body_1</a></td>
-<td class="comment-1" rowspan="1">Decrease counter by one and loop back to <a href="69A7.html#69bf">Run_Main_Loop_Body_1</a> until counter is zero.</td>
+<td class="instruction">DJNZ <a href="69A7.html#69bf">Clear_2Wide_Frames_Loop</a></td>
+<td class="comment-1" rowspan="1">Decrease the counter and loop back to <a href="69A7.html#69bf">Clear_2Wide_Frames_Loop</a> until all six 2-wide sprite frame IDs are cleared.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="69c6"></span>
+<div class="comments">
+<div class="paragraph">
+Call the game handlers.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="69c6"></span>69C6</td>
 <td class="instruction">LD A,($5FBE)</td>
-<td class="comment-1" rowspan="3">Call <a href="6CA5.html">6CA5</a> if *<a href="5FBE.html">Lives_Backup</a> is non-zero.</td>
+<td class="comment-1" rowspan="3">Call <a href="6CA5.html">ResetRedBird</a> if *<a href="5FBE.html">Lives_Backup</a> is non-zero.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -181,7 +204,7 @@ Clear the frame IDs for: <a href="DAC4.html#dac7">Sprite01_Frame_ID</a>, <a href
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="69ca"></span>69CA</td>
-<td class="instruction">CALL NZ,<a href="6CA5.html">$6CA5</a></td>
+<td class="instruction">CALL NZ,<a href="6CA5.html">ResetRedBird</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -221,7 +244,7 @@ Clear the frame IDs for: <a href="DAC4.html#dac7">Sprite01_Frame_ID</a>, <a href
 <td class="asm-label"></td>
 <td class="address-1"><span id="69de"></span>69DE</td>
 <td class="instruction">LD A,($5FAD)</td>
-<td class="comment-1" rowspan="3">Call <a href="6480.html#64be">UpdateEnergyBar_Refill</a> if *<a href="5FAD.html">LandedOnPlatformFlag</a> is set.</td>
+<td class="comment-1" rowspan="3">Call <a href="6480.html#64be">UpdateEnergyBar_Refill</a> if *<a href="5FAD.html">LandedOnPlatformFlag</a> (worm Y adjustment flag) is set.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -234,10 +257,20 @@ Clear the frame IDs for: <a href="DAC4.html#dac7">Sprite01_Frame_ID</a>, <a href
 <td class="instruction">CALL NZ,<a href="6480.html#64be">UpdateEnergyBar_Refill</a></td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="69e5"></span>
+<div class="comments">
+<div class="paragraph">
+Tidy up at end of frame.
+</div>
+</div>
+</td>
+</tr>
+<tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="69e5"></span>69E5</td>
 <td class="instruction">LD A,($5FB3)</td>
-<td class="comment-1" rowspan="2">Write *<a href="5FB3.html">LivesDisplayCharacter</a> to *<a href="6CBE.html#6cc3">6CC3</a>.</td>
+<td class="comment-1" rowspan="2">Copy *<a href="5FB3.html">LivesDisplayCharacter</a> to *<a href="6CC3.html">Lives_Display_Previous</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>

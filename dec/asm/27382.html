@@ -51,7 +51,7 @@ Updates the red bird's position and animation. Handles the red bird's movement a
 <td class="asm-label">UpdateRedBirdMovement</td>
 <td class="address-2"><span id="27382"></span>27382</td>
 <td class="instruction">LD IX,56004</td>
-<td class="comment-1" rowspan="1"><span class="register">IX</span>=<a href="56004.html">Sprite01_X_Position</a> (red bird sprite data).</td>
+<td class="comment-1" rowspan="1"><span class="register">IX</span>=<a href="56004.html">Sprite01_3Wide_X_Position</a> (red bird sprite data).</td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
@@ -67,7 +67,7 @@ Reset the red bird's frame and colour to defaults.
 <td class="asm-label"></td>
 <td class="address-1"><span id="27386"></span>27386</td>
 <td class="instruction">LD (IX+3),0</td>
-<td class="comment-1" rowspan="1">Write 0 to *<span class="register">IX</span>+3 (clear frame — invisible).</td>
+<td class="comment-1" rowspan="1">Write 0 to *<span class="register">IX</span>+3 (clear frame/ set to invisible).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -130,8 +130,8 @@ If the room is being initialised, set a random appearance delay.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="27407"></span>27407</td>
-<td class="instruction">CALL <a href="27705.html">27705</a></td>
-<td class="comment-1" rowspan="1">Call <a href="27705.html">27705</a>.</td>
+<td class="instruction">CALL <a href="27705.html">GenerateRandomNumber</a></td>
+<td class="comment-1" rowspan="1">Call <a href="27705.html">GenerateRandomNumber</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -156,7 +156,7 @@ If the room is being initialised, set a random appearance delay.
 <span id="27417"></span>
 <div class="comments">
 <div class="paragraph">
-If an appearance delay is active, the red bird is waiting to enter the current room — count down and handle the transition.
+If an appearance delay is active, the red bird is waiting to enter the current room so count down and handle the transition.
 </div>
 </div>
 </td>
@@ -182,7 +182,7 @@ If an appearance delay is active, the red bird is waiting to enter the current r
 <span id="27423"></span>
 <div class="comments">
 <div class="paragraph">
-Red bird is active in the current room — update its flight path.
+Red bird is active in the current room so update its flight path.
 </div>
 </div>
 </td>
@@ -231,7 +231,7 @@ Decrement the direction change timer.
 <span id="27435"></span>
 <div class="comments">
 <div class="paragraph">
-Timer expired — choose a new flight direction.
+Timer expired so choose a new flight direction.
 </div>
 </div>
 </td>
@@ -278,8 +278,8 @@ Pick a new random direction and duration.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="27446"></span>27446</td>
-<td class="instruction">CALL <a href="27705.html">27705</a></td>
-<td class="comment-1" rowspan="1">Call <a href="27705.html">27705</a>.</td>
+<td class="instruction">CALL <a href="27705.html">GenerateRandomNumber</a></td>
+<td class="comment-1" rowspan="1">Call <a href="27705.html">GenerateRandomNumber</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -463,7 +463,7 @@ Update the red bird's wing animation frame.
 <td class="asm-label"></td>
 <td class="address-1"><span id="27498"></span>27498</td>
 <td class="instruction">LD (56007),A</td>
-<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<a href="56004.html#56007">Sprite01_Frame_ID</a> (red bird frame).</td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<a href="56004.html#56007">Sprite01_3Wide_Frame_ID</a> (red bird frame).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -515,7 +515,7 @@ Red bird is waiting to appear. Count down the delay timer and handle the room tr
 <span id="27512"></span>
 <div class="comments">
 <div class="paragraph">
-Red bird has arrived in Percy's room — clear the delay and animate.
+Red bird has arrived in Percy's room so clear the delay and animate.
 </div>
 </div>
 </td>
@@ -542,7 +542,7 @@ Red bird has arrived in Percy's room — clear the delay and animate.
 <span id="27518"></span>
 <div class="comments">
 <div class="paragraph">
-Still waiting — decrement the appearance delay.
+Still waiting so decrement the appearance delay.
 </div>
 </div>
 </td>
@@ -570,7 +570,7 @@ Still waiting — decrement the appearance delay.
 <span id="27523"></span>
 <div class="comments">
 <div class="paragraph">
-Delay expired — determine which direction the red bird should enter from based on which room it's coming from relative to Percy's room.
+Delay expired; determine which direction the red bird should enter from based on which room it's coming from relative to Percy's room.
 </div>
 </div>
 </td>
@@ -619,7 +619,7 @@ Delay expired — determine which direction the red bird should enter from based
 <span id="27537"></span>
 <div class="comments">
 <div class="paragraph">
-Red bird is coming from a higher room — enter flying right.
+Red bird is coming from a higher room so enter flying right.
 </div>
 </div>
 </td>
@@ -667,7 +667,7 @@ Handle the red bird's stun recovery. The stun timer counts down, and the red bir
 <td class="asm-label"></td>
 <td class="address-1"><span id="27550"></span>27550</td>
 <td class="instruction">LD A,1</td>
-<td class="comment-1" rowspan="2">Write BLUE to *<a href="56004.html#56006">Sprite01_Colour</a>.</td>
+<td class="comment-1" rowspan="2">Write BLUE to *<a href="56004.html#56006">Sprite01_3Wide_Colour</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -702,7 +702,7 @@ Handle the red bird's stun recovery. The stun timer counts down, and the red bir
 <span id="27561"></span>
 <div class="comments">
 <div class="paragraph">
-Still stunned — only draw if the red bird is in the current room.
+Still stunned so only draw if the red bird is in the current room.
 </div>
 </div>
 </td>
@@ -740,7 +740,7 @@ Still stunned — only draw if the red bird is in the current room.
 <span id="27570"></span>
 <div class="comments">
 <div class="paragraph">
-Red bird is stunned and visible — move it downward slowly (falling).
+Red bird is stunned and visible so move it downward slowly (falling).
 </div>
 </div>
 </td>
@@ -786,7 +786,7 @@ Red bird is stunned and visible — move it downward slowly (falling).
 <span id="27584"></span>
 <div class="comments">
 <div class="paragraph">
-Stun ending — clear the timer and set a short reappearance delay.
+Stun ending so clear the timer and set a short reappearance delay.
 </div>
 </div>
 </td>

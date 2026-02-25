@@ -361,7 +361,7 @@ Attribute overlay command 24: end of attribute data. Finalises the room setup by
 <td class="asm-label">FillAttributes_End</td>
 <td class="address-2"><span id="5f74"></span>5F74</td>
 <td class="instruction">LD A,($5FA9)</td>
-<td class="comment-1" rowspan="3">Jump to <a href="5F35.html#5f83">FillAttributes_SetAttributeBase</a> if *<a href="5FA9.html">EggDropState</a> is zero.</td>
+<td class="comment-1" rowspan="3">Jump to <a href="5F35.html#5f83">FillAttributes_SetAttributeBase</a> if *<a href="5FA9.html">EggDropFlag</a> is zero.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -377,7 +377,7 @@ Attribute overlay command 24: end of attribute data. Finalises the room setup by
 <td class="asm-label"></td>
 <td class="address-1"><span id="5f7a"></span>5F7A</td>
 <td class="instruction">XOR A</td>
-<td class="comment-1" rowspan="2">Write 00 to *<a href="5FA9.html">EggDropState</a>.</td>
+<td class="comment-1" rowspan="2">Write 00 to *<a href="5FA9.html">EggDropFlag</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -407,7 +407,7 @@ Attribute overlay command 24: end of attribute data. Finalises the room setup by
 <span id="5f83"></span>
 <div class="comments">
 <div class="paragraph">
-Calculate the base address for this room's colour attributes. Each room has 20 bytes of attribute data stored sequentially from <a href="DE9E.html">DE9E</a>, so multiply the zero-indexed room number by 20 and add the base.
+Calculate the base address for this room's colour attributes. Each room has 20 bytes of attribute data stored sequentially from <a href="DE9E.html">RoomAttribute_Data</a>, so multiply the zero-indexed room number by 20 and add the base.
 </div>
 </div>
 </td>
@@ -428,7 +428,7 @@ Calculate the base address for this room's colour attributes. Each room has 20 b
 <td class="asm-label"></td>
 <td class="address-1"><span id="5f87"></span>5F87</td>
 <td class="instruction">LD DE,$DE9E</td>
-<td class="comment-1" rowspan="1"><span class="register">DE</span>=<a href="DE9E.html">DE9E</a>.</td>
+<td class="comment-1" rowspan="1"><span class="register">DE</span>=<a href="DE9E.html">RoomAttribute_Data</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>

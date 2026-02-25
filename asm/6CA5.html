@@ -33,7 +33,7 @@ Next: <a href="6CB2.html">6CB2</a>
 </td>
 </tr>
 </table>
-<div class="description">6CA5: Routine at 6CA5</div>
+<div class="description">6CA5: Reset Red Bird</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
@@ -41,50 +41,63 @@ Next: <a href="6CB2.html">6CB2</a>
 <div class="paragraph">
 Used by the routine at <a href="69A7.html">Run_Main_Loop_Body</a>.
 </div>
+<div class="paragraph">
+Resets the red bird to an inactive state by writing FF to its traversal direction, stun timers and current room. This effectively disables the red bird until it is reinitialised.
+</div>
 </div>
 </td>
 </tr>
 <tr>
+<td class="asm-label">ResetRedBird</td>
 <td class="address-2"><span id="6ca5"></span>6CA5</td>
 <td class="instruction">LD HL,$6CB3</td>
 <td class="comment-1" rowspan="3">Write FF to *<a href="6CB3.html">RedBirdTraversalDirection</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6ca8"></span>6CA8</td>
 <td class="instruction">LD C,$FF</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6caa"></span>6CAA</td>
 <td class="instruction">LD (HL),C</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6cab"></span>6CAB</td>
 <td class="instruction">INC HL</td>
 <td class="comment-1" rowspan="2">Write FF to *<a href="6CB4.html">RedBirdStunTimer</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6cac"></span>6CAC</td>
 <td class="instruction">LD (HL),C</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6cad"></span>6CAD</td>
 <td class="instruction">INC HL</td>
 <td class="comment-1" rowspan="2">Write FF to *<a href="6CB5.html">RedBirdStunTimerCopy</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6cae"></span>6CAE</td>
 <td class="instruction">LD (HL),C</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6caf"></span>6CAF</td>
 <td class="instruction">INC HL</td>
 <td class="comment-1" rowspan="2">Write FF to *<a href="6CB6.html">RedBirdCurrentRoom</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6cb0"></span>6CB0</td>
 <td class="instruction">LD (HL),C</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6cb1"></span>6CB1</td>
 <td class="instruction">RET</td>
 <td class="comment-1" rowspan="1">Return.</td>

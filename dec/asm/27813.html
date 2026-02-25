@@ -33,7 +33,7 @@ Next: <a href="27826.html">27826</a>
 </td>
 </tr>
 </table>
-<div class="description">27813: Routine at 6CA5</div>
+<div class="description">27813: Reset Red Bird</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
@@ -41,50 +41,63 @@ Next: <a href="27826.html">27826</a>
 <div class="paragraph">
 Used by the routine at <a href="27047.html">Run_Main_Loop_Body</a>.
 </div>
+<div class="paragraph">
+Resets the red bird to an inactive state by writing 255 to its traversal direction, stun timers and current room. This effectively disables the red bird until it is reinitialised.
+</div>
 </div>
 </td>
 </tr>
 <tr>
+<td class="asm-label">ResetRedBird</td>
 <td class="address-2"><span id="27813"></span>27813</td>
 <td class="instruction">LD HL,27827</td>
 <td class="comment-1" rowspan="3">Write 255 to *<a href="27827.html">RedBirdTraversalDirection</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27816"></span>27816</td>
 <td class="instruction">LD C,255</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27818"></span>27818</td>
 <td class="instruction">LD (HL),C</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27819"></span>27819</td>
 <td class="instruction">INC HL</td>
 <td class="comment-1" rowspan="2">Write 255 to *<a href="27828.html">RedBirdStunTimer</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27820"></span>27820</td>
 <td class="instruction">LD (HL),C</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27821"></span>27821</td>
 <td class="instruction">INC HL</td>
 <td class="comment-1" rowspan="2">Write 255 to *<a href="27829.html">RedBirdStunTimerCopy</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27822"></span>27822</td>
 <td class="instruction">LD (HL),C</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27823"></span>27823</td>
 <td class="instruction">INC HL</td>
 <td class="comment-1" rowspan="2">Write 255 to *<a href="27830.html">RedBirdCurrentRoom</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27824"></span>27824</td>
 <td class="instruction">LD (HL),C</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="27825"></span>27825</td>
 <td class="instruction">RET</td>
 <td class="comment-1" rowspan="1">Return.</td>

@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Percy the Potty Pigeon: Routine at 6F54</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-dark.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-wide.css" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-75RERFCHBG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-75RERFCHBG');
+</script>
+</head>
+<body class="Asm-c">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html"><img alt="logo" src="../images/logo.png" /></a></td>
+<td class="page-header">Routines</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="6F13.html">6F13</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#6f54">Map</a></td>
+<td class="next">
+Next: <a href="6F8D.html">6F8D</a>
+</td>
+</tr>
+</table>
+<div class="description">6F54: Check Car Egg Collision</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="5">
+<div class="details">
+<div class="paragraph">
+Used by the routine at <a href="6E5D.html">Handler_Car_Type1</a>.
+</div>
+<div class="paragraph">
+Checks if Percy's egg has hit the car. If so, starts the crash animation and awards points.
+</div>
+</div>
+<table class="input">
+<tr class="asm-input-header">
+<th colspan="2">Input</th>
+</tr>
+<tr>
+<td class="register">IX</td>
+<td class="register-desc">Pointer to car sprite data</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td class="asm-label">CheckCarEggCollision</td>
+<td class="address-2"><span id="6f54"></span>6F54</td>
+<td class="instruction">LD HL,$DAC8</td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="DAC8.html">Sprite02_3Wide_X_Position</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6f57"></span>6F57</td>
+<td class="instruction">LD BC,$7208</td>
+<td class="comment-1" rowspan="1"><span class="register">BC</span>=<a href="7208.html">CarCrashTimer</a> (crash timer).</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="6f5a"></span>
+<div class="comments">
+<div class="paragraph">
+This entry point is used by the routine at <a href="6DAB.html">Dispatch_Game_State</a>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">CheckCarEggCollision_Test</td>
+<td class="address-2"><span id="6f5a"></span>6F5A</td>
+<td class="instruction">LD A,(HL)</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6f5b"></span>6F5B</td>
+<td class="instruction">PUSH AF</td>
+<td class="comment-1" rowspan="1">Stash the original X position on the stack.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6f5c"></span>6F5C</td>
+<td class="instruction">ADD A,$05</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>+=05 (offset to centre of car).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6f5e"></span>6F5E</td>
+<td class="instruction">LD (HL),A</td>
+<td class="comment-1" rowspan="1">Write the adjusted position to *<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6f5f"></span>6F5F</td>
+<td class="instruction">PUSH HL</td>
+<td class="comment-1" rowspan="2">Copy <span class="register">HL</span> to <span class="register">IX</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6f60"></span>6F60</td>
+<td class="instruction">POP IX</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6f62"></span>6F62</td>
+<td class="instruction">LD IY,$DAE0</td>
+<td class="comment-1" rowspan="1"><span class="register">IY</span>=<a href="DAE0.html">Egg_States</a> (egg sprite data).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6f66"></span>6F66</td>
+<td class="instruction">PUSH BC</td>
+<td class="comment-1" rowspan="1">Stash <span class="register">BC</span> on the stack.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6f67"></span>6F67</td>
+<td class="instruction">CALL <a href="6C85.html">CheckEggCollision</a></td>
+<td class="comment-1" rowspan="1">Call <a href="6C85.html">CheckEggCollision</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6f6a"></span>6F6A</td>
+<td class="instruction">POP BC</td>
+<td class="comment-1" rowspan="1">Restore <span class="register">BC</span> from the stack.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6f6b"></span>6F6B</td>
+<td class="instruction">JR C,<a href="6F54.html#6f8a">CheckCarEggCollision_Miss</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="6F54.html#6f8a">CheckCarEggCollision_Miss</a> if no collision.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="6f6d"></span>
+<div class="comments">
+<div class="paragraph">
+Egg hit the car — restore the original X position and start the crash.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6f6d"></span>6F6D</td>
+<td class="instruction">POP AF</td>
+<td class="comment-1" rowspan="1">Restore the original X position from the stack.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6f6e"></span>6F6E</td>
+<td class="instruction">LD (HL),A</td>
+<td class="comment-1" rowspan="1">Write it back to *<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6f6f"></span>6F6F</td>
+<td class="instruction">CALL <a href="6C39.html">GenerateRandomNumber</a></td>
+<td class="comment-1" rowspan="1">Call <a href="6C39.html">GenerateRandomNumber</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6f72"></span>6F72</td>
+<td class="instruction">OR %00010000</td>
+<td class="comment-1" rowspan="1">Set bit 4 (ensure a minimum crash duration).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6f74"></span>6F74</td>
+<td class="instruction">LD (BC),A</td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">BC</span> (crash timer).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6f75"></span>6F75</td>
+<td class="instruction">LD A,$0F</td>
+<td class="comment-1" rowspan="2">Call <a href="67B2.html">AddToScore</a> to add 0F points to the score.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6f77"></span>6F77</td>
+<td class="instruction">CALL <a href="67B2.html">AddToScore</a></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="6f7a"></span>
+<div class="comments">
+<div class="paragraph">
+This entry point is used by the routines at <a href="69F7.html">Handler_RedBird</a>, <a href="7190.html">HandlerFrog01_CheckEggCollision</a>, <a href="74B9.html">74B9</a>, <a href="74D6.html">74D6</a> and <a href="768C.html">UpdatePlaneFlightPath</a>.
+</div>
+<div class="paragraph">
+Play a short random sound burst — used as a hit sound effect by multiple routines.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">PlayHitSound</td>
+<td class="address-2"><span id="6f7a"></span>6F7A</td>
+<td class="instruction">LD B,$00</td>
+<td class="comment-1" rowspan="1"><span class="register">B</span>=00 (loop 0100 times).</td>
+</tr>
+<tr>
+<td class="asm-label">PlayHitSound_Loop</td>
+<td class="address-2"><span id="6f7c"></span>6F7C</td>
+<td class="instruction">CALL <a href="6C39.html">GenerateRandomNumber</a></td>
+<td class="comment-1" rowspan="1">Call <a href="6C39.html">GenerateRandomNumber</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6f7f"></span>6F7F</td>
+<td class="instruction">AND %00011000</td>
+<td class="comment-1" rowspan="1">Keep only bits 3-4.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6f81"></span>6F81</td>
+<td class="instruction">OR %00000001</td>
+<td class="comment-1" rowspan="1">Set bit 0 (border colour: blue).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6f83"></span>6F83</td>
+<td class="instruction">OUT ($FE),A</td>
+<td class="comment-1" rowspan="1">Send to the speaker.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6f85"></span>6F85</td>
+<td class="instruction">NOP</td>
+<td class="comment-1" rowspan="2">No operation.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6f86"></span>6F86</td>
+<td class="instruction">NOP</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6f87"></span>6F87</td>
+<td class="instruction">DJNZ <a href="6F54.html#6f7c">PlayHitSound_Loop</a></td>
+<td class="comment-1" rowspan="1">Decrease <span class="register">B</span> by one and loop back to <a href="6F54.html#6f7c">PlayHitSound_Loop</a> until done.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6f89"></span>6F89</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="6f8a"></span>
+<div class="comments">
+<div class="paragraph">
+No collision — restore the original X position and return.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">CheckCarEggCollision_Miss</td>
+<td class="address-2"><span id="6f8a"></span>6F8A</td>
+<td class="instruction">POP AF</td>
+<td class="comment-1" rowspan="1">Restore the original X position from the stack.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6f8b"></span>6F8B</td>
+<td class="instruction">LD (HL),A</td>
+<td class="comment-1" rowspan="1">Write it back to *<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6f8c"></span>6F8C</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="6F13.html">6F13</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#6f54">Map</a></td>
+<td class="next">
+Next: <a href="6F8D.html">6F8D</a>
+</td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
+<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
+<div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
+<div><a href="../dec/asm/28500.html">Switch to decimal</a>.</div>
+</footer>
+</body>
+</html>

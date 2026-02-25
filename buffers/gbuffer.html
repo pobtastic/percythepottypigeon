@@ -185,7 +185,7 @@ Set to 01 when Percy has collided with scenery and the move was rejected.
 <td class="map-g"><span id="5fa9"></span><a href="../asm/5FA9.html">5FA9</a></td>
 <td class="map-length">1</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/5FA9.html">Egg State</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/5FA9.html">Flag: Egg State</a></div>
 <div class="map-entry-desc">
 <div class="paragraph">
 Set to FF when Percy is dropping an egg, and cleared to 00 when the egg routine is complete.
@@ -195,9 +195,21 @@ Set to FF when Percy is dropping an egg, and cleared to 00 when the egg routine 
 </tr>
 <tr>
 <td class="map-g"><span id="5faa"></span><a href="../asm/5FAA.html">5FAA</a></td>
-<td class="map-length">3</td>
+<td class="map-length">2</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/5FAA.html">Game Mode Flag</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/5FAA.html">Flag: Carrying A Worm</a></div>
+<div class="map-entry-desc">
+<div class="paragraph">
+Set to FF when Percy is carrying a worm, and cleared to 00 when he's not.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="5fac"></span><a href="../asm/5FAC.html">5FAC</a></td>
+<td class="map-length">1</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/5FAC.html">Flag:</a></div>
 <div class="map-entry-desc">
 </div>
 </td>
@@ -206,10 +218,10 @@ Set to FF when Percy is dropping an egg, and cleared to 00 when the egg routine 
 <td class="map-g"><span id="5fad"></span><a href="../asm/5FAD.html">5FAD</a></td>
 <td class="map-length">1</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/5FAD.html">Landed On Platform Flag</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/5FAD.html">Flag: Landed On Platform Flag</a></div>
 <div class="map-entry-desc">
 <div class="paragraph">
-Set to FF when Percy has landed on a platform. Cleared to 00 when no platform is beneath.
+Set to FF when Percy has landed on a platform. Cleared to 00 when no platform is beneath him.
 </div>
 </div>
 </td>
@@ -266,10 +278,10 @@ The current level number. E.g. 01 for the first level.
 <td class="map-g"><span id="5fb2"></span><a href="../asm/5FB2.html">5FB2</a></td>
 <td class="map-length">1</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/5FB2.html">Lives Remaining</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/5FB2.html">Worms Remaining</a></div>
 <div class="map-entry-desc">
 <div class="paragraph">
-Number of lives Percy has remaining for the current phase.
+Number of worms Percy has remaining to collect for the current level.
 </div>
 </div>
 </td>
@@ -305,7 +317,7 @@ A rotating bit pattern used to animate the nest chicks. Each bit controls the an
 <div class="map-entry-title-11"><a class="map-entry-title" href="../asm/5FB5.html">Room Attribute Pointer</a></div>
 <div class="map-entry-desc">
 <div class="paragraph">
-Pointer to the current room's colour attribute data, calculated from the room number and the base at <a href="../asm/DE9E.html">DE9E</a>.
+Pointer to the current room's colour attribute data, calculated from the room number and the base at <a href="../asm/DE9E.html">RoomAttribute_Data</a>.
 </div>
 </div>
 </td>
@@ -449,6 +461,15 @@ Workspace for scoring calculations.
 </td>
 </tr>
 <tr>
+<td class="map-g"><span id="6961"></span><a href="../asm/6961.html">6961</a></td>
+<td class="map-length">5</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/6961.html">Table: Worm Collection Count</a></div>
+<div class="map-entry-desc">
+</div>
+</td>
+</tr>
+<tr>
 <td class="map-g"><span id="6cb2"></span><a href="../asm/6CB2.html">6CB2</a></td>
 <td class="map-length">1</td>
 <td class="map-g-desc">
@@ -582,13 +603,22 @@ Counts down each frame while the red bird is waiting to enter the current room. 
 </tr>
 <tr>
 <td class="map-g"><span id="6cbe"></span><a href="../asm/6CBE.html">6CBE</a></td>
-<td class="map-length">6</td>
+<td class="map-length">5</td>
 <td class="map-g-desc">
 <div class="map-entry-title-11"><a class="map-entry-title" href="../asm/6CBE.html">Red Bird Speed Table</a></div>
 <div class="map-entry-desc">
 <div class="paragraph">
 Flight speed for each level. Indexed by zero-based level number.
 </div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="6cc3"></span><a href="../asm/6CC3.html">6CC3</a></td>
+<td class="map-length">1</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/6CC3.html">Lives Display Previous</a></div>
+<div class="map-entry-desc">
 </div>
 </td>
 </tr>
@@ -638,8 +668,11 @@ Jump height lookup table. Each entry is the Y offset from ground level for one s
 <td class="map-g"><span id="7208"></span><a href="../asm/7208.html">7208</a></td>
 <td class="map-length">7</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/7208.html">Game status buffer entry at 7208</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/7208.html">Car State Data</a></div>
 <div class="map-entry-desc">
+<div class="paragraph">
+Crash animation timer. When non-zero, the car cycles through crash frames. Counts down to 01 then clears.
+</div>
 </div>
 </td>
 </tr>
@@ -663,9 +696,27 @@ Jump height lookup table. Each entry is the Y offset from ground level for one s
 </tr>
 <tr>
 <td class="map-g"><span id="7924"></span><a href="../asm/7924.html">7924</a></td>
-<td class="map-length">12</td>
+<td class="map-length">1</td>
 <td class="map-g-desc">
 <div class="map-entry-title-11"><a class="map-entry-title" href="../asm/7924.html">Game status buffer entry at 7924</a></div>
+<div class="map-entry-desc">
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="7925"></span><a href="../asm/7925.html">7925</a></td>
+<td class="map-length">3</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/7925.html">Game status buffer entry at 7925</a></div>
+<div class="map-entry-desc">
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="7928"></span><a href="../asm/7928.html">7928</a></td>
+<td class="map-length">8</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/7928.html">Game status buffer entry at 7928</a></div>
 <div class="map-entry-desc">
 </div>
 </td>
@@ -685,6 +736,38 @@ Jump height lookup table. Each entry is the Y offset from ground level for one s
 <td class="map-g-desc">
 <div class="map-entry-title-11"><a class="map-entry-title" href="../asm/7B2E.html">Jump Table: Room Handlers</a></div>
 <div class="map-entry-desc">
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="97da"></span><a href="../asm/97DA.html">97DA</a></td>
+<td class="map-length">149</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/97DA.html">Room 0E: Level 3</a></div>
+<div class="map-entry-desc">
+<div class="paragraph">
+<table class="">
+<tr>
+<td class="" colspan="1" rowspan="1"><img alt="room-14" src="../images/scr/room-14.png" /></td>
+</tr>
+</table>
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="986f"></span><a href="../asm/986F.html">986F</a></td>
+<td class="map-length">149</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/986F.html">Room 0F: Level 4</a></div>
+<div class="map-entry-desc">
+<div class="paragraph">
+<table class="">
+<tr>
+<td class="" colspan="1" rowspan="1"><img alt="room-15" src="../images/scr/room-15.png" /></td>
+</tr>
+</table>
+</div>
 </div>
 </td>
 </tr>
@@ -755,8 +838,11 @@ Used by Frog 2.
 <td class="map-g"><span id="dad0"></span><a href="../asm/DAD0.html">DAD0</a></td>
 <td class="map-length">4</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DAD0.html">Car 2 States</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DAD0.html">Sprite 4 Data States</a></div>
 <div class="map-entry-desc">
+<div class="paragraph">
+Used by Car 2.
+</div>
 </div>
 </td>
 </tr>
@@ -764,8 +850,11 @@ Used by Frog 2.
 <td class="map-g"><span id="dad4"></span><a href="../asm/DAD4.html">DAD4</a></td>
 <td class="map-length">4</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DAD4.html">Car 3 States</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DAD4.html">Sprite 5 Data States</a></div>
 <div class="map-entry-desc">
+<div class="paragraph">
+Used by Car 3.
+</div>
 </div>
 </td>
 </tr>
@@ -773,8 +862,11 @@ Used by Frog 2.
 <td class="map-g"><span id="dad8"></span><a href="../asm/DAD8.html">DAD8</a></td>
 <td class="map-length">4</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DAD8.html">Game status buffer entry at DAD8</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DAD8.html">Sprite 6 Data States</a></div>
 <div class="map-entry-desc">
+<div class="paragraph">
+Used by ???
+</div>
 </div>
 </td>
 </tr>
@@ -782,8 +874,11 @@ Used by Frog 2.
 <td class="map-g"><span id="dadc"></span><a href="../asm/DADC.html">DADC</a></td>
 <td class="map-length">4</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DADC.html">Game status buffer entry at DADC</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DADC.html">Sprite 7 Data States</a></div>
 <div class="map-entry-desc">
+<div class="paragraph">
+Used by ???
+</div>
 </div>
 </td>
 </tr>
@@ -809,7 +904,7 @@ Used by Frog 2.
 <td class="map-g"><span id="dae8"></span><a href="../asm/DAE8.html">DAE8</a></td>
 <td class="map-length">4</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DAE8.html">Game status buffer entry at DAE8</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DAE8.html">2-Wide Sprite 1 Data States</a></div>
 <div class="map-entry-desc">
 </div>
 </td>
@@ -818,7 +913,7 @@ Used by Frog 2.
 <td class="map-g"><span id="daec"></span><a href="../asm/DAEC.html">DAEC</a></td>
 <td class="map-length">4</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DAEC.html">Game status buffer entry at DAEC</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DAEC.html">2-Wide Sprite 2 Data States</a></div>
 <div class="map-entry-desc">
 </div>
 </td>
@@ -827,7 +922,7 @@ Used by Frog 2.
 <td class="map-g"><span id="daf0"></span><a href="../asm/DAF0.html">DAF0</a></td>
 <td class="map-length">4</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DAF0.html">Game status buffer entry at DAF0</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DAF0.html">2-Wide Sprite 3 Data States</a></div>
 <div class="map-entry-desc">
 </div>
 </td>
@@ -836,7 +931,7 @@ Used by Frog 2.
 <td class="map-g"><span id="daf4"></span><a href="../asm/DAF4.html">DAF4</a></td>
 <td class="map-length">4</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DAF4.html">Game status buffer entry at DAF4</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DAF4.html">2-Wide Sprite 4 Data States</a></div>
 <div class="map-entry-desc">
 </div>
 </td>
@@ -845,7 +940,7 @@ Used by Frog 2.
 <td class="map-g"><span id="daf8"></span><a href="../asm/DAF8.html">DAF8</a></td>
 <td class="map-length">4</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DAF8.html">Game status buffer entry at DAF8</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DAF8.html">2-Wide Sprite 5 Data States</a></div>
 <div class="map-entry-desc">
 </div>
 </td>
@@ -854,7 +949,7 @@ Used by Frog 2.
 <td class="map-g"><span id="dafc"></span><a href="../asm/DAFC.html">DAFC</a></td>
 <td class="map-length">4</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DAFC.html">Game status buffer entry at DAFC</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DAFC.html">2-Wide Sprite 6 Data States</a></div>
 <div class="map-entry-desc">
 </div>
 </td>
@@ -881,6 +976,15 @@ Stores Percy's X position from the previous frame, used to detect horizontal mov
 </td>
 </tr>
 <tr>
+<td class="map-g"><span id="de9e"></span><a href="../asm/DE9E.html">DE9E</a></td>
+<td class="map-length">354</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DE9E.html">Room Attribute Data</a></div>
+<div class="map-entry-desc">
+</div>
+</td>
+</tr>
+<tr>
 <td class="map-g"><span id="e000"></span><a href="../asm/E000.html">E000</a></td>
 <td class="map-length">6144</td>
 <td class="map-g-desc">
@@ -890,10 +994,10 @@ Stores Percy's X position from the previous frame, used to detect horizontal mov
 </td>
 </tr>
 <tr>
-<td class="map-g"><span id="fac0"></span><a href="../asm/FAC0.html">FAC0</a></td>
-<td class="map-length">1</td>
+<td class="map-g"><span id="f800"></span><a href="../asm/F800.html">F800</a></td>
+<td class="map-length">705</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/FAC0.html">Game status buffer entry at FAC0</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/F800.html">Overlay Buffer</a></div>
 <div class="map-entry-desc">
 </div>
 </td>

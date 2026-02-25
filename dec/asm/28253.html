@@ -29,11 +29,11 @@ Prev: <a href="28207.html">28207</a>
 </td>
 <td class="up">Up: <a href="../maps/all.html#28253">Map</a></td>
 <td class="next">
-Next: <a href="28802.html">28802</a>
+Next: <a href="28435.html">28435</a>
 </td>
 </tr>
 </table>
-<div class="description">28253: Routine at 6E5D</div>
+<div class="description">28253: Handler: Car Type 1 (Driving Right)</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
@@ -41,333 +41,553 @@ Next: <a href="28802.html">28802</a>
 <div class="paragraph">
 Used by the routine at <a href="28075.html">Dispatch_Game_State</a>.
 </div>
+<div class="paragraph">
+Handles a car driving right across the screen. The car is made up of two sprites (16 pixels apart) representing the front and back.
+</div>
+<div class="paragraph">
+When the car reaches the right edge it is reinitialised from a random position.
+</div>
 </div>
 </td>
 </tr>
 <tr>
+<td class="asm-label">Handler_Car_Type1</td>
 <td class="address-2"><span id="28253"></span>28253</td>
 <td class="instruction">LD IX,56008</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">IX</span>=<a href="56008.html">Sprite02_3Wide_X_Position</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28257"></span>28257</td>
 <td class="instruction">LD A,(24507)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Call <a href="28435.html">InitialiseCar</a> if *<a href="24507.html">RoomBufferFlag</a> is set/ the room is being initialised.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28260"></span>28260</td>
 <td class="instruction">OR A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28261"></span>28261</td>
-<td class="instruction">CALL NZ,<a href="28253.html#28435">28435</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">CALL NZ,<a href="28435.html">InitialiseCar</a></td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="28264"></span>
+<div class="comments">
+<div class="paragraph">
+If the car crash timer is active, handle the crash animation.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28264"></span>28264</td>
 <td class="instruction">LD A,(29192)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="29192.html">CarCrashTimer</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28267"></span>28267</td>
 <td class="instruction">OR A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Jump to <a href="28253.html#28311">Handler_CarType1_Drive</a> if the crash timer is zero (car is driving normally).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28268"></span>28268</td>
-<td class="instruction">JR Z,<a href="28253.html#28311">28311</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR Z,<a href="28253.html#28311">Handler_CarType1_Drive</a></td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="28270"></span>
+<div class="comments">
+<div class="paragraph">
+This entry point is used by the routines at <a href="28557.html">Handler_CarType2</a> and <a href="28712.html">Handler_CarType3</a>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Handler_Car_Type1_0</td>
 <td class="address-2"><span id="28270"></span>28270</td>
 <td class="instruction">CP 1</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Jump to <a href="28253.html#28305">Handler_CarType1_CrashEnd</a> if the crash timer has reached 1 (crash ending).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28272"></span>28272</td>
-<td class="instruction">JR Z,<a href="28253.html#28305">28305</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR Z,<a href="28253.html#28305">Handler_CarType1_CrashEnd</a></td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="28274"></span>
+<div class="comments">
+<div class="paragraph">
+Car is crashing — decrement the timer and cycle through crash animation frames.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28274"></span>28274</td>
 <td class="instruction">DEC A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Decrement the crash timer.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28275"></span>28275</td>
 <td class="instruction">LD (29192),A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<a href="29192.html">CarCrashTimer</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28278"></span>28278</td>
-<td class="instruction">AND 2</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">AND %00000010</td>
+<td class="comment-1" rowspan="1">Keep only bit 1 (alternates between 0 and 2).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28280"></span>28280</td>
 <td class="instruction">ADD A,32</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>+=32 (crash frame base).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28282"></span>28282</td>
 <td class="instruction">EX AF,AF'</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Stash the frame in shadow <span class="register">AF</span>.</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="28283"></span>
+<div class="comments">
+<div class="paragraph">
+If the car is on the lower road (Y=160), use a different frame set.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28283"></span>28283</td>
 <td class="instruction">LD A,(IX+1)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Load <span class="register">A</span> with the car's Y position (from *<span class="register">IX</span>+1).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28286"></span>28286</td>
 <td class="instruction">CP 160</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Jump to <a href="28253.html#28295">Handler_CarType1_SetCrashFrame</a> if the car is not on the lower road.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28288"></span>28288</td>
-<td class="instruction">JR NZ,<a href="28253.html#28295">28295</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR NZ,<a href="28253.html#28295">Handler_CarType1_SetCrashFrame</a></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28290"></span>28290</td>
 <td class="instruction">EX AF,AF'</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Retrieve the crash frame from shadow <span class="register">AF</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28291"></span>28291</td>
 <td class="instruction">ADD A,2</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>+=2 (offset to left-facing crash frames).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28293"></span>28293</td>
-<td class="instruction">JR <a href="28253.html#28296">28296</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR <a href="28253.html#28296">Handler_CarType1_StoreCrashFrame</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="28253.html#28296">Handler_CarType1_StoreCrashFrame</a>.</td>
 </tr>
 <tr>
+<td class="asm-label">Handler_CarType1_SetCrashFrame</td>
 <td class="address-2"><span id="28295"></span>28295</td>
 <td class="instruction">EX AF,AF'</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Retrieve the crash frame from shadow <span class="register">AF</span>.</td>
 </tr>
 <tr>
+<td class="asm-label">Handler_CarType1_StoreCrashFrame</td>
 <td class="address-2"><span id="28296"></span>28296</td>
 <td class="instruction">LD (IX+3),A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">IX</span>+3 (front sprite frame).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28299"></span>28299</td>
 <td class="instruction">INC A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Increment <span class="register">A</span> for the rear sprite.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28300"></span>28300</td>
 <td class="instruction">LD (IX+7),A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">IX</span>+7 (rear sprite frame).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28303"></span>28303</td>
-<td class="instruction">JR <a href="28253.html#28399">28399</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR <a href="28253.html#28399">Handler_CarCheckPercyCollision</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="28253.html#28399">Handler_CarCheckPercyCollision</a>.</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="28305"></span>
+<div class="comments">
+<div class="paragraph">
+Crash animation finished — clear the timer.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Handler_CarType1_CrashEnd</td>
 <td class="address-2"><span id="28305"></span>28305</td>
 <td class="instruction">XOR A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Write 0 to *<a href="29192.html">CarCrashTimer</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28306"></span>28306</td>
 <td class="instruction">LD (29192),A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28309"></span>28309</td>
-<td class="instruction">JR <a href="28253.html#28399">28399</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR <a href="28253.html#28399">Handler_CarCheckPercyCollision</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="28253.html#28399">Handler_CarCheckPercyCollision</a>.</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="28311"></span>
+<div class="comments">
+<div class="paragraph">
+Car is driving normally — move it to the right.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Handler_CarType1_Drive</td>
 <td class="address-2"><span id="28311"></span>28311</td>
 <td class="instruction">LD HL,29196</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="29192.html#29196">CarSpeed2</a> (car speed).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28314"></span>28314</td>
 <td class="instruction">LD A,(IX+0)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">IX</span>+0 (car X position).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28317"></span>28317</td>
 <td class="instruction">ADD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>+=*<span class="register">HL</span> (add speed).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28318"></span>28318</td>
 <td class="instruction">CP 222</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Call <a href="28435.html">InitialiseCar</a> to reinitialise the car if it's at the right edge.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28320"></span>28320</td>
-<td class="instruction">CALL NC,<a href="28253.html#28435">28435</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">CALL NC,<a href="28435.html">InitialiseCar</a></td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="28323"></span>
+<div class="comments">
+<div class="paragraph">
+Update both sprite X positions (16 apart).
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28323"></span>28323</td>
 <td class="instruction">LD (IX+0),A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">IX</span>+0 (front X).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28326"></span>28326</td>
 <td class="instruction">ADD A,16</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>+=16.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28328"></span>28328</td>
 <td class="instruction">LD (IX+4),A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">IX</span>+4 (rear X).</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="28331"></span>
+<div class="comments">
+<div class="paragraph">
+Set the driving right frames.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28331"></span>28331</td>
 <td class="instruction">LD (IX+3),28</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write 28 to *<span class="register">IX</span>+3 (front frame: driving right).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28335"></span>28335</td>
 <td class="instruction">LD (IX+7),29</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write 29 to *<span class="register">IX</span>+7 (rear frame: driving right).</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="28339"></span>
+<div class="comments">
+<div class="paragraph">
+Set the car colour for both sprites.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28339"></span>28339</td>
 <td class="instruction">LD A,(29194)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Write *<a href="29192.html#29194">CarColour</a> to; <ul class="">
+<li>*<span class="register">IX</span>+2 (front colour)</li>
+<li>*<span class="register">IX</span>+6 (rear colour)</li>
+</ul></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28342"></span>28342</td>
 <td class="instruction">LD (IX+2),A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28345"></span>28345</td>
 <td class="instruction">LD (IX+6),A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="28348"></span>
+<div class="comments">
+<div class="paragraph">
+This entry point is used by the routine at <a href="28557.html">Handler_CarType2</a>.
+</div>
+<div class="paragraph">
+Set the Y positions for the wheels/underside sprites.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Handler_Car_Type1_1</td>
 <td class="address-2"><span id="28348"></span>28348</td>
 <td class="instruction">LD (IX+33),160</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write 160 to *<span class="register">IX</span>+33 (front underside Y).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28352"></span>28352</td>
 <td class="instruction">LD (IX+37),160</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write 160 to *<span class="register">IX</span>+37 (rear underside Y).</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="28356"></span>
+<div class="comments">
+<div class="paragraph">
+Set the X positions for the underside sprites (offset by 3 and 24 from the car's X).
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28356"></span>28356</td>
 <td class="instruction">LD A,(IX+0)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">IX</span>+0.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28359"></span>28359</td>
 <td class="instruction">ADD A,3</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>+=3.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28361"></span>28361</td>
 <td class="instruction">LD (IX+32),A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">IX</span>+32 (front underside X).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28364"></span>28364</td>
 <td class="instruction">ADD A,21</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>+=21.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28366"></span>28366</td>
 <td class="instruction">LD (IX+36),A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">IX</span>+36 (rear underside X).</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="28369"></span>
+<div class="comments">
+<div class="paragraph">
+Animate the wheels — cycle through frames 16-19.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28369"></span>28369</td>
 <td class="instruction">LD HL,29197</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="29192.html#29197">CarWheelAnimation</a> (wheel animation counter).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28372"></span>28372</td>
 <td class="instruction">LD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">HL</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28373"></span>28373</td>
 <td class="instruction">INC A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Increment the counter.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28374"></span>28374</td>
-<td class="instruction">AND 3</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">AND %00000011</td>
+<td class="comment-1" rowspan="1">Keep only bits 0-1 (cycle 0-3).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28376"></span>28376</td>
 <td class="instruction">LD (HL),A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write back to *<span class="register">HL</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28377"></span>28377</td>
 <td class="instruction">ADD A,16</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>+=16 (wheel frame base).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28379"></span>28379</td>
 <td class="instruction">LD (IX+35),A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">IX</span>+35 (front wheel frame).</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="28382"></span>
+<div class="comments">
+<div class="paragraph">
+Offset the rear wheel animation by 2 for visual variety.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28382"></span>28382</td>
 <td class="instruction">LD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">HL</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28383"></span>28383</td>
 <td class="instruction">ADD A,2</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>+=2.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28385"></span>28385</td>
-<td class="instruction">AND 3</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">AND %00000011</td>
+<td class="comment-1" rowspan="1">Keep only bits 0-1.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28387"></span>28387</td>
 <td class="instruction">ADD A,16</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>+=16 (wheel frame base).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28389"></span>28389</td>
 <td class="instruction">LD (IX+39),A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">IX</span>+39 (rear wheel frame).</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="28392"></span>
+<div class="comments">
+<div class="paragraph">
+This entry point is used by the routine at <a href="28557.html">Handler_CarType2</a>.
+</div>
+<div class="paragraph">
+Check if Percy's egg has hit the car.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Handler_Car_Type1_2</td>
 <td class="address-2"><span id="28392"></span>28392</td>
 <td class="instruction">LD A,(24489)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="24489.html">EggDropFlag</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28395"></span>28395</td>
 <td class="instruction">OR A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Call <a href="28500.html">CheckCarEggCollision</a> if the egg is active.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28396"></span>28396</td>
-<td class="instruction">CALL NZ,<a href="28253.html#28500">28500</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">CALL NZ,<a href="28500.html">CheckCarEggCollision</a></td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="28399"></span>
+<div class="comments">
+<div class="paragraph">
+Check if the car has collided with Percy.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Handler_CarCheckPercyCollision</td>
 <td class="address-2"><span id="28399"></span>28399</td>
 <td class="instruction">LD IX,56000</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">IX</span>=<a href="56000.html">Percy_X_Position</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28403"></span>28403</td>
 <td class="instruction">LD IY,56012</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">IY</span>=<a href="56012.html">Sprite03_3Wide_X_Position</a>.</td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
@@ -380,944 +600,124 @@ This entry point is used by the routine at <a href="28075.html">Dispatch_Game_St
 </td>
 </tr>
 <tr>
+<td class="asm-label">Handler_CarCheckPercyCollision_Test</td>
 <td class="address-2"><span id="28407"></span>28407</td>
 <td class="instruction">CALL <a href="27731.html">CheckSpriteCollision</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Call <a href="27731.html">CheckSpriteCollision</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28410"></span>28410</td>
 <td class="instruction">RET C</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Return if no collision.</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="28411"></span>
+<div class="comments">
+<div class="paragraph">
+Car hit Percy — knock him backward.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Handler_CarKnockBackPercy</td>
 <td class="address-1"><span id="28411"></span>28411</td>
 <td class="instruction">LD HL,56000</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="56000.html">Percy_X_Position</a> (Percy's X position).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28414"></span>28414</td>
 <td class="instruction">LD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">HL</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28415"></span>28415</td>
 <td class="instruction">SUB 20</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>-=20 (knock back distance).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28417"></span>28417</td>
-<td class="instruction">JR C,<a href="28253.html#28427">28427</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR C,<a href="28253.html#28427">Handler_CarKnockBackPercy_LeftEdge</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="28253.html#28427">Handler_CarKnockBackPercy_LeftEdge</a> if the result underflowed (Percy at the left edge).</td>
 </tr>
 <tr>
+<td class="asm-label">Handler_Car_Type1_3</td>
 <td class="address-2"><span id="28419"></span>28419</td>
 <td class="instruction">LD (HL),A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write the new X position to *<span class="register">HL</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28420"></span>28420</td>
 <td class="instruction">INC HL</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Advance to Percy's Y position.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28421"></span>28421</td>
 <td class="instruction">LD (HL),120</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write 120 to *<span class="register">HL</span> (set Percy's Y position after knockback).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28423"></span>28423</td>
 <td class="instruction">LD (24487),A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<a href="24487.html">FallingState</a> (set the falling state).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28426"></span>28426</td>
 <td class="instruction">RET</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Return.</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="28427"></span>
+<div class="comments">
+<div class="paragraph">
+Percy was too close to the left edge — adjust position rightward.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Handler_CarKnockBackPercy_LeftEdge</td>
 <td class="address-2"><span id="28427"></span>28427</td>
 <td class="instruction">LD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">HL</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28428"></span>28428</td>
 <td class="instruction">ADD A,10</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>+=10.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="28430"></span>28430</td>
-<td class="instruction">JR <a href="28253.html#28419">28419</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR <a href="28253.html#28419">Handler_Car_Type1_3</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="28253.html#28419">Handler_Car_Type1_3</a>.</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="28432"></span>
+<div class="comments">
+<div class="paragraph">
+Alternate entry point for car initialisation.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">InitialiseCar_Alternate</td>
 <td class="address-1"><span id="28432"></span>28432</td>
-<td class="instruction">CALL <a href="28253.html#28435">28435</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-2"><span id="28435"></span>28435</td>
-<td class="instruction">CALL <a href="27705.html">27705</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28438"></span>28438</td>
-<td class="instruction">AND 3</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28440"></span>28440</td>
-<td class="instruction">INC A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28441"></span>28441</td>
-<td class="instruction">LD (29196),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28444"></span>28444</td>
-<td class="instruction">LD A,(24517)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28447"></span>28447</td>
-<td class="instruction">OR A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28448"></span>28448</td>
-<td class="instruction">JR Z,<a href="28253.html#28460">28460</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28450"></span>28450</td>
-<td class="instruction">CALL <a href="27705.html">27705</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28453"></span>28453</td>
-<td class="instruction">AND 31</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28455"></span>28455</td>
-<td class="instruction">OR 1</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28457"></span>28457</td>
-<td class="instruction">LD (29198),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-2"><span id="28460"></span>28460</td>
-<td class="instruction">CALL <a href="27705.html">27705</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28463"></span>28463</td>
-<td class="instruction">AND 3</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28465"></span>28465</td>
-<td class="instruction">CP 1</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28467"></span>28467</td>
-<td class="instruction">JR Z,<a href="28253.html#28460">28460</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28469"></span>28469</td>
-<td class="instruction">LD (29194),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28472"></span>28472</td>
-<td class="instruction">XOR A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28473"></span>28473</td>
-<td class="instruction">LD (29192),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28476"></span>28476</td>
-<td class="instruction">LD (IX+1),144</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28480"></span>28480</td>
-<td class="instruction">LD (IX+5),144</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28484"></span>28484</td>
-<td class="instruction">LD (IX+34),7</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28488"></span>28488</td>
-<td class="instruction">LD (IX+38),7</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28492"></span>28492</td>
-<td class="instruction">LD A,(IX+0)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28495"></span>28495</td>
-<td class="instruction">CP 100</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28497"></span>28497</td>
-<td class="instruction">RET C</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28498"></span>28498</td>
-<td class="instruction">XOR A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28499"></span>28499</td>
-<td class="instruction">RET</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-2"><span id="28500"></span>28500</td>
-<td class="instruction">LD HL,56008</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28503"></span>28503</td>
-<td class="instruction">LD BC,29192</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="routine-comment" colspan="5">
-<span id="28506"></span>
-<div class="comments">
-<div class="paragraph">
-This entry point is used by the routine at <a href="28075.html">Dispatch_Game_State</a>.
-</div>
-</div>
-</td>
-</tr>
-<tr>
-<td class="address-2"><span id="28506"></span>28506</td>
-<td class="instruction">LD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28507"></span>28507</td>
-<td class="instruction">PUSH AF</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28508"></span>28508</td>
-<td class="instruction">ADD A,5</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28510"></span>28510</td>
-<td class="instruction">LD (HL),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28511"></span>28511</td>
-<td class="instruction">PUSH HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28512"></span>28512</td>
-<td class="instruction">POP IX</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28514"></span>28514</td>
-<td class="instruction">LD IY,56032</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28518"></span>28518</td>
-<td class="instruction">PUSH BC</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28519"></span>28519</td>
-<td class="instruction">CALL <a href="27781.html">CheckEggCollision</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28522"></span>28522</td>
-<td class="instruction">POP BC</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28523"></span>28523</td>
-<td class="instruction">JR C,<a href="28253.html#28554">28554</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28525"></span>28525</td>
-<td class="instruction">POP AF</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28526"></span>28526</td>
-<td class="instruction">LD (HL),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28527"></span>28527</td>
-<td class="instruction">CALL <a href="27705.html">27705</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28530"></span>28530</td>
-<td class="instruction">OR 16</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28532"></span>28532</td>
-<td class="instruction">LD (BC),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28533"></span>28533</td>
-<td class="instruction">LD A,15</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28535"></span>28535</td>
-<td class="instruction">CALL <a href="26546.html">AddToScore</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="routine-comment" colspan="5">
-<span id="28538"></span>
-<div class="comments">
-<div class="paragraph">
-This entry point is used by the routines at <a href="27127.html">Handler_RedBird</a>, <a href="29072.html">HandlerFrog01_CheckEggCollision</a>, <a href="29881.html">29881</a>, <a href="29910.html">29910</a> and <a href="30348.html">UpdatePlaneFlightPath</a>.
-</div>
-</div>
-</td>
-</tr>
-<tr>
-<td class="address-2"><span id="28538"></span>28538</td>
-<td class="instruction">LD B,0</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-2"><span id="28540"></span>28540</td>
-<td class="instruction">CALL <a href="27705.html">27705</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28543"></span>28543</td>
-<td class="instruction">AND 24</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28545"></span>28545</td>
-<td class="instruction">OR 1</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28547"></span>28547</td>
-<td class="instruction">OUT (254),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28549"></span>28549</td>
-<td class="instruction">NOP</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28550"></span>28550</td>
-<td class="instruction">NOP</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28551"></span>28551</td>
-<td class="instruction">DJNZ <a href="28253.html#28540">28540</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28553"></span>28553</td>
-<td class="instruction">RET</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-2"><span id="28554"></span>28554</td>
-<td class="instruction">POP AF</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28555"></span>28555</td>
-<td class="instruction">LD (HL),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28556"></span>28556</td>
-<td class="instruction">RET</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="routine-comment" colspan="5">
-<span id="28557"></span>
-<div class="comments">
-<div class="paragraph">
-This entry point is used by the routine at <a href="28075.html">Dispatch_Game_State</a>.
-</div>
-</div>
-</td>
-</tr>
-<tr>
-<td class="address-2"><span id="28557"></span>28557</td>
-<td class="instruction">LD IX,56008</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28561"></span>28561</td>
-<td class="instruction">LD HL,29195</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28564"></span>28564</td>
-<td class="instruction">LD A,(24507)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28567"></span>28567</td>
-<td class="instruction">OR A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28568"></span>28568</td>
-<td class="instruction">JR NZ,<a href="28253.html#28684">28684</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28570"></span>28570</td>
-<td class="instruction">LD A,(29192)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28573"></span>28573</td>
-<td class="instruction">OR A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28574"></span>28574</td>
-<td class="instruction">JP NZ,<a href="28253.html#28270">28270</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28577"></span>28577</td>
-<td class="instruction">LD A,(IX+1)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28580"></span>28580</td>
-<td class="instruction">CP 144</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28582"></span>28582</td>
-<td class="instruction">JR Z,<a href="28253.html#28619">28619</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28584"></span>28584</td>
-<td class="instruction">LD A,(IX+0)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28587"></span>28587</td>
-<td class="instruction">SUB (HL)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28588"></span>28588</td>
-<td class="instruction">CP 104</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28590"></span>28590</td>
-<td class="instruction">JR C,<a href="28253.html#28654">28654</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-2"><span id="28592"></span>28592</td>
-<td class="instruction">LD (IX+0),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28595"></span>28595</td>
-<td class="instruction">ADD A,16</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28597"></span>28597</td>
-<td class="instruction">LD (IX+4),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28600"></span>28600</td>
-<td class="instruction">LD (IX+1),160</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28604"></span>28604</td>
-<td class="instruction">LD (IX+5),160</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28608"></span>28608</td>
-<td class="instruction">LD (IX+3),30</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28612"></span>28612</td>
-<td class="instruction">LD (IX+7),31</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28616"></span>28616</td>
-<td class="instruction">JP <a href="28253.html#28392">28392</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-2"><span id="28619"></span>28619</td>
-<td class="instruction">LD A,(IX+0)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28622"></span>28622</td>
-<td class="instruction">ADD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28623"></span>28623</td>
-<td class="instruction">CP 222</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28625"></span>28625</td>
-<td class="instruction">JR NC,<a href="28253.html#28684">28684</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-2"><span id="28627"></span>28627</td>
-<td class="instruction">LD (IX+0),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28630"></span>28630</td>
-<td class="instruction">ADD A,16</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28632"></span>28632</td>
-<td class="instruction">LD (IX+4),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28635"></span>28635</td>
-<td class="instruction">LD (IX+1),144</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28639"></span>28639</td>
-<td class="instruction">LD (IX+5),144</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28643"></span>28643</td>
-<td class="instruction">LD (IX+3),28</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28647"></span>28647</td>
-<td class="instruction">LD (IX+7),29</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28651"></span>28651</td>
-<td class="instruction">JP <a href="28253.html#28348">28348</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-2"><span id="28654"></span>28654</td>
-<td class="instruction">PUSH HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28655"></span>28655</td>
-<td class="instruction">CALL <a href="27705.html">27705</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28658"></span>28658</td>
-<td class="instruction">POP HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28659"></span>28659</td>
-<td class="instruction">AND 3</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28661"></span>28661</td>
-<td class="instruction">INC A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28662"></span>28662</td>
-<td class="instruction">LD (HL),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-2"><span id="28663"></span>28663</td>
-<td class="instruction">PUSH HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28664"></span>28664</td>
-<td class="instruction">CALL <a href="27705.html">27705</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28667"></span>28667</td>
-<td class="instruction">POP HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28668"></span>28668</td>
-<td class="instruction">AND 3</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28670"></span>28670</td>
-<td class="instruction">CP 1</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28672"></span>28672</td>
-<td class="instruction">JR Z,<a href="28253.html#28663">28663</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28674"></span>28674</td>
-<td class="instruction">LD (IX+2),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28677"></span>28677</td>
-<td class="instruction">LD (IX+6),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28680"></span>28680</td>
-<td class="instruction">LD A,104</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28682"></span>28682</td>
-<td class="instruction">JR <a href="28253.html#28627">28627</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-2"><span id="28684"></span>28684</td>
-<td class="instruction">PUSH HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28685"></span>28685</td>
-<td class="instruction">CALL <a href="27705.html">27705</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28688"></span>28688</td>
-<td class="instruction">POP HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28689"></span>28689</td>
-<td class="instruction">AND 3</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28691"></span>28691</td>
-<td class="instruction">INC A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28692"></span>28692</td>
-<td class="instruction">LD (HL),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28693"></span>28693</td>
-<td class="instruction">PUSH HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28694"></span>28694</td>
-<td class="instruction">CALL <a href="27705.html">27705</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28697"></span>28697</td>
-<td class="instruction">POP HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28698"></span>28698</td>
-<td class="instruction">AND 3</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28700"></span>28700</td>
-<td class="instruction">ADD A,4</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28702"></span>28702</td>
-<td class="instruction">LD (IX+2),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28705"></span>28705</td>
-<td class="instruction">LD (IX+6),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28708"></span>28708</td>
-<td class="instruction">LD A,222</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28710"></span>28710</td>
-<td class="instruction">JR <a href="28253.html#28592">28592</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="routine-comment" colspan="5">
-<span id="28712"></span>
-<div class="comments">
-<div class="paragraph">
-This entry point is used by the routine at <a href="28075.html">Dispatch_Game_State</a>.
-</div>
-</div>
-</td>
-</tr>
-<tr>
-<td class="address-2"><span id="28712"></span>28712</td>
-<td class="instruction">LD IX,56008</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28716"></span>28716</td>
-<td class="instruction">LD HL,29195</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28719"></span>28719</td>
-<td class="instruction">LD (HL),1</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28721"></span>28721</td>
-<td class="instruction">LD A,(24507)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28724"></span>28724</td>
-<td class="instruction">OR A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28725"></span>28725</td>
-<td class="instruction">JR NZ,<a href="28253.html#28750">28750</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28727"></span>28727</td>
-<td class="instruction">LD A,(29192)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28730"></span>28730</td>
-<td class="instruction">OR A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28731"></span>28731</td>
-<td class="instruction">JP NZ,<a href="28253.html#28270">28270</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28734"></span>28734</td>
-<td class="instruction">LD A,(IX+1)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28737"></span>28737</td>
-<td class="instruction">CP 144</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28739"></span>28739</td>
-<td class="instruction">JR Z,<a href="28253.html#28771">28771</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28741"></span>28741</td>
-<td class="instruction">LD A,(IX+0)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28744"></span>28744</td>
-<td class="instruction">SUB (HL)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28745"></span>28745</td>
-<td class="instruction">JR C,<a href="28253.html#28750">28750</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28747"></span>28747</td>
-<td class="instruction">JP <a href="28253.html#28592">28592</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-2"><span id="28750"></span>28750</td>
-<td class="instruction">PUSH HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28751"></span>28751</td>
-<td class="instruction">CALL <a href="27705.html">27705</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28754"></span>28754</td>
-<td class="instruction">POP HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28755"></span>28755</td>
-<td class="instruction">AND 3</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28757"></span>28757</td>
-<td class="instruction">CP 1</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28759"></span>28759</td>
-<td class="instruction">JR Z,<a href="28253.html#28750">28750</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28761"></span>28761</td>
-<td class="instruction">LD (IX+2),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28764"></span>28764</td>
-<td class="instruction">LD (IX+6),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28767"></span>28767</td>
-<td class="instruction">XOR A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28768"></span>28768</td>
-<td class="instruction">JP <a href="28253.html#28627">28627</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-2"><span id="28771"></span>28771</td>
-<td class="instruction">LD A,(IX+0)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28774"></span>28774</td>
-<td class="instruction">ADD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28775"></span>28775</td>
-<td class="instruction">CP 40</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28777"></span>28777</td>
-<td class="instruction">JR NC,<a href="28253.html#28782">28782</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28779"></span>28779</td>
-<td class="instruction">JP <a href="28253.html#28627">28627</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-2"><span id="28782"></span>28782</td>
-<td class="instruction">PUSH HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28783"></span>28783</td>
-<td class="instruction">CALL <a href="27705.html">27705</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28786"></span>28786</td>
-<td class="instruction">POP HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28787"></span>28787</td>
-<td class="instruction">AND 3</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28789"></span>28789</td>
-<td class="instruction">ADD A,4</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28791"></span>28791</td>
-<td class="instruction">LD (IX+2),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28794"></span>28794</td>
-<td class="instruction">LD (IX+6),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28797"></span>28797</td>
-<td class="instruction">LD A,40</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="28799"></span>28799</td>
-<td class="instruction">JP <a href="28253.html#28592">28592</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">CALL <a href="28435.html">InitialiseCar</a></td>
+<td class="comment-1" rowspan="1">Call <a href="28435.html">InitialiseCar</a>.</td>
 </tr>
 </table>
 <table class="asm-navigation">
@@ -1327,7 +727,7 @@ Prev: <a href="28207.html">28207</a>
 </td>
 <td class="up">Up: <a href="../maps/all.html#28253">Map</a></td>
 <td class="next">
-Next: <a href="28802.html">28802</a>
+Next: <a href="28435.html">28435</a>
 </td>
 </tr>
 </table>

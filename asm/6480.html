@@ -58,7 +58,7 @@ Animates Percy's energy bar at the bottom of the screen. The bar depletes when P
 <span id="6483"></span>
 <div class="comments">
 <div class="paragraph">
-If *<a href="5FA7.html">FallingState</a> is non-zero, it's acting as a cooldown timer — decrement it and return.
+If *<a href="5FA7.html">FallingState</a> is non-zero, it's acting as a cooldown timer so decrement it and return.
 </div>
 </div>
 </td>
@@ -133,7 +133,7 @@ refills. Otherwise it depletes.
 <span id="6495"></span>
 <div class="comments">
 <div class="paragraph">
-Percy is airborne — deplete the energy bar. Uses a slower frame delay of 07 frames between each step.
+Percy is airborne so deplete the energy bar. Uses a slower frame delay of 07 frames between each step.
 </div>
 </div>
 </td>
@@ -296,7 +296,7 @@ Copy the updated byte to the three pixel rows below to give the energy bar its h
 <span id="64b6"></span>
 <div class="comments">
 <div class="paragraph">
-Current byte is empty — scan leftward for the next filled byte.
+Current byte is empty so scan leftward for the next filled byte.
 </div>
 </div>
 </td>
@@ -337,7 +337,7 @@ Current byte is empty — scan leftward for the next filled byte.
 This entry point is used by the routine at <a href="69A7.html">Run_Main_Loop_Body</a>.
 </div>
 <div class="paragraph">
-Percy is on the ground — refill the energy bar. Uses a faster frame delay of 03 frames between each step.
+Percy is on the ground so refill the energy bar. Uses a faster frame delay of 03 frames between each step.
 </div>
 </div>
 </td>
@@ -441,7 +441,7 @@ Refill the energy bar by shifting pixels right (filling from the left). Scans le
 <span id="64da"></span>
 <div class="comments">
 <div class="paragraph">
-Current byte is fully filled — scan rightward for the next byte to fill.
+Current byte is fully filled so scan rightward for the next byte to fill.
 </div>
 </div>
 </td>
@@ -479,7 +479,7 @@ Current byte is fully filled — scan rightward for the next byte to fill.
 <span id="64e1"></span>
 <div class="comments">
 <div class="paragraph">
-Energy bar has fully depleted — set Percy to the falling state.
+Energy bar has fully depleted so set Percy to the falling state.
 </div>
 </div>
 </td>

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Percy the Potty Pigeon: Routine at 26243</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-dark.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-wide.css" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-75RERFCHBG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-75RERFCHBG');
+</script>
+</head>
+<body class="Asm-c">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html"><img alt="logo" src="../images/logo.png" /></a></td>
+<td class="page-header">Routines</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="26155.html">26155</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#26243">Map</a></td>
+<td class="next">
+Next: <a href="26280.html">26280</a>
+</td>
+</tr>
+</table>
+<div class="description">26243: Draw Worm Animation Frame</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="5">
+<div class="details">
+<div class="paragraph">
+Used by the routine at <a href="26155.html">Handle_Worms</a>.
+</div>
+<div class="paragraph">
+Draws an 8-pixel-row worm wiggle animation frame at the screen address in <span class="register">HL</span>. Alternates between two graphic frames at 42947 and 42955 based on the animation toggle at <a href="24500.html">ChickAnimationStates</a>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Handler_DrawWorm</td>
+<td class="address-2"><span id="26243"></span>26243</td>
+<td class="instruction">LD DE,42947</td>
+<td class="comment-1" rowspan="1">Default animation frame pointer: <span class="register">DE</span>=42947 (worm frame 1).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26246"></span>26246</td>
+<td class="instruction">LD A,(24500)</td>
+<td class="comment-1" rowspan="4">Rotate *<a href="24500.html">ChickAnimationStates</a> right through carry; if the carry flag is set, keep worm frame 1 and skip over the alternative frame (worm frame 2).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26249"></span>26249</td>
+<td class="instruction">RRCA</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26250"></span>26250</td>
+<td class="instruction">LD (24500),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26253"></span>26253</td>
+<td class="instruction">JR C,<a href="26243.html#26258">Handler_DrawWorm_Frame</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26255"></span>26255</td>
+<td class="instruction">LD DE,42955</td>
+<td class="comment-1" rowspan="1">Else the carry flag is unset so set the alternative animation frame pointer: <span class="register">DE</span>=42955 (worm frame 2).</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="26258"></span>
+<div class="comments">
+<div class="paragraph">
+This entry point is used by the routines at <a href="26090.html">DrawNestChicks</a> and <a href="26674.html">AnimateSnapdragons</a>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Handler_DrawWorm_Frame</td>
+<td class="address-2"><span id="26258"></span>26258</td>
+<td class="instruction">LD B,8</td>
+<td class="comment-1" rowspan="1">Set a line counter in <span class="register">B</span> (8 lines in a UDG).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26260"></span>26260</td>
+<td class="instruction">PUSH HL</td>
+<td class="comment-1" rowspan="1">Stash the screen address on the stack.</td>
+</tr>
+<tr>
+<td class="asm-label">Handler_DrawWorm_FrameLoop</td>
+<td class="address-2"><span id="26261"></span>26261</td>
+<td class="instruction">LD A,(DE)</td>
+<td class="comment-1" rowspan="2">Copy the UDG data to the screen buffer.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26262"></span>26262</td>
+<td class="instruction">LD (HL),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26263"></span>26263</td>
+<td class="instruction">INC H</td>
+<td class="comment-1" rowspan="1">Move down one pixel line in the screen buffer.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26264"></span>26264</td>
+<td class="instruction">INC DE</td>
+<td class="comment-1" rowspan="1">Move to the next UDG graphic data byte.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26265"></span>26265</td>
+<td class="instruction">DJNZ <a href="26243.html#26261">Handler_DrawWorm_FrameLoop</a></td>
+<td class="comment-1" rowspan="1">Decrease the line counter by one and loop back to <a href="26243.html#26261">Handler_DrawWorm_FrameLoop</a> until all 8 lines of the UDG character have been drawn.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26267"></span>26267</td>
+<td class="instruction">POP HL</td>
+<td class="comment-1" rowspan="1">Restore the screen address from the stack.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26268"></span>26268</td>
+<td class="instruction">LD A,H</td>
+<td class="comment-1" rowspan="8">Convert the screen address to the corresponding attribute address and write 3 (magenta on black) as the worm colour attribute.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26269"></span>26269</td>
+<td class="instruction">RRCA</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26270"></span>26270</td>
+<td class="instruction">RRCA</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26271"></span>26271</td>
+<td class="instruction">RRCA</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26272"></span>26272</td>
+<td class="instruction">AND %00000011</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26274"></span>26274</td>
+<td class="instruction">OR %11111000</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26276"></span>26276</td>
+<td class="instruction">LD H,A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26277"></span>26277</td>
+<td class="instruction">LD (HL),3</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26279"></span>26279</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="26155.html">26155</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#26243">Map</a></td>
+<td class="next">
+Next: <a href="26280.html">26280</a>
+</td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
+<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
+<div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
+<div><a href="../../asm/6683.html">Switch to hexadecimal</a>.</div>
+</footer>
+</body>
+</html>

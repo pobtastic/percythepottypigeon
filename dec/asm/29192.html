@@ -33,18 +33,58 @@ Next: <a href="29199.html">29199</a>
 </td>
 </tr>
 </table>
-<div class="description">29192: Game status buffer entry at 7208</div>
+<div class="description">29192: Car State Data</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
 <div class="details">
+<div class="paragraph">
+Crash animation timer. When non-zero, the car cycles through crash frames. Counts down to 1 then clears.
+</div>
 </div>
 </td>
 </tr>
 <tr>
+<td class="asm-label">CarCrashTimer</td>
 <td class="address-1"><span id="29192"></span>29192</td>
-<td class="instruction">DEFB 0,0,0,0,0,0,0</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">DEFB 0</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="29193"></span>29193</td>
+<td class="instruction">DEFB 0</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label">CarColour</td>
+<td class="address-1"><span id="29194"></span>29194</td>
+<td class="instruction">DEFB 0</td>
+<td class="comment-1" rowspan="1">The car's current body colour.</td>
+</tr>
+<tr>
+<td class="asm-label">CarSpeed</td>
+<td class="address-1"><span id="29195"></span>29195</td>
+<td class="instruction">DEFB 0</td>
+<td class="comment-1" rowspan="1">Car speed for the left-driving variants (types 2 and 3).</td>
+</tr>
+<tr>
+<td class="asm-label">CarSpeed2</td>
+<td class="address-1"><span id="29196"></span>29196</td>
+<td class="instruction">DEFB 0</td>
+<td class="comment-1" rowspan="1">Car speed for the right-driving variant (type 1).</td>
+</tr>
+<tr>
+<td class="asm-label">CarWheelAnimation</td>
+<td class="address-1"><span id="29197"></span>29197</td>
+<td class="instruction">DEFB 0</td>
+<td class="comment-1" rowspan="1">Wheel animation counter. Cycles through 0-3 to animate the wheel rotation frames 16-19.</td>
+</tr>
+<tr>
+<td class="asm-label">CarAppearanceDelay</td>
+<td class="address-1"><span id="29198"></span>29198</td>
+<td class="instruction">DEFB 0</td>
+<td class="comment-1" rowspan="1">Random delay before the car appears after initialisation.</td>
 </tr>
 </table>
 <table class="asm-navigation">

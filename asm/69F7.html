@@ -42,7 +42,10 @@ Next: <a href="6AF6.html">6AF6</a>
 Used by the routine at <a href="69A7.html">Run_Main_Loop_Body</a>.
 </div>
 <div class="paragraph">
-Handles the red bird — a thief that steals worms Percy is carrying. Percy can stun the red bird by hitting it with an egg. The red bird's flight path data is stored at <a href="BE00.html">Table_RedBirdFlightPath_01</a> with entries separated by 00 terminators for each room.
+Handles the red bird who is a thief that steals worms Percy is carrying.
+</div>
+<div class="paragraph">
+Percy can stun the red bird by hitting it with an egg. The red bird's flight path data is stored at <a href="BE00.html">Table_RedBirdFlightPath_01</a> with entries separated by 00 terminators for each room.
 </div>
 </div>
 </td>
@@ -177,7 +180,7 @@ Found a 00 terminator so move to the data for the next room.
 <span id="6a14"></span>
 <div class="comments">
 <div class="paragraph">
-Found the correct room's data — store the flight path pointer.
+Found the correct room's data so store the flight path pointer.
 </div>
 </div>
 </td>
@@ -255,7 +258,7 @@ Check if the red bird has stolen Percy's worm.
 <td class="asm-label"></td>
 <td class="address-1"><span id="6a25"></span>6A25</td>
 <td class="instruction">LD A,($5FAA)</td>
-<td class="comment-1" rowspan="3">Jump to <a href="69F7.html#6a60">HandleRedBird_CheckEgg</a> if *<a href="5FAA.html">GameModeFlag</a> is unset.</td>
+<td class="comment-1" rowspan="3">Jump to <a href="69F7.html#6a60">HandleRedBird_CheckEgg</a> if *<a href="5FAA.html">CarryingWormFlag</a> is unset.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -287,7 +290,7 @@ Check collision between Percy and the red bird.
 <td class="asm-label"></td>
 <td class="address-1"><span id="6a2f"></span>6A2F</td>
 <td class="instruction">LD IY,$DAC4</td>
-<td class="comment-1" rowspan="1"><span class="register">IY</span>=<a href="DAC4.html">Sprite01_X_Position</a> (red bird sprite data).</td>
+<td class="comment-1" rowspan="1"><span class="register">IY</span>=<a href="DAC4.html">Sprite01_3Wide_X_Position</a> (red bird sprite data).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -332,7 +335,7 @@ Check the red bird has a valid frame (is visible).
 <span id="6a3e"></span>
 <div class="comments">
 <div class="paragraph">
-Red bird stole Percy's worm — return the worm to the room and play a sound.
+Red bird stole Percy's worm so return the worm to the room and play a sound.
 </div>
 </div>
 </td>
@@ -340,8 +343,8 @@ Red bird stole Percy's worm — return the worm to the room and play a sound.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6a3e"></span>6A3E</td>
-<td class="instruction">CALL <a href="679C.html">CollectItem</a></td>
-<td class="comment-1" rowspan="1">Call <a href="679C.html">CollectItem</a>.</td>
+<td class="instruction">CALL <a href="679C.html">DropWorm</a></td>
+<td class="comment-1" rowspan="1">Call <a href="679C.html">DropWorm</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -459,13 +462,12 @@ Check if Percy's egg has hit the red bird.
 <td class="asm-label">HandleRedBird_CheckEgg</td>
 <td class="address-2"><span id="6a60"></span>6A60</td>
 <td class="instruction">LD A,($5FA9)</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="5FA9.html">EggDropState</a>.</td>
+<td class="comment-1" rowspan="3">Jump to <a href="69F7.html#6a9d">HandleRedBird_Done</a> if *<a href="5FA9.html">EggDropFlag</a> is unset/ no egg is active.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6a63"></span>6A63</td>
 <td class="instruction">OR A</td>
-<td class="comment-1" rowspan="2">Jump to <a href="69F7.html#6a9d">HandleRedBird_Done</a> if no egg is active.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -482,7 +484,7 @@ Check if Percy's egg has hit the red bird.
 <td class="asm-label"></td>
 <td class="address-1"><span id="6a6a"></span>6A6A</td>
 <td class="instruction">LD IX,$DAC4</td>
-<td class="comment-1" rowspan="1"><span class="register">IX</span>=<a href="DAC4.html">Sprite01_X_Position</a>.</td>
+<td class="comment-1" rowspan="1"><span class="register">IX</span>=<a href="DAC4.html">Sprite01_3Wide_X_Position</a>.</td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
@@ -515,12 +517,22 @@ Only check collision if the red bird is in the same room as the egg.
 <td class="asm-label"></td>
 <td class="address-1"><span id="6a75"></span>6A75</td>
 <td class="instruction">CP B</td>
-<td class="comment-1" rowspan="2">Jump to <a href="69F7.html#6a9d">HandleRedBird_Done</a> if the red bird is not in the same room.</td>
+<td class="comment-1" rowspan="2">Jump to <a href="69F7.html#6a9d">HandleRedBird_Done</a> if the red bird is not in the current room.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6a76"></span>6A76</td>
 <td class="instruction">JR NZ,<a href="69F7.html#6a9d">HandleRedBird_Done</a></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="6a78"></span>
+<div class="comments">
+<div class="paragraph">
+The red bird is in the current room.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -539,7 +551,7 @@ Only check collision if the red bird is in the same room as the egg.
 <span id="6a7d"></span>
 <div class="comments">
 <div class="paragraph">
-Egg hit the red bird — check if already stunned.
+Egg hit the red bird so check if already stunned.
 </div>
 </div>
 </td>
@@ -565,7 +577,7 @@ Egg hit the red bird — check if already stunned.
 <span id="6a83"></span>
 <div class="comments">
 <div class="paragraph">
-Stun the red bird — set a random stun timer and award points.
+Stun the red bird so set a random stun timer and award points.
 </div>
 </div>
 </td>
@@ -573,8 +585,8 @@ Stun the red bird — set a random stun timer and award points.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6a83"></span>6A83</td>
-<td class="instruction">CALL <a href="6C39.html">$6C39</a></td>
-<td class="comment-1" rowspan="1">Call <a href="6C39.html">6C39</a>.</td>
+<td class="instruction">CALL <a href="6C39.html">GenerateRandomNumber</a></td>
+<td class="comment-1" rowspan="1">Call <a href="6C39.html">GenerateRandomNumber</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -614,8 +626,8 @@ Stun the red bird — set a random stun timer and award points.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6a97"></span>6A97</td>
-<td class="instruction">CALL <a href="6E5D.html#6f7a">$6F7A</a></td>
-<td class="comment-1" rowspan="1">Call <a href="6E5D.html#6f7a">6F7A</a>.</td>
+<td class="instruction">CALL <a href="6F54.html#6f7a">PlayHitSound</a></td>
+<td class="comment-1" rowspan="1">Call <a href="6F54.html#6f7a">PlayHitSound</a>.</td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
@@ -707,7 +719,7 @@ Check if the combined value wraps past room 0B.
 <span id="6aad"></span>
 <div class="comments">
 <div class="paragraph">
-Wrap point reached — flip the red bird's flight direction.
+Wrap point reached so flip the red bird's flight direction.
 </div>
 </div>
 </td>
@@ -750,7 +762,7 @@ Look up the flight speed for the current level from the table at <a href="6CBE.h
 <td class="asm-label"></td>
 <td class="address-1"><span id="6ab8"></span>6AB8</td>
 <td class="instruction">LD A,($5FB1)</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="5FB1.html">CurrentLevel</a> (current level).</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="5FB1.html">CurrentLevel</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -860,7 +872,7 @@ Search for a valid Y position that doesn't collide with scenery.
 <span id="6ad4"></span>
 <div class="comments">
 <div class="paragraph">
-Position blocked — try the next row down.
+Position blocked so try the next row down.
 </div>
 </div>
 </td>
@@ -908,7 +920,7 @@ Position blocked — try the next row down.
 <span id="6add"></span>
 <div class="comments">
 <div class="paragraph">
-Reached the bottom — wrap back to the top and shift X inward.
+Reached the bottom so wrap back to the top and shift X inward.
 </div>
 </div>
 </td>
@@ -941,7 +953,7 @@ Reached the bottom — wrap back to the top and shift X inward.
 <span id="6ae5"></span>
 <div class="comments">
 <div class="paragraph">
-Flying left — shift the starting X position rightward.
+Flying left so shift the starting X position rightward.
 </div>
 </div>
 </td>
@@ -988,7 +1000,7 @@ Flying left — shift the starting X position rightward.
 <span id="6aed"></span>
 <div class="comments">
 <div class="paragraph">
-Flying right — shift the starting X position leftward.
+Flying right so shift the starting X position leftward.
 </div>
 </div>
 </td>

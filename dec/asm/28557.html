@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Percy the Potty Pigeon: Routine at 28557</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-dark.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-wide.css" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-75RERFCHBG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-75RERFCHBG');
+</script>
+</head>
+<body class="Asm-c">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html"><img alt="logo" src="../images/logo.png" /></a></td>
+<td class="page-header">Routines</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="28500.html">28500</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#28557">Map</a></td>
+<td class="next">
+Next: <a href="28712.html">28712</a>
+</td>
+</tr>
+</table>
+<div class="description">28557: Handler: Car Type 2 (Driving Left)</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="5">
+<div class="details">
+<div class="paragraph">
+Used by the routine at <a href="28075.html">Dispatch_Game_State</a>.
+</div>
+<div class="paragraph">
+Handles a car driving left across the screen. When it reaches the left boundary it turns around and drives right at ground level until reaching the right edge, then reinitialises.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Handler_CarType2</td>
+<td class="address-2"><span id="28557"></span>28557</td>
+<td class="instruction">LD IX,56008</td>
+<td class="comment-1" rowspan="1"><span class="register">IX</span>=<a href="56008.html">Sprite02_3Wide_X_Position</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28561"></span>28561</td>
+<td class="instruction">LD HL,29195</td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="29192.html#29195">CarSpeed</a> (car speed).</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="28564"></span>
+<div class="comments">
+<div class="paragraph">
+If the room is being initialised, set up the car.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28564"></span>28564</td>
+<td class="instruction">LD A,(24507)</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="24507.html">RoomBufferFlag</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28567"></span>28567</td>
+<td class="instruction">OR A</td>
+<td class="comment-1" rowspan="2">Jump to <a href="28557.html#28684">Handler_CarType2_Initialise</a> if the room buffer flag is set.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28568"></span>28568</td>
+<td class="instruction">JR NZ,<a href="28557.html#28684">Handler_CarType2_Initialise</a></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="28570"></span>
+<div class="comments">
+<div class="paragraph">
+If the car crash timer is active, handle the crash animation.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28570"></span>28570</td>
+<td class="instruction">LD A,(29192)</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="29192.html">CarCrashTimer</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28573"></span>28573</td>
+<td class="instruction">OR A</td>
+<td class="comment-1" rowspan="2">Jump to <a href="28253.html#28270">Handler_Car_Type1_0</a> if the crash timer is active.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28574"></span>28574</td>
+<td class="instruction">JP NZ,<a href="28253.html#28270">Handler_Car_Type1_0</a></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="28577"></span>
+<div class="comments">
+<div class="paragraph">
+Check which road the car is on.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28577"></span>28577</td>
+<td class="instruction">LD A,(IX+1)</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">IX</span>+1 (car Y position).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28580"></span>28580</td>
+<td class="instruction">CP 144</td>
+<td class="comment-1" rowspan="1">Is the car on the upper road (144)?</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28582"></span>28582</td>
+<td class="instruction">JR Z,<a href="28557.html#28619">Handler_CarType2_DriveRight</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="28557.html#28619">Handler_CarType2_DriveRight</a> if on the upper road.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="28584"></span>
+<div class="comments">
+<div class="paragraph">
+Car is on the lower road (Y=160) — driving left.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28584"></span>28584</td>
+<td class="instruction">LD A,(IX+0)</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">IX</span>+0 (car X position).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28587"></span>28587</td>
+<td class="instruction">SUB (HL)</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>-=*<span class="register">HL</span> (subtract speed).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28588"></span>28588</td>
+<td class="instruction">CP 104</td>
+<td class="comment-1" rowspan="1">Has the car reached 104 (left boundary)?</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28590"></span>28590</td>
+<td class="instruction">JR C,<a href="28557.html#28654">Handler_CarType2_TurnAround</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="28557.html#28654">Handler_CarType2_TurnAround</a> if at the left boundary (turn around).</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="28592"></span>
+<div class="comments">
+<div class="paragraph">
+This entry point is used by the routine at <a href="28712.html">Handler_CarType3</a>.
+</div>
+<div class="paragraph">
+Update positions and set driving left frames.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Handler_CarType2_UpdateLeft</td>
+<td class="address-2"><span id="28592"></span>28592</td>
+<td class="instruction">LD (IX+0),A</td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">IX</span>+0 (front X).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28595"></span>28595</td>
+<td class="instruction">ADD A,16</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>+=16.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28597"></span>28597</td>
+<td class="instruction">LD (IX+4),A</td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">IX</span>+4 (rear X).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28600"></span>28600</td>
+<td class="instruction">LD (IX+1),160</td>
+<td class="comment-1" rowspan="1">Write 160 to *<span class="register">IX</span>+1 (front Y: lower road).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28604"></span>28604</td>
+<td class="instruction">LD (IX+5),160</td>
+<td class="comment-1" rowspan="1">Write 160 to *<span class="register">IX</span>+5 (rear Y: lower road).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28608"></span>28608</td>
+<td class="instruction">LD (IX+3),30</td>
+<td class="comment-1" rowspan="1">Write 30 to *<span class="register">IX</span>+3 (front frame: driving left).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28612"></span>28612</td>
+<td class="instruction">LD (IX+7),31</td>
+<td class="comment-1" rowspan="1">Write 31 to *<span class="register">IX</span>+7 (rear frame: driving left).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28616"></span>28616</td>
+<td class="instruction">JP <a href="28253.html#28392">Handler_Car_Type1_2</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="28253.html#28392">Handler_Car_Type1_2</a>.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="28619"></span>
+<div class="comments">
+<div class="paragraph">
+Car is on the upper road (Y=144) — driving right.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Handler_CarType2_DriveRight</td>
+<td class="address-2"><span id="28619"></span>28619</td>
+<td class="instruction">LD A,(IX+0)</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">IX</span>+0 (car X position).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28622"></span>28622</td>
+<td class="instruction">ADD A,(HL)</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>+=*<span class="register">HL</span> (add speed).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28623"></span>28623</td>
+<td class="instruction">CP 222</td>
+<td class="comment-1" rowspan="1">Has the car reached 222 (right edge)?</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28625"></span>28625</td>
+<td class="instruction">JR NC,<a href="28557.html#28684">Handler_CarType2_Initialise</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="28557.html#28684">Handler_CarType2_Initialise</a> if at the right edge (reinitialise).</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="28627"></span>
+<div class="comments">
+<div class="paragraph">
+This entry point is used by the routine at <a href="28712.html">Handler_CarType3</a>.
+</div>
+<div class="paragraph">
+Update positions and set driving right frames.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Handler_CarType2_UpdateRight</td>
+<td class="address-2"><span id="28627"></span>28627</td>
+<td class="instruction">LD (IX+0),A</td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">IX</span>+0 (front X).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28630"></span>28630</td>
+<td class="instruction">ADD A,16</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>+=16.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28632"></span>28632</td>
+<td class="instruction">LD (IX+4),A</td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">IX</span>+4 (rear X).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28635"></span>28635</td>
+<td class="instruction">LD (IX+1),144</td>
+<td class="comment-1" rowspan="1">Write 144 to *<span class="register">IX</span>+1 (front Y: upper road).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28639"></span>28639</td>
+<td class="instruction">LD (IX+5),144</td>
+<td class="comment-1" rowspan="1">Write 144 to *<span class="register">IX</span>+5 (rear Y: upper road).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28643"></span>28643</td>
+<td class="instruction">LD (IX+3),28</td>
+<td class="comment-1" rowspan="1">Write 28 to *<span class="register">IX</span>+3 (front frame: driving right).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28647"></span>28647</td>
+<td class="instruction">LD (IX+7),29</td>
+<td class="comment-1" rowspan="1">Write 29 to *<span class="register">IX</span>+7 (rear frame: driving right).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28651"></span>28651</td>
+<td class="instruction">JP <a href="28253.html#28348">Handler_Car_Type1_1</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="28253.html#28348">Handler_Car_Type1_1</a>.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="28654"></span>
+<div class="comments">
+<div class="paragraph">
+Car reached the left boundary — turn around. Pick a new random speed and colour, then start driving right from the left boundary.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Handler_CarType2_TurnAround</td>
+<td class="address-2"><span id="28654"></span>28654</td>
+<td class="instruction">PUSH HL</td>
+<td class="comment-1" rowspan="1">Stash <span class="register">HL</span> on the stack.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28655"></span>28655</td>
+<td class="instruction">CALL <a href="27705.html">GenerateRandomNumber</a></td>
+<td class="comment-1" rowspan="1">Call <a href="27705.html">GenerateRandomNumber</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28658"></span>28658</td>
+<td class="instruction">POP HL</td>
+<td class="comment-1" rowspan="1">Restore <span class="register">HL</span> from the stack.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28659"></span>28659</td>
+<td class="instruction">AND %00000011</td>
+<td class="comment-1" rowspan="1">Keep only bits 0-1 (random speed 0-3).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28661"></span>28661</td>
+<td class="instruction">INC A</td>
+<td class="comment-1" rowspan="1">Increment (speed 1-4).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28662"></span>28662</td>
+<td class="instruction">LD (HL),A</td>
+<td class="comment-1" rowspan="1">Write the new speed to *<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="28663"></span>
+<div class="comments">
+<div class="paragraph">
+Pick a new colour, rejecting 1 (blue).
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Handler_CarType2_0</td>
+<td class="address-2"><span id="28663"></span>28663</td>
+<td class="instruction">PUSH HL</td>
+<td class="comment-1" rowspan="1">Stash <span class="register">HL</span> on the stack.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28664"></span>28664</td>
+<td class="instruction">CALL <a href="27705.html">GenerateRandomNumber</a></td>
+<td class="comment-1" rowspan="1">Call <a href="27705.html">GenerateRandomNumber</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28667"></span>28667</td>
+<td class="instruction">POP HL</td>
+<td class="comment-1" rowspan="1">Restore <span class="register">HL</span> from the stack.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28668"></span>28668</td>
+<td class="instruction">AND %00000011</td>
+<td class="comment-1" rowspan="1">Keep only bits 0-1.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28670"></span>28670</td>
+<td class="instruction">CP 1</td>
+<td class="comment-1" rowspan="1">Is the colour 1 (blue)?</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28672"></span>28672</td>
+<td class="instruction">JR Z,<a href="28557.html#28663">Handler_CarType2_0</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="28557.html#28663">Handler_CarType2_0</a> if blue (pick again).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28674"></span>28674</td>
+<td class="instruction">LD (IX+2),A</td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">IX</span>+2 (front colour).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28677"></span>28677</td>
+<td class="instruction">LD (IX+6),A</td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">IX</span>+6 (rear colour).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28680"></span>28680</td>
+<td class="instruction">LD A,104</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=104 (left boundary X position).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28682"></span>28682</td>
+<td class="instruction">JR <a href="28557.html#28627">Handler_CarType2_UpdateRight</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="28557.html#28627">Handler_CarType2_UpdateRight</a>.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="28684"></span>
+<div class="comments">
+<div class="paragraph">
+Initialise car type 2 — start from the right edge driving left with a random speed and colour.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Handler_CarType2_Initialise</td>
+<td class="address-2"><span id="28684"></span>28684</td>
+<td class="instruction">PUSH HL</td>
+<td class="comment-1" rowspan="1">Stash <span class="register">HL</span> on the stack.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28685"></span>28685</td>
+<td class="instruction">CALL <a href="27705.html">GenerateRandomNumber</a></td>
+<td class="comment-1" rowspan="1">Call <a href="27705.html">GenerateRandomNumber</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28688"></span>28688</td>
+<td class="instruction">POP HL</td>
+<td class="comment-1" rowspan="1">Restore <span class="register">HL</span> from the stack.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28689"></span>28689</td>
+<td class="instruction">AND %00000011</td>
+<td class="comment-1" rowspan="1">Keep only bits 0-1.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28691"></span>28691</td>
+<td class="instruction">INC A</td>
+<td class="comment-1" rowspan="1">Increment (speed 1-4).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28692"></span>28692</td>
+<td class="instruction">LD (HL),A</td>
+<td class="comment-1" rowspan="1">Write the new speed to *<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="28693"></span>
+<div class="comments">
+<div class="paragraph">
+Pick a colour, using the range 4-7 (bright colours).
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28693"></span>28693</td>
+<td class="instruction">PUSH HL</td>
+<td class="comment-1" rowspan="1">Stash <span class="register">HL</span> on the stack.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28694"></span>28694</td>
+<td class="instruction">CALL <a href="27705.html">GenerateRandomNumber</a></td>
+<td class="comment-1" rowspan="1">Call <a href="27705.html">GenerateRandomNumber</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28697"></span>28697</td>
+<td class="instruction">POP HL</td>
+<td class="comment-1" rowspan="1">Restore <span class="register">HL</span> from the stack.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28698"></span>28698</td>
+<td class="instruction">AND %00000011</td>
+<td class="comment-1" rowspan="1">Keep only bits 0-1.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28700"></span>28700</td>
+<td class="instruction">ADD A,4</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>+=4 (bright colour range).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28702"></span>28702</td>
+<td class="instruction">LD (IX+2),A</td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">IX</span>+2 (front colour).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28705"></span>28705</td>
+<td class="instruction">LD (IX+6),A</td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">IX</span>+6 (rear colour).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28708"></span>28708</td>
+<td class="instruction">LD A,222</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=222 (right edge X position).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28710"></span>28710</td>
+<td class="instruction">JR <a href="28557.html#28592">Handler_CarType2_UpdateLeft</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="28557.html#28592">Handler_CarType2_UpdateLeft</a>.</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="28500.html">28500</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#28557">Map</a></td>
+<td class="next">
+Next: <a href="28712.html">28712</a>
+</td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
+<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
+<div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
+<div><a href="../../asm/6F8D.html">Switch to hexadecimal</a>.</div>
+</footer>
+</body>
+</html>

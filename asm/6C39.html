@@ -33,96 +33,141 @@ Next: <a href="6C53.html">6C53</a>
 </td>
 </tr>
 </table>
-<div class="description">6C39: Routine at 6C39</div>
+<div class="description">6C39: Generate Random Number</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
 <div class="details">
 <div class="paragraph">
-Used by the routines at <a href="69F7.html">Handler_RedBird</a>, <a href="6AF6.html">UpdateRedBirdMovement</a>, <a href="6E2F.html">6E2F</a> and <a href="6E5D.html">6E5D</a>.
+Used by the routines at <a href="69F7.html">Handler_RedBird</a>, <a href="6AF6.html">UpdateRedBirdMovement</a>, <a href="6E2F.html">6E2F</a>, <a href="6F13.html">InitialiseCar</a>, <a href="6F54.html">CheckCarEggCollision</a>, <a href="6F8D.html">Handler_CarType2</a> and <a href="7028.html">Handler_CarType3</a>.
+</div>
+<div class="paragraph">
+Generates a pseudo-random number using the seed stored at *<a href="6CB7.html">RedBirdAnimationSeed</a>. The algorithm scrambles the seed value through a series of arithmetic operations and stores the result back as the new seed. Returns the random value in <span class="register">A</span>.
+</div>
+</div>
+<table class="output">
+<tr class="asm-output-header">
+<th colspan="2">Output</th>
+</tr>
+<tr>
+<td class="register">A</td>
+<td class="register-desc">Pseudo-random value</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td class="asm-label">GenerateRandomNumber</td>
+<td class="address-2"><span id="6c39"></span>6C39</td>
+<td class="instruction">LD A,($6CB7)</td>
+<td class="comment-1" rowspan="2"><span class="register">H</span>=*<a href="6CB7.html">RedBirdAnimationSeed</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6c3c"></span>6C3C</td>
+<td class="instruction">LD H,A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6c3d"></span>6C3D</td>
+<td class="instruction">LD L,$00</td>
+<td class="comment-1" rowspan="2">Load both <span class="register">L</span> and <span class="register">D</span> with 00.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6c3f"></span>6C3F</td>
+<td class="instruction">LD D,L</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6c40"></span>6C40</td>
+<td class="instruction">LD E,H</td>
+<td class="comment-1" rowspan="1">Copy *<a href="6CB7.html">RedBirdAnimationSeed</a> into <span class="register">E</span>.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="6c41"></span>
+<div class="comments">
+<div class="paragraph">
+<span class="register">HL</span> = seed × 0100 <span class="register">DE</span> = seed. Subtract <span class="register">DE</span> twice.
 </div>
 </div>
 </td>
 </tr>
 <tr>
-<td class="address-2"><span id="6c39"></span>6C39</td>
-<td class="instruction">LD A,($6CB7)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="6c3c"></span>6C3C</td>
-<td class="instruction">LD H,A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="6c3d"></span>6C3D</td>
-<td class="instruction">LD L,$00</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="6c3f"></span>6C3F</td>
-<td class="instruction">LD D,L</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="6c40"></span>6C40</td>
-<td class="instruction">LD E,H</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6c41"></span>6C41</td>
 <td class="instruction">AND A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Clear carry.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6c42"></span>6C42</td>
 <td class="instruction">SBC HL,DE</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>-=<span class="register">DE</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6c44"></span>6C44</td>
 <td class="instruction">SBC HL,DE</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>-=<span class="register">DE</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6c46"></span>6C46</td>
 <td class="instruction">LD DE,$00FE</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2"><span class="register">HL</span>+=00FE.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6c49"></span>6C49</td>
 <td class="instruction">ADD HL,DE</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="6c4a"></span>
+<div class="comments">
+<div class="paragraph">
+Combine the high and low bytes.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6c4a"></span>6C4A</td>
 <td class="instruction">LD A,L</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=<span class="register">L</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6c4b"></span>6C4B</td>
 <td class="instruction">SUB H</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>-=<span class="register">H</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6c4c"></span>6C4C</td>
-<td class="instruction">JR C,<a href="6C39.html#6c4f">$6C4F</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR C,<a href="6C39.html#6c4f">GenerateRandomNumber_Store</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="6C39.html#6c4f">GenerateRandomNumber_Store</a> if carry set.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6c4e"></span>6C4E</td>
 <td class="instruction">DEC A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Decrement <span class="register">A</span>.</td>
 </tr>
 <tr>
+<td class="asm-label">GenerateRandomNumber_Store</td>
 <td class="address-2"><span id="6c4f"></span>6C4F</td>
 <td class="instruction">LD ($6CB7),A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write the new seed to *<a href="6CB7.html">RedBirdAnimationSeed</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6c52"></span>6C52</td>
 <td class="instruction">RET</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Return.</td>
 </tr>
 </table>
 <table class="asm-navigation">

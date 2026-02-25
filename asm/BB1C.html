@@ -33,7 +33,7 @@ Next: <a href="BC0E.html">BC0E</a>
 </td>
 </tr>
 </table>
-<div class="description">BB1C: Routine at BB1C</div>
+<div class="description">BB1C: Draw Sprites and Merge Collision Map</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
@@ -41,129 +41,187 @@ Next: <a href="BC0E.html">BC0E</a>
 <div class="paragraph">
 Used by the routine at <a href="6992.html">Run_Game_Frame</a>.
 </div>
+<div class="paragraph">
+Draws all active sprites (Percy, hazards, etc.) to the screen buffer and then merges the collision map with the background scenery. First draws up to 08 three-column-wide sprites (e.g. Percy, large hazards), then up to 08 two-column-wide sprites (e.g. smaller objects). After drawing, the sprite positions are backed up and the collision map is scanned to composite sprite pixels onto the background.
+</div>
+</div>
+<table class="input">
+<tr class="asm-input-header">
+<th colspan="2">Input</th>
+</tr>
+<tr>
+<td class="register">IX</td>
+<td class="register-desc">Percy sprite data pointer</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="bb1c"></span>
+<div class="comments">
+<div class="paragraph">
+Check if lives backup is non-zero; if so, clear the sprite overlay buffer and return early (used during life-lost sequence).
+</div>
 </div>
 </td>
 </tr>
 <tr>
+<td class="asm-label">Draw_Sprites</td>
 <td class="address-2"><span id="bb1c"></span>BB1C</td>
 <td class="instruction">LD IX,$DAC0</td>
-<td class="comment-1" rowspan="1"><span class="register">IX</span>=<a href="DAC0.html">Percy_X_Position</a>.</td>
+<td class="comment-1" rowspan="1">Point <span class="register">IX</span> at <a href="DAC0.html">Percy_X_Position</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bb20"></span>BB20</td>
 <td class="instruction">LD A,($5FBE)</td>
-<td class="comment-1" rowspan="3">Jump to <a href="BB1C.html#bb33">BB33</a> if *<a href="5FBE.html">Lives_Backup</a> is zero.</td>
+<td class="comment-1" rowspan="3">Jump to <a href="BB1C.html#bb33">Draw_3Wide_Sprites</a> if *<a href="5FBE.html">Lives_Backup</a> is zero.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bb23"></span>BB23</td>
 <td class="instruction">OR A</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bb24"></span>BB24</td>
-<td class="instruction">JR Z,<a href="BB1C.html#bb33">$BB33</a></td>
+<td class="instruction">JR Z,<a href="BB1C.html#bb33">Draw_3Wide_Sprites</a></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bb26"></span>BB26</td>
 <td class="instruction">LD HL,$F800</td>
-<td class="comment-1" rowspan="5">Copy 00 across 02BF bytes from <a href="F800.html">F800</a> onwards.</td>
+<td class="comment-1" rowspan="5">Clear 02BF bytes of the sprite overlay buffer from <a href="F800.html">OverlayBuffer</a> onwards.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bb29"></span>BB29</td>
 <td class="instruction">LD DE,$F801</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bb2c"></span>BB2C</td>
 <td class="instruction">LD (HL),L</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bb2d"></span>BB2D</td>
 <td class="instruction">LD BC,$02BF</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bb30"></span>BB30</td>
 <td class="instruction">LDIR</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bb32"></span>BB32</td>
 <td class="instruction">RET</td>
 <td class="comment-1" rowspan="1">Return.</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="bb33"></span>
+<div class="comments">
+<div class="paragraph">
+Main sprite drawing loop: draw up to 08 three-column-wide sprites.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Draw_3Wide_Sprites</td>
 <td class="address-2"><span id="bb33"></span>BB33</td>
 <td class="instruction">LD IX,$DAC0</td>
-<td class="comment-1" rowspan="1"><span class="register">IX</span>=<a href="DAC0.html">Percy_X_Position</a>.</td>
+<td class="comment-1" rowspan="1">Point <span class="register">IX</span> at <a href="DAC0.html">Percy_X_Position</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bb37"></span>BB37</td>
 <td class="instruction">LD A,$FF</td>
-<td class="comment-1" rowspan="2">Write FF to *<a href="FAC0.html">FAC0</a>.</td>
+<td class="comment-1" rowspan="2">Write a terminator byte (FF) to *<a href="F800.html#fac0">OverlayBuffer_End</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bb39"></span>BB39</td>
 <td class="instruction">LD ($FAC0),A</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bb3c"></span>BB3C</td>
 <td class="instruction">LD B,$08</td>
-<td class="comment-1" rowspan="1"><span class="register">B</span>=08.</td>
+<td class="comment-1" rowspan="1">Set the sprite counter to 08 in <span class="register">B</span>.</td>
 </tr>
 <tr>
+<td class="asm-label">Draw_3Wide_Loop</td>
 <td class="address-2"><span id="bb3e"></span>BB3E</td>
 <td class="instruction">PUSH BC</td>
-<td class="comment-1" rowspan="1">Stash <span class="register">BC</span> on the stack.</td>
+<td class="comment-1" rowspan="1">Stash the sprite counter on the stack.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bb3f"></span>BB3F</td>
 <td class="instruction">LD A,(IX+$01)</td>
-<td class="comment-1" rowspan="3">Jump to <a href="BB1C.html#bb4a">BB4A</a> if *<span class="register">IX</span>+01 is less than A1.</td>
+<td class="comment-1" rowspan="4">Clamp the Y position: if *<span class="register">IX</span>+01 is not less than A1 write A0 to *<span class="register">IX</span>+01.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bb42"></span>BB42</td>
 <td class="instruction">CP $A1</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bb44"></span>BB44</td>
-<td class="instruction">JR C,<a href="BB1C.html#bb4a">$BB4A</a></td>
+<td class="instruction">JR C,<a href="BB1C.html#bb4a">Draw_3Wide_TestActive</a></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bb46"></span>BB46</td>
 <td class="instruction">LD (IX+$01),$A0</td>
-<td class="comment-1" rowspan="1">Write A0 to *<span class="register">IX</span>+01.</td>
 </tr>
 <tr>
+<td class="asm-label">Draw_3Wide_TestActive</td>
 <td class="address-2"><span id="bb4a"></span>BB4A</td>
 <td class="instruction">LD A,(IX+$03)</td>
-<td class="comment-1" rowspan="3">Jump to <a href="BDA6.html#bde4">BDE4</a> if *<span class="register">IX</span>+03 is zero.</td>
+<td class="comment-1" rowspan="3">Jump to <a href="BDA6.html#bde4">BDE4</a> if the sprite is inactive (*<span class="register">IX</span>+03 which is frame ID is zero).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bb4d"></span>BB4D</td>
 <td class="instruction">OR A</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bb4e"></span>BB4E</td>
 <td class="instruction">JP Z,<a href="BDA6.html#bde4">$BDE4</a></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bb51"></span>BB51</td>
 <td class="instruction">CALL <a href="BC0E.html">CalculateScreenBufferAddress</a></td>
 <td class="comment-1" rowspan="1">Call <a href="BC0E.html">CalculateScreenBufferAddress</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bb54"></span>BB54</td>
 <td class="instruction">PUSH HL</td>
-<td class="comment-1" rowspan="1">Stash <span class="register">HL</span> on the stack.</td>
+<td class="comment-1" rowspan="1">Stash the screen address on the stack.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bb55"></span>BB55</td>
 <td class="instruction">CALL <a href="BD5E.html">DrawSpriteColumn</a></td>
 <td class="comment-1" rowspan="1">Call <a href="BD5E.html">DrawSpriteColumn</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bb58"></span>BB58</td>
 <td class="instruction">POP HL</td>
-<td class="comment-1" rowspan="1">Restore <span class="register">HL</span> from the stack.</td>
+<td class="comment-1" rowspan="1">Restore the screen address from the stack.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bb59"></span>BB59</td>
 <td class="instruction">CALL <a href="BC52.html">ApplySpriteAttributes3Wide</a></td>
 <td class="comment-1" rowspan="1">Call <a href="BC52.html">ApplySpriteAttributes3Wide</a>.</td>
@@ -179,619 +237,748 @@ This entry point is used by the routine at <a href="BDA6.html">BDA6</a>.
 </td>
 </tr>
 <tr>
+<td class="asm-label">Advance_To_Next_Sprite</td>
 <td class="address-2"><span id="bb5c"></span>BB5C</td>
 <td class="instruction">INC IX</td>
-<td class="comment-1" rowspan="4">Increment <span class="register">IX</span> by four.</td>
+<td class="comment-1" rowspan="4">Advance <span class="register">IX</span> to the next sprite entry (each entry is 04 bytes).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bb5e"></span>BB5E</td>
 <td class="instruction">INC IX</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bb60"></span>BB60</td>
 <td class="instruction">INC IX</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bb62"></span>BB62</td>
 <td class="instruction">INC IX</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bb64"></span>BB64</td>
 <td class="instruction">POP BC</td>
-<td class="comment-1" rowspan="1">Restore <span class="register">BC</span> from the stack.</td>
+<td class="comment-1" rowspan="1">Restore the sprite counter from the stack.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bb65"></span>BB65</td>
-<td class="instruction">DJNZ <a href="BB1C.html#bb3e">$BB3E</a></td>
-<td class="comment-1" rowspan="1">Decrease counter by one and loop back to <a href="BB1C.html#bb3e">BB3E</a> until counter is zero.</td>
+<td class="instruction">DJNZ <a href="BB1C.html#bb3e">Draw_3Wide_Loop</a></td>
+<td class="comment-1" rowspan="1">Decrease the sprite counter and loop back to <a href="BB1C.html#bb3e">Draw_3Wide_Loop</a> until all 08 three-wide sprites are processed.</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="bb67"></span>
+<div class="comments">
+<div class="paragraph">
+Draw up to 08 two-column-wide sprites.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Draw_2Wide_Sprites</td>
 <td class="address-1"><span id="bb67"></span>BB67</td>
 <td class="instruction">LD B,$08</td>
-<td class="comment-1" rowspan="1"><span class="register">B</span>=08.</td>
+<td class="comment-1" rowspan="1">Set the sprite counter to 08 in <span class="register">B</span>.</td>
 </tr>
 <tr>
+<td class="asm-label">Draw_2Wide_Loop</td>
 <td class="address-2"><span id="bb69"></span>BB69</td>
 <td class="instruction">PUSH BC</td>
-<td class="comment-1" rowspan="1">Stash <span class="register">BC</span> on the stack.</td>
+<td class="comment-1" rowspan="1">Stash the sprite counter on the stack.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bb6a"></span>BB6A</td>
 <td class="instruction">LD A,(IX+$01)</td>
-<td class="comment-1" rowspan="3">Jump to <a href="BB1C.html#bb75">BB75</a> if *<span class="register">IX</span>+01 is less than A9.</td>
+<td class="comment-1" rowspan="4">Clamp the Y position: if *<span class="register">IX</span>+01 is not less than A9 write A8 to *<span class="register">IX</span>+01.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bb6d"></span>BB6D</td>
 <td class="instruction">CP $A9</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bb6f"></span>BB6F</td>
-<td class="instruction">JR C,<a href="BB1C.html#bb75">$BB75</a></td>
+<td class="instruction">JR C,<a href="BB1C.html#bb75">Draw_Sprites_0</a></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bb71"></span>BB71</td>
 <td class="instruction">LD (IX+$01),$A8</td>
-<td class="comment-1" rowspan="1">Write A8 to *<span class="register">IX</span>+01.</td>
 </tr>
 <tr>
+<td class="asm-label">Draw_Sprites_0</td>
 <td class="address-2"><span id="bb75"></span>BB75</td>
 <td class="instruction">LD A,(IX+$03)</td>
-<td class="comment-1" rowspan="3">Jump to <a href="BB1C.html#bb86">BB86</a> if *<span class="register">IX</span>+03 is zero.</td>
+<td class="comment-1" rowspan="3">Jump to <a href="BB1C.html#bb86">Advance_To_Next_2Wide</a> if the sprite is inactive (*<span class="register">IX</span>+03 is zero).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bb78"></span>BB78</td>
 <td class="instruction">OR A</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bb79"></span>BB79</td>
-<td class="instruction">JR Z,<a href="BB1C.html#bb86">$BB86</a></td>
+<td class="instruction">JR Z,<a href="BB1C.html#bb86">Advance_To_Next_2Wide</a></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bb7b"></span>BB7B</td>
 <td class="instruction">CALL <a href="BC0E.html">CalculateScreenBufferAddress</a></td>
 <td class="comment-1" rowspan="1">Call <a href="BC0E.html">CalculateScreenBufferAddress</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bb7e"></span>BB7E</td>
 <td class="instruction">PUSH HL</td>
-<td class="comment-1" rowspan="1">Stash <span class="register">HL</span> on the stack.</td>
+<td class="comment-1" rowspan="1">Stash the screen address on the stack.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bb7f"></span>BB7F</td>
 <td class="instruction">CALL <a href="BDA6.html">$BDA6</a></td>
 <td class="comment-1" rowspan="1">Call <a href="BDA6.html">BDA6</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bb82"></span>BB82</td>
 <td class="instruction">POP HL</td>
-<td class="comment-1" rowspan="1">Restore <span class="register">HL</span> from the stack.</td>
+<td class="comment-1" rowspan="1">Restore the screen address from the stack.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bb83"></span>BB83</td>
 <td class="instruction">CALL <a href="BCF7.html">ApplySpriteAttributes2Wide</a></td>
 <td class="comment-1" rowspan="1">Call <a href="BCF7.html">ApplySpriteAttributes2Wide</a>.</td>
 </tr>
 <tr>
+<td class="asm-label">Advance_To_Next_2Wide</td>
 <td class="address-2"><span id="bb86"></span>BB86</td>
 <td class="instruction">INC IX</td>
-<td class="comment-1" rowspan="4">Increment <span class="register">IX</span> by four.</td>
+<td class="comment-1" rowspan="4">Advance <span class="register">IX</span> to the next sprite entry (each entry is 04 bytes).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bb88"></span>BB88</td>
 <td class="instruction">INC IX</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bb8a"></span>BB8A</td>
 <td class="instruction">INC IX</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bb8c"></span>BB8C</td>
 <td class="instruction">INC IX</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bb8e"></span>BB8E</td>
 <td class="instruction">POP BC</td>
-<td class="comment-1" rowspan="1">Restore <span class="register">BC</span> from the stack.</td>
+<td class="comment-1" rowspan="1">Restore the sprite counter from the stack.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bb8f"></span>BB8F</td>
-<td class="instruction">DJNZ <a href="BB1C.html#bb69">$BB69</a></td>
-<td class="comment-1" rowspan="1">Decrease counter by one and loop back to <a href="BB1C.html#bb69">BB69</a> until counter is zero.</td>
+<td class="instruction">DJNZ <a href="BB1C.html#bb69">Draw_2Wide_Loop</a></td>
+<td class="comment-1" rowspan="1">Decrease the sprite counter and loop back to <a href="BB1C.html#bb69">Draw_2Wide_Loop</a> until all 08 two-wide sprites are processed.</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="bb91"></span>
+<div class="comments">
+<div class="paragraph">
+Back up current sprite positions for the next frame's erase pass.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bb91"></span>BB91</td>
 <td class="instruction">LD HL,$DAC0</td>
-<td class="comment-1" rowspan="4">Copy 0040 bytes from *<a href="DAC0.html">Percy_X_Position</a> to <a href="DB00.html">PercyPreviousXPosition</a>.</td>
+<td class="comment-1" rowspan="4">Copy 40 bytes from <a href="DAC0.html">Percy_X_Position</a> to <a href="DB00.html">PercyPreviousXPosition</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bb94"></span>BB94</td>
 <td class="instruction">LD DE,$DB00</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bb97"></span>BB97</td>
 <td class="instruction">LD BC,$0040</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bb9a"></span>BB9A</td>
 <td class="instruction">LDIR</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="bb9c"></span>
+<div class="comments">
+<div class="paragraph">
+Scan the collision overlay buffer and merge sprite pixels onto the background. Each non-zero, non-FF byte in the buffer is a countdown; when it reaches zero the sprite pixel data is composited with the scenery.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bb9c"></span>BB9C</td>
 <td class="instruction">LD HL,$F7FF</td>
-<td class="comment-1" rowspan="1"><span class="register">HL</span>=F7FF.</td>
+<td class="comment-1" rowspan="1">Set <span class="register">HL</span> to F7FF (one byte before the overlay buffer).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bb9f"></span>BB9F</td>
 <td class="instruction">XOR A</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=00.</td>
+<td class="comment-1" rowspan="1">Set <span class="register">A</span> to 00.</td>
 </tr>
 <tr>
+<td class="asm-label">Collision_Scan_Loop</td>
 <td class="address-2"><span id="bba0"></span>BBA0</td>
 <td class="instruction">INC HL</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
+<td class="comment-1" rowspan="3">Increment <span class="register">HL</span> and jump back to <a href="BB1C.html#bba0">Collision_Scan_Loop</a> if *<span class="register">HL</span> is zero (skip empty cells).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bba1"></span>BBA1</td>
 <td class="instruction">OR (HL)</td>
-<td class="comment-1" rowspan="2">Jump to <a href="BB1C.html#bba0">BBA0</a> if *<span class="register">HL</span> is zero.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bba2"></span>BBA2</td>
-<td class="instruction">JP Z,<a href="BB1C.html#bba0">$BBA0</a></td>
+<td class="instruction">JP Z,<a href="BB1C.html#bba0">Collision_Scan_Loop</a></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bba5"></span>BBA5</td>
 <td class="instruction">CP $FF</td>
-<td class="comment-1" rowspan="2">Return if <span class="register">A</span> is equal to FF.</td>
+<td class="comment-1" rowspan="2">Return if the terminator (FF) is found indicating the end of the buffer.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bba7"></span>BBA7</td>
 <td class="instruction">RET Z</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bba8"></span>BBA8</td>
 <td class="instruction">DEC (HL)</td>
-<td class="comment-1" rowspan="1">Decrease *<span class="register">HL</span> by one.</td>
+<td class="comment-1" rowspan="1">Decrease the countdown at *<span class="register">HL</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bba9"></span>BBA9</td>
 <td class="instruction">CP $02</td>
-<td class="comment-1" rowspan="2">Jump to <a href="BB1C.html#bbbb">BBBB</a> if <span class="register">A</span> is equal to 02.</td>
+<td class="comment-1" rowspan="2">Jump to <a href="BB1C.html#bbbb">Merge_Sprite_Column</a> if the value was 02 (skip background restore).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbab"></span>BBAB</td>
-<td class="instruction">JP Z,<a href="BB1C.html#bbbb">$BBBB</a></td>
+<td class="instruction">JP Z,<a href="BB1C.html#bbbb">Merge_Sprite_Column</a></td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="bbae"></span>
+<div class="comments">
+<div class="paragraph">
+Restore the background pixel at this position from the scenery buffer.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbae"></span>BBAE</td>
 <td class="instruction">PUSH HL</td>
-<td class="comment-1" rowspan="1">Stash <span class="register">HL</span> on the stack.</td>
+<td class="comment-1" rowspan="1">Stash the overlay buffer pointer on the stack.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbaf"></span>BBAF</td>
 <td class="instruction">LD A,H</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=<span class="register">H</span>.</td>
+<td class="comment-1" rowspan="3">Calculate the scenery source address in <span class="register">DE</span> by subtracting 20 from the high byte of <span class="register">HL</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbb0"></span>BBB0</td>
 <td class="instruction">SUB $20</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>-=20.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbb2"></span>BBB2</td>
 <td class="instruction">LD D,A</td>
-<td class="comment-1" rowspan="1"><span class="register">D</span>=<span class="register">A</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbb3"></span>BBB3</td>
 <td class="instruction">LD E,L</td>
-<td class="comment-1" rowspan="1"><span class="register">E</span>=<span class="register">L</span>.</td>
+<td class="comment-1" rowspan="1">Copy the low byte across.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbb4"></span>BBB4</td>
 <td class="instruction">LD A,H</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=<span class="register">H</span>.</td>
+<td class="comment-1" rowspan="3">Calculate the screen destination address in <span class="register">HL</span> by subtracting A0 from the high byte.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbb5"></span>BBB5</td>
 <td class="instruction">SUB $A0</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>-=A0.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbb7"></span>BBB7</td>
 <td class="instruction">LD H,A</td>
-<td class="comment-1" rowspan="1"><span class="register">H</span>=<span class="register">A</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbb8"></span>BBB8</td>
 <td class="instruction">LD A,(DE)</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">DE</span>.</td>
+<td class="comment-1" rowspan="2">Copy the scenery byte from *<span class="register">DE</span> to the screen at *<span class="register">HL</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbb9"></span>BBB9</td>
 <td class="instruction">LD (HL),A</td>
-<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">HL</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbba"></span>BBBA</td>
 <td class="instruction">POP HL</td>
-<td class="comment-1" rowspan="1">Restore <span class="register">HL</span> from the stack.</td>
+<td class="comment-1" rowspan="1">Restore the overlay buffer pointer from the stack.</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="bbbb"></span>
+<div class="comments">
+<div class="paragraph">
+Merge the sprite column pixels with the background. Derives the sprite buffer, background and screen addresses from the overlay buffer pointer, then ORs sprite data onto the background for 08 pixel rows.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Merge_Sprite_Column</td>
 <td class="address-2"><span id="bbbb"></span>BBBB</td>
 <td class="instruction">PUSH HL</td>
-<td class="comment-1" rowspan="1">Stash <span class="register">HL</span> on the stack.</td>
+<td class="comment-1" rowspan="1">Stash the overlay buffer pointer on the stack.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbbc"></span>BBBC</td>
 <td class="instruction">LD A,H</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=<span class="register">H</span>.</td>
+<td class="comment-1" rowspan="5">Derive the attribute row from the overlay buffer address: mask the low two bits of the high byte, rotate left three times and set bits 6-7 to form the base screen address high byte.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbbd"></span>BBBD</td>
-<td class="instruction">AND %00000011</td>
-<td class="comment-1" rowspan="1">Keep only bits 0-1.</td>
+<td class="instruction">AND $03</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbbf"></span>BBBF</td>
 <td class="instruction">RLCA</td>
-<td class="comment-1" rowspan="3">RLCA three positions.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbc0"></span>BBC0</td>
 <td class="instruction">RLCA</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbc1"></span>BBC1</td>
 <td class="instruction">RLCA</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbc2"></span>BBC2</td>
-<td class="instruction">OR %11000000</td>
-<td class="comment-1" rowspan="1">Set bits 6-7.</td>
+<td class="instruction">OR $C0</td>
+<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbc4"></span>BBC4</td>
 <td class="instruction">LD H,A</td>
-<td class="comment-1" rowspan="1"><span class="register">H</span>=<span class="register">A</span>.</td>
+<td class="comment-1" rowspan="4">Set <span class="register">H</span>, <span class="register">B</span> (sprite source) and <span class="register">D</span> (screen destination) to this base. Set bit 5 of <span class="register">B</span> for the sprite buffer and reset bit 7 of <span class="register">D</span> for the screen buffer.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbc5"></span>BBC5</td>
 <td class="instruction">LD B,H</td>
-<td class="comment-1" rowspan="1"><span class="register">B</span>=<span class="register">H</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbc6"></span>BBC6</td>
 <td class="instruction">LD D,H</td>
-<td class="comment-1" rowspan="1"><span class="register">D</span>=<span class="register">H</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbc7"></span>BBC7</td>
 <td class="instruction">SET 5,B</td>
-<td class="comment-1" rowspan="1">Set bit 5 of <span class="register">B</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbc9"></span>BBC9</td>
 <td class="instruction">RES 7,D</td>
-<td class="comment-1" rowspan="1">Reset bit 7 of <span class="register">D</span>.</td>
+<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbcb"></span>BBCB</td>
 <td class="instruction">LD C,L</td>
-<td class="comment-1" rowspan="1"><span class="register">C</span>=<span class="register">L</span>.</td>
+<td class="comment-1" rowspan="2">Copy the low byte to <span class="register">C</span> and <span class="register">E</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbcc"></span>BBCC</td>
 <td class="instruction">LD E,L</td>
-<td class="comment-1" rowspan="1"><span class="register">E</span>=<span class="register">L</span>.</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="bbcd"></span>
+<div class="comments">
+<div class="paragraph">
+Merge eight pixel rows: OR the sprite data from *<span class="register">BC</span> onto the background at *<span class="register">HL</span>, write the result to screen at *<span class="register">DE</span>, then clear the sprite source byte.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbcd"></span>BBCD</td>
 <td class="instruction">LD A,(BC)</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">BC</span>.</td>
+<td class="comment-1" rowspan="5">Row 1: merge sprite with background, write to screen, clear sprite.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbce"></span>BBCE</td>
 <td class="instruction">OR (HL)</td>
-<td class="comment-1" rowspan="1">Set the bits from *<span class="register">HL</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbcf"></span>BBCF</td>
 <td class="instruction">LD (DE),A</td>
-<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">DE</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbd0"></span>BBD0</td>
 <td class="instruction">XOR A</td>
-<td class="comment-1" rowspan="2">Write 00 to *<span class="register">BC</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbd1"></span>BBD1</td>
 <td class="instruction">LD (BC),A</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbd2"></span>BBD2</td>
 <td class="instruction">INC B</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">B</span> by one.</td>
+<td class="comment-1" rowspan="8">Row 2: advance all row pointers and merge.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbd3"></span>BBD3</td>
 <td class="instruction">INC D</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">D</span> by one.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbd4"></span>BBD4</td>
 <td class="instruction">INC H</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">H</span> by one.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbd5"></span>BBD5</td>
 <td class="instruction">LD A,(BC)</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">BC</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbd6"></span>BBD6</td>
 <td class="instruction">OR (HL)</td>
-<td class="comment-1" rowspan="1">Set the bits from *<span class="register">HL</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbd7"></span>BBD7</td>
 <td class="instruction">LD (DE),A</td>
-<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">DE</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbd8"></span>BBD8</td>
 <td class="instruction">XOR A</td>
-<td class="comment-1" rowspan="2">Write 00 to *<span class="register">BC</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbd9"></span>BBD9</td>
 <td class="instruction">LD (BC),A</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbda"></span>BBDA</td>
 <td class="instruction">INC B</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">B</span> by one.</td>
+<td class="comment-1" rowspan="8">Row 3: advance all row pointers and merge.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbdb"></span>BBDB</td>
 <td class="instruction">INC D</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">D</span> by one.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbdc"></span>BBDC</td>
 <td class="instruction">INC H</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">H</span> by one.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbdd"></span>BBDD</td>
 <td class="instruction">LD A,(BC)</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">BC</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbde"></span>BBDE</td>
 <td class="instruction">OR (HL)</td>
-<td class="comment-1" rowspan="1">Set the bits from *<span class="register">HL</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbdf"></span>BBDF</td>
 <td class="instruction">LD (DE),A</td>
-<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">DE</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbe0"></span>BBE0</td>
 <td class="instruction">XOR A</td>
-<td class="comment-1" rowspan="2">Write 00 to *<span class="register">BC</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbe1"></span>BBE1</td>
 <td class="instruction">LD (BC),A</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbe2"></span>BBE2</td>
 <td class="instruction">INC B</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">B</span> by one.</td>
+<td class="comment-1" rowspan="8">Row 4: advance all row pointers and merge.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbe3"></span>BBE3</td>
 <td class="instruction">INC D</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">D</span> by one.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbe4"></span>BBE4</td>
 <td class="instruction">INC H</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">H</span> by one.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbe5"></span>BBE5</td>
 <td class="instruction">LD A,(BC)</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">BC</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbe6"></span>BBE6</td>
 <td class="instruction">OR (HL)</td>
-<td class="comment-1" rowspan="1">Set the bits from *<span class="register">HL</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbe7"></span>BBE7</td>
 <td class="instruction">LD (DE),A</td>
-<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">DE</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbe8"></span>BBE8</td>
 <td class="instruction">XOR A</td>
-<td class="comment-1" rowspan="2">00 to *<span class="register">BC</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbe9"></span>BBE9</td>
 <td class="instruction">LD (BC),A</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbea"></span>BBEA</td>
 <td class="instruction">INC B</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">B</span> by one.</td>
+<td class="comment-1" rowspan="8">Row 5: advance all row pointers and merge.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbeb"></span>BBEB</td>
 <td class="instruction">INC D</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">D</span> by one.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbec"></span>BBEC</td>
 <td class="instruction">INC H</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">H</span> by one.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbed"></span>BBED</td>
 <td class="instruction">LD A,(BC)</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">BC</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbee"></span>BBEE</td>
 <td class="instruction">OR (HL)</td>
-<td class="comment-1" rowspan="1">Set the bits from *<span class="register">HL</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbef"></span>BBEF</td>
 <td class="instruction">LD (DE),A</td>
-<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">DE</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbf0"></span>BBF0</td>
 <td class="instruction">XOR A</td>
-<td class="comment-1" rowspan="2">Write 00 to *<span class="register">BC</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbf1"></span>BBF1</td>
 <td class="instruction">LD (BC),A</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbf2"></span>BBF2</td>
 <td class="instruction">INC B</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">B</span> by one.</td>
+<td class="comment-1" rowspan="9">Row 6: advance all row pointers and merge.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbf3"></span>BBF3</td>
 <td class="instruction">INC D</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">D</span> by one.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbf4"></span>BBF4</td>
 <td class="instruction">INC H</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">H</span> by one.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbf5"></span>BBF5</td>
 <td class="instruction">LD A,(BC)</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">BC</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbf6"></span>BBF6</td>
 <td class="instruction">OR (HL)</td>
-<td class="comment-1" rowspan="1">Set the bits from *<span class="register">HL</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbf7"></span>BBF7</td>
 <td class="instruction">LD (DE),A</td>
-<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">DE</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbf8"></span>BBF8</td>
 <td class="instruction">XOR A</td>
-<td class="comment-1" rowspan="2">Write 00 to *<span class="register">BC</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbf9"></span>BBF9</td>
 <td class="instruction">LD (BC),A</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbfa"></span>BBFA</td>
 <td class="instruction">INC D</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">D</span> by one.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbfb"></span>BBFB</td>
 <td class="instruction">INC H</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">H</span> by one.</td>
+<td class="comment-1" rowspan="6">Row 7: advance all row pointers and merge.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbfc"></span>BBFC</td>
 <td class="instruction">INC B</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">B</span> by one.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbfd"></span>BBFD</td>
 <td class="instruction">LD A,(BC)</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">BC</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbfe"></span>BBFE</td>
 <td class="instruction">OR (HL)</td>
-<td class="comment-1" rowspan="1">Set the bits from *<span class="register">HL</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bbff"></span>BBFF</td>
 <td class="instruction">LD (DE),A</td>
-<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">DE</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bc00"></span>BC00</td>
 <td class="instruction">XOR A</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=00.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bc01"></span>BC01</td>
 <td class="instruction">LD (BC),A</td>
-<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">BC</span>.</td>
+<td class="comment-1" rowspan="9">Row 8: advance all row pointers, merge and clear sprite.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bc02"></span>BC02</td>
 <td class="instruction">INC B</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">B</span> by one.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bc03"></span>BC03</td>
 <td class="instruction">INC H</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">H</span> by one.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bc04"></span>BC04</td>
 <td class="instruction">INC D</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">D</span> by one.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bc05"></span>BC05</td>
 <td class="instruction">LD A,(BC)</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">BC</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bc06"></span>BC06</td>
 <td class="instruction">OR (HL)</td>
-<td class="comment-1" rowspan="1">Set the bits from *<span class="register">HL</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bc07"></span>BC07</td>
 <td class="instruction">LD (DE),A</td>
-<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">DE</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bc08"></span>BC08</td>
 <td class="instruction">XOR A</td>
-<td class="comment-1" rowspan="2">Write 00 to *<span class="register">BC</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bc09"></span>BC09</td>
 <td class="instruction">LD (BC),A</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bc0a"></span>BC0A</td>
 <td class="instruction">POP HL</td>
-<td class="comment-1" rowspan="1">Restore <span class="register">HL</span> from the stack.</td>
+<td class="comment-1" rowspan="1">Restore the overlay buffer pointer from the stack.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bc0b"></span>BC0B</td>
-<td class="instruction">JP <a href="BB1C.html#bba0">$BBA0</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="BB1C.html#bba0">BBA0</a>.</td>
+<td class="instruction">JP <a href="BB1C.html#bba0">Collision_Scan_Loop</a></td>
+<td class="comment-1" rowspan="1">Jump back to <a href="BB1C.html#bba0">Collision_Scan_Loop</a> to continue scanning.</td>
 </tr>
 </table>
 <table class="asm-navigation">

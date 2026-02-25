@@ -767,7 +767,7 @@ Read Q-T row for left (Q, bit 0) and right (W, bit 1).
 <span id="60a8"></span>
 <div class="comments">
 <div class="paragraph">
-Handle Percy's egg drop state. If *<a href="5FA9.html">EggDropState</a> is set, Percy has dropped an egg and it is currently in flight.
+Handle Percy's egg drop state. If *<a href="5FA9.html">EggDropFlag</a> is set, Percy has dropped an egg and it is currently in flight.
 </div>
 </div>
 </td>
@@ -776,7 +776,7 @@ Handle Percy's egg drop state. If *<a href="5FA9.html">EggDropState</a> is set, 
 <td class="asm-label">MainGameLoop_HandleEggDrop</td>
 <td class="address-2"><span id="60a8"></span>60A8</td>
 <td class="instruction">LD A,($5FA9)</td>
-<td class="comment-1" rowspan="3">Jump to <a href="5FE9.html#60d9">MainGameLoop_TestFirePressed</a> if *<a href="5FA9.html">EggDropState</a> is unset (no egg active).</td>
+<td class="comment-1" rowspan="3">Jump to <a href="5FE9.html#60d9">MainGameLoop_TestFirePressed</a> if *<a href="5FA9.html">EggDropFlag</a> is unset (no egg active).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -793,7 +793,7 @@ Handle Percy's egg drop state. If *<a href="5FA9.html">EggDropState</a> is set, 
 <span id="60ae"></span>
 <div class="comments">
 <div class="paragraph">
-Egg is in flight — advance its Y position.
+Egg is in flight so advance its Y position.
 </div>
 </div>
 </td>
@@ -827,7 +827,7 @@ Egg is in flight — advance its Y position.
 <span id="60b7"></span>
 <div class="comments">
 <div class="paragraph">
-Egg has reached its target — end the egg drop state.
+Egg has reached its target so end the egg drop state.
 </div>
 </div>
 </td>
@@ -842,7 +842,7 @@ Egg has reached its target — end the egg drop state.
 <td class="asm-label"></td>
 <td class="address-1"><span id="60bb"></span>60BB</td>
 <td class="instruction">XOR A</td>
-<td class="comment-1" rowspan="2">Write 00 to *<a href="5FA9.html">EggDropState</a> (egg drop complete).</td>
+<td class="comment-1" rowspan="2">Write 00 to *<a href="5FA9.html">EggDropFlag</a> (egg drop complete).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -997,7 +997,7 @@ Percy must be below Y position 84 to drop an egg.
 <span id="60ed"></span>
 <div class="comments">
 <div class="paragraph">
-Start the egg drop sequence — set the egg's target position and activate the egg state.
+Start the egg drop sequence and set the egg's target position/ activate the egg state.
 </div>
 </div>
 </td>
@@ -1017,8 +1017,8 @@ Start the egg drop sequence — set the egg's target position and activate the e
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="60f0"></span>60F0</td>
-<td class="instruction">CALL <a href="679C.html">CollectItem</a></td>
-<td class="comment-1" rowspan="1">Call <a href="679C.html">CollectItem</a>.</td>
+<td class="instruction">CALL <a href="679C.html">DropWorm</a></td>
+<td class="comment-1" rowspan="1">Call <a href="679C.html">DropWorm</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -1066,7 +1066,7 @@ Start the egg drop sequence — set the egg's target position and activate the e
 <td class="asm-label"></td>
 <td class="address-1"><span id="6105"></span>6105</td>
 <td class="instruction">LD ($5FA9),A</td>
-<td class="comment-1" rowspan="1">Write FF to *<a href="5FA9.html">EggDropState</a> (egg drop in progress).</td>
+<td class="comment-1" rowspan="1">Write FF to *<a href="5FA9.html">EggDropFlag</a> (egg drop in progress).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -1278,7 +1278,7 @@ If Percy has fallen below Y position 8D lose a life.
 <td class="asm-label"></td>
 <td class="address-1"><span id="614b"></span>614B</td>
 <td class="instruction">CP $8D</td>
-<td class="comment-1" rowspan="2">Jump to <a href="68B8.html">Handle_Life_Lost</a> if Percy has fallen off the screen (Percy's Y position is greater than 8D).</td>
+<td class="comment-1" rowspan="2">Jump to <a href="68B8.html">Handle_Level_Complete</a> if Percy has fallen off the screen (Percy's Y position is greater than 8D).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>

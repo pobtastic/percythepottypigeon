@@ -33,22 +33,25 @@ Next: <a href="26871.html">26871</a>
 </td>
 </tr>
 </table>
-<div class="description">26808: Handle Life Lost</div>
+<div class="description">26808: Handle Level Complete</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
 <div class="details">
 <div class="paragraph">
-Used by the routine at <a href="26155.html">Compute_Sprite_Position</a>.
+Used by the routine at <a href="26337.html">Position_Worm_In_Beak</a>.
+</div>
+<div class="paragraph">
+Called after a worm is delivered to check if all worms have been collected. Decrements the worms remaining counter and if zero, plays a completion jingle, advances to the next room and sets up the new level.
 </div>
 </div>
 </td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Life_Lost</td>
+<td class="asm-label">Handle_Level_Complete</td>
 <td class="address-2"><span id="26808"></span>26808</td>
 <td class="instruction">LD HL,24498</td>
-<td class="comment-1" rowspan="2">Decrease *<a href="24498.html">LivesRemaining</a> by one.</td>
+<td class="comment-1" rowspan="2">Decrease *<a href="24498.html">WormsRemaining</a> by one.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -59,7 +62,7 @@ Used by the routine at <a href="26155.html">Compute_Sprite_Position</a>.
 <td class="asm-label"></td>
 <td class="address-1"><span id="26812"></span>26812</td>
 <td class="instruction">RET NZ</td>
-<td class="comment-1" rowspan="1">Return if *<span class="register">HL</span> is not equal to 0.</td>
+<td class="comment-1" rowspan="1">Return if the worms remaining counter is not zero.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -83,29 +86,29 @@ Used by the routine at <a href="26155.html">Compute_Sprite_Position</a>.
 <td class="asm-label"></td>
 <td class="address-1"><span id="26820"></span>26820</td>
 <td class="instruction">LD DE,8</td>
-<td class="comment-1" rowspan="1"><span class="register">DE</span>=0008 (pitch step per iteration).</td>
+<td class="comment-1" rowspan="1"><span class="register">DE</span>=8 (pitch step per iteration).</td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
 <span id="26823"></span>
 <div class="comments">
 <div class="paragraph">
-Play one step of the death sound.
+Play the level complete sound effect.
 </div>
 </div>
 </td>
 </tr>
 <tr>
-<td class="asm-label">HandleLifeLost_SoundLoop</td>
+<td class="asm-label">Level_Complete_Sound_Loop</td>
 <td class="address-2"><span id="26823"></span>26823</td>
-<td class="instruction">CALL <a href="26939.html">DeathSoundStep</a></td>
-<td class="comment-1" rowspan="1">Call <a href="26939.html">DeathSoundStep</a>.</td>
+<td class="instruction">CALL <a href="26939.html">LevelCompleteSoundStep</a></td>
+<td class="comment-1" rowspan="1">Call <a href="26939.html">LevelCompleteSoundStep</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26826"></span>26826</td>
-<td class="instruction">DJNZ <a href="26808.html#26823">HandleLifeLost_SoundLoop</a></td>
-<td class="comment-1" rowspan="1">Decrease the step counter by one and loop back to <a href="26808.html#26823">HandleLifeLost_SoundLoop</a> until the sound is complete.</td>
+<td class="instruction">DJNZ <a href="26808.html#26823">Level_Complete_Sound_Loop</a></td>
+<td class="comment-1" rowspan="1">Decrease the step counter by one and loop back to <a href="26808.html#26823">Level_Complete_Sound_Loop</a> until the sound is complete.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -146,26 +149,36 @@ Play one step of the death sound.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26842"></span>26842</td>
-<td class="instruction">CALL <a href="26871.html">UpdateLivesDisplay</a></td>
-<td class="comment-1" rowspan="1">Call <a href="26871.html">UpdateLivesDisplay</a>.</td>
+<td class="instruction">CALL <a href="26871.html">SetUp_NextLevel</a></td>
+<td class="comment-1" rowspan="1">Call <a href="26871.html">SetUp_NextLevel</a>.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="26845"></span>
+<div class="comments">
+<div class="paragraph">
+Locate the level splash screen.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26845"></span>26845</td>
 <td class="instruction">LD A,(24497)</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="24497.html">CurrentLevel</a>.</td>
+<td class="comment-1" rowspan="1">Fetch the current level from *<a href="24497.html">CurrentLevel</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26848"></span>26848</td>
 <td class="instruction">ADD A,11</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>+=11.</td>
+<td class="comment-1" rowspan="1">Add 11 (the total number of rooms) to calculate the pointer to the level splash screen.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26850"></span>26850</td>
 <td class="instruction">LD (24517),A</td>
-<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<a href="24517.html">CurrentRoom</a>.</td>
+<td class="comment-1" rowspan="1">Write the result to *<a href="24517.html">CurrentRoom</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -189,7 +202,7 @@ Play one step of the death sound.
 <td class="asm-label"></td>
 <td class="address-1"><span id="26856"></span>26856</td>
 <td class="instruction">LD HL,64505</td>
-<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="64249.html#64505">Audio_LoseLifeJingle</a>.</td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="64249.html#64505">Audio_LevelCompleteJingle</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>

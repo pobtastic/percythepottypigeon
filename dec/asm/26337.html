@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Percy the Potty Pigeon: Routine at 26337</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-dark.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-wide.css" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-75RERFCHBG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-75RERFCHBG');
+</script>
+</head>
+<body class="Asm-c">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html"><img alt="logo" src="../images/logo.png" /></a></td>
+<td class="page-header">Routines</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="26280.html">26280</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#26337">Map</a></td>
+<td class="next">
+Next: <a href="26524.html">26524</a>
+</td>
+</tr>
+</table>
+<div class="description">26337: Percy Carrying Worm</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="5">
+<div class="details">
+<div class="paragraph">
+Used by the routine at <a href="26155.html">Handle_Worms</a>.
+</div>
+<div class="paragraph">
+After scanning all entries, check if Percy is carrying a worm and handle the worm-in-beak sprite positioning.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Position_Worm_In_Beak</td>
+<td class="address-2"><span id="26337"></span>26337</td>
+<td class="instruction">LD A,(24490)</td>
+<td class="comment-1" rowspan="3">Return if *<a href="24490.html">CarryingWormFlag</a> (worm carrying flag) is zero.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26340"></span>26340</td>
+<td class="instruction">OR A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26341"></span>26341</td>
+<td class="instruction">RET Z</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26342"></span>26342</td>
+<td class="instruction">LD A,(IX+1)</td>
+<td class="comment-1" rowspan="3">Jump to <a href="26337.html#26356">Update_Worm_In_Beak</a> if Percy's Y position is less than 143.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26345"></span>26345</td>
+<td class="instruction">CP 143</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26347"></span>26347</td>
+<td class="instruction">JR C,<a href="26337.html#26356">Update_Worm_In_Beak</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26349"></span>26349</td>
+<td class="instruction">LD A,(24492)</td>
+<td class="comment-1" rowspan="3">Jump to <a href="27127.html#27159">27159</a> if *<a href="24492.html">24492</a> (worm drop flag) is non-zero (worm is being dropped to a chick).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26352"></span>26352</td>
+<td class="instruction">OR A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26353"></span>26353</td>
+<td class="instruction">JP NZ,<a href="26524.html">DropWorm</a></td>
+</tr>
+<tr>
+<td class="asm-label">Update_Worm_In_Beak</td>
+<td class="address-2"><span id="26356"></span>26356</td>
+<td class="instruction">LD A,(IX+1)</td>
+<td class="comment-1" rowspan="3">Jump to <a href="26337.html#26368">Set_Worm_Sprite_X</a> if Percy's Y position is not less than 141.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26359"></span>26359</td>
+<td class="instruction">CP 141</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26361"></span>26361</td>
+<td class="instruction">JR NC,<a href="26337.html#26368">Set_Worm_Sprite_X</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26363"></span>26363</td>
+<td class="instruction">OR 255</td>
+<td class="comment-1" rowspan="2">Set *<a href="24492.html">24492</a> to 255 (enable worm drop).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26365"></span>26365</td>
+<td class="instruction">LD (24492),A</td>
+</tr>
+<tr>
+<td class="asm-label">Set_Worm_Sprite_X</td>
+<td class="address-2"><span id="26368"></span>26368</td>
+<td class="instruction">LD A,(24485)</td>
+<td class="comment-1" rowspan="5">Calculate the worm-in-beak X position: if *<a href="24485.html">PercyFacingDirection</a> (facing direction) is zero (facing right), add 12 to Percy's X, otherwise add 251 (offset left).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26371"></span>26371</td>
+<td class="instruction">OR A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26372"></span>26372</td>
+<td class="instruction">JR NZ,<a href="26337.html#26378">Position_Worm_In_Beak_0</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26374"></span>26374</td>
+<td class="instruction">ADD A,12</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26376"></span>26376</td>
+<td class="instruction">JR <a href="26337.html#26380">Position_Worm_In_Beak_1</a></td>
+</tr>
+<tr>
+<td class="asm-label">Position_Worm_In_Beak_0</td>
+<td class="address-2"><span id="26378"></span>26378</td>
+<td class="instruction">LD A,251</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label">Position_Worm_In_Beak_1</td>
+<td class="address-2"><span id="26380"></span>26380</td>
+<td class="instruction">ADD A,(IX+0)</td>
+<td class="comment-1" rowspan="1">Add the offset to Percy's X position.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26383"></span>26383</td>
+<td class="instruction">LD (IX+32),A</td>
+<td class="comment-1" rowspan="1">Write the result to *<span class="register">IX</span>+32 (worm sprite X position).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26386"></span>26386</td>
+<td class="instruction">LD A,(IX+1)</td>
+<td class="comment-1" rowspan="2">Set the worm sprite Y position to Percy's Y plus 4.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26389"></span>26389</td>
+<td class="instruction">ADD A,4</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26391"></span>26391</td>
+<td class="instruction">LD (IX+33),A</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26394"></span>26394</td>
+<td class="instruction">LD C,13</td>
+<td class="comment-1" rowspan="6">Set the worm sprite frame: start with 13 rotate *<a href="24500.html">ChickAnimationStates</a> and if carry is not set, increment to 14 for the alternate wiggle frame.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26396"></span>26396</td>
+<td class="instruction">LD A,(24500)</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26399"></span>26399</td>
+<td class="instruction">RRCA</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26400"></span>26400</td>
+<td class="instruction">LD (24500),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26403"></span>26403</td>
+<td class="instruction">JR C,<a href="26337.html#26406">Set_Worm_Sprite_Frame</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26405"></span>26405</td>
+<td class="instruction">INC C</td>
+</tr>
+<tr>
+<td class="asm-label">Set_Worm_Sprite_Frame</td>
+<td class="address-2"><span id="26406"></span>26406</td>
+<td class="instruction">LD (IX+35),C</td>
+<td class="comment-1" rowspan="1">Write the worm sprite frame index to *<span class="register">IX</span>+35.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26409"></span>26409</td>
+<td class="instruction">LD A,(24493)</td>
+<td class="comment-1" rowspan="3">Jump to <a href="26337.html#26422">Adjust_Worm_Y_Up</a> if *<a href="24493.html">LandedOnPlatformFlag</a> (worm Y adjustment flag) is non-zero.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26412"></span>26412</td>
+<td class="instruction">OR A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26413"></span>26413</td>
+<td class="instruction">JR NZ,<a href="26337.html#26422">Adjust_Worm_Y_Up</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26415"></span>26415</td>
+<td class="instruction">LD A,(IX+1)</td>
+<td class="comment-1" rowspan="3">Jump to <a href="26337.html#26430">Check_Nest_Delivery</a> if Percy's Y position is not less than 144.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26418"></span>26418</td>
+<td class="instruction">CP 144</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26420"></span>26420</td>
+<td class="instruction">JR C,<a href="26337.html#26430">Check_Nest_Delivery</a></td>
+</tr>
+<tr>
+<td class="asm-label">Adjust_Worm_Y_Up</td>
+<td class="address-2"><span id="26422"></span>26422</td>
+<td class="instruction">LD A,(IX+33)</td>
+<td class="comment-1" rowspan="3">Subtract 4 from the worm Y position to adjust it upward.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26425"></span>26425</td>
+<td class="instruction">SUB 4</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26427"></span>26427</td>
+<td class="instruction">LD (IX+33),A</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="26430"></span>
+<div class="comments">
+<div class="paragraph">
+Check if Percy is at the nest to deliver the worm to the baby chicks (only on level 6).
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Check_Nest_Delivery</td>
+<td class="address-2"><span id="26430"></span>26430</td>
+<td class="instruction">LD A,(24517)</td>
+<td class="comment-1" rowspan="3">Return if *<a href="24517.html">CurrentRoom</a> (current level) is not equal to 6.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26433"></span>26433</td>
+<td class="instruction">CP 6</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26435"></span>26435</td>
+<td class="instruction">RET NZ</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26436"></span>26436</td>
+<td class="instruction">LD A,(IX+1)</td>
+<td class="comment-1" rowspan="3">Return if Percy's Y position is less than 17.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26439"></span>26439</td>
+<td class="instruction">CP 17</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26441"></span>26441</td>
+<td class="instruction">RET C</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26442"></span>26442</td>
+<td class="instruction">CP 33</td>
+<td class="comment-1" rowspan="2">Return if Percy's Y position is 33 or more.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26444"></span>26444</td>
+<td class="instruction">RET NC</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26445"></span>26445</td>
+<td class="instruction">LD A,(IX+0)</td>
+<td class="comment-1" rowspan="3">Return if Percy's X position is 107 or more.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26448"></span>26448</td>
+<td class="instruction">CP 107</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26450"></span>26450</td>
+<td class="instruction">RET NC</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26451"></span>26451</td>
+<td class="instruction">LD A,(24485)</td>
+<td class="comment-1" rowspan="3">Return if *<a href="24485.html">PercyFacingDirection</a> (facing direction) is zero (Percy must be facing left).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26454"></span>26454</td>
+<td class="instruction">OR A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26455"></span>26455</td>
+<td class="instruction">RET Z</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="26456"></span>
+<div class="comments">
+<div class="paragraph">
+Scan the room attribute data for a collected worm marker to convert into a nest delivery.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26456"></span>26456</td>
+<td class="instruction">LD BC,352</td>
+<td class="comment-1" rowspan="1">Set the search counter to 352 in <span class="register">BC</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26459"></span>26459</td>
+<td class="instruction">LD HL,56990</td>
+<td class="comment-1" rowspan="1">Point <span class="register">HL</span> at <a href="56990.html">RoomAttribute_Data</a>.</td>
+</tr>
+<tr>
+<td class="asm-label">Search_Nest_Slot_Loop</td>
+<td class="address-2"><span id="26462"></span>26462</td>
+<td class="instruction">LD A,30</td>
+<td class="comment-1" rowspan="3">Jump to <a href="26337.html#26474">Deliver_Worm_To_Nest</a> if *<span class="register">HL</span> equals 30 (found a collected worm marker to convert).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26464"></span>26464</td>
+<td class="instruction">CP (HL)</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26465"></span>26465</td>
+<td class="instruction">JR Z,<a href="26337.html#26474">Deliver_Worm_To_Nest</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26467"></span>26467</td>
+<td class="instruction">INC HL</td>
+<td class="comment-1" rowspan="5">Otherwise advance and loop back to <a href="26337.html#26462">Search_Nest_Slot_Loop</a>, decrementing <span class="register">BC</span> until zero.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26468"></span>26468</td>
+<td class="instruction">DEC BC</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26469"></span>26469</td>
+<td class="instruction">LD A,C</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26470"></span>26470</td>
+<td class="instruction">OR B</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26471"></span>26471</td>
+<td class="instruction">JR NZ,<a href="26337.html#26462">Search_Nest_Slot_Loop</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26473"></span>26473</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return (no available slot found).</td>
+</tr>
+<tr>
+<td class="asm-label">Deliver_Worm_To_Nest</td>
+<td class="address-2"><span id="26474"></span>26474</td>
+<td class="instruction">LD (HL),0</td>
+<td class="comment-1" rowspan="3">Write 0 then 31 to convert the collected marker into a delivered/disabled entry.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26476"></span>26476</td>
+<td class="instruction">INC HL</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26477"></span>26477</td>
+<td class="instruction">LD (HL),31</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26479"></span>26479</td>
+<td class="instruction">XOR A</td>
+<td class="comment-1" rowspan="2">Deactivate the worm-in-beak sprite by writing 0 to *<span class="register">IX</span>+35.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26480"></span>26480</td>
+<td class="instruction">LD (IX+35),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26483"></span>26483</td>
+<td class="instruction">LD A,200</td>
+<td class="comment-1" rowspan="2">Call <a href="27127.html#27270">27270</a> with <span class="register">A</span>=200 to add 200 to the score.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26485"></span>26485</td>
+<td class="instruction">CALL <a href="26546.html">AddToScore</a></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="26488"></span>
+<div class="comments">
+<div class="paragraph">
+Play a delivery sound effect.
+</div>
+<div class="paragraph">
+<audio controls="" src="../../audio/fed-chicks.wav">
+<p>Your browser doesn't support HTML5 audio. Here is a <a href="../../audio/fed-chicks.wav">link to the audio</a> instead.</p>
+</audio>
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26488"></span>26488</td>
+<td class="instruction">LD E,50</td>
+<td class="comment-1" rowspan="1">Set the sound duration in <span class="register">E</span> to 50.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26490"></span>26490</td>
+<td class="instruction">LD A,1</td>
+<td class="comment-1" rowspan="1">Set the initial speaker state to 1.</td>
+</tr>
+<tr>
+<td class="asm-label">Delivery_Sound_Outer</td>
+<td class="address-2"><span id="26492"></span>26492</td>
+<td class="instruction">LD B,E</td>
+<td class="comment-1" rowspan="1">Copy duration to <span class="register">B</span>.</td>
+</tr>
+<tr>
+<td class="asm-label">Delivery_Sound_Inner</td>
+<td class="address-2"><span id="26493"></span>26493</td>
+<td class="instruction">OUT (254),A</td>
+<td class="comment-1" rowspan="1">Output the speaker state to port 254.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26495"></span>26495</td>
+<td class="instruction">DJNZ <a href="26337.html#26493">Delivery_Sound_Inner</a></td>
+<td class="comment-1" rowspan="1">Loop the inner delay for <span class="register">B</span> iterations.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26497"></span>26497</td>
+<td class="instruction">EX AF,AF'</td>
+<td class="comment-1" rowspan="7">Toggle the speaker bit pattern using XOR 24 mixed with duration bits for a warbling effect.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26498"></span>26498</td>
+<td class="instruction">LD A,E</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26499"></span>26499</td>
+<td class="instruction">AND 24</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26501"></span>26501</td>
+<td class="instruction">LD D,A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26502"></span>26502</td>
+<td class="instruction">EX AF,AF'</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26503"></span>26503</td>
+<td class="instruction">XOR 24</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26505"></span>26505</td>
+<td class="instruction">OR D</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26506"></span>26506</td>
+<td class="instruction">INC E</td>
+<td class="comment-1" rowspan="3">Advance the frequency and loop back to <a href="26337.html#26492">Delivery_Sound_Outer</a> until <span class="register">E</span> wraps to zero.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26507"></span>26507</td>
+<td class="instruction">INC E</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26508"></span>26508</td>
+<td class="instruction">JR NZ,<a href="26337.html#26492">Delivery_Sound_Outer</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26510"></span>26510</td>
+<td class="instruction">CALL <a href="26808.html">Handle_Level_Complete</a></td>
+<td class="comment-1" rowspan="1">Call <a href="26808.html">Handle_Level_Complete</a>.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="26513"></span>
+<div class="comments">
+<div class="paragraph">
+This entry point is used by the routines at <a href="25831.html">LoseLife</a> and <a href="26524.html">DropWorm</a>.
+</div>
+<div class="paragraph">
+Reset the worm-carrying state.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Reset_Worm_State</td>
+<td class="address-2"><span id="26513"></span>26513</td>
+<td class="instruction">XOR A</td>
+<td class="comment-1" rowspan="4">Write 0 to *<a href="24490.html">CarryingWormFlag</a>, *<a href="24492.html">24492</a> and *<span class="register">IX</span>+35 to clear the worm carrying flag, worm drop flag and worm-in-beak sprite frame.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26514"></span>26514</td>
+<td class="instruction">LD (24490),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26517"></span>26517</td>
+<td class="instruction">LD (24492),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26520"></span>26520</td>
+<td class="instruction">LD (IX+35),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="26523"></span>26523</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="26280.html">26280</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#26337">Map</a></td>
+<td class="next">
+Next: <a href="26524.html">26524</a>
+</td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
+<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
+<div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
+<div><a href="../../asm/66E1.html">Switch to hexadecimal</a>.</div>
+</footer>
+</body>
+</html>

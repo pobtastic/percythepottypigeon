@@ -33,13 +33,13 @@ Next: <a href="26977.html">26977</a>
 </td>
 </tr>
 </table>
-<div class="description">26939: Death Sound Step</div>
+<div class="description">26939: Level Complete Sound Step</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
 <div class="details">
 <div class="paragraph">
-Used by the routine at <a href="26808.html">Handle_Life_Lost</a>.
+Used by the routine at <a href="26808.html">Handle_Level_Complete</a>.
 </div>
 </div>
 <table class="input">
@@ -62,7 +62,7 @@ Used by the routine at <a href="26808.html">Handle_Life_Lost</a>.
 </td>
 </tr>
 <tr>
-<td class="asm-label">DeathSoundStep</td>
+<td class="asm-label">LevelCompleteSoundStep</td>
 <td class="address-2"><span id="26939"></span>26939</td>
 <td class="instruction">PUSH BC</td>
 <td class="comment-1" rowspan="3">Stash the step counter, pitch and pitch adjustment on the stack.</td>
@@ -78,26 +78,15 @@ Used by the routine at <a href="26808.html">Handle_Life_Lost</a>.
 <td class="instruction">PUSH DE</td>
 </tr>
 <tr>
-<td class="routine-comment" colspan="5">
-<span id="26942"></span>
-<div class="comments">
-<div class="paragraph">
-Add 25 to the score during the death sequence.
-</div>
-</div>
-</td>
-</tr>
-<tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26942"></span>26942</td>
 <td class="instruction">LD A,25</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=25.</td>
+<td class="comment-1" rowspan="2">Call <a href="26546.html">AddToScore</a> to add 25 points to the score.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26944"></span>26944</td>
 <td class="instruction">CALL <a href="26546.html">AddToScore</a></td>
-<td class="comment-1" rowspan="1">Call <a href="26546.html">AddToScore</a>.</td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">

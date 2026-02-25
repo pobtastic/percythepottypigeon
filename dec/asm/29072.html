@@ -58,7 +58,7 @@ Return if an egg isn't being dropped at this point.
 <td class="asm-label">HandlerFrog01_CheckEggCollision</td>
 <td class="address-2"><span id="29072"></span>29072</td>
 <td class="instruction">LD A,(24489)</td>
-<td class="comment-1" rowspan="3">Return if *<a href="24489.html">EggDropState</a> is unset.</td>
+<td class="comment-1" rowspan="3">Return if *<a href="24489.html">EggDropFlag</a> is unset.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -96,7 +96,7 @@ Check the first frog.
 <td class="asm-label"></td>
 <td class="address-1"><span id="29084"></span>29084</td>
 <td class="instruction">LD IX,56008</td>
-<td class="comment-1" rowspan="1"><span class="register">IX</span>=<a href="56008.html">Sprite02_X_Position</a>.</td>
+<td class="comment-1" rowspan="1"><span class="register">IX</span>=<a href="56008.html">Sprite02_3Wide_X_Position</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -141,7 +141,7 @@ Item hit the first frog.
 <span id="29097"></span>
 <div class="comments">
 <div class="paragraph">
-Stun the frog — set a random stun timer and award points.
+Stun the frog and set a random stun timer/ award points.
 </div>
 </div>
 </td>
@@ -178,8 +178,8 @@ Stun the frog — set a random stun timer and award points.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29107"></span>29107</td>
-<td class="instruction">CALL <a href="28253.html#28538">28538</a></td>
-<td class="comment-1" rowspan="1">Call <a href="28253.html#28538">28538</a>.</td>
+<td class="instruction">CALL <a href="28500.html#28538">PlayHitSound</a></td>
+<td class="comment-1" rowspan="1">Call <a href="28500.html#28538">PlayHitSound</a>.</td>
 </tr>
 <tr>
 <td class="asm-label">HandlerEggCollision_Destroy01</td>
@@ -227,7 +227,7 @@ Check the second frog.
 <td class="asm-label"></td>
 <td class="address-1"><span id="29119"></span>29119</td>
 <td class="instruction">LD IX,56012</td>
-<td class="comment-1" rowspan="1"><span class="register">IX</span>=<a href="56012.html">Sprite03_X_Position</a>.</td>
+<td class="comment-1" rowspan="1"><span class="register">IX</span>=<a href="56012.html">Sprite03_3Wide_X_Position</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -327,8 +327,8 @@ Stun the second frog and award points.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29149"></span>29149</td>
-<td class="instruction">CALL <a href="28253.html#28538">28538</a></td>
-<td class="comment-1" rowspan="1">Call <a href="28253.html#28538">28538</a>.</td>
+<td class="instruction">CALL <a href="28500.html#28538">PlayHitSound</a></td>
+<td class="comment-1" rowspan="1">Call <a href="28500.html#28538">PlayHitSound</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>

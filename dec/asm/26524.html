@@ -25,7 +25,7 @@ gtag('config', 'G-75RERFCHBG');
 <table class="asm-navigation">
 <tr>
 <td class="prev">
-Prev: <a href="26155.html">26155</a>
+Prev: <a href="26337.html">26337</a>
 </td>
 <td class="up">Up: <a href="../maps/all.html#26524">Map</a></td>
 <td class="next">
@@ -33,19 +33,25 @@ Next: <a href="26546.html">26546</a>
 </td>
 </tr>
 </table>
-<div class="description">26524: Collect Item?</div>
+<div class="description">26524: Drop Worm</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
 <div class="details">
 <div class="paragraph">
-Used by the routines at <a href="24553.html">MainGameLoop</a>, <a href="26155.html">Compute_Sprite_Position</a> and <a href="27127.html">Handler_RedBird</a>.
+Used by the routines at <a href="24553.html">MainGameLoop</a>, <a href="26337.html">Position_Worm_In_Beak</a> and <a href="27127.html">Handler_RedBird</a>.
+</div>
+<div class="paragraph">
+Drops the worm Percy is carrying.
+</div>
+<div class="paragraph">
+The worm will reappear when the room is next redrawn.
 </div>
 </div>
 </td>
 </tr>
 <tr>
-<td class="asm-label">CollectItem</td>
+<td class="asm-label">DropWorm</td>
 <td class="address-2"><span id="26524"></span>26524</td>
 <td class="instruction">LD BC,352</td>
 <td class="comment-1" rowspan="1"><span class="register">BC</span>=352 (number of attribute cells to search).</td>
@@ -54,24 +60,24 @@ Used by the routines at <a href="24553.html">MainGameLoop</a>, <a href="26155.ht
 <td class="asm-label"></td>
 <td class="address-1"><span id="26527"></span>26527</td>
 <td class="instruction">LD HL,56990</td>
-<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="56990.html">56990</a>.</td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="56990.html">RoomAttribute_Data</a>.</td>
 </tr>
 <tr>
-<td class="asm-label">CollectItem_SearchLoop</td>
+<td class="asm-label">DropWorm_SearchLoop</td>
 <td class="address-2"><span id="26530"></span>26530</td>
 <td class="instruction">LD A,30</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=30 (collectible item attribute).</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=30 (worm attribute value).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26532"></span>26532</td>
 <td class="instruction">CP (HL)</td>
-<td class="comment-1" rowspan="2">Jump to <a href="26524.html#26542">CollectItem_Found</a> if *<span class="register">HL</span> matches.</td>
+<td class="comment-1" rowspan="2">Jump to <a href="26524.html#26542">DropWorm_Found</a> if *<span class="register">HL</span> matches.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26533"></span>26533</td>
-<td class="instruction">JR Z,<a href="26524.html#26542">CollectItem_Found</a></td>
+<td class="instruction">JR Z,<a href="26524.html#26542">DropWorm_Found</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -89,7 +95,7 @@ Used by the routines at <a href="24553.html">MainGameLoop</a>, <a href="26155.ht
 <td class="asm-label"></td>
 <td class="address-1"><span id="26537"></span>26537</td>
 <td class="instruction">LD A,C</td>
-<td class="comment-1" rowspan="2">Jump to <a href="26524.html#26530">CollectItem_SearchLoop</a> if there are more cells to search.</td>
+<td class="comment-1" rowspan="3">Jump to <a href="26524.html#26530">DropWorm_SearchLoop</a> if there are more cells to search.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -99,32 +105,31 @@ Used by the routines at <a href="24553.html">MainGameLoop</a>, <a href="26155.ht
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26539"></span>26539</td>
-<td class="instruction">JR NZ,<a href="26524.html#26530">CollectItem_SearchLoop</a></td>
-<td class="comment-1" rowspan="1"></td>
+<td class="instruction">JR NZ,<a href="26524.html#26530">DropWorm_SearchLoop</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26541"></span>26541</td>
 <td class="instruction">RET</td>
-<td class="comment-1" rowspan="1">Return (no collectible found).</td>
+<td class="comment-1" rowspan="1">Return (no worm found).</td>
 </tr>
 <tr>
-<td class="asm-label">CollectItem_Found</td>
+<td class="asm-label">DropWorm_Found</td>
 <td class="address-2"><span id="26542"></span>26542</td>
 <td class="instruction">LD (HL),0</td>
-<td class="comment-1" rowspan="1">Write 0 to *<span class="register">HL</span> to remove the collectible.</td>
+<td class="comment-1" rowspan="1">Write 0 to *<span class="register">HL</span> to remove the worm.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26544"></span>26544</td>
-<td class="instruction">JR <a href="26155.html#26513">Compute_Sprite_Position_23</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="26155.html#26513">Compute_Sprite_Position_23</a>.</td>
+<td class="instruction">JR <a href="26337.html#26513">Reset_Worm_State</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="26337.html#26513">Reset_Worm_State</a>.</td>
 </tr>
 </table>
 <table class="asm-navigation">
 <tr>
 <td class="prev">
-Prev: <a href="26155.html">26155</a>
+Prev: <a href="26337.html">26337</a>
 </td>
 <td class="up">Up: <a href="../maps/all.html#26524">Map</a></td>
 <td class="next">

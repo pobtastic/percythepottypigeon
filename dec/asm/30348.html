@@ -421,7 +421,7 @@ This entry point is used by the routine at <a href="30336.html">Handler_Plane</a
 <td class="asm-label"></td>
 <td class="address-1"><span id="30495"></span>30495</td>
 <td class="instruction">LD IX,56048</td>
-<td class="comment-1" rowspan="1"><span class="register">IX</span>=<a href="56048.html">56048</a>.</td>
+<td class="comment-1" rowspan="1"><span class="register">IX</span>=<a href="56048.html">Sprite03_2Wide_X_Position</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -474,7 +474,7 @@ This entry point is used by the routine at <a href="30336.html">Handler_Plane</a
 <td class="asm-label"></td>
 <td class="address-1"><span id="30521"></span>30521</td>
 <td class="instruction">LD IY,56048</td>
-<td class="comment-1" rowspan="1"><span class="register">IY</span>=<a href="56048.html">56048</a>.</td>
+<td class="comment-1" rowspan="1"><span class="register">IY</span>=<a href="56048.html">Sprite03_2Wide_X_Position</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -579,8 +579,8 @@ This entry point is used by the routine at <a href="30336.html">Handler_Plane</a
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="30561"></span>30561</td>
-<td class="instruction">JP <a href="28253.html#28538">28538</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="28253.html#28538">28538</a>.</td>
+<td class="instruction">JP <a href="28500.html#28538">PlayHitSound</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="28500.html#28538">PlayHitSound</a>.</td>
 </tr>
 <tr>
 <td class="asm-label">UpdatePlaneFlightPath_9</td>
@@ -752,7 +752,7 @@ This entry point is used by the routine at <a href="30336.html">Handler_Plane</a
 <td class="asm-label"></td>
 <td class="address-1"><span id="30617"></span>30617</td>
 <td class="instruction">LD (56049),A</td>
-<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<a href="56048.html#56049">56049</a>.</td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<a href="56048.html#56049">Sprite03_2Wide_Y_Position</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -764,13 +764,13 @@ This entry point is used by the routine at <a href="30336.html">Handler_Plane</a
 <td class="asm-label"></td>
 <td class="address-1"><span id="30623"></span>30623</td>
 <td class="instruction">LD (56048),A</td>
-<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<a href="56048.html">56048</a>.</td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<a href="56048.html">Sprite03_2Wide_X_Position</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="30626"></span>30626</td>
 <td class="instruction">LD A,255</td>
-<td class="comment-1" rowspan="1">Write 255 to *<a href="56048.html#56050">56050</a>.</td>
+<td class="comment-1" rowspan="1">Write 255 to *<a href="56048.html#56050">Sprite03_2Wide_Colour</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -787,8 +787,8 @@ This entry point is used by the routine at <a href="30336.html">Handler_Plane</a
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="30635"></span>30635</td>
-<td class="instruction">JP <a href="28253.html#28538">28538</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="28253.html#28538">28538</a>.</td>
+<td class="instruction">JP <a href="28500.html#28538">PlayHitSound</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="28500.html#28538">PlayHitSound</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -1185,7 +1185,7 @@ This entry point is used by the routines at <a href="29247.html">Handler_Room01<
 <td class="asm-label">UpdatePlaneFlightPath_18</td>
 <td class="address-2"><span id="30769"></span>30769</td>
 <td class="instruction">LD A,(24489)</td>
-<td class="comment-1" rowspan="3">Return if *<a href="24489.html">EggDropState</a> is unset.</td>
+<td class="comment-1" rowspan="3">Return if *<a href="24489.html">EggDropFlag</a> is unset.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -1347,8 +1347,8 @@ This entry point is used by the routines at <a href="29247.html">Handler_Room01<
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="30828"></span>30828</td>
-<td class="instruction">CALL <a href="28253.html#28538">28538</a></td>
-<td class="comment-1" rowspan="1">Call <a href="28253.html#28538">28538</a>.</td>
+<td class="instruction">CALL <a href="28500.html#28538">PlayHitSound</a></td>
+<td class="comment-1" rowspan="1">Call <a href="28500.html#28538">PlayHitSound</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Percy the Potty Pigeon: Data at 6961</title>
+<title>Percy the Potty Pigeon: Game status buffer entry at 6961</title>
 <meta charset="utf-8" />
 <link rel="stylesheet" type="text/css" href="../skoolkit.css" />
 <link rel="stylesheet" type="text/css" href="../skoolkit-dark.css" />
@@ -15,11 +15,11 @@ gtag('js', new Date());
 gtag('config', 'G-75RERFCHBG');
 </script>
 </head>
-<body class="Asm-b">
+<body class="Asm-g">
 <table class="header">
 <tr>
 <td class="logo"><a href="../index.html"><img alt="logo" src="../images/logo.png" /></a></td>
-<td class="page-header">Data</td>
+<td class="page-header">Game status buffer</td>
 </tr>
 </table>
 <table class="asm-navigation">
@@ -33,7 +33,7 @@ Next: <a href="6966.html">6966</a>
 </td>
 </tr>
 </table>
-<div class="description">6961: Data block at 6961</div>
+<div class="description">6961: Table: Worm Collection Count</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
@@ -42,9 +42,34 @@ Next: <a href="6966.html">6966</a>
 </td>
 </tr>
 <tr>
+<td class="asm-label">Table_WormCollectionCount</td>
 <td class="address-1"><span id="6961"></span>6961</td>
-<td class="instruction">DEFB $0F,$14,$1E,$28,$32</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">DEFB $0F</td>
+<td class="comment-1" rowspan="1">Level 01: 0F worms to collect.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6962"></span>6962</td>
+<td class="instruction">DEFB $14</td>
+<td class="comment-1" rowspan="1">Level 02: 14 worms to collect.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6963"></span>6963</td>
+<td class="instruction">DEFB $1E</td>
+<td class="comment-1" rowspan="1">Level 03: 1E worms to collect.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6964"></span>6964</td>
+<td class="instruction">DEFB $28</td>
+<td class="comment-1" rowspan="1">Level 04: 28 worms to collect.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="6965"></span>6965</td>
+<td class="instruction">DEFB $32</td>
+<td class="comment-1" rowspan="1">Level 05: 32 worms to collect.</td>
 </tr>
 </table>
 <table class="asm-navigation">

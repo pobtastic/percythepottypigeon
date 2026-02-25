@@ -33,161 +33,195 @@ Next: <a href="693B.html">693B</a>
 </td>
 </tr>
 </table>
-<div class="description">68F7: Update Lives Display</div>
+<div class="description">68F7: Set Up Next Level</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
 <div class="details">
 <div class="paragraph">
-Used by the routines at <a href="653D.html">Initialise_Lives</a> and <a href="68B8.html">Handle_Life_Lost</a>.
+Used by the routines at <a href="653D.html">Initialise_Lives</a> and <a href="68B8.html">Handle_Level_Complete</a>.
 </div>
 <div class="paragraph">
-Updates the lives display after losing a life.
+Prepares the game state for the next level. Increments the current level number, awards an extra life on level 04 loads the worm collection target for the new level from the lookup table, and resets all collected and disabled worm markers in the room attribute data.
 </div>
 </div>
 </td>
 </tr>
 <tr>
-<td class="asm-label">UpdateLivesDisplay</td>
+<td class="routine-comment" colspan="5">
+<span id="68f7"></span>
+<div class="comments">
+<div class="paragraph">
+Increment the level counter and check for extra life award.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">SetUp_NextLevel</td>
 <td class="address-2"><span id="68f7"></span>68F7</td>
 <td class="instruction">LD A,($5FB1)</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="5FB1.html">CurrentLevel</a>.</td>
+<td class="comment-1" rowspan="1">Fetch the current level from *<a href="5FB1.html">CurrentLevel</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="68fa"></span>68FA</td>
 <td class="instruction">LD HL,$5FB3</td>
-<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="5FB3.html">LivesDisplayCharacter</a>.</td>
+<td class="comment-1" rowspan="1">Point <span class="register">HL</span> at <a href="5FB3.html">LivesDisplayCharacter</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="68fd"></span>68FD</td>
 <td class="instruction">CP $05</td>
-<td class="comment-1" rowspan="2">Jump to <a href="68F7.html#6911">UpdateLivesDisplay_0</a> if *<a href="5FB1.html">CurrentLevel</a> is equal to 05.</td>
+<td class="comment-1" rowspan="2">Jump to <a href="68F7.html#6911">SetWorm_Target</a> if the current level is equal to 05 (don't increment past the maximum).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="68ff"></span>68FF</td>
-<td class="instruction">JR Z,<a href="68F7.html#6911">UpdateLivesDisplay_0</a></td>
+<td class="instruction">JR Z,<a href="68F7.html#6911">SetWorm_Target</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6901"></span>6901</td>
 <td class="instruction">INC A</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">A</span> by one.</td>
+<td class="comment-1" rowspan="2">Increment the level number and write it back to *<a href="5FB1.html">CurrentLevel</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6902"></span>6902</td>
 <td class="instruction">LD ($5FB1),A</td>
-<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<a href="5FB1.html">CurrentLevel</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6905"></span>6905</td>
 <td class="instruction">CP $04</td>
-<td class="comment-1" rowspan="2">Jump to <a href="68F7.html#6911">UpdateLivesDisplay_0</a> if <span class="register">A</span> is not equal to 04.</td>
+<td class="comment-1" rowspan="2">Jump to <a href="68F7.html#6911">SetWorm_Target</a> if the new level is not equal to 04.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6907"></span>6907</td>
-<td class="instruction">JR NZ,<a href="68F7.html#6911">UpdateLivesDisplay_0</a></td>
+<td class="instruction">JR NZ,<a href="68F7.html#6911">SetWorm_Target</a></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="6909"></span>
+<div class="comments">
+<div class="paragraph">
+Award an extra life on level 04.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6909"></span>6909</td>
 <td class="instruction">INC (HL)</td>
-<td class="comment-1" rowspan="1">Increment *<span class="register">HL</span> by one.</td>
+<td class="comment-1" rowspan="2">Increment the lives display character at *<span class="register">HL</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="690a"></span>690A</td>
 <td class="instruction">LD A,(HL)</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">HL</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="690b"></span>690B</td>
 <td class="instruction">LD HL,$50F0</td>
-<td class="comment-1" rowspan="1"><span class="register">HL</span>=50F0 (screen buffer location).</td>
+<td class="comment-1" rowspan="1">Point <span class="register">HL</span> at 50F0 (screen buffer position for the lives display).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="690e"></span>690E</td>
 <td class="instruction">CALL <a href="6581.html">PrintCharacter</a></td>
-<td class="comment-1" rowspan="1">Call <a href="6581.html">PrintCharacter</a>.</td>
+<td class="comment-1" rowspan="1">Call <a href="69F7.html#6a5f">6A5F</a>.</td>
 </tr>
 <tr>
-<td class="asm-label">UpdateLivesDisplay_0</td>
+<td class="routine-comment" colspan="5">
+<span id="6911"></span>
+<div class="comments">
+<div class="paragraph">
+Load the worm collection target for the new level.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">SetWorm_Target</td>
 <td class="address-2"><span id="6911"></span>6911</td>
 <td class="instruction">LD A,($5FB1)</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="5FB1.html">CurrentLevel</a>.</td>
+<td class="comment-1" rowspan="1">Fetch the current level from *<a href="5FB1.html">CurrentLevel</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6914"></span>6914</td>
 <td class="instruction">LD B,$00</td>
-<td class="comment-1" rowspan="1"><span class="register">B</span>=00.</td>
+<td class="comment-1" rowspan="3">Set <span class="register">BC</span> to the level number minus one as a table index.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6916"></span>6916</td>
 <td class="instruction">LD C,A</td>
-<td class="comment-1" rowspan="1"><span class="register">C</span>=<span class="register">A</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6917"></span>6917</td>
 <td class="instruction">DEC C</td>
-<td class="comment-1" rowspan="1">Decrease <span class="register">C</span> by one.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6918"></span>6918</td>
 <td class="instruction">LD HL,$6961</td>
-<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="6961.html">6961</a>.</td>
+<td class="comment-1" rowspan="1">Point <span class="register">HL</span> at <a href="6961.html">Table_WormCollectionCount</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="691b"></span>691B</td>
 <td class="instruction">ADD HL,BC</td>
-<td class="comment-1" rowspan="1"><span class="register">HL</span>+=<span class="register">BC</span>.</td>
+<td class="comment-1" rowspan="1">Add the index to get the table entry address.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="691c"></span>691C</td>
 <td class="instruction">LD A,(HL)</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">HL</span>.</td>
+<td class="comment-1" rowspan="3">Write the worm collection count for this level to *<a href="5FB2.html">WormsRemaining</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="691d"></span>691D</td>
 <td class="instruction">LD HL,$5FB2</td>
-<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="5FB2.html">LivesRemaining</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6920"></span>6920</td>
 <td class="instruction">LD (HL),A</td>
-<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="6921"></span>
+<div class="comments">
+<div class="paragraph">
+Reset all collected and disabled worm markers in the room attribute data back to 00.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6921"></span>6921</td>
 <td class="instruction">LD HL,$DE9E</td>
-<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="DE9E.html">DE9E</a>.</td>
+<td class="comment-1" rowspan="1">Point <span class="register">HL</span> at <a href="DE9E.html">RoomAttribute_Data</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6924"></span>6924</td>
 <td class="instruction">LD BC,$0160</td>
-<td class="comment-1" rowspan="1"><span class="register">BC</span>=0160.</td>
+<td class="comment-1" rowspan="1">Set the byte counter to 0160 in <span class="register">BC</span>.</td>
 </tr>
 <tr>
-<td class="asm-label">UpdateLivesDisplay_1</td>
+<td class="asm-label">ResetWorm_Markers_Loop</td>
 <td class="address-2"><span id="6927"></span>6927</td>
 <td class="instruction">LD A,(HL)</td>
-<td class="comment-1" rowspan="3">Jump to <a href="68F7.html#692e">UpdateLivesDisplay_2</a> if *<span class="register">HL</span> is not equal to 1F.</td>
+<td class="comment-1" rowspan="4">If *<span class="register">HL</span> equals 1F (disabled marker), write 00 to *<span class="register">HL</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -197,48 +231,46 @@ Updates the lives display after losing a life.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="692a"></span>692A</td>
-<td class="instruction">JR NZ,<a href="68F7.html#692e">UpdateLivesDisplay_2</a></td>
+<td class="instruction">JR NZ,<a href="68F7.html#692e">ResetWorm_TestCollected</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="692c"></span>692C</td>
 <td class="instruction">LD (HL),$00</td>
-<td class="comment-1" rowspan="1">Write 00 to *<span class="register">HL</span>.</td>
 </tr>
 <tr>
-<td class="asm-label">UpdateLivesDisplay_2</td>
+<td class="asm-label">ResetWorm_TestCollected</td>
 <td class="address-2"><span id="692e"></span>692E</td>
 <td class="instruction">CP $1E</td>
-<td class="comment-1" rowspan="2">Jump to <a href="68F7.html#6934">UpdateLivesDisplay_3</a> if <span class="register">A</span> is not equal to 1E.</td>
+<td class="comment-1" rowspan="3">If *<span class="register">HL</span> equals 1E (collected marker), write 00 to *<span class="register">HL</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6930"></span>6930</td>
-<td class="instruction">JR NZ,<a href="68F7.html#6934">UpdateLivesDisplay_3</a></td>
+<td class="instruction">JR NZ,<a href="68F7.html#6934">ResetWorm_Markers_Next</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6932"></span>6932</td>
 <td class="instruction">LD (HL),$00</td>
-<td class="comment-1" rowspan="1">Write 00 to *<span class="register">HL</span>.</td>
 </tr>
 <tr>
-<td class="asm-label">UpdateLivesDisplay_3</td>
+<td class="asm-label">ResetWorm_Markers_Next</td>
 <td class="address-2"><span id="6934"></span>6934</td>
 <td class="instruction">INC HL</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
+<td class="comment-1" rowspan="1">Move to the next data byte.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6935"></span>6935</td>
 <td class="instruction">DEC BC</td>
-<td class="comment-1" rowspan="1">Decrease <span class="register">BC</span> by one.</td>
+<td class="comment-1" rowspan="1">Decrease the byte counter by one.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6936"></span>6936</td>
 <td class="instruction">LD A,C</td>
-<td class="comment-1" rowspan="3">Jump back to <a href="68F7.html#6927">UpdateLivesDisplay_1</a> until <span class="register">BC</span> is zero.</td>
+<td class="comment-1" rowspan="3">Jump back to <a href="68F7.html#6927">ResetWorm_Markers_Loop</a> until all 0160 bytes are processed.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -248,7 +280,7 @@ Updates the lives display after losing a life.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6938"></span>6938</td>
-<td class="instruction">JR NZ,<a href="68F7.html#6927">UpdateLivesDisplay_1</a></td>
+<td class="instruction">JR NZ,<a href="68F7.html#6927">ResetWorm_Markers_Loop</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
