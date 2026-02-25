@@ -4,6 +4,14 @@
 
 #AUDIO(menu.wav)(#INCLUDE(Menu))
 
+[Audio:collect-worm:Collect Worm]
+
+#AUDIO(collect-worm.wav)(#INCLUDE(CollectWorm))
+
+[Audio:fed-chicks:Fed The Chicks]
+
+#AUDIO(fed-chicks.wav)(#INCLUDE(FedChicks))
+
 [Audio:lose-life:Lose Life]
 
 #AUDIO(lose-life.wav)(#INCLUDE(LoseLife))

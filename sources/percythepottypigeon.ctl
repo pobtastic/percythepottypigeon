@@ -424,20 +424,25 @@ D $5FA8 Set to #N$01 when Percy has collided with scenery and the move was
 . rejected.
 B $5FA8,$01
 
-g $5FA9 Egg State
-@ $5FA9 label=EggDropState
+g $5FA9 Flag: Egg State
+@ $5FA9 label=EggDropFlag
 D $5FA9 Set to #N$FF when Percy is dropping an egg, and cleared to #N$00 when
 . the egg routine is complete.
 B $5FA9,$01
 
-g $5FAA Game Mode Flag
-@ $5FAA label=GameModeFlag
+g $5FAA Flag: Carrying A Worm
+@ $5FAA label=CarryingWormFlag
+D $5FAA Set to #N$FF when Percy is carrying a worm, and cleared to #N$00 when
+. he's not.
 B $5FAA,$01
 
-g $5FAD Landed On Platform Flag
+g $5FAC Flag:
+B $5FAC
+
+g $5FAD Flag: Landed On Platform Flag
 @ $5FAD label=LandedOnPlatformFlag
 D $5FAD Set to #N$FF when Percy has landed on a platform. Cleared to #N$00
-. when no platform is beneath.
+. when no platform is beneath him.
 B $5FAD,$01
 
 g $5FAE Movement Speed
@@ -465,9 +470,9 @@ g $5FB1 Current Level
 D $5FB1 The current level number. E.g. #N$01 for the first level.
 B $5FB1,$01
 
-g $5FB2 Lives Remaining
-@ $5FB2 label=LivesRemaining
-D $5FB2 Number of lives Percy has remaining for the current phase.
+g $5FB2 Worms Remaining
+@ $5FB2 label=WormsRemaining
+D $5FB2 Number of worms Percy has remaining to collect for the current level.
 B $5FB2,$01
 
 g $5FB3 Lives Display Character
@@ -716,12 +721,12 @@ N $60A8 Handle Percy's egg drop state. If *#R$5FA9 is set, Percy has dropped
 . an egg and it is currently in flight.
 @ $60A8 label=MainGameLoop_HandleEggDrop
   $60A8,$06 Jump to #R$60D9 if *#R$5FA9 is unset (no egg active).
-N $60AE Egg is in flight — advance its Y position.
+N $60AE Egg is in flight so advance its Y position.
   $60AE,$03 #REGa=*#REGix+#N$21.
   $60B1,$02 #REGa+=#N$04.
   $60B3,$02 Has the egg reached Y position #N$A8?
   $60B5,$02 Jump to #R$60BF if not yet reached.
-N $60B7 Egg has reached its target — end the egg drop state.
+N $60B7 Egg has reached its target so end the egg drop state.
   $60B7,$04 Write #N$00 to *#REGix+#N$23.
   $60BB,$04 Write #N$00 to *#R$5FA9 (egg drop complete).
 @ $60BF label=MainGameLoop_UpdateEggY
@@ -743,7 +748,7 @@ N $60D9 Check if fire is pressed and conditions are met to drop an egg.
 N $60E6 Percy must be below Y position #N$84 to drop an egg.
   $60E6,$07 Jump to #R$610E if Percy's Y position (*#REGix+#N$01) is greater
 . than or equal to #N$84 (too high to drop an egg).
-N $60ED Start the egg drop sequence — set the egg's target position and
+N $60ED Start the egg drop sequence and set the egg's target position/
 . activate the egg state.
   $60ED,$02 #REGa+=#N$10.
   $60EF,$01 Stash #REGaf on the stack.
@@ -971,7 +976,7 @@ D $6280 Move Percy left. Checks screen boundary and handles room transitions.
 R $6280 IX Pointer to Percys state data
 R $6280 D Number of pixels to move
   $6280,$05 Write #N$01 to *#R$5FA5 (Percy is facing left).
-N $6285 If *#R$5FAA is non-zero, apply an extra boundary check.
+N $6285 If *#R$5FAA is set, apply an extra boundary check.
   $6285,$06 Jump to #R$6297 if *#R$5FAA is set.
   $628B,$03 Load #REGa with Percy's X position (*#REGix+#N$00) - #N$05.
 N $6290 If Percy has gone past the left edge transition into the previous room.
@@ -995,7 +1000,7 @@ D $62A2 Move Percy right. Checks screen boundary and handles room transitions.
 R $62A2 IX Pointer to Percys state data
 R $62A2 D Number of pixels to move
   $62A2,$04 Write #N$00 to *#R$5FA5 (Percy is facing right).
-N $62A6 If *#R$5FAA is non-zero, apply an extra boundary check.
+N $62A6 If *#R$5FAA is set, apply an extra boundary check.
   $62A6,$06 Jump to #R$62B6 if *#R$5FAA is unset.
   $62AC,$06 Load #REGa with Percy's X position (*#REGix+#N$00) + the number of
 . pixels to move (from #REGd) + #N$04.
@@ -1292,7 +1297,7 @@ c $6480 Update Energy Bar
 D $6480 Animates Percy's energy bar at the bottom of the screen. The bar
 . depletes when Percy is airborne and refills when Percy is on the ground. If
 . the bar fully depletes, Percy enters the falling state.
-N $6483 If *#R$5FA7 is non-zero, it's acting as a cooldown timer — decrement
+N $6483 If *#R$5FA7 is non-zero, it's acting as a cooldown timer so decrement
 . it and return.
   $6483,$03 #REGa=*#R$5FA7.
   $6486,$03 Jump to #R$648E if *#R$5FA7 is zero (Percy isn't falling).
@@ -1304,7 +1309,7 @@ N $648E refills. Otherwise it depletes.
 @ $648E label=UpdateEnergyBar_CheckPosition
   $648E,$03 Load #REGa with Percy's Y position (from *#REGix+#N$01).
   $6491,$04 Jump to #R$64BE if Percy is at, or below the ground level (#N$90).
-N $6495 Percy is airborne — deplete the energy bar. Uses a slower frame delay
+N $6495 Percy is airborne so deplete the energy bar. Uses a slower frame delay
 . of #N$07 frames between each step.
   $6495,$03 #REGa=*#R$5FAB.
   $6498,$01 Increment the frame delay counter.
@@ -1328,13 +1333,13 @@ N $64AE Copy the updated byte to the three pixel rows below to give the
   $64B1,$02 Copy to the second row below.
   $64B3,$02 Copy to the third row below.
   $64B5,$01 Return.
-N $64B6 Current byte is empty — scan leftward for the next filled byte.
+N $64B6 Current byte is empty so scan leftward for the next filled byte.
 @ $64B6 label=UpdateEnergyBar_Deplete_ScanLeft
   $64B6,$01 Move one byte to the left.
   $64B7,$05 Jump to #R$64E1 if the energy bar is fully depleted (reached #N$E0,
 . the left edge of the bar).
   $64BC,$02 Jump to #R$64A8 to check this byte.
-N $64BE Percy is on the ground — refill the energy bar. Uses a faster frame
+N $64BE Percy is on the ground so refill the energy bar. Uses a faster frame
 . delay of #N$03 frames between each step.
 @ $64BE label=UpdateEnergyBar_Refill
   $64BE,$03 #REGa=*#R$5FAB.
@@ -1353,14 +1358,14 @@ N $64CC Refill the energy bar by shifting pixels right (filling from the left).
   $64D4,$02 Shift *#REGhl right one pixel.
   $64D6,$02 Set bit 7 of *#REGhl (fill from the left).
   $64D8,$02 Jump to #R$64AE to copy the result to the rows below.
-N $64DA Current byte is fully filled — scan rightward for the next byte to
+N $64DA Current byte is fully filled so scan rightward for the next byte to
 . fill.
 @ $64DA label=UpdateEnergyBar_Refill_ScanRight
   $64DA,$01 Move one byte to the right.
   $64DB,$04 Return if the bar is fully refilled (the scan reached #N$ED which
 . is the right edge of the bar).
   $64DF,$02 Jump to #R$64CF to check this byte.
-N $64E1 Energy bar has fully depleted — set Percy to the falling state.
+N $64E1 Energy bar has fully depleted so set Percy to the falling state.
 @ $64E1 label=UpdateEnergyBar_Depleted
   $64E1,$05 Write #N$FF to *#R$5FA7.
   $64E6,$01 Return.
@@ -1568,22 +1573,202 @@ R $6621 BC The length of the text to print
 . until the whole string has been printed to the screen.
   $662A,$01 Return.
 
-c $662B Compute Sprite Position?
-@ $662B label=Compute_Sprite_Position
+c $662B Handle Worm Collection and Delivery
+@ $662B label=Handle_Worms
+D $662B Manages the worm collectibles in each room. Scans the room attribute data
+. to find active worm tiles, animates them with a wiggling effect, and checks if
+. Percy is at the correct position to pick one up. When Percy is carrying a worm,
+. the worm-in-beak sprite is positioned relative to Percy. On level #N$06, checks
+. if Percy is at the nest to deliver the worm to the baby chicks for bonus points.
+N $662B Calculate Percy's tile map position from his pixel coordinates.
+  $662B,$04 Point #REGix at #R$DAC0.
+  $662F,$02 Set #REGb to #N$08.
+M $6631,$09 Calculate the tile row from Percy's Y position: add #N$08, rotate
+. left twice and mask with #N$E0 to get the row component in #REGe.
+  $6637,$02,b$01 Keep only bits 5-7.
+M $663A,$0C Calculate the tile column from Percy's X position: add #N$02, rotate
+. right three times and mask with #N$1F, then OR with the row component to
+. form the full tile map offset in #REGe.
+  $6642,$02,b$01 Keep only bits 0-4.
+  $6646,$06 If *#R$5FA5 (facing direction) is zero (facing right), increment
+. #REGe by one to adjust the lookup position.
+  $664C,$01 Increment the map offset by one.
+N $664D Scan the room attribute entries to find active worm tiles.
+  $664D,$03 Load the room attribute pointer from *#R$5FB5 into #REGhl.
+  $6650,$05 Load the worm count from *#R$5FB1, increment it by one and store it
+. in #REGc.
+@ $6655 label=Scan_Worms_Loop
+  $6655,$05 Jump to #R$667B if the current entry is #N$1E (worm already
+. collected).
+  $665A,$01 Advance past the type byte.
+  $665B,$05 Jump to #R$667C if the next byte is #N$1F (the slot is disabled).
+  $6660,$01 Advance.
+  $6661,$05 Compare the entry index against #REGc; jump to #R$667E if it is
+. greater or equal (not a valid worm).
+  $6666,$04 Jump to #R$66A8 if the tile position matches #REGe (worm found at
+. Percy's location).
+N $666A No match at this entry; draw the worm wiggle animation at this tile
+. position and move to the next entry.
+@ $666A label=Animate_Worm
+  $666A,$03 Stash the room attribute pointer, worm counter and position on the
+. stack.
+  $666D,$03 Load the tile screen address low byte from *#REGhl; set high byte to
+. #N$F0 to form a screen buffer address.
+  $6670,$03 Call #R$6683 to draw the worm wiggle animation frame.
+  $6673,$03 Restore the position, worm counter and room attribute pointer from
+. the stack.
+@ $6676 label=Next_Worm_Entry
+  $6676,$03 Advance to the next entry and loop back to #R$6655 until all #N$08
+. entries are checked.
+  $6679,$02 Jump to #R$66E1.
+N $667B Skip entries that are marked as collected or disabled.
+@ $667B label=Skip_Collected_Worm
+  $667B,$01 Skip one extra byte for collected entries.
+@ $667C label=Skip_Disabled_Worm
+  $667C,$02 Skip the remaining bytes of this entry.
+@ $667E label=Skip_Invalid_Entry
+  $667E,$03 Advance past this entry and loop back to #R$6655 until all entries
+. are checked.
+  $6681,$02 Jump to #R$66E1.
 
-c $679C Collect Item?
-@ $679C label=CollectItem
+c $6683 Draw Worm Animation Frame
+@ $6683 label=Handler_DrawWorm
+D $6683 Draws an #N$08-pixel-row worm wiggle animation frame at the screen
+. address in #REGhl. Alternates between two graphic frames at #N$A7C3 and
+. #N$A7CB based on the animation toggle at #R$5FB4.
+  $6683,$03 Default animation frame pointer: #REGde=#N$A7C3 (worm frame 1).
+  $6686,$09 Rotate *#R$5FB4 right through carry; if the carry flag is set, keep
+. worm frame 1 and skip over the alternative frame (worm frame 2).
+  $668F,$03 Else the carry flag is unset so set the alternative animation frame
+. pointer: #REGde=#N$A7CB (worm frame 2).
+@ $6692 label=Handler_DrawWorm_Frame
+  $6692,$02 Set a line counter in #REGb (#N$08 lines in a UDG).
+  $6694,$01 Stash the screen address on the stack.
+@ $6695 label=Handler_DrawWorm_FrameLoop
+  $6695,$02 Copy the UDG data to the screen buffer.
+  $6697,$01 Move down one pixel line in the screen buffer.
+  $6698,$01 Move to the next UDG graphic data byte.
+  $6699,$02 Decrease the line counter by one and loop back to #R$6695 until all
+. #N$08 lines of the UDG character have been drawn.
+  $669B,$01 Restore the screen address from the stack.
+M $669C,$0A Convert the screen address to the corresponding attribute address
+. and write #N$03 (magenta on black) as the worm colour attribute.
+  $66A0,$02,b$01 Keep only bits 0-1.
+  $66A2,$02,b$01 Set bits 3-7.
+  $66A7,$01 Return.
+
+c $66A8 Handler: Worm Found
+@ $66A8 label=Handler_Worm_Found
+D $66A8 A worm was found at Percy's position; check if Percy is low enough to
+. collect it and not already carrying one.
+  $66A8,$07 Jump to #R$666A if Percy's Y position is less than #N$79 (not low
+. enough to pick up the worm).
+  $66AF,$06 Jump to #R$666A if *#R$5FAA is set (so Percy is already carrying a
+. worm).
+N $66B5 Percy is in position and not carrying; collect the worm.
+  $66B5,$05 Set *#R$5FAA to #N$FF (mark Percy as carrying a worm).
+  $66BA,$03 Stash the position, worm counter and room attribute pointer on the
+. stack.
+  $66BD,$05 Move back three bytes in the room attribute data and write #N$1E to
+. mark this worm as collected.
+  $66C2,$02 Stash #REGix on the stack.
+N $66C4 #HTML(#AUDIO(collect-worm.wav)(#INCLUDE(CollectWorm)))
+  $66C4,$12 #HTML(Play a two-part collection sound effect by calling
+. <a rel="noopener nofollow" href="https://skoolkid.github.io/rom/asm/03B5.html">BEEP</a>
+. with durations of #N($0064,$04,$04)/ #N($00C8,$04,$04) then
+. #N($0064,$04,$04)/ #N($0064,$04,$04).)
+  $66D6,$05 Restore #REGix, the room attribute pointer, worm counter and
+. position from the stack.
+  $66DB,$04 Write #N$00 to clear *#R$5FA9.
+  $66DF,$02 Jump to #R$6676 to continue scanning.
+
+c $66E1 Percy Carrying Worm
+@ $66E1 label=Position_Worm_In_Beak
+D $66E1 After scanning all entries, check if Percy is carrying a worm and
+. handle the worm-in-beak sprite positioning.
+  $66E1,$05 Return if *#R$5FAA (worm carrying flag) is zero.
+  $66E6,$07 Jump to #R$66F4 if Percy's Y position is less than #N$8F.
+  $66ED,$07 Jump to #R$6A17 if *#R$5FAC (worm drop flag) is non-zero (worm is
+. being dropped to a chick).
+@ $66F4 label=Update_Worm_In_Beak
+  $66F4,$07 Jump to #R$6700 if Percy's Y position is not less than #N$8D.
+  $66FB,$05 Set *#R$5FAC to #N$FF (enable worm drop).
+@ $6700 label=Set_Worm_Sprite_X
+  $6700,$0A Calculate the worm-in-beak X position: if *#R$5FA5 (facing
+. direction) is zero (facing right), add #N$0C to Percy's X, otherwise add
+. #N$FB (offset left).
+  $670C,$03 Add the offset to Percy's X position.
+  $670F,$03 Write the result to *#REGix+#N$20 (worm sprite X position).
+  $6712,$05 Set the worm sprite Y position to Percy's Y plus #N$04.
+  $671A,$0C Set the worm sprite frame: start with #N$0D, rotate *#R$5FB4 and if
+. carry is not set, increment to #N$0E for the alternate wiggle frame.
+@ $6726 label=Set_Worm_Sprite_Frame
+  $6726,$03 Write the worm sprite frame index to *#REGix+#N$23.
+  $6729,$06 Jump to #R$6736 if *#R$5FAD (worm Y adjustment flag) is non-zero.
+  $672F,$07 Jump to #R$673E if Percy's Y position is not less than #N$90.
+@ $6736 label=Adjust_Worm_Y_Up
+  $6736,$08 Subtract #N$04 from the worm Y position to adjust it upward.
+N $673E Check if Percy is at the nest to deliver the worm to the baby chicks
+. (only on level #N$06).
+@ $673E label=Check_Nest_Delivery
+  $673E,$06 Return if *#R$5FC5 (current level) is not equal to #N$06.
+  $6744,$06 Return if Percy's Y position is less than #N$11.
+  $674A,$03 Return if Percy's Y position is #N$21 or more.
+  $674D,$06 Return if Percy's X position is #N$6B or more.
+  $6753,$05 Return if *#R$5FA5 (facing direction) is zero (Percy must be facing
+. left).
+N $6758 Scan the room attribute data for a collected worm marker to convert
+. into a nest delivery.
+  $6758,$03 Set the search counter to #N$0160 in #REGbc.
+  $675B,$03 Point #REGhl at #R$DE9E.
+@ $675E label=Search_Nest_Slot_Loop
+  $675E,$05 Jump to #R$676A if *#REGhl equals #N$1E (found a collected worm
+. marker to convert).
+  $6763,$06 Otherwise advance and loop back to #R$675E, decrementing #REGbc
+. until zero.
+  $6769,$01 Return (no available slot found).
+@ $676A label=Deliver_Worm_To_Nest
+  $676A,$05 Write #N$00 then #N$1F to convert the collected marker into a
+. delivered/disabled entry.
+  $676F,$04 Deactivate the worm-in-beak sprite by writing #N$00 to
+. *#REGix+#N$23.
+  $6773,$05 Call #R$6A86 with #REGa=#N$C8 to add #N$C8 to the score.
+N $6778 Play a delivery sound effect.
+N $6778 #HTML(#AUDIO(fed-chicks.wav)(#INCLUDE(FedChicks)))
+  $6778,$02 Set the sound duration in #REGe to #N$32.
+  $677A,$02 Set the initial speaker state to #N$01.
+@ $677C label=Delivery_Sound_Outer
+  $677C,$01 Copy duration to #REGb.
+@ $677D label=Delivery_Sound_Inner
+  $677D,$02 Output the speaker state to port #N$FE.
+  $677F,$02 Loop the inner delay for #REGb iterations.
+  $6781,$09 Toggle the speaker bit pattern using XOR #N$18, mixed with duration
+. bits for a warbling effect.
+  $678A,$04 Advance the frequency and loop back to #R$677C until #REGe wraps to
+. zero.
+  $678E,$03 Call #R$68B8.
+N $6791 Reset the worm-carrying state.
+@ $6791 label=Reset_Worm_State
+  $6791,$0A Write #N$00 to *#R$5FAA, *#R$5FAC and *#REGix+#N$23 to clear the
+. worm carrying flag, worm drop flag and worm-in-beak sprite frame.
+  $679B,$01 Return.
+
+c $679C Drop Worm
+@ $679C label=DropWorm
+D $679C Drops the worm Percy is carrying.
+.
+. The worm will reappear when the room is next redrawn.
   $679C,$03 #REGbc=#N$0160 (number of attribute cells to search).
   $679F,$03 #REGhl=#R$DE9E.
-@ $67A2 label=CollectItem_SearchLoop
-  $67A2,$02 #REGa=#N$1E (collectible item attribute).
+@ $67A2 label=DropWorm_SearchLoop
+  $67A2,$02 #REGa=#N$1E (worm attribute value).
   $67A4,$03 Jump to #R$67AE if *#REGhl matches.
   $67A7,$01 Advance to the next attribute cell.
   $67A8,$01 Decrease the search counter.
-  $67A9,$02 Jump to #R$67A2 if there are more cells to search.
-  $67AD,$01 Return (no collectible found).
-@ $67AE label=CollectItem_Found
-  $67AE,$02 Write #N$00 to *#REGhl to remove the collectible.
+  $67A9,$04 Jump to #R$67A2 if there are more cells to search.
+  $67AD,$01 Return (no worm found).
+@ $67AE label=DropWorm_Found
+  $67AE,$02 Write #N$00 to *#REGhl to remove the worm.
   $67B0,$02 Jump to #R$6791.
 
 c $67B2 Add To Score
@@ -1741,7 +1926,7 @@ N $685B Compare Percy's column with the snapdragon's column from the table.
   $685C,$01 #REGa=*#REGhl.
   $685D,$02,b$01 Keep only bits 0-4 (snapdragon's character column).
   $685F,$03 Jump to #R$6867 if Percy is to the left of the snapdragon.
-N $6862 Percy is to the right — add #N$03 to use the right-facing frames.
+N $6862 Percy is to the right so add #N$03 to use the right-facing frames.
   $6862,$01 Restore the animation frame from the stack.
   $6863,$02 #REGa+=#N$03.
   $6865,$02 Jump to #R$6868.
@@ -1791,19 +1976,22 @@ N $689F Snapdragon #N($01+(#PC-$689F)/$04):
 L $689F,$04,$06
   $68B7,$01 Terminator.
 
-c $68B8 Handle Life Lost
-@ $68B8 label=Handle_Life_Lost
+c $68B8 Handle Level Complete
+@ $68B8 label=Handle_Level_Complete
+D $68B8 Called after a worm is delivered to check if all worms have been
+. collected. Decrements the worms remaining counter and if zero, plays a
+. completion jingle, advances to the next room and sets up the new level.
   $68B8,$04 Decrease *#R$5FB2 by one.
-  $68BC,$01 Return if *#REGhl is not equal to #N$00.
+  $68BC,$01 Return if the worms remaining counter is not zero.
   $68BD,$02 Stash #REGix on the stack.
   $68BF,$02 Set a sound step counter in #REGb of #N$28 steps.
   $68C1,$03 #REGhl=#N$0320 (initial sound pitch).
-  $68C4,$03 #REGde=#N($0008,$04,$04) (pitch step per iteration).
-N $68C7 Play one step of the death sound.
-@ $68C7 label=HandleLifeLost_SoundLoop
+  $68C4,$03 #REGde=#N$0008 (pitch step per iteration).
+N $68C7 Play the level complete sound effect.
+@ $68C7 label=Level_Complete_Sound_Loop
   $68C7,$03 Call #R$693B.
-  $68CA,$02 Decrease the step counter by one and loop back to #R$68C7 until the
-. sound is complete.
+  $68CA,$02 Decrease the step counter by one and loop back to
+. #R$68C7 until the sound is complete.
   $68CC,$08 #HTML(Write #N$0F to; #LIST
 . { *<a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/5C48.html">BORDCR</a> }
 . { *#R$5FBD }
@@ -1811,9 +1999,11 @@ N $68C7 Play one step of the death sound.
   $68D4,$04 Set border to #INK$01.
   $68D8,$02 Restore #REGix from the stack.
   $68DA,$03 Call #R$68F7.
-  $68DD,$03 #REGa=*#R$5FB1.
-  $68E0,$02 #REGa+=#N$0B.
-  $68E2,$03 Write #REGa to *#R$5FC5.
+N $68DD Locate the level splash screen.
+  $68DD,$03 Fetch the current level from *#R$5FB1.
+  $68E0,$02 Add #N$0B (the total number of rooms) to calculate the pointer to
+. the level splash screen.
+  $68E2,$03 Write the result to *#R$5FC5.
   $68E5,$03 Call #R$5E24.
 N $68E8 #HTML(#AUDIO(lose-life.wav)(#INCLUDE(LoseLife)))
   $68E8,$03 #REGhl=#R$FBF9.
@@ -1823,48 +2013,52 @@ N $68E8 #HTML(#AUDIO(lose-life.wav)(#INCLUDE(LoseLife)))
   $68F2,$04 Write #N$00 to *#R$5FA5 (Percy is facing right).
   $68F6,$01 Return.
 
-c $68F7 Update Lives Display
-@ $68F7 label=UpdateLivesDisplay
-D $68F7 Updates the lives display after losing a life.
-  $68F7,$03 #REGa=*#R$5FB1.
-  $68FA,$03 #REGhl=#R$5FB3.
-  $68FD,$04 Jump to #R$6911 if *#R$5FB1 is equal to #N$05.
-  $6901,$01 Increment #REGa by one.
-  $6902,$03 Write #REGa to *#R$5FB1.
-  $6905,$04 Jump to #R$6911 if #REGa is not equal to #N$04.
-  $6909,$01 Increment *#REGhl by one.
-  $690A,$01 #REGa=*#REGhl.
-  $690B,$03 #REGhl=#N$50F0 (screen buffer location).
-  $690E,$03 Call #R$6581.
-  $6911,$03 #REGa=*#R$5FB1.
-  $6914,$02 #REGb=#N$00.
-  $6916,$01 #REGc=#REGa.
-  $6917,$01 Decrease #REGc by one.
-  $6918,$03 #REGhl=#R$6961.
-  $691B,$01 #REGhl+=#REGbc.
-  $691C,$01 #REGa=*#REGhl.
-  $691D,$03 #REGhl=#R$5FB2.
-  $6920,$01 Write #REGa to *#REGhl.
-  $6921,$03 #REGhl=#R$DE9E.
-  $6924,$03 #REGbc=#N$0160.
-  $6927,$05 Jump to #R$692E if *#REGhl is not equal to #N$1F.
-  $692C,$02 Write #N$00 to *#REGhl.
-  $692E,$04 Jump to #R$6934 if #REGa is not equal to #N$1E.
-  $6932,$02 Write #N$00 to *#REGhl.
-  $6934,$01 Increment #REGhl by one.
-  $6935,$01 Decrease #REGbc by one.
-  $6936,$04 Jump back to #R$6927 until #REGbc is zero.
+c $68F7 Set Up Next Level
+@ $68F7 label=SetUp_NextLevel
+D $68F7 Prepares the game state for the next level. Increments the current
+. level number, awards an extra life on level #N$04, loads the worm collection
+. target for the new level from the lookup table, and resets all collected and
+. disabled worm markers in the room attribute data.
+N $68F7 Increment the level counter and check for extra life award.
+  $68F7,$03 Fetch the current level from *#R$5FB1.
+  $68FA,$03 Point #REGhl at #R$5FB3.
+  $68FD,$04 Jump to #R$6911 if the current level is equal to #N$05 (don't
+. increment past the maximum).
+  $6901,$04 Increment the level number and write it back to *#R$5FB1.
+  $6905,$04 Jump to #R$6911 if the new level is not equal to #N$04.
+N $6909 Award an extra life on level #N$04.
+  $6909,$02 Increment the lives display character at *#REGhl.
+  $690B,$03 Point #REGhl at #N$50F0 (screen buffer position for the lives
+. display).
+  $690E,$03 Call #R$6A5F.
+N $6911 Load the worm collection target for the new level.
+@ $6911 label=SetWorm_Target
+  $6911,$03 Fetch the current level from *#R$5FB1.
+  $6914,$04 Set #REGbc to the level number minus one as a table index.
+  $6918,$03 Point #REGhl at #R$6961.
+  $691B,$01 Add the index to get the table entry address.
+  $691C,$05 Write the worm collection count for this level to *#R$5FB2.
+N $6921 Reset all collected and disabled worm markers in the room attribute
+. data back to #N$00.
+  $6921,$03 Point #REGhl at #R$DE9E.
+  $6924,$03 Set the byte counter to #N$0160 in #REGbc.
+@ $6927 label=ResetWorm_Markers_Loop
+  $6927,$07 If *#REGhl equals #N$1F (disabled marker), write #N$00 to *#REGhl.
+@ $692E label=ResetWorm_TestCollected
+  $692E,$06 If *#REGhl equals #N$1E (collected marker), write #N$00 to *#REGhl.
+@ $6934 label=ResetWorm_Markers_Next
+  $6934,$01 Move to the next data byte.
+  $6935,$01 Decrease the byte counter by one.
+  $6936,$04 Jump back to #R$6927 until all #N$0160 bytes are processed.
   $693A,$01 Return.
 
-c $693B Death Sound Step
-@ $693B label=DeathSoundStep
+c $693B Level Complete Sound Step
+@ $693B label=LevelCompleteSoundStep
 R $693B B Sound step counter
 R $693B HL Current pitch
 R $693B DE Pitch adjustment per step
   $693B,$03 Stash the step counter, pitch and pitch adjustment on the stack.
-N $693E Add #N$19 to the score during the death sequence.
-  $693E,$02 #REGa=#N$19.
-  $6940,$03 Call #R$67B2.
+  $693E,$05 Call #R$67B2 to add #N$19 points to the score.
 N $6943 Pick a random border colour using the Memory Refresh Register.
   $6943,$03 #REGl=the contents of the Memory Refresh Register.
   $6946,$02 Set the low byte in #REGh to #N$00 so only low memory is accessed.
@@ -1883,8 +2077,10 @@ N $695A Lower the pitch for the next step by subtracting the pitch adjustment.
   $695F,$01 Restore the step counter from the stack.
   $6960,$01 Return.
 
-b $6961
-  $6961,$05
+g $6961 Table: Worm Collection Count
+@ $6961 label=Table_WormCollectionCount
+B $6961,$01 Level #N($01+(#PC-$6961)): #N(#PEEK(#PC)) worms to collect.
+L $6961,$01,$05
 
 c $6966 Pause Border Effect
 @ $6966 label=Pause_BorderEffect
@@ -1949,27 +2145,40 @@ N $6998 Handle room #N$06 special case; the chicks in the nest.
 
 c $69A7 Run Main Loop Body
 @ $69A7 label=Run_Main_Loop_Body
+D $69A7 Processes one frame of the main game loop. Clears all sprite frame IDs,
+. then calls the various game handlers for Percy, hazards and level-specific
+. logic. Resets the lives backup flag and restores the border colour before
+. returning.
   $69A7,$01 Disable interrupts.
   $69A8,$04 Stash #REGix and #REGiy on the stack.
-N $69AC Clear the frame IDs for: #FOR$00,$07||n|#R($DAC7+(n*$04))|, | and ||.
-  $69AC,$02 #REGb=#N$07.
-  $69AE,$03 #REGhl=#R$DAC7.
-  $69B1,$02 #REGc=#N$00.
-  $69B3,$01 Write #REGc to *#REGhl.
-  $69B4,$04 Increment #REGhl by four.
-  $69B8,$02 Decrease counter by one and loop back to #R$69B3 until counter is zero.
-  $69BA,$03 #REGhl=#R$DAEB.
-  $69BD,$02 #REGb=#N$06.
-  $69BF,$01 Write #REGc to *#REGhl.
-  $69C0,$04 Increment #REGhl by four.
-  $69C4,$02 Decrease counter by one and loop back to #R$69BF until counter is zero.
+N $69AC Clear the sprite frame IDs for:
+. #FOR$00,$06||n|#R($DAC7+(n*$04))|, | and || (the eight 3-wide sprites).
+  $69AC,$02 Set the sprite counter to #N$07 in #REGb.
+  $69AE,$03 Point #REGhl at #R$DAC7 (first 3-wide sprite frame ID).
+  $69B1,$02 Set the clear value in #REGc to #N$00.
+@ $69B3 label=Clear_3Wide_Frames_Loop
+  $69B3,$01 Write #N$00 to the sprite frame ID at *#REGhl.
+  $69B4,$04 Advance #REGhl by four bytes to the next sprite entry.
+  $69B8,$02 Decrease the counter and loop back to #R$69B3 until all seven
+. 3-wide sprite frame IDs are cleared.
+N $69BA Clear the sprite frame IDs for:
+. #FOR$00,$05||n|#R($DAEB+(n*$04))|, | and || (the six 2-wide sprites).
+  $69BA,$03 Point #REGhl at #R$DAEB (first 2-wide sprite frame ID).
+  $69BD,$02 Set the sprite counter to #N$06 in #REGb.
+@ $69BF label=Clear_2Wide_Frames_Loop
+  $69BF,$01 Write #N$00 to the sprite frame ID at *#REGhl.
+  $69C0,$04 Advance #REGhl by four bytes to the next sprite entry.
+  $69C4,$02 Decrease the counter and loop back to #R$69BF until all six
+. 2-wide sprite frame IDs are cleared.
+N $69C6 Call the game handlers.
   $69C6,$07 Call #R$6CA5 if *#R$5FBE is non-zero.
   $69CD,$03 Call #R$69F7.
   $69D0,$03 Call #R$6DAB.
   $69D3,$03 Call #R$720F.
   $69D6,$08 Call #R$7082 if *#R$5FC5 is equal to #N$04.
-  $69DE,$07 Call #R$64BE if *#R$5FAD is set.
-  $69E5,$06 Write *#R$5FB3 to *#R$6CC3.
+  $69DE,$07 Call #R$64BE if *#R$5FAD (worm Y adjustment flag) is set.
+N $69E5 Tidy up at end of frame.
+  $69E5,$06 Copy *#R$5FB3 to *#R$6CC3.
   $69EB,$04 Write #N$00 to *#R$5FBE.
   $69EF,$03 Set border to #INK$01.
   $69F2,$04 Restore #REGiy and #REGix from the stack.
@@ -1977,7 +2186,9 @@ N $69AC Clear the frame IDs for: #FOR$00,$07||n|#R($DAC7+(n*$04))|, | and ||.
 
 c $69F7 Handler: Red Bird
 @ $69F7 label=Handler_RedBird
-D $69F7 Handles the red bird — a thief that steals worms Percy is carrying.
+D $69F7 Handles the red bird who is a thief that steals worms Percy is
+. carrying.
+.
 . Percy can stun the red bird by hitting it with an egg. The red bird's
 . flight path data is stored at #R$BE00 with entries separated by #N$00
 . terminators for each room.
@@ -1997,7 +2208,7 @@ N $6A09 Scan through the flightpath data to find the current room.
 N $6A0F Found a #N$00 terminator so move to the data for the next room.
   $6A0F,$01 Increment the room counter.
   $6A10,$04 Jump back to #R$6A09 if this isn't at the target room yet.
-N $6A14 Found the correct room's data — store the flight path pointer.
+N $6A14 Found the correct room's data so store the flight path pointer.
 @ $6A14 label=HandleRedBird_InitPath
   $6A14,$03 Write #REGhl to *#R$6CBB (current flight path pointer).
 N $6A17 Seed the random animation state from the Memory Refresh Register.
@@ -2017,7 +2228,7 @@ N $6A2B Check collision between Percy and the red bird.
 N $6A38 Check the red bird has a valid frame (is visible).
   $6A38,$06 Jump to #R$6A60 if *#REGiy+#N$03 is unset, so the red bird frame is
 . #N$00 (i.e. not visible).
-N $6A3E Red bird stole Percy's worm — return the worm to the room and play a
+N $6A3E Red bird stole Percy's worm so return the worm to the room and play a
 . sound.
   $6A3E,$03 Call #R$679C.
   $6A41,$03 #REGde=#N($0003,$04,$04).
@@ -2036,20 +2247,20 @@ N $6A3E Red bird stole Percy's worm — return the worm to the room and play a
   $6A5D,$03 No operation.
 N $6A60 Check if Percy's egg has hit the red bird.
 @ $6A60 label=HandleRedBird_CheckEgg
-  $6A60,$03 #REGa=*#R$5FA9.
-  $6A63,$03 Jump to #R$6A9D if no egg is active.
+  $6A60,$06 Jump to #R$6A9D if *#R$5FA9 is unset/ no egg is active.
   $6A66,$04 #REGiy=#R$DAE0.
   $6A6A,$04 #REGix=#R$DAC4.
 N $6A6E Only check collision if the red bird is in the same room as the egg.
   $6A6E,$04 #REGb=*#R$6CB6.
   $6A72,$03 #REGa=*#R$5FC5.
-  $6A75,$03 Jump to #R$6A9D if the red bird is not in the same room.
+  $6A75,$03 Jump to #R$6A9D if the red bird is not in the current room.
+N $6A78 The red bird is in the current room.
   $6A78,$03 Call #R$6C85.
   $6A7B,$02 Jump to #R$6A9D if no collision.
-N $6A7D Egg hit the red bird — check if already stunned.
+N $6A7D Egg hit the red bird so check if already stunned.
   $6A7D,$06 Jump to #R$6A9A if *#R$6CB4 is set so the red bird is already
 . stunned.
-N $6A83 Stun the red bird — set a random stun timer and award points.
+N $6A83 Stun the red bird so set a random stun timer and award points.
   $6A83,$03 Call #R$6C39.
   $6A86,$02,b$01 Set bit 6 (ensure a minimum stun duration).
   $6A88,$03 Write #REGa to *#R$6CB4.
@@ -2073,7 +2284,7 @@ N $6AA1 Calculates the red bird's next room and flight direction when it crosses
 N $6AA8 Check if the combined value wraps past room #N$0B.
   $6AA8,$01 #REGa+=#REGb.
   $6AA9,$04 Jump to #R$6AB5 if the combined value doesn't wrap past room #N$0B.
-N $6AAD Wrap point reached — flip the red bird's flight direction.
+N $6AAD Wrap point reached so flip the red bird's flight direction.
   $6AAD,$03 #REGa=*#R$6CB3.
   $6AB0,$02,b$01 Toggle bit 0 (flip direction).
   $6AB2,$03 Write #REGa to *#R$6CB3.
@@ -2081,7 +2292,7 @@ N $6AB5 Look up the flight speed for the current level from the table at
 . #R$6CBE.
 @ $6AB5 label=HandleRedBird_LookupSpeed
   $6AB5,$03 #REGhl=#R$6CBE.
-  $6AB8,$03 #REGa=*#R$5FB1 (current level).
+  $6AB8,$03 #REGa=*#R$5FB1.
   $6ABB,$01 Decrement to make zero-indexed.
   $6ABC,$01 #REGe=#REGa.
   $6ABD,$02 #REGd=#N$00.
@@ -2098,18 +2309,18 @@ N $6AD0 Search for a valid Y position that doesn't collide with scenery.
 @ $6AD0 label=HandleRedBird_FindPosition
   $6AD0,$03 Call #R$6C0C.
   $6AD3,$01 Return if no collision (valid position found).
-N $6AD4 Position blocked — try the next row down.
+N $6AD4 Position blocked so try the next row down.
   $6AD4,$04 Increment #REGb by #N$04.
   $6AD8,$01 #REGa=#REGb.
   $6AD9,$04 Jump back to #R$6AD0 until the bottom of search area is reached.
-N $6ADD Reached the bottom — wrap back to the top and shift X inward.
+N $6ADD Reached the bottom so wrap back to the top and shift X inward.
   $6ADD,$02 #REGb=#N$04 (reset Y to the top).
   $6ADF,$03 #REGa=*#R$6CB3 (flight direction).
   $6AE2,$03 Jump to #R$6AED if flying right.
-N $6AE5 Flying left — shift the starting X position rightward.
+N $6AE5 Flying left so shift the starting X position rightward.
   $6AE5,$06 Increment #REGc by #N$06.
   $6AEB,$02 Jump to #R$6AD0 to try again.
-N $6AED Flying right — shift the starting X position leftward.
+N $6AED Flying right so shift the starting X position leftward.
 @ $6AED label=HandleRedBird_ShiftLeft
   $6AED,$06 Decrement #REGc by #N$06.
   $6AF3,$02 Jump to #R$6AD0 to try again.
@@ -2122,7 +2333,7 @@ D $6AF6 Updates the red bird's position and animation. Handles the red bird's
 . animation.
   $6AF6,$04 #REGix=#R$DAC4 (red bird sprite data).
 N $6AFA Reset the red bird's frame and colour to defaults.
-  $6AFA,$04 Write #N$00 to *#REGix+#N$03 (clear frame — invisible).
+  $6AFA,$04 Write #N$00 to *#REGix+#N$03 (clear frame/ set to invisible).
   $6AFE,$04 Write #INK$02 to *#REGix+#N$02.
 N $6B02 If the red bird is stunned, handle stun recovery instead.
   $6B02,$07 Jump to #R$6B9B if *#R$6CB4 is set indicating the red bird is
@@ -2134,16 +2345,16 @@ N $6B09 If the room is being initialised, set a random appearance delay.
   $6B14,$02,b$01 Keep only bits 0-5 (cap at #N$3F).
   $6B16,$03 Write #REGa to *#R$6CBD.
 N $6B19 If an appearance delay is active, the red bird is waiting to enter the
-. current room — count down and handle the transition.
+. current room so count down and handle the transition.
 @ $6B19 label=UpdateRedBirdMovement_CheckDelay
   $6B19,$06 Jump to #R$6B6E if *#R$6CBD is active.
-N $6B1F Red bird is active in the current room — update its flight path.
+N $6B1F Red bird is active in the current room so update its flight path.
   $6B1F,$06 Write *#R$5FC5 to *#R$6CB6 (store the red bird's current room).
 N $6B25 Decrement the direction change timer.
   $6B25,$03 #REGhl=#R$6CB2.
   $6B28,$01 Decrement *#REGhl.
   $6B29,$02 Jump to #R$6B4A if the timer hasn't expired.
-N $6B2B Timer expired — choose a new flight direction.
+N $6B2B Timer expired so choose a new flight direction.
   $6B2B,$04 Write #N$00 to *#R$6CBA.
   $6B2F,$03 #REGhl=#R$6CBA.
   $6B32,$01 Decrement *#REGhl.
@@ -2189,21 +2400,21 @@ N $6B6E Red bird is waiting to appear. Count down the delay timer and handle
   $6B72,$03 #REGa=*#R$6CB6 (red bird's current room).
   $6B75,$01 Is the red bird in the same room as Percy?
   $6B76,$02 Jump to #R$6B7E if not.
-N $6B78 Red bird has arrived in Percy's room — clear the delay and animate.
+N $6B78 Red bird has arrived in Percy's room so clear the delay and animate.
   $6B78,$04 Write #N$00 to *#R$6CBD.
   $6B7C,$02 Jump to #R$6B5F.
-N $6B7E Still waiting — decrement the appearance delay.
+N $6B7E Still waiting so decrement the appearance delay.
 @ $6B7E label=UpdateRedBirdMovement_Countdown
   $6B7E,$03 #REGhl=#R$6CBD.
   $6B81,$01 Decrement *#REGhl.
   $6B82,$01 Return if the delay hasn't expired yet.
-N $6B83 Delay expired — determine which direction the red bird should enter from
+N $6B83 Delay expired; determine which direction the red bird should enter from
 . based on which room it's coming from relative to Percy's room.
   $6B83,$04 Write #N$00 to *#R$6CB3 (default: flying left).
   $6B87,$04 #REGb=*#R$5FC5.
   $6B8B,$03 #REGa=*#R$6CB6.
   $6B8E,$03 Jump to #R$6B96 if the red bird is coming from a lower numbered room.
-N $6B91 Red bird is coming from a higher room — enter flying right.
+N $6B91 Red bird is coming from a higher room so enter flying right.
   $6B91,$05 Write #N$01 to *#R$6CB3 (flying right).
 @ $6B96 label=UpdateRedBirdMovement_EnterRoom
   $6B96,$03 Call #R$6AA1.
@@ -2217,18 +2428,18 @@ N $6B9B Handle the red bird's stun recovery. The stun timer counts down, and
   $6BA3,$01 Decrement the stun timer.
   $6BA4,$01 #REGa=*#REGhl.
   $6BA5,$04 Jump to #R$6BC0 if the stun is about to end.
-N $6BA9 Still stunned — only draw if the red bird is in the current room.
+N $6BA9 Still stunned so only draw if the red bird is in the current room.
   $6BA9,$04 #REGb=*#R$6CB6.
   $6BAD,$03 #REGa=*#R$5FC5.
   $6BB0,$02 Return if the red bird is not in the same room as Percy.
-N $6BB2 Red bird is stunned and visible — move it downward slowly (falling).
+N $6BB2 Red bird is stunned and visible so move it downward slowly (falling).
   $6BB2,$03 #REGc=*#REGix+#N$00 (red bird's X position).
   $6BB5,$03 #REGa=*#REGix+#N$01 (red bird's Y position).
   $6BB8,$02 #REGa+=#N$03 (drift downward).
   $6BBA,$01 Store the result in #REGb.
   $6BBB,$03 Call #R$6C0C.
   $6BBE,$02 Jump to #R$6B5F.
-N $6BC0 Stun ending — clear the timer and set a short reappearance delay.
+N $6BC0 Stun ending so clear the timer and set a short reappearance delay.
 @ $6BC0 label=UpdateRedBirdMovement_StunEnd
   $6BC0,$01 Clear the stun timer to #N$00.
 N $6BC1 Set a short reappearance delay.
@@ -2243,17 +2454,17 @@ D $6BC8 Movement direction jump table. The entry point is self-modified at
 . *#REGhl, then falls through to #R$6C0C to validate the position.
 . #TABLE(default,centre,centre,centre,centre)
 . { =h Direction | =h Index | =h X | =h Y }
-. { Up | 0 | — | −speed }
+. { Up | 0 | - | −speed }
 . { Up-right | 1 | +speed | −speed }
-. { Right | 2 | +speed | — }
+. { Right | 2 | +speed | - }
 . { Down-right | 3 | +speed | +speed }
-. { Down | 4 | — | +speed }
+. { Down | 4 | - | +speed }
 . { Down-left | 5 | −speed | +speed }
-. { Left | 6 | −speed | — }
+. { Left | 6 | −speed | - }
 . { Up-left | 7 | −speed | −speed }
 . TABLE#
 E $6BC8 Continue on to #R$6C0C.
-  $6BC8,$02 Self-modified jump — offset written by #R$6B4E.
+  $6BC8,$02 Self-modified jump; offset written by #R$6B4E.
 @ $6BCA label=RedBirdDirection_Up
   $6BCA,$02 Jump to #R$6BDA (up).
 @ $6BCC label=RedBirdDirection_UpRight
@@ -2332,24 +2543,46 @@ N $6C21 Check C <= X-max.
   $6C21,$01 Advance to X-max.
   $6C22,$01 #REGa=*#REGhl.
   $6C23,$03 Jump to #R$6C2F if #REGc is greater than X-max.
-N $6C26 Position is within this region — store it and return success.
+N $6C26 Position is within this region so store it and return success.
   $6C26,$03 Write #REGc to *#REGix+#N$00 (X position).
   $6C29,$03 Write #REGb to *#REGix+#N$01 (Y position).
   $6C2C,$01 Restore the boundary pointer from the stack.
   $6C2D,$01 Clear carry (valid position).
   $6C2E,$01 Return.
-N $6C2F Position is outside this region — try the next one.
+N $6C2F Position is outside this region so try the next one.
 @ $6C2F label=ValidateRedBirdPosition_Next
   $6C2F,$01 Restore the boundary pointer from the stack.
   $6C30,$04 Advance #REGhl by #N$04 (next boundary entry).
   $6C34,$02 Jump to #R$6C0F.
-N $6C36 End of boundary data — no valid region found.
+N $6C36 End of boundary data. No valid region found.
 @ $6C36 label=ValidateRedBirdPosition_OutOfBounds
   $6C36,$01 Restore the boundary pointer from the stack.
   $6C37,$01 Set carry (out of bounds).
   $6C38,$01 Return.
 
-c $6C39
+c $6C39 Generate Random Number
+@ $6C39 label=GenerateRandomNumber
+D $6C39 Generates a pseudo-random number using the seed stored at *#R$6CB7.
+. The algorithm scrambles the seed value through a series of arithmetic
+. operations and stores the result back as the new seed. Returns the random
+. value in #REGa.
+R $6C39 O:A Pseudo-random value
+  $6C39,$04 #REGh=*#R$6CB7.
+  $6C3D,$03 Load both #REGl and #REGd with #N$00.
+  $6C40,$01 Copy *#R$6CB7 into #REGe.
+N $6C41 #REGhl = seed × #N$100, #REGde = seed. Subtract #REGde twice.
+  $6C41,$01 Clear carry.
+  $6C42,$02 #REGhl-=#REGde.
+  $6C44,$02 #REGhl-=#REGde.
+  $6C46,$04 #REGhl+=#N($00FE,$04,$04).
+N $6C4A Combine the high and low bytes.
+  $6C4A,$01 #REGa=#REGl.
+  $6C4B,$01 #REGa-=#REGh.
+  $6C4C,$02 Jump to #R$6C4F if carry set.
+  $6C4E,$01 Decrement #REGa.
+@ $6C4F label=GenerateRandomNumber_Store
+  $6C4F,$03 Write the new seed to *#R$6CB7.
+  $6C52,$01 Return.
 
 c $6C53 Check Sprite Collision
 D $6C53 Checks if two sprites overlap by comparing their X and Y positions.
@@ -2435,7 +2668,11 @@ N $6CA1 Sprite is above so check if its bottom edge reaches the egg's centre.
   $6CA4,$01 Return (with; carry clear meaning a collision, and carry set meaning
 . no collision).
 
-c $6CA5
+c $6CA5 Reset Red Bird
+@ $6CA5 label=ResetRedBird
+D $6CA5 Resets the red bird to an inactive state by writing #N$FF to its
+. traversal direction, stun timers and current room. This effectively disables
+. the red bird until it is reinitialised.
   $6CA5,$06 Write #N$FF to *#R$6CB3.
   $6CAB,$02 Write #N$FF to *#R$6CB4.
   $6CAD,$02 Write #N$FF to *#R$6CB5.
@@ -2514,10 +2751,12 @@ B $6CBD,$01
 g $6CBE Red Bird Speed Table
 @ $6CBE label=RedBirdSpeedTable
 D $6CBE Flight speed for each level. Indexed by zero-based level number.
-B $6CBE,$01 Speed: #N(#PEEK(#PC)).
+B $6CBE,$01 Speed for level #N($01+(#PC-$6CBE)): #N(#PEEK(#PC)).
 L $6CBE,$01,$05
 
-  $6CC3
+g $6CC3 Lives Display Previous
+@ $6CC3 label=Lives_Display_Previous
+B $6CC3,$01
 
 g $6CC4 Red Bird Wing Animation Counter
 @ $6CC4 label=RedBirdWingAnimationCounter
@@ -2533,7 +2772,338 @@ c $6DAB Dispatch Game State
 
 c $6E2F
 
-c $6E5D
+c $6E5D Handler: Car Type 1 (Driving Right)
+@ $6E5D label=Handler_Car_Type1
+D $6E5D Handles a car driving right across the screen. The car is made up of
+. two sprites (#N$10 pixels apart) representing the front and back.
+.
+. When the car reaches the right edge it is reinitialised from a random
+. position.
+  $6E5D,$04 #REGix=#R$DAC8.
+  $6E61,$07 Call #R$6F13 if *#R$5FBB is set/ the room is being initialised.
+N $6E68 If the car crash timer is active, handle the crash animation.
+  $6E68,$03 #REGa=*#R$7208.
+  $6E6B,$03 Jump to #R$6E97 if the crash timer is zero (car is driving
+. normally).
+  $6E6E,$04 Jump to #R$6E91 if the crash timer has reached #N$01 (crash
+. ending).
+N $6E72 Car is crashing — decrement the timer and cycle through crash
+. animation frames.
+  $6E72,$01 Decrement the crash timer.
+  $6E73,$03 Write #REGa to *#R$7208.
+  $6E76,$02,b$01 Keep only bit 1 (alternates between #N$00 and #N$02).
+  $6E78,$02 #REGa+=#N$20 (crash frame base).
+  $6E7A,$01 Stash the frame in shadow #REGaf.
+N $6E7B If the car is on the lower road (Y=#N$A0), use a different frame set.
+  $6E7B,$03 Load #REGa with the car's Y position (from *#REGix+#N$01).
+  $6E7E,$04 Jump to #R$6E87 if the car is not on the lower road.
+  $6E82,$01 Retrieve the crash frame from shadow #REGaf.
+  $6E83,$02 #REGa+=#N$02 (offset to left-facing crash frames).
+  $6E85,$02 Jump to #R$6E88.
+@ $6E87 label=Handler_CarType1_SetCrashFrame
+  $6E87,$01 Retrieve the crash frame from shadow #REGaf.
+@ $6E88 label=Handler_CarType1_StoreCrashFrame
+  $6E88,$03 Write #REGa to *#REGix+#N$03 (front sprite frame).
+  $6E8B,$01 Increment #REGa for the rear sprite.
+  $6E8C,$03 Write #REGa to *#REGix+#N$07 (rear sprite frame).
+  $6E8F,$02 Jump to #R$6EEF.
+N $6E91 Crash animation finished — clear the timer.
+@ $6E91 label=Handler_CarType1_CrashEnd
+  $6E91,$04 Write #N$00 to *#R$7208.
+  $6E95,$02 Jump to #R$6EEF.
+N $6E97 Car is driving normally — move it to the right.
+@ $6E97 label=Handler_CarType1_Drive
+  $6E97,$03 #REGhl=#R$720C (car speed).
+  $6E9A,$03 #REGa=*#REGix+#N$00 (car X position).
+  $6E9D,$01 #REGa+=*#REGhl (add speed).
+  $6E9E,$05 Call #R$6F13 to reinitialise the car if it's at the right edge.
+N $6EA3 Update both sprite X positions (#N$10 apart).
+  $6EA3,$03 Write #REGa to *#REGix+#N$00 (front X).
+  $6EA6,$02 #REGa+=#N$10.
+  $6EA8,$03 Write #REGa to *#REGix+#N$04 (rear X).
+N $6EAB Set the driving right frames.
+  $6EAB,$04 Write #N$1C to *#REGix+#N$03 (front frame: driving right).
+  $6EAF,$04 Write #N$1D to *#REGix+#N$07 (rear frame: driving right).
+N $6EB3 Set the car colour for both sprites.
+  $6EB3,$09 Write *#R$720A to; #LIST
+. { *#REGix+#N$02 (front colour) }
+. { *#REGix+#N$06 (rear colour) }
+. LIST#
+N $6EBC Set the Y positions for the wheels/underside sprites.
+  $6EBC,$04 Write #N$A0 to *#REGix+#N$21 (front underside Y).
+  $6EC0,$04 Write #N$A0 to *#REGix+#N$25 (rear underside Y).
+N $6EC4 Set the X positions for the underside sprites (offset by #N$03 and
+. #N$18 from the car's X).
+  $6EC4,$03 #REGa=*#REGix+#N$00.
+  $6EC7,$02 #REGa+=#N$03.
+  $6EC9,$03 Write #REGa to *#REGix+#N$20 (front underside X).
+  $6ECC,$02 #REGa+=#N$15.
+  $6ECE,$03 Write #REGa to *#REGix+#N$24 (rear underside X).
+N $6ED1 Animate the wheels — cycle through frames #N$10-#N$13.
+  $6ED1,$03 #REGhl=#R$720D (wheel animation counter).
+  $6ED4,$01 #REGa=*#REGhl.
+  $6ED5,$01 Increment the counter.
+  $6ED6,$02,b$01 Keep only bits 0-1 (cycle #N$00-#N$03).
+  $6ED8,$01 Write back to *#REGhl.
+  $6ED9,$02 #REGa+=#N$10 (wheel frame base).
+  $6EDB,$03 Write #REGa to *#REGix+#N$23 (front wheel frame).
+N $6EDE Offset the rear wheel animation by #N$02 for visual variety.
+  $6EDE,$01 #REGa=*#REGhl.
+  $6EDF,$02 #REGa+=#N$02.
+  $6EE1,$02,b$01 Keep only bits 0-1.
+  $6EE3,$02 #REGa+=#N$10 (wheel frame base).
+  $6EE5,$03 Write #REGa to *#REGix+#N$27 (rear wheel frame).
+N $6EE8 Check if Percy's egg has hit the car.
+  $6EE8,$03 #REGa=*#R$5FA9.
+  $6EEB,$04 Call #R$6F54 if the egg is active.
+N $6EEF Check if the car has collided with Percy.
+@ $6EEF label=Handler_CarCheckPercyCollision
+  $6EEF,$04 #REGix=#R$DAC0.
+  $6EF3,$04 #REGiy=#R$DACC.
+@ $6EF7 label=Handler_CarCheckPercyCollision_Test
+  $6EF7,$03 Call #R$6C53.
+  $6EFA,$01 Return if no collision.
+N $6EFB Car hit Percy — knock him backward.
+@ $6EFB label=Handler_CarKnockBackPercy
+  $6EFB,$03 #REGhl=#R$DAC0 (Percy's X position).
+  $6EFE,$01 #REGa=*#REGhl.
+  $6EFF,$02 #REGa-=#N$14 (knock back distance).
+  $6F01,$02 Jump to #R$6F0B if the result underflowed (Percy at the left edge).
+  $6F03,$01 Write the new X position to *#REGhl.
+  $6F04,$01 Advance to Percy's Y position.
+  $6F05,$02 Write #N$78 to *#REGhl (set Percy's Y position after knockback).
+  $6F07,$03 Write #REGa to *#R$5FA7 (set the falling state).
+  $6F0A,$01 Return.
+N $6F0B Percy was too close to the left edge — adjust position rightward.
+@ $6F0B label=Handler_CarKnockBackPercy_LeftEdge
+  $6F0B,$01 #REGa=*#REGhl.
+  $6F0C,$02 #REGa+=#N$0A.
+  $6F0E,$02 Jump to #R$6F03.
+
+N $6F10 Alternate entry point for car initialisation.
+@ $6F10 label=InitialiseCar_Alternate
+  $6F10,$03 Call #R$6F13.
+
+c $6F13 Initialise Car
+@ $6F13 label=InitialiseCar
+D $6F13 Initialises a car with random speed, colour and position. The car
+. starts at Y=#N$90 (upper road) with the possibility of appearing at different
+. X positions.
+R $6F13 IX Pointer to car sprite data
+  $6F13,$03 Call #R$6C39.
+  $6F16,$02,b$01 Keep only bits 0-1 (random speed #N$00-#N$03).
+  $6F18,$01 Increment (speed #N$01-#N$04).
+  $6F19,$03 Write #REGa to *#R$720C.
+N $6F1C Set a random appearance delay if the room is valid.
+  $6F1C,$03 #REGa=*#R$5FC5.
+  $6F1F,$03 Jump to #R$6F2C if the room number is zero.
+  $6F22,$03 Call #R$6C39.
+  $6F25,$02,b$01 Keep only bits 0-4.
+  $6F27,$02,b$01 Set bit 0 (ensure odd value).
+  $6F29,$03 Write #REGa to *#R$720E.
+N $6F2C Pick a random colour, but reject colour #N$01 (blue).
+@ $6F2C label=InitialiseCar_PickColour
+  $6F2C,$03 Call #R$6C39.
+  $6F2F,$02,b$01 Keep only bits 0-1 (random colour #N$00-#N$03).
+  $6F31,$04 Jump to #R$6F2C if the colour is #INK$01 (pick again).
+  $6F35,$03 Write #REGa to *#R$720A.
+N $6F38 Clear the crash timer and set the car on the upper road.
+  $6F38,$04 Write #N$00 to *#R$7208.
+  $6F3C,$04 Write #N$90 to *#REGix+#N$01 (front Y: upper road).
+  $6F40,$04 Write #N$90 to *#REGix+#N$05 (rear Y: upper road).
+  $6F44,$04 Write #N$07 to *#REGix+#N$22 (front wheel colour: white).
+  $6F48,$04 Write #N$07 to *#REGix+#N$26 (rear wheel colour: white).
+N $6F4C If the car's X position is past #N$64, reset it to the left.
+  $6F4C,$03 Load #REGa with the car's X position (from *#REGix+#N$00).
+  $6F4F,$03 Return if the car's X position is less than #N$64 (position is
+. valid).
+  $6F52,$01 #REGa=#N$00 (reset X position to the left edge).
+  $6F53,$01 Return.
+
+c $6F54 Check Car Egg Collision
+@ $6F54 label=CheckCarEggCollision
+D $6F54 Checks if Percy's egg has hit the car. If so, starts the crash
+. animation and awards points.
+R $6F54 IX Pointer to car sprite data
+  $6F54,$03 #REGhl=#R$DAC8.
+  $6F57,$03 #REGbc=#R$7208 (crash timer).
+@ $6F5A label=CheckCarEggCollision_Test
+  $6F5A,$01 #REGa=*#REGhl.
+  $6F5B,$01 Stash the original X position on the stack.
+  $6F5C,$02 #REGa+=#N$05 (offset to centre of car).
+  $6F5E,$01 Write the adjusted position to *#REGhl.
+  $6F5F,$03 Copy #REGhl to #REGix.
+  $6F62,$04 #REGiy=#R$DAE0 (egg sprite data).
+  $6F66,$01 Stash #REGbc on the stack.
+  $6F67,$03 Call #R$6C85.
+  $6F6A,$01 Restore #REGbc from the stack.
+  $6F6B,$02 Jump to #R$6F8A if no collision.
+N $6F6D Egg hit the car — restore the original X position and start the crash.
+  $6F6D,$01 Restore the original X position from the stack.
+  $6F6E,$01 Write it back to *#REGhl.
+  $6F6F,$03 Call #R$6C39.
+  $6F72,$02,b$01 Set bit 4 (ensure a minimum crash duration).
+  $6F74,$01 Write #REGa to *#REGbc (crash timer).
+  $6F75,$05 Call #R$67B2 to add #N$0F points to the score.
+N $6F7A Play a short random sound burst — used as a hit sound effect by
+. multiple routines.
+@ $6F7A label=PlayHitSound
+  $6F7A,$02 #REGb=#N$00 (loop #N$100 times).
+@ $6F7C label=PlayHitSound_Loop
+  $6F7C,$03 Call #R$6C39.
+  $6F7F,$02,b$01 Keep only bits 3-4.
+  $6F81,$02,b$01 Set bit 0 (border colour: blue).
+  $6F83,$02 Send to the speaker.
+  $6F85,$02 No operation.
+  $6F87,$02 Decrease #REGb by one and loop back to #R$6F7C until done.
+  $6F89,$01 Return.
+N $6F8A No collision — restore the original X position and return.
+@ $6F8A label=CheckCarEggCollision_Miss
+  $6F8A,$01 Restore the original X position from the stack.
+  $6F8B,$01 Write it back to *#REGhl.
+  $6F8C,$01 Return.
+
+c $6F8D Handler: Car Type 2 (Driving Left)
+@ $6F8D label=Handler_CarType2
+D $6F8D Handles a car driving left across the screen. When it reaches the left
+. boundary it turns around and drives right at ground level until reaching the
+. right edge, then reinitialises.
+  $6F8D,$04 #REGix=#R$DAC8.
+  $6F91,$03 #REGhl=#R$720B (car speed).
+N $6F94 If the room is being initialised, set up the car.
+  $6F94,$03 #REGa=*#R$5FBB.
+  $6F97,$03 Jump to #R$700C if the room buffer flag is set.
+N $6F9A If the car crash timer is active, handle the crash animation.
+  $6F9A,$03 #REGa=*#R$7208.
+  $6F9D,$04 Jump to #R$6E6E if the crash timer is active.
+N $6FA1 Check which road the car is on.
+  $6FA1,$03 #REGa=*#REGix+#N$01 (car Y position).
+  $6FA4,$02 Is the car on the upper road (#N$90)?
+  $6FA6,$02 Jump to #R$6FCB if on the upper road.
+N $6FA8 Car is on the lower road (Y=#N$A0) — driving left.
+  $6FA8,$03 #REGa=*#REGix+#N$00 (car X position).
+  $6FAB,$01 #REGa-=*#REGhl (subtract speed).
+  $6FAC,$02 Has the car reached #N$68 (left boundary)?
+  $6FAE,$02 Jump to #R$6FEE if at the left boundary (turn around).
+N $6FB0 Update positions and set driving left frames.
+@ $6FB0 label=Handler_CarType2_UpdateLeft
+  $6FB0,$03 Write #REGa to *#REGix+#N$00 (front X).
+  $6FB3,$02 #REGa+=#N$10.
+  $6FB5,$03 Write #REGa to *#REGix+#N$04 (rear X).
+  $6FB8,$04 Write #N$A0 to *#REGix+#N$01 (front Y: lower road).
+  $6FBC,$04 Write #N$A0 to *#REGix+#N$05 (rear Y: lower road).
+  $6FC0,$04 Write #N$1E to *#REGix+#N$03 (front frame: driving left).
+  $6FC4,$04 Write #N$1F to *#REGix+#N$07 (rear frame: driving left).
+  $6FC8,$03 Jump to #R$6EE8.
+N $6FCB Car is on the upper road (Y=#N$90) — driving right.
+@ $6FCB label=Handler_CarType2_DriveRight
+  $6FCB,$03 #REGa=*#REGix+#N$00 (car X position).
+  $6FCE,$01 #REGa+=*#REGhl (add speed).
+  $6FCF,$02 Has the car reached #N$DE (right edge)?
+  $6FD1,$02 Jump to #R$700C if at the right edge (reinitialise).
+N $6FD3 Update positions and set driving right frames.
+@ $6FD3 label=Handler_CarType2_UpdateRight
+  $6FD3,$03 Write #REGa to *#REGix+#N$00 (front X).
+  $6FD6,$02 #REGa+=#N$10.
+  $6FD8,$03 Write #REGa to *#REGix+#N$04 (rear X).
+  $6FDB,$04 Write #N$90 to *#REGix+#N$01 (front Y: upper road).
+  $6FDF,$04 Write #N$90 to *#REGix+#N$05 (rear Y: upper road).
+  $6FE3,$04 Write #N$1C to *#REGix+#N$03 (front frame: driving right).
+  $6FE7,$04 Write #N$1D to *#REGix+#N$07 (rear frame: driving right).
+  $6FEB,$03 Jump to #R$6EBC.
+N $6FEE Car reached the left boundary — turn around. Pick a new random speed
+. and colour, then start driving right from the left boundary.
+@ $6FEE label=Handler_CarType2_TurnAround
+  $6FEE,$01 Stash #REGhl on the stack.
+  $6FEF,$03 Call #R$6C39.
+  $6FF2,$01 Restore #REGhl from the stack.
+  $6FF3,$02,b$01 Keep only bits 0-1 (random speed #N$00-#N$03).
+  $6FF5,$01 Increment (speed #N$01-#N$04).
+  $6FF6,$01 Write the new speed to *#REGhl.
+N $6FF7 Pick a new colour, rejecting #N$01 (blue).
+  $6FF7,$01 Stash #REGhl on the stack.
+  $6FF8,$03 Call #R$6C39.
+  $6FFB,$01 Restore #REGhl from the stack.
+  $6FFC,$02,b$01 Keep only bits 0-1.
+  $6FFE,$02 Is the colour #N$01 (blue)?
+  $7000,$02 Jump to #R$6FF7 if blue (pick again).
+  $7002,$03 Write #REGa to *#REGix+#N$02 (front colour).
+  $7005,$03 Write #REGa to *#REGix+#N$06 (rear colour).
+  $7008,$02 #REGa=#N$68 (left boundary X position).
+  $700A,$02 Jump to #R$6FD3.
+N $700C Initialise car type 2 — start from the right edge driving left with
+. a random speed and colour.
+@ $700C label=Handler_CarType2_Initialise
+  $700C,$01 Stash #REGhl on the stack.
+  $700D,$03 Call #R$6C39.
+  $7010,$01 Restore #REGhl from the stack.
+  $7011,$02,b$01 Keep only bits 0-1.
+  $7013,$01 Increment (speed #N$01-#N$04).
+  $7014,$01 Write the new speed to *#REGhl.
+N $7015 Pick a colour, using the range #N$04-#N$07 (bright colours).
+  $7015,$01 Stash #REGhl on the stack.
+  $7016,$03 Call #R$6C39.
+  $7019,$01 Restore #REGhl from the stack.
+  $701A,$02,b$01 Keep only bits 0-1.
+  $701C,$02 #REGa+=#N$04 (bright colour range).
+  $701E,$03 Write #REGa to *#REGix+#N$02 (front colour).
+  $7021,$03 Write #REGa to *#REGix+#N$06 (rear colour).
+  $7024,$02 #REGa=#N$DE (right edge X position).
+  $7026,$02 Jump to #R$6FB0.
+
+c $7028 Handler: Car Type 3 (Driving Left, Fixed Speed)
+@ $7028 label=Handler_CarType3
+D $7028 Handles a car driving left across the screen. When it reaches the left
+. boundary it reinitialises from the right edge. Speed is fixed at #N$01.
+  $7028,$04 #REGix=#R$DAC8.
+  $702C,$03 #REGhl=#R$720B.
+  $702F,$02 Write #N$01 to *#REGhl (fixed speed of #N$01).
+N $7031 If the room is being initialised, set up the car.
+  $7031,$03 #REGa=*#R$5FBB.
+  $7034,$03 Jump to #R$704E if the room buffer flag is set.
+N $7037 If the car crash timer is active, handle the crash animation.
+  $7037,$03 #REGa=*#R$7208.
+  $703A,$04 Jump to #R$6E6E if the crash timer is active.
+N $703E Check which road the car is on.
+  $703E,$03 #REGa=*#REGix+#N$01 (car Y position).
+  $7041,$02 Is the car on the upper road (#N$90)?
+  $7043,$02 Jump to #R$7063 if on the upper road.
+N $7045 Car is on the lower road — driving left.
+  $7045,$03 #REGa=*#REGix+#N$00 (car X position).
+  $7048,$01 #REGa-=*#REGhl (subtract speed).
+  $7049,$02 Jump to #R$704E if the result underflowed (reinitialise).
+  $704B,$03 Jump to #R$6FB0.
+N $704E Initialise car type 3 — pick a random colour (rejecting #N$01) and
+. start from the right edge.
+@ $704E label=Handler_CarType3_Initialise
+  $704E,$01 Stash #REGhl on the stack.
+  $704F,$03 Call #R$6C39.
+  $7052,$01 Restore #REGhl from the stack.
+  $7053,$02,b$01 Keep only bits 0-1.
+  $7055,$02 Is the colour #N$01 (blue)?
+  $7057,$02 Jump to #R$704E if blue (pick again).
+  $7059,$03 Write #REGa to *#REGix+#N$02 (front colour).
+  $705C,$03 Write #REGa to *#REGix+#N$06 (rear colour).
+  $705F,$01 #REGa=#N$00 (start from the left edge).
+  $7060,$03 Jump to #R$6FD3.
+N $7063 Car is on the upper road — driving right.
+@ $7063 label=Handler_CarType3_DriveRight
+  $7063,$03 #REGa=*#REGix+#N$00 (car X position).
+  $7066,$01 #REGa+=*#REGhl (add speed).
+  $7067,$02 Has the car reached #N$28?
+  $7069,$02 Jump to #R$706E if past the boundary.
+  $706B,$03 Jump to #R$6FD3.
+N $706E Pick a new bright colour and restart from #N$28.
+@ $706E label=Handler_CarType3_Restart
+  $706E,$01 Stash #REGhl on the stack.
+  $706F,$03 Call #R$6C39.
+  $7072,$01 Restore #REGhl from the stack.
+  $7073,$02,b$01 Keep only bits 0-1.
+  $7075,$02 #REGa+=#N$04 (bright colour range).
+  $7077,$03 Write #REGa to *#REGix+#N$02 (front colour).
+  $707A,$03 Write #REGa to *#REGix+#N$06 (rear colour).
+  $707D,$02 #REGa=#N$28.
+  $707F,$03 Jump to #R$6FB0.
 
 c $7082 Handler: Frogs
 @ $7082 label=Handler_Frogs
@@ -2604,7 +3174,7 @@ N $7195 Check the first frog.
   $71A3,$02 Jump to #R$71B9 if the egg isn't colliding with the first frog.
 N $71A5 Item hit the first frog.
   $71A5,$04 Jump to #R$71B6 if the frog is already stunned.
-N $71A9 Stun the frog — set a random stun timer and award points.
+N $71A9 Stun the frog and set a random stun timer/ award points.
   $71A9,$02 #REGa=the contents of the Memory Refresh Register.
   $71AB,$02,b$01 Set bit 6 (ensure a minimum stun duration).
   $71AD,$01 Write the stun duration to the first frogs stun countdown.
@@ -2659,7 +3229,23 @@ D $71EF Jump height lookup table. Each entry is the Y offset from ground level
 . #N$18 steps.
   $71EF,$19,$0C,$01,$0C
 
-g $7208
+g $7208 Car State Data
+@ $7208 label=CarCrashTimer
+D $7208 Crash animation timer. When non-zero, the car cycles through crash
+. frames. Counts down to #N$01, then clears.
+B $7208,$01
+B $7209,$01
+@ $720A label=CarColour
+B $720A,$01 The car's current body colour.
+@ $720B label=CarSpeed
+B $720B,$01 Car speed for the left-driving variants (types 2 and 3).
+@ $720C label=CarSpeed2
+B $720C,$01 Car speed for the right-driving variant (type 1).
+@ $720D label=CarWheelAnimation
+B $720D,$01 Wheel animation counter. Cycles through #N$00-#N$03 to animate the
+. wheel rotation frames #N$10-#N$13.
+@ $720E label=CarAppearanceDelay
+B $720E,$01 Random delay before the car appears after initialisation.
 
 c $720F Room Handler Dispatch
 @ $720F label=RoomHandlerDispatch
@@ -3077,6 +3663,10 @@ c $7893
 
 g $7924
 
+g $7925
+
+g $7928
+
 c $7930
 
 c $794A Handler: Spider
@@ -3105,6 +3695,7 @@ c $79D2
 b $7AC3
   $7AC8
   $7B04
+  $7B0D
 
 g $7B2E Jump Table: Room Handlers
 @ $7B2E label=JumpTable_RoomHandler
@@ -3178,7 +3769,27 @@ b $95A5 Room #N$0C: Title Screen.
 D $95A5 #ROOM$0C
   $9746,$01 Terminator.
 
-b $9747
+b $9747 Room #N$0D: Level 2
+@ $9747 label=Room13_Level2
+D $9747 #ROOM$0D
+  $97D9,$01 Terminator.
+
+g $97DA Room #N$0E: Level 3
+@ $97DA label=Room14_Level3
+D $97DA #ROOM$0E
+  $986E,$01 Terminator.
+
+g $986F Room #N$0F: Level 4
+@ $986F label=Room15_Level4
+D $986F #ROOM$0F
+  $9903,$01 Terminator.
+
+b $9904 Room #N$10: Level 5
+@ $9904 label=Room16_Level5
+D $9904 #ROOM$10
+  $9997,$01 Terminator.
+
+b $9998
 
 b $9BAA Graphics: Default Tile Set
 @ $9BAA label=TileSet_Default
@@ -3343,127 +3954,110 @@ L $AB3B,$20,$60,$02
 
 b $B73B
 
-c $BB1C
-  $BB1C,$04 #REGix=#R$DAC0.
+c $BB1C Draw Sprites and Merge Collision Map
+@ $BB1C label=Draw_Sprites
+D $BB1C Draws all active sprites (Percy, hazards, etc.) to the screen buffer and
+. then merges the collision map with the background scenery. First draws up to
+. #N$08 three-column-wide sprites (e.g. Percy, large hazards), then up to #N$08
+. two-column-wide sprites (e.g. smaller objects). After drawing, the sprite
+. positions are backed up and the collision map is scanned to composite sprite
+. pixels onto the background.
+R $BB1C IX Percy sprite data pointer
+N $BB1C Check if lives backup is non-zero; if so, clear the sprite overlay
+. buffer and return early (used during life-lost sequence).
+  $BB1C,$04 Point #REGix at #R$DAC0.
   $BB20,$06 Jump to #R$BB33 if *#R$5FBE is zero.
-  $BB26,$0C Copy #N$00 across #N$02BF bytes from #R$F800 onwards.
+  $BB26,$0C Clear #N$02BF bytes of the sprite overlay buffer from #R$F800
+. onwards.
   $BB32,$01 Return.
-
-  $BB33,$04 #REGix=#R$DAC0.
-  $BB37,$05 Write #N$FF to *#R$FAC0.
-  $BB3C,$02 #REGb=#N$08.
-  $BB3E,$01 Stash #REGbc on the stack.
-  $BB3F,$07 Jump to #R$BB4A if *#REGix+#N$01 is less than #N$A1.
-  $BB46,$04 Write #N$A0 to *#REGix+#N$01.
-  $BB4A,$07 Jump to #R$BDE4 if *#REGix+#N$03 is zero.
+N $BB33 Main sprite drawing loop: draw up to #N$08 three-column-wide sprites.
+@ $BB33 label=Draw_3Wide_Sprites
+  $BB33,$04 Point #REGix at #R$DAC0.
+  $BB37,$05 Write a terminator byte (#N$FF) to *#R$FAC0.
+  $BB3C,$02 Set the sprite counter to #N$08 in #REGb.
+@ $BB3E label=Draw_3Wide_Loop
+  $BB3E,$01 Stash the sprite counter on the stack.
+  $BB3F,$0B Clamp the Y position: if *#REGix+#N$01 is not less than #N$A1,
+. write #N$A0 to *#REGix+#N$01.
+@ $BB4A label=Draw_3Wide_TestActive
+  $BB4A,$07 Jump to #R$BDE4 if the sprite is inactive (*#REGix+#N$03 which is
+. frame ID is zero).
   $BB51,$03 Call #R$BC0E.
-  $BB54,$01 Stash #REGhl on the stack.
+  $BB54,$01 Stash the screen address on the stack.
   $BB55,$03 Call #R$BD5E.
-  $BB58,$01 Restore #REGhl from the stack.
+  $BB58,$01 Restore the screen address from the stack.
   $BB59,$03 Call #R$BC52.
-  $BB5C,$08 Increment #REGix by four.
-  $BB64,$01 Restore #REGbc from the stack.
-  $BB65,$02 Decrease counter by one and loop back to #R$BB3E until counter is zero.
-  $BB67,$02 #REGb=#N$08.
-  $BB69,$01 Stash #REGbc on the stack.
-  $BB6A,$07 Jump to #R$BB75 if *#REGix+#N$01 is less than #N$A9.
-  $BB71,$04 Write #N$A8 to *#REGix+#N$01.
-  $BB75,$06 Jump to #R$BB86 if *#REGix+#N$03 is zero.
+@ $BB5C label=Advance_To_Next_Sprite
+  $BB5C,$08 Advance #REGix to the next sprite entry (each entry is #N$04 bytes).
+  $BB64,$01 Restore the sprite counter from the stack.
+  $BB65,$02 Decrease the sprite counter and loop back to #R$BB3E until all
+. #N$08 three-wide sprites are processed.
+N $BB67 Draw up to #N$08 two-column-wide sprites.
+@ $BB67 label=Draw_2Wide_Sprites
+  $BB67,$02 Set the sprite counter to #N$08 in #REGb.
+@ $BB69 label=Draw_2Wide_Loop
+  $BB69,$01 Stash the sprite counter on the stack.
+  $BB6A,$0B Clamp the Y position: if *#REGix+#N$01 is not less than #N$A9,
+. write #N$A8 to *#REGix+#N$01.
+  $BB75,$06 Jump to #R$BB86 if the sprite is inactive (*#REGix+#N$03 is zero).
   $BB7B,$03 Call #R$BC0E.
-  $BB7E,$01 Stash #REGhl on the stack.
+  $BB7E,$01 Stash the screen address on the stack.
   $BB7F,$03 Call #R$BDA6.
-  $BB82,$01 Restore #REGhl from the stack.
+  $BB82,$01 Restore the screen address from the stack.
   $BB83,$03 Call #R$BCF7.
-  $BB86,$08 Increment #REGix by four.
-  $BB8E,$01 Restore #REGbc from the stack.
-  $BB8F,$02 Decrease counter by one and loop back to #R$BB69 until counter is zero.
-  $BB91,$0B Copy #N($0040,$04,$04) bytes from *#R$DAC0 to #R$DB00.
-  $BB9C,$03 #REGhl=#N$F7FF.
-  $BB9F,$01 #REGa=#N$00.
-  $BBA0,$01 Increment #REGhl by one.
-  $BBA1,$04 Jump to #R$BBA0 if *#REGhl is zero.
-  $BBA5,$03 Return if #REGa is equal to #N$FF.
-  $BBA8,$01 Decrease *#REGhl by one.
-  $BBA9,$05 Jump to #R$BBBB if #REGa is equal to #N$02.
-  $BBAE,$01 Stash #REGhl on the stack.
-  $BBAF,$01 #REGa=#REGh.
-  $BBB0,$02 #REGa-=#N$20.
-  $BBB2,$01 #REGd=#REGa.
-  $BBB3,$01 #REGe=#REGl.
-  $BBB4,$01 #REGa=#REGh.
-  $BBB5,$02 #REGa-=#N$A0.
-  $BBB7,$01 #REGh=#REGa.
-  $BBB8,$01 #REGa=*#REGde.
-  $BBB9,$01 Write #REGa to *#REGhl.
-  $BBBA,$01 Restore #REGhl from the stack.
-  $BBBB,$01 Stash #REGhl on the stack.
-  $BBBC,$01 #REGa=#REGh.
-  $BBBD,$02,b$01 Keep only bits 0-1.
-  $BBBF,$03 RLCA three positions.
-  $BBC2,$02,b$01 Set bits 6-7.
-  $BBC4,$01 #REGh=#REGa.
-  $BBC5,$01 #REGb=#REGh.
-  $BBC6,$01 #REGd=#REGh.
-  $BBC7,$02 Set bit 5 of #REGb.
-  $BBC9,$02 Reset bit 7 of #REGd.
-  $BBCB,$01 #REGc=#REGl.
-  $BBCC,$01 #REGe=#REGl.
-  $BBCD,$01 #REGa=*#REGbc.
-  $BBCE,$01 Set the bits from *#REGhl.
-  $BBCF,$01 Write #REGa to *#REGde.
-  $BBD0,$02 Write #N$00 to *#REGbc.
-  $BBD2,$01 Increment #REGb by one.
-  $BBD3,$01 Increment #REGd by one.
-  $BBD4,$01 Increment #REGh by one.
-  $BBD5,$01 #REGa=*#REGbc.
-  $BBD6,$01 Set the bits from *#REGhl.
-  $BBD7,$01 Write #REGa to *#REGde.
-  $BBD8,$02 Write #N$00 to *#REGbc.
-  $BBDA,$01 Increment #REGb by one.
-  $BBDB,$01 Increment #REGd by one.
-  $BBDC,$01 Increment #REGh by one.
-  $BBDD,$01 #REGa=*#REGbc.
-  $BBDE,$01 Set the bits from *#REGhl.
-  $BBDF,$01 Write #REGa to *#REGde.
-  $BBE0,$02 Write #N$00 to *#REGbc.
-  $BBE2,$01 Increment #REGb by one.
-  $BBE3,$01 Increment #REGd by one.
-  $BBE4,$01 Increment #REGh by one.
-  $BBE5,$01 #REGa=*#REGbc.
-  $BBE6,$01 Set the bits from *#REGhl.
-  $BBE7,$01 Write #REGa to *#REGde.
-  $BBE8,$02 #N$00 to *#REGbc.
-  $BBEA,$01 Increment #REGb by one.
-  $BBEB,$01 Increment #REGd by one.
-  $BBEC,$01 Increment #REGh by one.
-  $BBED,$01 #REGa=*#REGbc.
-  $BBEE,$01 Set the bits from *#REGhl.
-  $BBEF,$01 Write #REGa to *#REGde.
-  $BBF0,$02 Write #N$00 to *#REGbc.
-  $BBF2,$01 Increment #REGb by one.
-  $BBF3,$01 Increment #REGd by one.
-  $BBF4,$01 Increment #REGh by one.
-  $BBF5,$01 #REGa=*#REGbc.
-  $BBF6,$01 Set the bits from *#REGhl.
-  $BBF7,$01 Write #REGa to *#REGde.
-  $BBF8,$02 Write #N$00 to *#REGbc.
-  $BBFA,$01 Increment #REGd by one.
-  $BBFB,$01 Increment #REGh by one.
-  $BBFC,$01 Increment #REGb by one.
-  $BBFD,$01 #REGa=*#REGbc.
-  $BBFE,$01 Set the bits from *#REGhl.
-  $BBFF,$01 Write #REGa to *#REGde.
-  $BC00,$01 #REGa=#N$00.
-  $BC01,$01 Write #REGa to *#REGbc.
-  $BC02,$01 Increment #REGb by one.
-  $BC03,$01 Increment #REGh by one.
-  $BC04,$01 Increment #REGd by one.
-  $BC05,$01 #REGa=*#REGbc.
-  $BC06,$01 Set the bits from *#REGhl.
-  $BC07,$01 Write #REGa to *#REGde.
-  $BC08,$02 Write #N$00 to *#REGbc.
-  $BC0A,$01 Restore #REGhl from the stack.
-  $BC0B,$03 Jump to #R$BBA0.
+@ $BB86 label=Advance_To_Next_2Wide
+  $BB86,$08 Advance #REGix to the next sprite entry (each entry is #N$04 bytes).
+  $BB8E,$01 Restore the sprite counter from the stack.
+  $BB8F,$02 Decrease the sprite counter and loop back to #R$BB69 until all
+. #N$08 two-wide sprites are processed.
+N $BB91 Back up current sprite positions for the next frame's erase pass.
+  $BB91,$0B Copy #N$0040 bytes from #R$DAC0 to #R$DB00.
+N $BB9C Scan the collision overlay buffer and merge sprite pixels onto the
+. background. Each non-zero, non-#N$FF byte in the buffer is a countdown;
+. when it reaches zero the sprite pixel data is composited with the scenery.
+  $BB9C,$03 Set #REGhl to #N$F7FF (one byte before the overlay buffer).
+  $BB9F,$01 Set #REGa to #N$00.
+@ $BBA0 label=Collision_Scan_Loop
+  $BBA0,$05 Increment #REGhl and jump back to #R$BBA0 if *#REGhl is zero
+. (skip empty cells).
+  $BBA5,$03 Return if the terminator (#N$FF) is found indicating the end of the
+. buffer.
+  $BBA8,$01 Decrease the countdown at *#REGhl.
+  $BBA9,$05 Jump to #R$BBBB if the value was #N$02 (skip background restore).
+N $BBAE Restore the background pixel at this position from the scenery buffer.
+  $BBAE,$01 Stash the overlay buffer pointer on the stack.
+  $BBAF,$04 Calculate the scenery source address in #REGde by subtracting
+. #N$20 from the high byte of #REGhl.
+  $BBB3,$01 Copy the low byte across.
+  $BBB4,$04 Calculate the screen destination address in #REGhl by subtracting
+. #N$A0 from the high byte.
+  $BBB8,$02 Copy the scenery byte from *#REGde to the screen at *#REGhl.
+  $BBBA,$01 Restore the overlay buffer pointer from the stack.
+N $BBBB Merge the sprite column pixels with the background. Derives the sprite
+. buffer, background and screen addresses from the overlay buffer pointer,
+. then ORs sprite data onto the background for #N$08 pixel rows.
+@ $BBBB label=Merge_Sprite_Column
+  $BBBB,$01 Stash the overlay buffer pointer on the stack.
+  $BBBC,$06 Derive the attribute row from the overlay buffer address: mask the
+. low two bits of the high byte, rotate left three times and set bits 6-7 to
+. form the base screen address high byte.
+  $BBC4,$05 Set #REGh, #REGb (sprite source) and #REGd (screen destination) to
+. this base. Set bit 5 of #REGb for the sprite buffer and reset bit 7 of
+. #REGd for the screen buffer.
+  $BBCB,$02 Copy the low byte to #REGc and #REGe.
+N $BBCD Merge eight pixel rows: OR the sprite data from *#REGbc onto the
+. background at *#REGhl, write the result to screen at *#REGde, then clear
+. the sprite source byte.
+  $BBCD,$05 Row 1: merge sprite with background, write to screen, clear sprite.
+  $BBD2,$08 Row 2: advance all row pointers and merge.
+  $BBDA,$08 Row 3: advance all row pointers and merge.
+  $BBE2,$08 Row 4: advance all row pointers and merge.
+  $BBEA,$08 Row 5: advance all row pointers and merge.
+  $BBF2,$09 Row 6: advance all row pointers and merge.
+  $BBFB,$06 Row 7: advance all row pointers and merge.
+  $BC01,$09 Row 8: advance all row pointers, merge and clear sprite.
+  $BC0A,$01 Restore the overlay buffer pointer from the stack.
+  $BC0B,$03 Jump back to #R$BBA0 to continue scanning.
 
 c $BC0E Calculate Screen Buffer Address
 @ $BC0E label=CalculateScreenBufferAddress
@@ -3873,69 +4467,81 @@ B $DAC2,$01 Percy INK colour.
 B $DAC3,$01 Percy frame ID.
 
 g $DAC4 Sprite 1 Data States
-@ $DAC4 label=Sprite01_X_Position
+@ $DAC4 label=Sprite01_3Wide_X_Position
 D $DAC4 Used by the Red Bird.
 B $DAC4,$01 Sprite 1 X position.
-@ $DAC5 label=Sprite01_Y_Position
+@ $DAC5 label=Sprite01_3Wide_Y_Position
 B $DAC5,$01 Sprite 1 Y position.
-@ $DAC6 label=Sprite01_Colour
+@ $DAC6 label=Sprite01_3Wide_Colour
 B $DAC6,$01 Sprite 1 INK colour.
-@ $DAC7 label=Sprite01_Frame_ID
+@ $DAC7 label=Sprite01_3Wide_Frame_ID
 B $DAC7,$01 Sprite 1 frame ID.
 
 g $DAC8 Sprite 2 Data States
-@ $DAC8 label=Sprite02_X_Position
+@ $DAC8 label=Sprite02_3Wide_X_Position
 D $DAC8 Used by Frog 1.
 B $DAC8,$01 Sprite 2 X position.
-@ $DAC9 label=Sprite02_Y_Position
+@ $DAC9 label=Sprite02_3Wide_Y_Position
 B $DAC9,$01 Sprite 2 Y position.
-@ $DACA label=Sprite02_Colour
+@ $DACA label=Sprite02_3Wide_Colour
 B $DACA,$01 Sprite 2 INK colour.
-@ $DACB label=Sprite02_Frame_ID
+@ $DACB label=Sprite02_3Wide_Frame_ID
 B $DACB,$01 Sprite 2 frame ID.
 
 g $DACC Sprite 3 Data States
-@ $DACC label=Sprite03_X_Position
+@ $DACC label=Sprite03_3Wide_X_Position
 D $DACC Used by Frog 2.
 B $DACC,$01 Sprite 3 X position.
-@ $DACD label=Sprite03_Y_Position
+@ $DACD label=Sprite03_3Wide_Y_Position
 B $DACD,$01 Sprite 3 Y position.
-@ $DACE label=Sprite03_Colour
+@ $DACE label=Sprite03_3Wide_Colour
 B $DACE,$01 Sprite 3 INK colour.
-@ $DACF label=Sprite03_Frame_ID
+@ $DACF label=Sprite03_3Wide_Frame_ID
 B $DACF,$01 Sprite 3 frame ID.
 
-g $DAD0 Car 2 States
-@ $DAD0 label=Car02_X_Position
-B $DAD0,$01 Car 2 X position.
-@ $DAD1 label=Car02_Y_Position
-B $DAD1,$01 Car 2 Y position.
-@ $DAD2 label=Car02_Colour
-B $DAD2,$01 Car 2 INK colour.
-@ $DAD3 label=Car02_Frame_ID
-B $DAD3,$01 Car 2 frame ID.
+g $DAD0 Sprite 4 Data States
+@ $DAD0 label=Sprite04_3Wide_X_Position
+D $DAD0 Used by Car 2.
+B $DAD0,$01 Sprite 4 X position.
+@ $DAD1 label=Sprite04_3Wide_Y_Position
+B $DAD1,$01 Sprite 4 Y position.
+@ $DAD2 label=Sprite04_3Wide_Colour
+B $DAD2,$01 Sprite 4 INK colour.
+@ $DAD3 label=Sprite04_3Wide_Frame_ID
+B $DAD3,$01 Sprite 4 frame ID.
 
-g $DAD4 Car 3 States
-@ $DAD4 label=Car03_X_Position
-B $DAD4,$01 Car 3 X position.
-@ $DAD5 label=Car03_Y_Position
-B $DAD5,$01 Car 3 Y position.
-@ $DAD6 label=Car03_Colour
-B $DAD6,$01 Car 3 INK colour.
-@ $DAD7 label=Car03_Frame_ID
-B $DAD7,$01 Car 3 frame ID.
+g $DAD4 Sprite 5 Data States
+@ $DAD4 label=Sprite05_3Wide_X_Position
+D $DAD4 Used by Car 3.
+B $DAD4,$01 Sprite 5 X position.
+@ $DAD5 label=Sprite05_3Wide_Y_Position
+B $DAD5,$01 Sprite 5 Y position.
+@ $DAD6 label=Sprite05_3Wide_Colour
+B $DAD6,$01 Sprite 5 INK colour.
+@ $DAD7 label=Sprite05_3Wide_Frame_ID
+B $DAD7,$01 Sprite 5 frame ID.
 
-g $DAD8
-B $DAD8,$01
-B $DAD9,$01
-B $DADA,$01
-B $DADB,$01
+g $DAD8 Sprite 6 Data States
+@ $DAD8 label=Sprite06_3Wide_X_Position
+D $DAD8 Used by ???
+B $DAD8,$01 Sprite 6 X position.
+@ $DAD9 label=Sprite06_3Wide_Y_Position
+B $DAD9,$01 Sprite 6 Y position.
+@ $DADA label=Sprite06_3Wide_Colour
+B $DADA,$01 Sprite 6 INK colour.
+@ $DADB label=Sprite06_3Wide_Frame_ID
+B $DADB,$01 Sprite 6 frame ID.
 
-g $DADC
-B $DADC,$01
-B $DADD,$01
-B $DADE,$01
-B $DADF,$01
+g $DADC Sprite 7 Data States
+@ $DADC label=Sprite07_3Wide_X_Position
+D $DADC Used by ???
+B $DADC,$01 Sprite 7 X position.
+@ $DADD label=Sprite07_3Wide_Y_Position
+B $DADD,$01 Sprite 7 Y position.
+@ $DADE label=Sprite07_3Wide_Colour
+B $DADE,$01 Sprite 7 INK colour.
+@ $DADF label=Sprite07_3Wide_Frame_ID
+B $DADF,$01 Sprite 7 frame ID.
 
 g $DAE0 Egg States?
 @ $DAE0 label=Egg_States
@@ -3950,41 +4556,65 @@ B $DAE5,$01
 B $DAE6,$01
 B $DAE7,$01
 
-g $DAE8
-B $DAE8,$01
-B $DAE9,$01
-B $DAEA,$01
-B $DAEB,$01
+g $DAE8 2-Wide Sprite 1 Data States
+@ $DAE8 label=Sprite01_2Wide_X_Position
+B $DAE8,$01 Sprite 1 X position.
+@ $DAE9 label=Sprite01_2Wide__Y_Position
+B $DAE9,$01 Sprite 1 Y position.
+@ $DAEA label=Sprite01_2Wide_Colour
+B $DAEA,$01 Sprite 1 INK colour.
+@ $DAEB label=Sprite01_2WideFrame_ID
+B $DAEB,$01 Sprite 1 frame ID.
 
-g $DAEC
-B $DAEC,$01
-B $DAED,$01
-B $DAEE,$01
-B $DAEF,$01
+g $DAEC 2-Wide Sprite 2 Data States
+@ $DAEC label=Sprite02_2Wide_X_Position
+B $DAEC,$01 Sprite 2 X position.
+@ $DAED label=Sprite02_2Wide_Y_Position
+B $DAED,$01 Sprite 2 Y position.
+@ $DAEE label=Sprite02_2Wide_Colour
+B $DAEE,$01 Sprite 2 INK colour.
+@ $DAEF label=Sprite02_2WideFrame_ID
+B $DAEF,$01 Sprite 2 frame ID.
 
-g $DAF0
-B $DAF0,$01
-B $DAF1,$01
-B $DAF2,$01
-B $DAF3,$01
+g $DAF0 2-Wide Sprite 3 Data States
+@ $DAF0 label=Sprite03_2Wide_X_Position
+B $DAF0,$01 Sprite 3 X position.
+@ $DAF1 label=Sprite03_2Wide_Y_Position
+B $DAF1,$01 Sprite 3 Y position.
+@ $DAF2 label=Sprite03_2Wide_Colour
+B $DAF2,$01 Sprite 3 INK colour.
+@ $DAF3 label=Sprite03_2WideFrame_ID
+B $DAF3,$01 Sprite 3 frame ID.
 
-g $DAF4
-B $DAF4,$01
-B $DAF5,$01
-B $DAF6,$01
-B $DAF7,$01
+g $DAF4 2-Wide Sprite 4 Data States
+@ $DAF4 label=Sprite04_2Wide_X_Position
+B $DAF4,$01 Sprite 4 X position.
+@ $DAF5 label=Sprite04_2Wide_Y_Position
+B $DAF5,$01 Sprite 4 Y position.
+@ $DAF6 label=Sprite04_2Wide_Colour
+B $DAF6,$01 Sprite 4 INK colour.
+@ $DAF7 label=Sprite04_2WideFrame_ID
+B $DAF7,$01 Sprite 4 frame ID.
 
-g $DAF8
-B $DAF8,$01
-B $DAF9,$01
-B $DAFA,$01
-B $DAFB,$01
+g $DAF8 2-Wide Sprite 5 Data States
+@ $DAF8 label=Sprite05_2Wide_X_Position
+B $DAF8,$01 Sprite 5 X position.
+@ $DAF9 label=Sprite05_2Wide_Y_Position
+B $DAF9,$01 Sprite 5 Y position.
+@ $DAFA label=Sprite05_2Wide_Colour
+B $DAFA,$01 Sprite 5 INK colour.
+@ $DAFB label=Sprite05_2WideFrame_ID
+B $DAFB,$01 Sprite 5 frame ID.
 
-g $DAFC
-B $DAFC,$01
-B $DAFD,$01
-B $DAFE,$01
-B $DAFF,$01
+g $DAFC 2-Wide Sprite 6 Data States
+@ $DAFC label=Sprite06_2Wide_X_Position
+B $DAFC,$01 Sprite 6 X position.
+@ $DAFD label=Sprite06_2Wide_Y_Position
+B $DAFD,$01 Sprite 6 Y position.
+@ $DAFE label=Sprite06_2Wide_Colour
+B $DAFE,$01 Sprite 6 INK colour.
+@ $DAFF label=Sprite06_2WideFrame_ID
+B $DAFF,$01 Sprite 6 frame ID.
 
 g $DB00 Percy Previous X Position
 @ $DB00 label=PercyPreviousXPosition
@@ -3994,15 +4624,18 @@ B $DB00,$01
 
 g $DB0C
 
-b $DE9E
+g $DE9E Room Attribute Data
+@ $DE9E label=RoomAttribute_Data
+B $DE9E,$0160,$20
 
 g $E000 Sprite Buffer
 @ $E000 label=SpriteBuffer
 B $E000,$1800,$20
 
-b $F800
-
-g $FAC0
+g $F800 Overlay Buffer
+@ $F800 label=OverlayBuffer
+B $F800,$02C0,$20
+@ $FAC0 label=OverlayBuffer_End
 B $FAC0,$01
 
 c $FAC1 Play Next Level Jingle
@@ -4058,7 +4691,7 @@ M $FAE5,$03 Return if "ENTER" has been pressed.
 
 b $FAF9 Audio: Next Level Jingle
 @ $FAF9 label=Audio_NextLevelJingle
-@ $FBF9 label=Audio_LoseLifeJingle
+@ $FBF9 label=Audio_LevelCompleteJingle
   $FAF9,$0120
   $FC19,$02 Terminator.
 
