@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Percy the Potty Pigeon: Data at 7AC3</title>
+<title>Percy the Potty Pigeon: Game status buffer entry at 7AC3</title>
 <meta charset="utf-8" />
 <link rel="stylesheet" type="text/css" href="../skoolkit.css" />
 <link rel="stylesheet" type="text/css" href="../skoolkit-dark.css" />
@@ -15,11 +15,11 @@ gtag('js', new Date());
 gtag('config', 'G-75RERFCHBG');
 </script>
 </head>
-<body class="Asm-b">
+<body class="Asm-g">
 <table class="header">
 <tr>
 <td class="logo"><a href="../index.html"><img alt="logo" src="../images/logo.png" /></a></td>
-<td class="page-header">Data</td>
+<td class="page-header">Game status buffer</td>
 </tr>
 </table>
 <table class="asm-navigation">
@@ -29,95 +29,63 @@ Prev: <a href="79D2.html">79D2</a>
 </td>
 <td class="up">Up: <a href="../maps/all.html#7ac3">Map</a></td>
 <td class="next">
-Next: <a href="7B2E.html">7B2E</a>
+Next: <a href="7AC7.html">7AC7</a>
 </td>
 </tr>
 </table>
-<div class="description">7AC3: Data block at 7AC3</div>
+<div class="description">7AC3: Parachute State Data</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
 <div class="details">
+<div class="paragraph">
+State variables for the parachute hazard. <table class="default">
+<tr>
+<th colspan="1" rowspan="1">Offset</th>
+<th colspan="1" rowspan="1">Description</th>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">00</td>
+<td class="centre" colspan="1" rowspan="1">Stunned flag (bit 7 set = stunned by egg)</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">01</td>
+<td class="centre" colspan="1" rowspan="1">Landing counter</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">02</td>
+<td class="centre" colspan="1" rowspan="1">Detach flag</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">03</td>
+<td class="centre" colspan="1" rowspan="1">Animation counter</td>
+</tr>
+</table>
+</div>
 </div>
 </td>
 </tr>
 <tr>
+<td class="asm-label">Parachute_State_Data</td>
 <td class="address-1"><span id="7ac3"></span>7AC3</td>
-<td class="instruction">DEFB $00,$00,$00,$00,$00</td>
+<td class="instruction">DEFB $00</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
-<td class="address-1"><span id="7ac8"></span>7AC8</td>
-<td class="instruction">DEFB $00,$00,$00,$00,$00,$A0,$48,$EF</td>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7ac4"></span>7AC4</td>
+<td class="instruction">DEFB $00</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
-<td class="address-1"><span id="7ad0"></span>7AD0</td>
-<td class="instruction">DEFB $00,$88,$70,$EF,$00,$00,$00,$00</td>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7ac5"></span>7AC5</td>
+<td class="instruction">DEFB $00</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
-<td class="address-1"><span id="7ad8"></span>7AD8</td>
-<td class="instruction">DEFB $00,$A0,$04,$EF,$00,$90,$32,$99</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="7ae0"></span>7AE0</td>
-<td class="instruction">DEFB $00,$A0,$39,$A0,$00,$A0,$04,$50</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="7ae8"></span>7AE8</td>
-<td class="instruction">DEFB $00,$00,$00,$00,$00,$00,$00,$00</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="7af0"></span>7AF0</td>
-<td class="instruction">DEFB $00,$78,$70,$EF,$00,$00,$00,$00</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="7af8"></span>7AF8</td>
-<td class="instruction">DEFB $00,$00,$00,$00,$00,$00,$00,$00</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="7b00"></span>7B00</td>
-<td class="instruction">DEFB $00,$90,$90,$EF</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="7b04"></span>7B04</td>
-<td class="instruction">DEFB $00,$38,$00,$00,$00,$00,$00,$A0</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="7b0c"></span>7B0C</td>
-<td class="instruction">DEFB $AA</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="7b0d"></span>7B0D</td>
-<td class="instruction">DEFB $00,$00,$00,$00,$00,$00,$00,$00</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="7b15"></span>7B15</td>
-<td class="instruction">DEFB $00,$00,$00,$00,$00,$00,$00,$00</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="7b1d"></span>7B1D</td>
-<td class="instruction">DEFB $00,$68,$50,$78,$00,$88,$BC,$EF</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="7b25"></span>7B25</td>
-<td class="instruction">DEFB $00,$00,$00,$00,$00,$98,$78,$EF</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="7b2d"></span>7B2D</td>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7ac6"></span>7AC6</td>
 <td class="instruction">DEFB $00</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
@@ -129,7 +97,7 @@ Prev: <a href="79D2.html">79D2</a>
 </td>
 <td class="up">Up: <a href="../maps/all.html#7ac3">Map</a></td>
 <td class="next">
-Next: <a href="7B2E.html">7B2E</a>
+Next: <a href="7AC7.html">7AC7</a>
 </td>
 </tr>
 </table>

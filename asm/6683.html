@@ -33,13 +33,13 @@ Next: <a href="66A8.html">66A8</a>
 </td>
 </tr>
 </table>
-<div class="description">6683: Draw Worm Animation Frame</div>
+<div class="description">6683: Handler: Draw Worm Animation Frame</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
 <div class="details">
 <div class="paragraph">
-Used by the routine at <a href="662B.html">Handle_Worms</a>.
+Used by the routine at <a href="662B.html">Handler_Worms</a>.
 </div>
 <div class="paragraph">
 Draws an 08-pixel-row worm wiggle animation frame at the screen address in <span class="register">HL</span>. Alternates between two graphic frames at A7C3 and A7CB based on the animation toggle at <a href="5FB4.html">ChickAnimationStates</a>.
@@ -100,7 +100,7 @@ This entry point is used by the routines at <a href="65EA.html">DrawNestChicks</
 <td class="asm-label"></td>
 <td class="address-1"><span id="6694"></span>6694</td>
 <td class="instruction">PUSH HL</td>
-<td class="comment-1" rowspan="1">Stash the screen address on the stack.</td>
+<td class="comment-1" rowspan="1">Stash the screen buffer address on the stack.</td>
 </tr>
 <tr>
 <td class="asm-label">Handler_DrawWorm_FrameLoop</td>
@@ -135,13 +135,13 @@ This entry point is used by the routines at <a href="65EA.html">DrawNestChicks</
 <td class="asm-label"></td>
 <td class="address-1"><span id="669b"></span>669B</td>
 <td class="instruction">POP HL</td>
-<td class="comment-1" rowspan="1">Restore the screen address from the stack.</td>
+<td class="comment-1" rowspan="1">Restore the screen buffer address from the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="669c"></span>669C</td>
 <td class="instruction">LD A,H</td>
-<td class="comment-1" rowspan="8">Convert the screen address to the corresponding attribute address and write 03 (magenta on black) as the worm colour attribute.</td>
+<td class="comment-1" rowspan="8">Convert the screen buffer address to the corresponding attribute address and write 03 (magenta on black) as the worm colour attribute.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>

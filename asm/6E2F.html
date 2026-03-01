@@ -33,111 +33,121 @@ Next: <a href="6E5D.html">6E5D</a>
 </td>
 </tr>
 </table>
-<div class="description">6E2F: Routine at 6E2F</div>
+<div class="description">6E2F: Randomise Car Position</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
 <div class="details">
 <div class="paragraph">
-Used by the routine at <a href="6DAB.html">Dispatch_Game_State</a>.
+Used by the routine at <a href="6DAB.html">Handle_Cars</a>.
+</div>
+<div class="paragraph">
+Generates random parameters for a new car entering from the right side of the screen. Sets a random movement speed, random sprite active flags, and resets the car to the bottom of the screen. Clamps the X position to a maximum of DE.
 </div>
 </div>
 </td>
 </tr>
 <tr>
+<td class="asm-label">Randomise_Car_Position</td>
 <td class="address-2"><span id="6e2f"></span>6E2F</td>
 <td class="instruction">CALL <a href="6C39.html">GenerateRandomNumber</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="4">Generate a random car speed of 01-04 and write to *<a href="7208.html#720b">CarSpeed</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6e32"></span>6E32</td>
-<td class="instruction">AND $03</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">AND %00000011</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6e34"></span>6E34</td>
 <td class="instruction">INC A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6e35"></span>6E35</td>
 <td class="instruction">LD ($720B),A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6e38"></span>6E38</td>
 <td class="instruction">CALL <a href="6C39.html">GenerateRandomNumber</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="5">Generate a random sprite active value of 04-07 and write to both *<span class="register">IX</span>+02 and *<span class="register">IX</span>+06.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6e3b"></span>6E3B</td>
-<td class="instruction">AND $03</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">AND %00000011</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6e3d"></span>6E3D</td>
 <td class="instruction">ADD A,$04</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6e3f"></span>6E3F</td>
 <td class="instruction">LD (IX+$02),A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6e42"></span>6E42</td>
 <td class="instruction">LD (IX+$06),A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6e45"></span>6E45</td>
 <td class="instruction">LD (IX+$01),$A0</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Set both Y positions (*<span class="register">IX</span>+01 and *<span class="register">IX</span>+05) to A0 (bottom of screen).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6e49"></span>6E49</td>
 <td class="instruction">LD (IX+$05),$A0</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6e4d"></span>6E4D</td>
 <td class="instruction">XOR A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Write 00 to *<a href="7208.html#7209">CarCrashCounter</a> to clear it.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6e4e"></span>6E4E</td>
 <td class="instruction">LD ($7209),A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6e51"></span>6E51</td>
 <td class="instruction">LD A,(IX+$00)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Load the car X position from *<span class="register">IX</span>+00.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6e54"></span>6E54</td>
 <td class="instruction">CP $DE</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Return if the car X position is less than DE.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6e56"></span>6E56</td>
 <td class="instruction">LD A,$DE</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6e58"></span>6E58</td>
 <td class="instruction">RET C</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6e59"></span>6E59</td>
 <td class="instruction">LD (IX+$00),A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Otherwise clamp the X position to DE and return.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="6e5c"></span>6E5C</td>
 <td class="instruction">RET</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 </table>
 <table class="asm-navigation">

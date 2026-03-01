@@ -33,96 +33,106 @@ Next: <a href="794A.html">794A</a>
 </td>
 </tr>
 </table>
-<div class="description">7930: Routine at 7930</div>
+<div class="description">7930: Generate Random Number</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
 <div class="details">
 <div class="paragraph">
-Used by the routines at <a href="7439.html">7439</a>, <a href="74A7.html">74A7</a>, <a href="74B9.html">74B9</a>, <a href="7512.html">7512</a> and <a href="768C.html">UpdatePlaneFlightPath</a>.
+Used by the routines at <a href="7439.html">Handle_Red_Bird</a>, <a href="74A7.html">Randomise_Position_Loop</a>, <a href="74B9.html">Animate_Stunned_RedBird</a>, <a href="7512.html">7512</a> and <a href="768C.html">UpdatePlaneFlightPath</a>.
+</div>
+<div class="paragraph">
+Generates a pseudo-random number using a linear decay formula. Reads the current seed from <a href="7AC7.html">7AC7</a>, computes (seed + 01) * FE then derives the new seed from the difference of the low and high bytes of the result. Returns the new value in <span class="register">A</span>.
 </div>
 </div>
 </td>
 </tr>
 <tr>
+<td class="asm-label">Generate_Random_Number</td>
 <td class="address-2"><span id="7930"></span>7930</td>
 <td class="instruction">LD A,($7AC7)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Fetch the current random seed from *<a href="7AC7.html">7AC7</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7933"></span>7933</td>
 <td class="instruction">LD H,A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="4">Set <span class="register">HL</span> to seed * 0100 and copy into <span class="register">DE</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7934"></span>7934</td>
 <td class="instruction">LD L,$00</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7936"></span>7936</td>
 <td class="instruction">LD D,L</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7937"></span>7937</td>
 <td class="instruction">LD E,H</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7938"></span>7938</td>
 <td class="instruction">AND A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Subtract <span class="register">DE</span> twice from <span class="register">HL</span> (i.e. <span class="register">HL</span> = seed * FE).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7939"></span>7939</td>
 <td class="instruction">SBC HL,DE</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="793b"></span>793B</td>
 <td class="instruction">SBC HL,DE</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="793d"></span>793D</td>
 <td class="instruction">LD DE,$00FE</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Add FE to <span class="register">HL</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7940"></span>7940</td>
 <td class="instruction">ADD HL,DE</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7941"></span>7941</td>
 <td class="instruction">LD A,L</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="4">Subtract <span class="register">H</span> from <span class="register">L</span>; if no borrow occurred, decrement the result by one.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7942"></span>7942</td>
 <td class="instruction">SUB H</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7943"></span>7943</td>
-<td class="instruction">JR C,<a href="7930.html#7946">$7946</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR C,<a href="7930.html#7946">Store_Random_Seed</a></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7945"></span>7945</td>
 <td class="instruction">DEC A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label">Store_Random_Seed</td>
 <td class="address-2"><span id="7946"></span>7946</td>
 <td class="instruction">LD ($7AC7),A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write the new random seed to *<a href="7AC7.html">7AC7</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7949"></span>7949</td>
 <td class="instruction">RET</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Return.</td>
 </tr>
 </table>
 <table class="asm-navigation">

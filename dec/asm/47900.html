@@ -184,7 +184,7 @@ Main sprite drawing loop: draw up to 8 three-column-wide sprites.
 <td class="asm-label">Draw_3Wide_TestActive</td>
 <td class="address-2"><span id="47946"></span>47946</td>
 <td class="instruction">LD A,(IX+3)</td>
-<td class="comment-1" rowspan="3">Jump to <a href="48550.html#48612">48612</a> if the sprite is inactive (*<span class="register">IX</span>+3 which is frame ID is zero).</td>
+<td class="comment-1" rowspan="3">Jump to <a href="48612.html">Sprite_Inactive_Delay</a> if the sprite is inactive (*<span class="register">IX</span>+3 which is frame ID is zero).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -194,7 +194,7 @@ Main sprite drawing loop: draw up to 8 three-column-wide sprites.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="47950"></span>47950</td>
-<td class="instruction">JP Z,<a href="48550.html#48612">48612</a></td>
+<td class="instruction">JP Z,<a href="48612.html">Sprite_Inactive_Delay</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -206,19 +206,19 @@ Main sprite drawing loop: draw up to 8 three-column-wide sprites.
 <td class="asm-label"></td>
 <td class="address-1"><span id="47956"></span>47956</td>
 <td class="instruction">PUSH HL</td>
-<td class="comment-1" rowspan="1">Stash the screen address on the stack.</td>
+<td class="comment-1" rowspan="1">Stash the screen buffer address on the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="47957"></span>47957</td>
-<td class="instruction">CALL <a href="48478.html">DrawSpriteColumn</a></td>
-<td class="comment-1" rowspan="1">Call <a href="48478.html">DrawSpriteColumn</a>.</td>
+<td class="instruction">CALL <a href="48478.html">Draw_3Wide_Sprite_Column</a></td>
+<td class="comment-1" rowspan="1">Call <a href="48478.html">Draw_3Wide_Sprite_Column</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="47960"></span>47960</td>
 <td class="instruction">POP HL</td>
-<td class="comment-1" rowspan="1">Restore the screen address from the stack.</td>
+<td class="comment-1" rowspan="1">Restore the screen buffer address from the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -231,7 +231,7 @@ Main sprite drawing loop: draw up to 8 three-column-wide sprites.
 <span id="47964"></span>
 <div class="comments">
 <div class="paragraph">
-This entry point is used by the routine at <a href="48550.html">48550</a>.
+This entry point is used by the routine at <a href="48612.html">Sprite_Inactive_Delay</a>.
 </div>
 </div>
 </td>
@@ -338,19 +338,19 @@ Draw up to 8 two-column-wide sprites.
 <td class="asm-label"></td>
 <td class="address-1"><span id="47998"></span>47998</td>
 <td class="instruction">PUSH HL</td>
-<td class="comment-1" rowspan="1">Stash the screen address on the stack.</td>
+<td class="comment-1" rowspan="1">Stash the screen buffer address on the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="47999"></span>47999</td>
-<td class="instruction">CALL <a href="48550.html">48550</a></td>
-<td class="comment-1" rowspan="1">Call <a href="48550.html">48550</a>.</td>
+<td class="instruction">CALL <a href="48550.html">Draw_2Wide_Sprite_Column</a></td>
+<td class="comment-1" rowspan="1">Call <a href="48550.html">Draw_2Wide_Sprite_Column</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="48002"></span>48002</td>
 <td class="instruction">POP HL</td>
-<td class="comment-1" rowspan="1">Restore the screen address from the stack.</td>
+<td class="comment-1" rowspan="1">Restore the screen buffer address from the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -546,7 +546,7 @@ Restore the background pixel at this position from the scenery buffer.
 <td class="asm-label"></td>
 <td class="address-1"><span id="48056"></span>48056</td>
 <td class="instruction">LD A,(DE)</td>
-<td class="comment-1" rowspan="2">Copy the scenery byte from *<span class="register">DE</span> to the screen at *<span class="register">HL</span>.</td>
+<td class="comment-1" rowspan="2">Copy the scenery byte from *<span class="register">DE</span> to the screen buffer at *<span class="register">HL</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -564,7 +564,7 @@ Restore the background pixel at this position from the scenery buffer.
 <span id="48059"></span>
 <div class="comments">
 <div class="paragraph">
-Merge the sprite column pixels with the background. Derives the sprite buffer, background and screen addresses from the overlay buffer pointer, then ORs sprite data onto the background for 8 pixel rows.
+Merge the sprite column pixels with the background. Derives the sprite buffer, background and screen buffer addresses from the overlay buffer pointer, then ORs sprite data onto the background for 8 pixel rows.
 </div>
 </div>
 </td>
@@ -579,7 +579,7 @@ Merge the sprite column pixels with the background. Derives the sprite buffer, b
 <td class="asm-label"></td>
 <td class="address-1"><span id="48060"></span>48060</td>
 <td class="instruction">LD A,H</td>
-<td class="comment-1" rowspan="5">Derive the attribute row from the overlay buffer address: mask the low two bits of the high byte, rotate left three times and set bits 6-7 to form the base screen address high byte.</td>
+<td class="comment-1" rowspan="5">Derive the attribute row from the overlay buffer address: mask the low two bits of the high byte, rotate left three times and set bits 6-7 to form the base screen buffer address high byte.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -650,7 +650,7 @@ Merge the sprite column pixels with the background. Derives the sprite buffer, b
 <span id="48077"></span>
 <div class="comments">
 <div class="paragraph">
-Merge eight pixel rows: OR the sprite data from *<span class="register">BC</span> onto the background at *<span class="register">HL</span>, write the result to screen at *<span class="register">DE</span>, then clear the sprite source byte.
+Merge eight pixel rows: OR the sprite data from *<span class="register">BC</span> onto the background at *<span class="register">HL</span>, write the result to the screen buffer at *<span class="register">DE</span>, then clear the sprite source byte.
 </div>
 </div>
 </td>

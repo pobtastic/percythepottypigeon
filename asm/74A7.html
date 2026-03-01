@@ -33,56 +33,63 @@ Next: <a href="74B9.html">74B9</a>
 </td>
 </tr>
 </table>
-<div class="description">74A7: Routine at 74A7</div>
+<div class="description">74A7: Randomise Red Bird Position</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
 <div class="details">
 <div class="paragraph">
-Used by the routines at <a href="7439.html">7439</a> and <a href="7512.html">7512</a>.
+Used by the routines at <a href="7439.html">Handle_Red_Bird</a> and <a href="7512.html">7512</a>.
+</div>
+<div class="paragraph">
+Generates a random position for the red bird and validates it. Keeps generating new coordinates until a valid position is found, then clears the spawning flag.
 </div>
 </div>
 </td>
 </tr>
 <tr>
+<td class="asm-label">Randomise_Position_Loop</td>
 <td class="address-2"><span id="74a7"></span>74A7</td>
-<td class="instruction">CALL <a href="7930.html">$7930</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">CALL <a href="7930.html">Generate_Random_Number</a></td>
+<td class="comment-1" rowspan="4">Generate a random X coordinate in <span class="register">C</span> and a random Y coordinate in <span class="register">B</span> by calling <a href="7930.html">Generate_Random_Number</a> twice.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="74aa"></span>74AA</td>
 <td class="instruction">LD C,A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="74ab"></span>74AB</td>
-<td class="instruction">CALL <a href="7930.html">$7930</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">CALL <a href="7930.html">Generate_Random_Number</a></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="74ae"></span>74AE</td>
 <td class="instruction">LD B,A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="74af"></span>74AF</td>
 <td class="instruction">CALL <a href="6C0C.html">ValidateRedBirdPosition</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Call <a href="6C0C.html">ValidateRedBirdPosition</a> and jump back to <a href="74A7.html">Randomise_Position_Loop</a> if the position is invalid.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="74b2"></span>74B2</td>
-<td class="instruction">JR C,<a href="74A7.html#74a7">$74A7</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR C,<a href="74A7.html#74a7">Randomise_Position_Loop</a></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="74b4"></span>74B4</td>
 <td class="instruction">RES 7,(IY+$00)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Clear bit 7 of *<span class="register">IY</span>+00 (mark the red bird as active/no longer spawning).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="74b8"></span>74B8</td>
 <td class="instruction">RET</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Return.</td>
 </tr>
 </table>
 <table class="asm-navigation">

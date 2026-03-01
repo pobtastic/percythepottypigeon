@@ -33,13 +33,16 @@ Next: <a href="48550.html">48550</a>
 </td>
 </tr>
 </table>
-<div class="description">48478: Draw Sprite Column</div>
+<div class="description">48478: Draw 3-Wide Sprite Column</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
 <div class="details">
 <div class="paragraph">
 Used by the routine at <a href="47900.html">Draw_Sprites</a>.
+</div>
+<div class="paragraph">
+Draws a three-column-wide sprite to the screen buffer. Looks up the sprite graphic data from the frame table at <a href="43835.html">Sprite_01</a>, then shifts and ORs the pixel data across two adjacent screen columns, repeated for two column pairs (covering three columns total). The shift amount is self-modified at <a href="48478.html#48513">48514</a>.
 </div>
 </div>
 <table class="input">
@@ -66,26 +69,16 @@ Used by the routine at <a href="47900.html">Draw_Sprites</a>.
 <span id="48478"></span>
 <div class="comments">
 <div class="paragraph">
-Self-modify the shift loop counter at <a href="48478.html#48513">48514</a>.
+Look up the sprite graphic data address. Each frame is 32 bytes.
 </div>
 </div>
 </td>
 </tr>
 <tr>
-<td class="asm-label">DrawSpriteColumn</td>
+<td class="asm-label">Draw_3Wide_Sprite_Column</td>
 <td class="address-2"><span id="48478"></span>48478</td>
 <td class="instruction">LD (48514),A</td>
-<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<a href="48478.html#48513">48514</a>.</td>
-</tr>
-<tr>
-<td class="routine-comment" colspan="5">
-<span id="48481"></span>
-<div class="comments">
-<div class="paragraph">
-Look up the sprite frame graphic data. Each frame is 32 bytes, so multiply the zero-indexed frame number by 32 and add the sprite sheet base address.
-</div>
-</div>
-</td>
+<td class="comment-1" rowspan="1">Self-modify the shift jump offset at <a href="48478.html#48513">48514</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -97,25 +90,24 @@ Look up the sprite frame graphic data. Each frame is 32 bytes, so multiply the z
 <td class="asm-label"></td>
 <td class="address-1"><span id="48482"></span>48482</td>
 <td class="instruction">LD DE,43835</td>
-<td class="comment-1" rowspan="1"><span class="register">DE</span>=<a href="43835.html">Sprite_01</a> (sprite sheet base address).</td>
+<td class="comment-1" rowspan="1">Point <span class="register">DE</span> at <a href="43835.html">Sprite_01</a> (3-wide sprite frame table base).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="48485"></span>48485</td>
 <td class="instruction">LD L,(IX+3)</td>
-<td class="comment-1" rowspan="1"><span class="register">L</span>=*<span class="register">IX</span>+3 (one-indexed frame number).</td>
+<td class="comment-1" rowspan="2">Load the frame ID from *<span class="register">IX</span>+3 and decrement to make it zero-indexed.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="48488"></span>48488</td>
 <td class="instruction">DEC L</td>
-<td class="comment-1" rowspan="1">Decrement to make it zero-indexed.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="48489"></span>48489</td>
 <td class="instruction">LD H,0</td>
-<td class="comment-1" rowspan="2">Create an offset in <span class="register">HL</span> using the frame index.</td>
+<td class="comment-1" rowspan="7">Multiply the frame index by 32 and add to the table base to get the graphic data address.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -126,7 +118,6 @@ Look up the sprite frame graphic data. Each frame is 32 bytes, so multiply the z
 <td class="asm-label"></td>
 <td class="address-1"><span id="48492"></span>48492</td>
 <td class="instruction">ADD HL,HL</td>
-<td class="comment-1" rowspan="4">Multiply <span class="register">HL</span> by 32.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -147,7 +138,6 @@ Look up the sprite frame graphic data. Each frame is 32 bytes, so multiply the z
 <td class="asm-label"></td>
 <td class="address-1"><span id="48496"></span>48496</td>
 <td class="instruction">ADD HL,DE</td>
-<td class="comment-1" rowspan="1">Add the sprite sheet base address.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -166,7 +156,7 @@ Look up the sprite frame graphic data. Each frame is 32 bytes, so multiply the z
 <span id="48499"></span>
 <div class="comments">
 <div class="paragraph">
-Draw 2 columns, each 16 pixel rows tall. <span class="register">C</span> holds a mask of 7 used to detect character cell boundaries for screen address adjustment.
+Draw two column pairs, each 16 pixels tall, covering three screen columns. <span class="register">C</span> holds a mask of 7 used to detect character cell boundaries for screen address adjustment.
 </div>
 </div>
 </td>
@@ -175,19 +165,19 @@ Draw 2 columns, each 16 pixel rows tall. <span class="register">C</span> holds a
 <td class="asm-label"></td>
 <td class="address-1"><span id="48499"></span>48499</td>
 <td class="instruction">LD B,2</td>
-<td class="comment-1" rowspan="1">Set a column counter in <span class="register">B</span> of 2 columns.</td>
+<td class="comment-1" rowspan="1">Set the column pair counter to 2 in <span class="register">B</span>.</td>
 </tr>
 <tr>
-<td class="asm-label">DrawSpriteColumn_ColumnLoop</td>
+<td class="asm-label">Draw_3Wide_Column_Loop</td>
 <td class="address-1"><span id="48501"></span>48501</td>
 <td class="instruction">LD C,7</td>
-<td class="comment-1" rowspan="1"><span class="register">C</span>=7 (pixel row mask for character cell boundary detection).</td>
+<td class="comment-1" rowspan="1">Set the row boundary mask to 7 in <span class="register">C</span>.</td>
 </tr>
 <tr>
-<td class="asm-label">DrawSpriteColumn_0</td>
+<td class="asm-label">Draw_3Wide_Sprite_Column_0</td>
 <td class="address-2"><span id="48503"></span>48503</td>
 <td class="instruction">PUSH BC</td>
-<td class="comment-1" rowspan="2">Stash the column counter and screen buffer address on the stack.</td>
+<td class="comment-1" rowspan="2">Stash the column pair counter and screen buffer address on the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -198,7 +188,7 @@ Draw 2 columns, each 16 pixel rows tall. <span class="register">C</span> holds a
 <td class="asm-label"></td>
 <td class="address-1"><span id="48505"></span>48505</td>
 <td class="instruction">LD B,16</td>
-<td class="comment-1" rowspan="1">Set a row counter in <span class="register">B</span> of 16 pixel rows.</td>
+<td class="comment-1" rowspan="1">Set the row counter to 16 in <span class="register">B</span>.</td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
@@ -211,10 +201,10 @@ For each row, read a byte of sprite data, shift it left by the self-modified amo
 </td>
 </tr>
 <tr>
-<td class="asm-label">DrawSpriteColumn_RowLoop</td>
+<td class="asm-label">Draw_3Wide_Row_Loop</td>
 <td class="address-2"><span id="48507"></span>48507</td>
 <td class="instruction">PUSH DE</td>
-<td class="comment-1" rowspan="2">Stash the sprite data pointer and screen buffer address on the stack.</td>
+<td class="comment-1" rowspan="2">Stash the graphic data pointer and screen buffer address on the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -238,7 +228,7 @@ The shift amount at <a href="48478.html#48513">48514</a> was self-modified on en
 <td class="asm-label"></td>
 <td class="address-1"><span id="48509"></span>48509</td>
 <td class="instruction">LD A,(DE)</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">DE</span>.</td>
+<td class="comment-1" rowspan="1">Load the graphic byte from *<span class="register">DE</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -254,20 +244,20 @@ The shift amount at <a href="48478.html#48513">48514</a> was self-modified on en
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="48513"></span>48513</td>
-<td class="instruction">JR <a href="48478.html#48516">DrawSpriteColumn_ShiftLoop</a></td>
-<td class="comment-1" rowspan="1">Jump into the shift loop at <a href="48478.html#48516">DrawSpriteColumn_ShiftLoop</a>.</td>
+<td class="instruction">JR <a href="48478.html#48516">Shift_3Wide_Fine</a></td>
+<td class="comment-1" rowspan="1">Jump into the shift sequence (self-modified offset controls the number of shifts applied).</td>
 </tr>
 <tr>
-<td class="asm-label">DrawSpriteColumn_ShiftExtra</td>
+<td class="asm-label">Shift_3Wide_Extra</td>
 <td class="address-1"><span id="48515"></span>48515</td>
 <td class="instruction">ADD HL,HL</td>
-<td class="comment-1" rowspan="1">Shift <span class="register">HL</span> left one position.</td>
+<td class="comment-1" rowspan="1">Shift <span class="register">HL</span> left one position (extra shift).</td>
 </tr>
 <tr>
-<td class="asm-label">DrawSpriteColumn_ShiftLoop</td>
+<td class="asm-label">Shift_3Wide_Fine</td>
 <td class="address-2"><span id="48516"></span>48516</td>
 <td class="instruction">ADD HL,HL</td>
-<td class="comment-1" rowspan="6">Shift <span class="register">HL</span> left a further seven positions (eight total from <a href="48478.html#48515">DrawSpriteColumn_ShiftExtra</a>, or seven from <a href="48478.html#48516">DrawSpriteColumn_ShiftLoop</a>).</td>
+<td class="comment-1" rowspan="6">Shift <span class="register">HL</span> left seven positions; the total shift spreads the graphic byte across <span class="register">H</span> and <span class="register">L</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -298,17 +288,14 @@ The shift amount at <a href="48478.html#48513">48514</a> was self-modified on en
 <td class="asm-label"></td>
 <td class="address-1"><span id="48522"></span>48522</td>
 <td class="instruction">ADD HL,HL</td>
-<td class="comment-1" rowspan="1">Stash placeholder (last shift).</td>
+<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
 <span id="48523"></span>
 <div class="comments">
 <div class="paragraph">
-OR the shifted sprite data onto the screen buffer. The high byte goes
-</div>
-<div class="paragraph">
-into the current column and the low byte into the adjacent column.
+OR the shifted sprite data onto the screen buffer across two adjacent columns.
 </div>
 </div>
 </td>
@@ -334,7 +321,7 @@ into the current column and the low byte into the adjacent column.
 <td class="asm-label"></td>
 <td class="address-1"><span id="48526"></span>48526</td>
 <td class="instruction">LD A,D</td>
-<td class="comment-1" rowspan="3">OR the high byte of the sprite data onto *<span class="register">HL</span>.</td>
+<td class="comment-1" rowspan="3">OR the high byte of the shifted data onto the first screen column at *<span class="register">HL</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -350,7 +337,7 @@ into the current column and the low byte into the adjacent column.
 <td class="asm-label"></td>
 <td class="address-1"><span id="48529"></span>48529</td>
 <td class="instruction">INC L</td>
-<td class="comment-1" rowspan="3">Move to the next column and OR the low byte of the sprite data onto *<span class="register">HL</span>.</td>
+<td class="comment-1" rowspan="4">Advance to the next column and OR the low byte onto the second screen column at *<span class="register">HL</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -366,13 +353,12 @@ into the current column and the low byte into the adjacent column.
 <td class="asm-label"></td>
 <td class="address-1"><span id="48532"></span>48532</td>
 <td class="instruction">LD (HL),A</td>
-<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="48533"></span>48533</td>
 <td class="instruction">POP HL</td>
-<td class="comment-1" rowspan="2">Restore the screen buffer address and sprite data pointer from the stack.</td>
+<td class="comment-1" rowspan="2">Restore the screen buffer address and graphic data pointer from the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -409,8 +395,8 @@ Move down one pixel row in the screen buffer and check for a character cell boun
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="48538"></span>48538</td>
-<td class="instruction">CALL Z,<a href="48183.html">48183</a></td>
-<td class="comment-1" rowspan="1">Call <a href="48183.html">48183</a> to adjust the screen buffer address if a character cell boundary was crossed.</td>
+<td class="instruction">CALL Z,<a href="48183.html">Adjust_Screen_Address</a></td>
+<td class="comment-1" rowspan="1">Call <a href="48183.html">Adjust_Screen_Address</a> to adjust the screen buffer address if a character cell boundary was crossed.</td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
@@ -431,8 +417,8 @@ Move to the next sprite data byte and loop.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="48542"></span>48542</td>
-<td class="instruction">DJNZ <a href="48478.html#48507">DrawSpriteColumn_RowLoop</a></td>
-<td class="comment-1" rowspan="1">Decrease the row counter by one and loop back to <a href="48478.html#48507">DrawSpriteColumn_RowLoop</a> until all 16 rows are drawn.</td>
+<td class="instruction">DJNZ <a href="48478.html#48507">Draw_3Wide_Row_Loop</a></td>
+<td class="comment-1" rowspan="1">Decrease the row counter and loop back to <a href="48478.html#48507">Draw_3Wide_Row_Loop</a> until all 16 rows are drawn.</td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
@@ -448,13 +434,12 @@ Move to the next column in the screen buffer and loop.
 <td class="asm-label"></td>
 <td class="address-1"><span id="48544"></span>48544</td>
 <td class="instruction">POP HL</td>
-<td class="comment-1" rowspan="1">Restore the screen buffer address from the stack.</td>
+<td class="comment-1" rowspan="2">Restore the screen buffer address and column pair counter from the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="48545"></span>48545</td>
 <td class="instruction">POP BC</td>
-<td class="comment-1" rowspan="1">Restore the column counter from the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -465,8 +450,8 @@ Move to the next column in the screen buffer and loop.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="48547"></span>48547</td>
-<td class="instruction">DJNZ <a href="48478.html#48503">DrawSpriteColumn_0</a></td>
-<td class="comment-1" rowspan="1">Decrease the column counter by one and loop back to <a href="48478.html#48501">DrawSpriteColumn_ColumnLoop</a> until both columns are drawn.</td>
+<td class="instruction">DJNZ <a href="48478.html#48503">Draw_3Wide_Sprite_Column_0</a></td>
+<td class="comment-1" rowspan="1">Decrease the column pair counter and loop back to <a href="48478.html#48501">Draw_3Wide_Column_Loop</a> until both column pairs are drawn.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>

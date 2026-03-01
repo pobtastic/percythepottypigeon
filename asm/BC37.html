@@ -33,116 +33,146 @@ Next: <a href="BC52.html">BC52</a>
 </td>
 </tr>
 </table>
-<div class="description">BC37: Routine at BC37</div>
+<div class="description">BC37: Adjust Screen Address at Row Boundary</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
 <div class="details">
 <div class="paragraph">
-Used by the routines at <a href="BD5E.html">DrawSpriteColumn</a> and <a href="BDA6.html">BDA6</a>.
+Used by the routines at <a href="BD5E.html">Draw_3Wide_Sprite_Column</a> and <a href="BDA6.html">Draw_2Wide_Sprite_Column</a>.
+</div>
+<div class="paragraph">
+Adjusts the screen buffer address in <span class="register">HL</span> when a pixel row crosses a character cell boundary.
 </div>
 </div>
+<table class="input">
+<tr class="asm-input-header">
+<th colspan="2">Input</th>
+</tr>
+<tr>
+<td class="register">HL</td>
+<td class="register-desc">Screen buffer address</td>
+</tr>
+</table>
+<table class="output">
+<tr class="asm-output-header">
+<th colspan="2">Output</th>
+</tr>
+<tr>
+<td class="register">HL</td>
+<td class="register-desc">Adjusted Screen buffer address</td>
+</tr>
+</table>
 </td>
 </tr>
 <tr>
+<td class="asm-label">Adjust_Screen_Address</td>
 <td class="address-2"><span id="bc37"></span>BC37</td>
 <td class="instruction">LD A,L</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Load the low byte of the screen address.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bc38"></span>BC38</td>
 <td class="instruction">DEC H</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Undo the previous row increment and test if the next character row would cross into the next screen third.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bc39"></span>BC39</td>
 <td class="instruction">CPL</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bc3a"></span>BC3A</td>
-<td class="instruction">AND $E0</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">AND %11100000</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bc3c"></span>BC3C</td>
-<td class="instruction">JR Z,<a href="BC37.html#bc47">$BC47</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR Z,<a href="BC37.html#bc47">Next_Screen_Third</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="BC37.html#bc47">Next_Screen_Third</a> if crossing into the next screen third.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bc3e"></span>BC3E</td>
 <td class="instruction">LD A,L</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Add 20 to <span class="register">L</span> to move to the next character row.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bc3f"></span>BC3F</td>
 <td class="instruction">ADD A,$20</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bc41"></span>BC41</td>
 <td class="instruction">LD L,A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bc42"></span>BC42</td>
 <td class="instruction">LD A,H</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Mask <span class="register">H</span> to reset the pixel row bits.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bc43"></span>BC43</td>
-<td class="instruction">AND $F8</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">AND %11111000</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bc45"></span>BC45</td>
 <td class="instruction">LD H,A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bc46"></span>BC46</td>
 <td class="instruction">RET</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Return.</td>
 </tr>
 <tr>
+<td class="asm-label">Next_Screen_Third</td>
 <td class="address-2"><span id="bc47"></span>BC47</td>
 <td class="instruction">LD A,L</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Mask <span class="register">L</span> to keep only the column bits.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bc48"></span>BC48</td>
-<td class="instruction">AND $1F</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">AND %00011111</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bc4a"></span>BC4A</td>
 <td class="instruction">LD L,A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bc4b"></span>BC4B</td>
 <td class="instruction">LD A,H</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="4">Mask <span class="register">H</span> and add 08 to advance to the next screen third.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bc4c"></span>BC4C</td>
-<td class="instruction">AND $F8</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">AND %11111000</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bc4e"></span>BC4E</td>
 <td class="instruction">ADD A,$08</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bc50"></span>BC50</td>
 <td class="instruction">LD H,A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="bc51"></span>BC51</td>
 <td class="instruction">RET</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Return.</td>
 </tr>
 </table>
 <table class="asm-navigation">

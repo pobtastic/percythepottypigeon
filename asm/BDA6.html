@@ -29,11 +29,11 @@ Prev: <a href="BD5E.html">BD5E</a>
 </td>
 <td class="up">Up: <a href="../maps/all.html#bda6">Map</a></td>
 <td class="next">
-Next: <a href="BE00.html">BE00</a>
+Next: <a href="BDE4.html">BDE4</a>
 </td>
 </tr>
 </table>
-<div class="description">BDA6: Routine at BDA6</div>
+<div class="description">BDA6: Draw 2-Wide Sprite Column</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
@@ -41,368 +41,311 @@ Next: <a href="BE00.html">BE00</a>
 <div class="paragraph">
 Used by the routine at <a href="BB1C.html">Draw_Sprites</a>.
 </div>
+<div class="paragraph">
+Draws a two-column-wide sprite to the screen buffer. Looks up the sprite graphic data from the frame table at <a href="A763.html">Graphics_ChickFrame_01</a>, then shifts and ORs the pixel data across two adjacent screen columns. The shift amount is self-modified at <a href="BDA6.html#bdc4">BDC5</a>.
 </div>
+</div>
+<table class="input">
+<tr class="asm-input-header">
+<th colspan="2">Input</th>
+</tr>
+<tr>
+<td class="register">A</td>
+<td class="register-desc">Shift amount (self-modified into the code)</td>
+</tr>
+<tr>
+<td class="register">HL</td>
+<td class="register-desc">Screen buffer address</td>
+</tr>
+<tr>
+<td class="register">IX</td>
+<td class="register-desc">Pointer to sprite data (IX+03 = one-indexed frame number)</td>
+</tr>
+</table>
 </td>
-</tr>
-<tr>
-<td class="address-2"><span id="bda6"></span>BDA6</td>
-<td class="instruction">LD ($BDC5),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="bda9"></span>BDA9</td>
-<td class="instruction">PUSH HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="bdaa"></span>BDAA</td>
-<td class="instruction">LD DE,$A763</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="bdad"></span>BDAD</td>
-<td class="instruction">LD A,(IX+$03)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="bdb0"></span>BDB0</td>
-<td class="instruction">DEC A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="bdb1"></span>BDB1</td>
-<td class="instruction">LD L,A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="bdb2"></span>BDB2</td>
-<td class="instruction">LD H,$00</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="bdb4"></span>BDB4</td>
-<td class="instruction">ADD HL,HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="bdb5"></span>BDB5</td>
-<td class="instruction">ADD HL,HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="bdb6"></span>BDB6</td>
-<td class="instruction">ADD HL,HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="bdb7"></span>BDB7</td>
-<td class="instruction">ADD HL,DE</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="bdb8"></span>BDB8</td>
-<td class="instruction">EX DE,HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="bdb9"></span>BDB9</td>
-<td class="instruction">POP HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="bdba"></span>BDBA</td>
-<td class="instruction">LD B,$08</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="bdbc"></span>BDBC</td>
-<td class="instruction">LD C,$07</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-2"><span id="bdbe"></span>BDBE</td>
-<td class="instruction">PUSH DE</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="bdbf"></span>BDBF</td>
-<td class="instruction">PUSH HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="bdc0"></span>BDC0</td>
-<td class="instruction">LD A,(DE)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="bdc1"></span>BDC1</td>
-<td class="instruction">LD L,A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="bdc2"></span>BDC2</td>
-<td class="instruction">LD H,$00</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="bdc4"></span>BDC4</td>
-<td class="instruction">JR <a href="BDA6.html#bdcb">$BDCB</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="bdc6"></span>BDC6</td>
-<td class="instruction">ADD HL,HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="bdc7"></span>BDC7</td>
-<td class="instruction">ADD HL,HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="bdc8"></span>BDC8</td>
-<td class="instruction">ADD HL,HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="bdc9"></span>BDC9</td>
-<td class="instruction">ADD HL,HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="bdca"></span>BDCA</td>
-<td class="instruction">ADD HL,HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-2"><span id="bdcb"></span>BDCB</td>
-<td class="instruction">ADD HL,HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="bdcc"></span>BDCC</td>
-<td class="instruction">ADD HL,HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="bdcd"></span>BDCD</td>
-<td class="instruction">ADD HL,HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="bdce"></span>BDCE</td>
-<td class="instruction">POP DE</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="bdcf"></span>BDCF</td>
-<td class="instruction">PUSH DE</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="bdd0"></span>BDD0</td>
-<td class="instruction">EX DE,HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="bdd1"></span>BDD1</td>
-<td class="instruction">LD A,D</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="bdd2"></span>BDD2</td>
-<td class="instruction">OR (HL)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="bdd3"></span>BDD3</td>
-<td class="instruction">LD (HL),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="bdd4"></span>BDD4</td>
-<td class="instruction">INC L</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="bdd5"></span>BDD5</td>
-<td class="instruction">LD A,E</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="bdd6"></span>BDD6</td>
-<td class="instruction">OR (HL)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="bdd7"></span>BDD7</td>
-<td class="instruction">LD (HL),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="bdd8"></span>BDD8</td>
-<td class="instruction">POP HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="bdd9"></span>BDD9</td>
-<td class="instruction">POP DE</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="bdda"></span>BDDA</td>
-<td class="instruction">INC H</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="bddb"></span>BDDB</td>
-<td class="instruction">INC DE</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="bddc"></span>BDDC</td>
-<td class="instruction">LD A,H</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="bddd"></span>BDDD</td>
-<td class="instruction">AND C</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="bdde"></span>BDDE</td>
-<td class="instruction">CALL Z,<a href="BC37.html">$BC37</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="bde1"></span>BDE1</td>
-<td class="instruction">DJNZ <a href="BDA6.html#bdbe">$BDBE</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="bde3"></span>BDE3</td>
-<td class="instruction">RET</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
-<span id="bde4"></span>
+<span id="bda6"></span>
 <div class="comments">
 <div class="paragraph">
-This entry point is used by the routine at <a href="BB1C.html">Draw_Sprites</a>.
+Look up the sprite graphic data address.
 </div>
 </div>
 </td>
 </tr>
 <tr>
-<td class="address-2"><span id="bde4"></span>BDE4</td>
-<td class="instruction">PUSH BC</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="asm-label">Draw_2Wide_Sprite_Column</td>
+<td class="address-2"><span id="bda6"></span>BDA6</td>
+<td class="instruction">LD ($BDC5),A</td>
+<td class="comment-1" rowspan="1">Self-modify the shift jump offset at <a href="BDA6.html#bdc4">BDC5</a>.</td>
 </tr>
 <tr>
-<td class="address-1"><span id="bde5"></span>BDE5</td>
-<td class="instruction">LD B,$C8</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bda9"></span>BDA9</td>
+<td class="instruction">PUSH HL</td>
+<td class="comment-1" rowspan="1">Stash the screen buffer address on the stack.</td>
 </tr>
 <tr>
-<td class="address-2"><span id="bde7"></span>BDE7</td>
-<td class="instruction">NOP</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bdaa"></span>BDAA</td>
+<td class="instruction">LD DE,$A763</td>
+<td class="comment-1" rowspan="1">Point <span class="register">DE</span> at <a href="A763.html">Graphics_ChickFrame_01</a> (2-wide sprite frame table base).</td>
 </tr>
 <tr>
-<td class="address-1"><span id="bde8"></span>BDE8</td>
-<td class="instruction">NOP</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bdad"></span>BDAD</td>
+<td class="instruction">LD A,(IX+$03)</td>
+<td class="comment-1" rowspan="2">Load the frame ID from *<span class="register">IX</span>+03 and decrement to make it zero-indexed.</td>
 </tr>
 <tr>
-<td class="address-1"><span id="bde9"></span>BDE9</td>
-<td class="instruction">NOP</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bdb0"></span>BDB0</td>
+<td class="instruction">DEC A</td>
 </tr>
 <tr>
-<td class="address-1"><span id="bdea"></span>BDEA</td>
-<td class="instruction">NOP</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bdb1"></span>BDB1</td>
+<td class="instruction">LD L,A</td>
+<td class="comment-1" rowspan="6">Multiply the frame index by 08 and add to the table base to get the graphic data address.</td>
 </tr>
 <tr>
-<td class="address-1"><span id="bdeb"></span>BDEB</td>
-<td class="instruction">NOP</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bdb2"></span>BDB2</td>
+<td class="instruction">LD H,$00</td>
 </tr>
 <tr>
-<td class="address-1"><span id="bdec"></span>BDEC</td>
-<td class="instruction">NOP</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bdb4"></span>BDB4</td>
+<td class="instruction">ADD HL,HL</td>
 </tr>
 <tr>
-<td class="address-1"><span id="bded"></span>BDED</td>
-<td class="instruction">NOP</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bdb5"></span>BDB5</td>
+<td class="instruction">ADD HL,HL</td>
 </tr>
 <tr>
-<td class="address-1"><span id="bdee"></span>BDEE</td>
-<td class="instruction">NOP</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bdb6"></span>BDB6</td>
+<td class="instruction">ADD HL,HL</td>
 </tr>
 <tr>
-<td class="address-1"><span id="bdef"></span>BDEF</td>
-<td class="instruction">NOP</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bdb7"></span>BDB7</td>
+<td class="instruction">ADD HL,DE</td>
 </tr>
 <tr>
-<td class="address-1"><span id="bdf0"></span>BDF0</td>
-<td class="instruction">NOP</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bdb8"></span>BDB8</td>
+<td class="instruction">EX DE,HL</td>
+<td class="comment-1" rowspan="1">Exchange so <span class="register">DE</span> points to the sprite graphic data.</td>
 </tr>
 <tr>
-<td class="address-1"><span id="bdf1"></span>BDF1</td>
-<td class="instruction">NOP</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bdb9"></span>BDB9</td>
+<td class="instruction">POP HL</td>
+<td class="comment-1" rowspan="1">Restore the screen buffer address from the stack.</td>
 </tr>
 <tr>
-<td class="address-1"><span id="bdf2"></span>BDF2</td>
-<td class="instruction">DJNZ <a href="BDA6.html#bde7">$BDE7</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="routine-comment" colspan="5">
+<span id="bdba"></span>
+<div class="comments">
+<div class="paragraph">
+Draw eight pixel rows of the sprite across two columns.
+</div>
+</div>
+</td>
 </tr>
 <tr>
-<td class="address-1"><span id="bdf4"></span>BDF4</td>
-<td class="instruction">POP BC</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bdba"></span>BDBA</td>
+<td class="instruction">LD B,$08</td>
+<td class="comment-1" rowspan="1">Set the row counter to 08 in <span class="register">B</span>.</td>
 </tr>
 <tr>
-<td class="address-1"><span id="bdf5"></span>BDF5</td>
-<td class="instruction">JP <a href="BB1C.html#bb5c">Advance_To_Next_Sprite</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bdbc"></span>BDBC</td>
+<td class="instruction">LD C,$07</td>
+<td class="comment-1" rowspan="1">Set the row boundary mask to 07 in <span class="register">C</span>.</td>
 </tr>
 <tr>
-<td class="address-1"><span id="bdf8"></span>BDF8</td>
-<td class="instruction">NOP</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="asm-label">Draw_2Wide_Row_Loop</td>
+<td class="address-2"><span id="bdbe"></span>BDBE</td>
+<td class="instruction">PUSH DE</td>
+<td class="comment-1" rowspan="2">Stash the graphic data pointer and screen buffer address on the stack.</td>
 </tr>
 <tr>
-<td class="address-1"><span id="bdf9"></span>BDF9</td>
-<td class="instruction">JR NZ,<a href="BDA6.html#bdfb">$BDFB</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bdbf"></span>BDBF</td>
+<td class="instruction">PUSH HL</td>
 </tr>
 <tr>
-<td class="address-2"><span id="bdfb"></span>BDFB</td>
-<td class="instruction">ADD HL,BC</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bdc0"></span>BDC0</td>
+<td class="instruction">LD A,(DE)</td>
+<td class="comment-1" rowspan="3">Load the graphic byte from *<span class="register">DE</span> into <span class="register">L</span>; set <span class="register">H</span> to 00.</td>
 </tr>
 <tr>
-<td class="address-1"><span id="bdfc"></span>BDFC</td>
-<td class="instruction">LD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bdc1"></span>BDC1</td>
+<td class="instruction">LD L,A</td>
 </tr>
 <tr>
-<td class="address-1"><span id="bdfd"></span>BDFD</td>
-<td class="instruction">AND $F8</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bdc2"></span>BDC2</td>
+<td class="instruction">LD H,$00</td>
 </tr>
 <tr>
-<td class="address-1"><span id="bdff"></span>BDFF</td>
-<td class="instruction">OR E</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bdc4"></span>BDC4</td>
+<td class="instruction">JR <a href="BDA6.html#bdcb">Shift_Fine</a></td>
+<td class="comment-1" rowspan="1">Jump into the shift sequence (self-modified offset controls the number of shifts applied).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bdc6"></span>BDC6</td>
+<td class="instruction">ADD HL,HL</td>
+<td class="comment-1" rowspan="5">Shift <span class="register">HL</span> left five positions (coarse shift).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bdc7"></span>BDC7</td>
+<td class="instruction">ADD HL,HL</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bdc8"></span>BDC8</td>
+<td class="instruction">ADD HL,HL</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bdc9"></span>BDC9</td>
+<td class="instruction">ADD HL,HL</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bdca"></span>BDCA</td>
+<td class="instruction">ADD HL,HL</td>
+</tr>
+<tr>
+<td class="asm-label">Shift_Fine</td>
+<td class="address-2"><span id="bdcb"></span>BDCB</td>
+<td class="instruction">ADD HL,HL</td>
+<td class="comment-1" rowspan="3">Shift <span class="register">HL</span> left three more positions (fine shift); the total shift spreads the sprite byte across <span class="register">H</span> and <span class="register">L</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bdcc"></span>BDCC</td>
+<td class="instruction">ADD HL,HL</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bdcd"></span>BDCD</td>
+<td class="instruction">ADD HL,HL</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bdce"></span>BDCE</td>
+<td class="instruction">POP DE</td>
+<td class="comment-1" rowspan="2">Restore the screen buffer address onto the stack and copy to <span class="register">DE</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bdcf"></span>BDCF</td>
+<td class="instruction">PUSH DE</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bdd0"></span>BDD0</td>
+<td class="instruction">EX DE,HL</td>
+<td class="comment-1" rowspan="4">OR the high byte of the shifted data onto the first screen column at *<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bdd1"></span>BDD1</td>
+<td class="instruction">LD A,D</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bdd2"></span>BDD2</td>
+<td class="instruction">OR (HL)</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bdd3"></span>BDD3</td>
+<td class="instruction">LD (HL),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bdd4"></span>BDD4</td>
+<td class="instruction">INC L</td>
+<td class="comment-1" rowspan="4">Advance to the next column and OR the low byte onto the second screen column at *<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bdd5"></span>BDD5</td>
+<td class="instruction">LD A,E</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bdd6"></span>BDD6</td>
+<td class="instruction">OR (HL)</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bdd7"></span>BDD7</td>
+<td class="instruction">LD (HL),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bdd8"></span>BDD8</td>
+<td class="instruction">POP HL</td>
+<td class="comment-1" rowspan="2">Restore the screen buffer address and graphic data pointer from the stack.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bdd9"></span>BDD9</td>
+<td class="instruction">POP DE</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bdda"></span>BDDA</td>
+<td class="instruction">INC H</td>
+<td class="comment-1" rowspan="1">Advance to the next pixel row in the screen buffer.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bddb"></span>BDDB</td>
+<td class="instruction">INC DE</td>
+<td class="comment-1" rowspan="1">Advance to the next graphic byte.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bddc"></span>BDDC</td>
+<td class="instruction">LD A,H</td>
+<td class="comment-1" rowspan="3">If the pixel row has crossed a character boundary (masked with <span class="register">C</span>), call <a href="BC37.html">Adjust_Screen_Address</a> to adjust the screen buffer address.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bddd"></span>BDDD</td>
+<td class="instruction">AND C</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bdde"></span>BDDE</td>
+<td class="instruction">CALL Z,<a href="BC37.html">Adjust_Screen_Address</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bde1"></span>BDE1</td>
+<td class="instruction">DJNZ <a href="BDA6.html#bdbe">Draw_2Wide_Row_Loop</a></td>
+<td class="comment-1" rowspan="1">Decrease the row counter and loop back to <a href="BDA6.html#bdbe">Draw_2Wide_Row_Loop</a> until all 08 rows are drawn.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bde3"></span>BDE3</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
 </tr>
 </table>
 <table class="asm-navigation">
@@ -412,7 +355,7 @@ Prev: <a href="BD5E.html">BD5E</a>
 </td>
 <td class="up">Up: <a href="../maps/all.html#bda6">Map</a></td>
 <td class="next">
-Next: <a href="BE00.html">BE00</a>
+Next: <a href="BDE4.html">BDE4</a>
 </td>
 </tr>
 </table>

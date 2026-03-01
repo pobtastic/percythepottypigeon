@@ -33,7 +33,7 @@ Next: <a href="7924.html">7924</a>
 </td>
 </tr>
 </table>
-<div class="description">7893: Routine at 7893</div>
+<div class="description">7893: Handler:</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
@@ -45,354 +45,467 @@ Used by the routines at <a href="72E1.html">Handler_Room05</a>, <a href="730E.ht
 </td>
 </tr>
 <tr>
+<td class="asm-label">Handler_</td>
 <td class="address-2"><span id="7893"></span>7893</td>
 <td class="instruction">LD IY,$7B0D</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Point <span class="register">IY</span> at <a href="7B0D.html">7B0D</a> (state data).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7897"></span>7897</td>
 <td class="instruction">LD HL,$7928</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Point <span class="register">HL</span> at <a href="7928.html">7928</a> (per-room speed table).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="789a"></span>789A</td>
 <td class="instruction">LD A,($5FC5)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="6">Fetch the current room from *<a href="5FC5.html">CurrentRoom</a>, decrement to form a zero-based index and load the swoop speed for this room into <span class="register">B</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="789d"></span>789D</td>
 <td class="instruction">DEC A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="789e"></span>789E</td>
 <td class="instruction">LD D,$00</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="78a0"></span>78A0</td>
 <td class="instruction">LD E,A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="78a1"></span>78A1</td>
 <td class="instruction">ADD HL,DE</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="78a2"></span>78A2</td>
 <td class="instruction">LD B,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="78a3"></span>78A3</td>
 <td class="instruction">LD HL,$7925</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Point <span class="register">HL</span> at <a href="7925.html">7925</a> (swoop boundary data).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="78a6"></span>78A6</td>
 <td class="instruction">LD C,$53</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Set the base sprite frame in <span class="register">C</span> to 53.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="78a8"></span>78A8</td>
 <td class="instruction">LD A,($5FC5)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="7">Fetch the current room from *<a href="5FC5.html">CurrentRoom</a>, decrement and multiply by 04 to index into the state data; add offset to <span class="register">IY</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="78ab"></span>78AB</td>
 <td class="instruction">DEC A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="78ac"></span>78AC</td>
 <td class="instruction">ADD A,A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="78ad"></span>78AD</td>
 <td class="instruction">ADD A,A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="78ae"></span>78AE</td>
 <td class="instruction">LD E,A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="78af"></span>78AF</td>
 <td class="instruction">LD D,$00</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="78b1"></span>78B1</td>
 <td class="instruction">ADD IY,DE</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="78b3"></span>
+<div class="comments">
+<div class="paragraph">
+Check if the enemy needs to reset after Percy respawns.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="78b3"></span>78B3</td>
 <td class="instruction">LD A,($5FBB)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">If *<a href="5FBB.html">RoomBufferFlag</a> (respawn flag) is non-zero.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="78b6"></span>78B6</td>
 <td class="instruction">OR A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="78b7"></span>78B7</td>
-<td class="instruction">JR Z,<a href="7893.html#78bd">$78BD</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR Z,<a href="7893.html#78bd">Check_Swoop_State</a></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="78b9"></span>78B9</td>
 <td class="instruction">XOR A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Write 00 to *<a href="7927.html">7927</a> to reset the swoop state to idle.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="78ba"></span>78BA</td>
 <td class="instruction">LD ($7927),A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="78bd"></span>
+<div class="comments">
+<div class="paragraph">
+Check the current swoop state to determine behaviour.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Check_Swoop_State</td>
 <td class="address-2"><span id="78bd"></span>78BD</td>
 <td class="instruction">LD A,($7927)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Jump to <a href="7893.html#78e1">Process_Swoop</a> if *<a href="7927.html">7927</a> (swoop state) is non-zero (already swooping).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="78c0"></span>78C0</td>
 <td class="instruction">OR A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="78c1"></span>78C1</td>
-<td class="instruction">JR NZ,<a href="7893.html#78e1">$78E1</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR NZ,<a href="7893.html#78e1">Process_Swoop</a></td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="78c3"></span>
+<div class="comments">
+<div class="paragraph">
+Enemy is idle; check if Percy is directly below to trigger a swoop.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="78c3"></span>78C3</td>
 <td class="instruction">LD A,($DAC0)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="6">Compare Percy's X position (masked with FC) against the enemies X position (masked with FC); jump to <a href="7512.html#7527">7527</a> if they don't match.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="78c6"></span>78C6</td>
 <td class="instruction">AND $FC</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="78c8"></span>78C8</td>
 <td class="instruction">LD E,A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="78c9"></span>78C9</td>
 <td class="instruction">LD A,(IX+$00)</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="78cc"></span>78CC</td>
 <td class="instruction">AND $FC</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="78ce"></span>78CE</td>
 <td class="instruction">CP E</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="78cf"></span>78CF</td>
 <td class="instruction">JP NZ,<a href="7512.html#7527">$7527</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="78d2"></span>78D2</td>
 <td class="instruction">LD A,($DAC1)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Jump to <a href="7512.html#7527">7527</a> if Percy's Y position is less than 28 (too high to trigger a swoop).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="78d5"></span>78D5</td>
 <td class="instruction">CP $28</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="78d7"></span>78D7</td>
 <td class="instruction">JP C,<a href="7512.html#7527">$7527</a></td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="78da"></span>78DA</td>
 <td class="instruction">CP (IX+$01)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Jump to <a href="7512.html#7527">7527</a> if Percy's Y position is greater than or equal to the enemies Y position (Percy is below the enemy).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="78dd"></span>78DD</td>
 <td class="instruction">JP NC,<a href="7512.html#7527">$7527</a></td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="78e0"></span>78E0</td>
 <td class="instruction">XOR A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Set <span class="register">A</span> to 00 (begin new swoop).</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="78e1"></span>
+<div class="comments">
+<div class="paragraph">
+Process the swoop movement based on the current state.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Process_Swoop</td>
 <td class="address-2"><span id="78e1"></span>78E1</td>
 <td class="instruction">BIT 7,A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Jump to <a href="7893.html#78fc">Swoop_Ascending</a> if bit 7 of the swoop state is set (enemy is ascending).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="78e3"></span>78E3</td>
-<td class="instruction">JR NZ,<a href="7893.html#78fc">$78FC</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR NZ,<a href="7893.html#78fc">Swoop_Ascending</a></td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="78e5"></span>
+<div class="comments">
+<div class="paragraph">
+Enemy is descending.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="78e5"></span>78E5</td>
 <td class="instruction">ADD A,$02</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Add 02 to the swoop state; if it has reached 10 (maximum descent), set bit 7 to begin ascending and jump to <a href="7893.html#7917">Update_Swoop_State</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="78e7"></span>78E7</td>
 <td class="instruction">CP $10</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="78e9"></span>78E9</td>
-<td class="instruction">JR NZ,<a href="7893.html#78ef">$78EF</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR NZ,<a href="7893.html#78ef">Handler__0</a></td>
+<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="78eb"></span>78EB</td>
 <td class="instruction">SET 7,A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="78ed"></span>78ED</td>
-<td class="instruction">JR <a href="7893.html#7917">$7917</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR <a href="7893.html#7917">Update_Swoop_State</a></td>
+<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label">Handler__0</td>
 <td class="address-2"><span id="78ef"></span>78EF</td>
 <td class="instruction">LD ($7927),A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write the updated swoop state to *<a href="7927.html">7927</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="78f2"></span>78F2</td>
 <td class="instruction">LD D,A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Calculate the enemies new Y position by subtracting the swoop distance from the perch Y position at *<span class="register">IY</span>+01; write to *<span class="register">IX</span>+01.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="78f3"></span>78F3</td>
 <td class="instruction">LD A,(IY+$01)</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="78f6"></span>78F6</td>
 <td class="instruction">SUB D</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="78f7"></span>78F7</td>
 <td class="instruction">LD (IX+$01),A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="78fa"></span>78FA</td>
-<td class="instruction">JR <a href="7893.html#791a">$791A</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR <a href="7893.html#791a">Swoop_Animate</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="7893.html#791a">Swoop_Animate</a>.</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="78fc"></span>
+<div class="comments">
+<div class="paragraph">
+Enemy is ascending back to its perch.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Swoop_Ascending</td>
 <td class="address-2"><span id="78fc"></span>78FC</td>
 <td class="instruction">LD E,A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Mask off bit 7 and decrement the ascent counter; jump to <a href="7893.html#7911">Swoop_Complete</a> if it has reached zero (back at perch).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="78fd"></span>78FD</td>
 <td class="instruction">AND $7F</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="78ff"></span>78FF</td>
 <td class="instruction">DEC A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7900"></span>7900</td>
-<td class="instruction">JR Z,<a href="7893.html#7911">$7911</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR Z,<a href="7893.html#7911">Swoop_Complete</a></td>
+<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7902"></span>7902</td>
 <td class="instruction">LD D,A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="4">Calculate the enemies new Y position by subtracting the remaining ascent distance from the perch Y position; write to *<span class="register">IX</span>+01.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7903"></span>7903</td>
 <td class="instruction">LD A,(IY+$01)</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7906"></span>7906</td>
 <td class="instruction">SUB D</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7907"></span>7907</td>
 <td class="instruction">LD (IX+$01),A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="790a"></span>790A</td>
 <td class="instruction">LD A,E</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Decrement the swoop state and write it back to *<a href="7927.html">7927</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="790b"></span>790B</td>
 <td class="instruction">DEC A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="790c"></span>790C</td>
 <td class="instruction">LD ($7927),A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="790f"></span>790F</td>
-<td class="instruction">JR <a href="7893.html#791a">$791A</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR <a href="7893.html#791a">Swoop_Animate</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="7893.html#791a">Swoop_Animate</a>.</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="7911"></span>
+<div class="comments">
+<div class="paragraph">
+Swoop is complete; reset to idle.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Swoop_Complete</td>
 <td class="address-2"><span id="7911"></span>7911</td>
 <td class="instruction">XOR A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Write 00 to *<a href="7927.html">7927</a> (return to idle state).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7912"></span>7912</td>
 <td class="instruction">LD ($7927),A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7915"></span>7915</td>
-<td class="instruction">JR <a href="7893.html#791a">$791A</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR <a href="7893.html#791a">Swoop_Animate</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="7893.html#791a">Swoop_Animate</a>.</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="7917"></span>
+<div class="comments">
+<div class="paragraph">
+Update the swoop state and continue with animation.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Update_Swoop_State</td>
 <td class="address-2"><span id="7917"></span>7917</td>
 <td class="instruction">LD ($7927),A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write the swoop state to *<a href="7927.html">7927</a>.</td>
 </tr>
 <tr>
+<td class="asm-label">Swoop_Animate</td>
 <td class="address-2"><span id="791a"></span>791A</td>
 <td class="instruction">BIT 7,(IY+$00)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Jump to <a href="74B9.html">Animate_Stunned_RedBird</a> if bit 7 of *<span class="register">IY</span>+00 is set (enemy is spawning/inactive).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="791e"></span>791E</td>
-<td class="instruction">JP NZ,<a href="74B9.html">$74B9</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JP NZ,<a href="74B9.html">Animate_Stunned_RedBird</a></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7921"></span>7921</td>
 <td class="instruction">JP <a href="7512.html#755f">$755F</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Jump to <a href="7512.html#755f">755F</a>.</td>
 </tr>
 </table>
 <table class="asm-navigation">

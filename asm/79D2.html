@@ -33,7 +33,7 @@ Next: <a href="7AC3.html">7AC3</a>
 </td>
 </tr>
 </table>
-<div class="description">79D2: Routine at 79D2</div>
+<div class="description">79D2: Handle Parachute Descent</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
@@ -41,513 +41,667 @@ Next: <a href="7AC3.html">7AC3</a>
 <div class="paragraph">
 Used by the routines at <a href="7265.html">Handler_Room02</a>, <a href="73A4.html">Handler_Room08</a> and <a href="73E1.html">Handler_Room09</a>.
 </div>
+<div class="paragraph">
+Controls the paratrooper's parachute descent. The paratrooper descends under a parachute canopy, and upon reaching the bottom boundary the parachute folds up and detaches, drifting sideways while the paratrooper separates. The bottom boundary varies by room, and on room 08 it is extended to 88. Uses two sprite entries: the canopy (*<span class="register">IX</span>+00 to *<span class="register">IX</span>+03) and the body (*<span class="register">IX</span>+04 to *<span class="register">IX</span>+07).
+</div>
+</div>
+<table class="input">
+<tr class="asm-input-header">
+<th colspan="2">Input</th>
+</tr>
+<tr>
+<td class="register">IX</td>
+<td class="register-desc">Pointer to the parachute sprite data</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="79d2"></span>
+<div class="comments">
+<div class="paragraph">
+Set up initial state and check for respawn.
+</div>
 </div>
 </td>
 </tr>
 <tr>
+<td class="asm-label">Handle_Parachute_Descent</td>
 <td class="address-2"><span id="79d2"></span>79D2</td>
 <td class="instruction">LD A,($5FBB)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Fetch the respawn flag from *<a href="5FBB.html">RoomBufferFlag</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="79d5"></span>79D5</td>
 <td class="instruction">LD B,$70</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Set the default bottom boundary to 70 in <span class="register">B</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="79d7"></span>79D7</td>
 <td class="instruction">LD IY,$7AC3</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Point <span class="register">IY</span> at <a href="7AC3.html">Parachute_State_Data</a>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="79db"></span>79DB</td>
 <td class="instruction">OR A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Jump to <a href="79D2.html#7a94">Reset_Parachute</a> if the respawn flag is non-zero (reset the parachute).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="79dc"></span>79DC</td>
-<td class="instruction">JP NZ,<a href="79D2.html#7a94">$7A94</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JP NZ,<a href="79D2.html#7a94">Reset_Parachute</a></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="79df"></span>79DF</td>
 <td class="instruction">LD A,($5FC5)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">If *<a href="5FC5.html">CurrentRoom</a> is not equal to 08 skip over setting it below.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="79e2"></span>79E2</td>
 <td class="instruction">CP $08</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="79e4"></span>79E4</td>
-<td class="instruction">JR NZ,<a href="79D2.html#79e8">$79E8</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR NZ,<a href="79D2.html#79e8">Check_Parachute_State</a></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="79e6"></span>79E6</td>
 <td class="instruction">LD B,$88</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Set the bottom boundary to 88.</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="79e8"></span>
+<div class="comments">
+<div class="paragraph">
+Check the parachute's current state.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Check_Parachute_State</td>
 <td class="address-2"><span id="79e8"></span>79E8</td>
 <td class="instruction">BIT 7,(IY+$00)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Jump to <a href="79D2.html#7a80">Parachute_Stunned</a> if bit 7 of *<span class="register">IY</span>+00 is set (parachute is stunned by egg).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="79ec"></span>79EC</td>
-<td class="instruction">JP NZ,<a href="79D2.html#7a80">$7A80</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JP NZ,<a href="79D2.html#7a80">Parachute_Stunned</a></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="79ef"></span>79EF</td>
 <td class="instruction">LD A,(IY+$01)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Jump to <a href="79D2.html#7a26">Animate_Parachute_Fold</a> if *<span class="register">IY</span>+01 (landing counter) is non-zero (parachute is folding).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="79f2"></span>79F2</td>
 <td class="instruction">OR A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="79f3"></span>79F3</td>
-<td class="instruction">JR NZ,<a href="79D2.html#7a26">$7A26</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR NZ,<a href="79D2.html#7a26">Animate_Parachute_Fold</a></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="79f5"></span>79F5</td>
 <td class="instruction">LD A,(IY+$02)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Jump to <a href="79D2.html#7a41">Parachute_Detach</a> if *<span class="register">IY</span>+02 (detach flag) is non-zero (parachute has detached).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="79f8"></span>79F8</td>
 <td class="instruction">OR A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="79f9"></span>79F9</td>
-<td class="instruction">JR NZ,<a href="79D2.html#7a41">$7A41</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR NZ,<a href="79D2.html#7a41">Parachute_Detach</a></td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="79fb"></span>
+<div class="comments">
+<div class="paragraph">
+Descent phase: move the paratrooper downward by 02 pixels per frame.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Parachute_Descend</td>
 <td class="address-1"><span id="79fb"></span>79FB</td>
 <td class="instruction">LD A,(IX+$01)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Load <span class="register">A</span> with the canopy Y position from *<span class="register">IX</span>+01.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="79fe"></span>79FE</td>
 <td class="instruction">ADD A,$02</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Add 02 to the canopy Y position.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a00"></span>7A00</td>
 <td class="instruction">CP B</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Jump to <a href="79D2.html#7a21">Begin_Parachute_Fold</a> if the canopy Y position has reached the bottom boundary in <span class="register">B</span>.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a01"></span>7A01</td>
-<td class="instruction">JR NC,<a href="79D2.html#7a21">$7A21</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR NC,<a href="79D2.html#7a21">Begin_Parachute_Fold</a></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a03"></span>7A03</td>
 <td class="instruction">LD (IX+$01),A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write the updated Y position to *<span class="register">IX</span>+01 (canopy Y).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a06"></span>7A06</td>
 <td class="instruction">ADD A,$10</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Set the body Y position to the canopy Y plus 10.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a08"></span>7A08</td>
 <td class="instruction">LD (IX+$05),A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a0b"></span>7A0B</td>
 <td class="instruction">LD (IX+$03),$5B</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Set the canopy sprite frame to 5B (open parachute).</td>
 </tr>
 <tr>
+<td class="asm-label">Set_Body_Frame_And_Check</td>
 <td class="address-2"><span id="7a0f"></span>7A0F</td>
 <td class="instruction">LD (IX+$07),$52</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Set the body sprite frame to 52 (paratrooper under parachute).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a13"></span>7A13</td>
-<td class="instruction">CALL <a href="74D6.html">$74D6</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">CALL <a href="74D6.html">Check_Hazard_Collision</a></td>
+<td class="comment-1" rowspan="1">Call <a href="74D6.html">Check_Hazard_Collision</a> to check for collision with Percy or egg (canopy sprite).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a16"></span>7A16</td>
 <td class="instruction">INC IX</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="4">Advance <span class="register">IX</span> by four to the body sprite entry.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a18"></span>7A18</td>
 <td class="instruction">INC IX</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a1a"></span>7A1A</td>
 <td class="instruction">INC IX</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a1c"></span>7A1C</td>
 <td class="instruction">INC IX</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a1e"></span>7A1E</td>
-<td class="instruction">JP <a href="74D6.html">$74D6</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JP <a href="74D6.html">Check_Hazard_Collision</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="74D6.html">Check_Hazard_Collision</a> to check for collision with Percy or egg (body sprite).</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="7a21"></span>
+<div class="comments">
+<div class="paragraph">
+Paratrooper has reached the bottom boundary; begin folding the parachute.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Begin_Parachute_Fold</td>
 <td class="address-2"><span id="7a21"></span>7A21</td>
 <td class="instruction">LD A,$01</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Set the landing counter to 01.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a23"></span>7A23</td>
 <td class="instruction">LD (IY+$01),A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write the counter to *<span class="register">IY</span>+01.</td>
 </tr>
 <tr>
+<td class="asm-label">Animate_Parachute_Fold</td>
 <td class="address-2"><span id="7a26"></span>7A26</td>
 <td class="instruction">CP $07</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Jump to <a href="79D2.html#7a34">Continue_Fold</a> if the landing counter has not reached 07.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a28"></span>7A28</td>
-<td class="instruction">JR NZ,<a href="79D2.html#7a34">$7A34</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR NZ,<a href="79D2.html#7a34">Continue_Fold</a></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a2a"></span>7A2A</td>
 <td class="instruction">LD (IY+$01),$00</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Reset the landing counter to 00 and set the detach flag at *<span class="register">IY</span>+02 to 01 (parachute fully folded).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a2e"></span>7A2E</td>
 <td class="instruction">LD (IY+$02),$01</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a32"></span>7A32</td>
-<td class="instruction">JR <a href="79D2.html#7a41">$7A41</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR <a href="79D2.html#7a41">Parachute_Detach</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="79D2.html#7a41">Parachute_Detach</a>.</td>
 </tr>
 <tr>
+<td class="asm-label">Continue_Fold</td>
 <td class="address-2"><span id="7a34"></span>7A34</td>
 <td class="instruction">INC A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Increment the landing counter and write it back to *<span class="register">IY</span>+01.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a35"></span>7A35</td>
 <td class="instruction">LD (IY+$01),A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a38"></span>7A38</td>
 <td class="instruction">SRL A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Divide by two and add 5B to calculate the folding parachute frame.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a3a"></span>7A3A</td>
 <td class="instruction">ADD A,$5B</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a3c"></span>7A3C</td>
 <td class="instruction">LD (IX+$03),A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write the frame to *<span class="register">IX</span>+03 (canopy sprite).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a3f"></span>7A3F</td>
-<td class="instruction">JR <a href="79D2.html#7a0f">$7A0F</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR <a href="79D2.html#7a0f">Set_Body_Frame_And_Check</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="79D2.html#7a0f">Set_Body_Frame_And_Check</a> to set the body frame and check for collisions.</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="7a41"></span>
+<div class="comments">
+<div class="paragraph">
+Detach phase: the parachute drifts sideways while the paratrooper separates.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Parachute_Detach</td>
 <td class="address-2"><span id="7a41"></span>7A41</td>
 <td class="instruction">LD A,(IY+$03)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="4">Increment the animation counter at *<span class="register">IY</span>+03 wrapping at 07.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a44"></span>7A44</td>
 <td class="instruction">INC A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a45"></span>7A45</td>
 <td class="instruction">AND $07</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a47"></span>7A47</td>
 <td class="instruction">LD (IY+$03),A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a4a"></span>7A4A</td>
 <td class="instruction">SRL A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Divide by two and add 57 to calculate the drifting paratrooper walking frame.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a4c"></span>7A4C</td>
 <td class="instruction">ADD A,$57</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a4e"></span>7A4E</td>
 <td class="instruction">LD (IX+$07),A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write the frame to *<span class="register">IX</span>+07 (body sprite frame).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a51"></span>7A51</td>
 <td class="instruction">LD A,(IX+$04)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Load <span class="register">A</span> with the body X position from *<span class="register">IX</span>+04.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a54"></span>7A54</td>
 <td class="instruction">CP $80</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">If the body X position is less than 80 it is drifting left; jump to <a href="79D2.html#7a64">Drift_Right</a> if drifting right.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a56"></span>7A56</td>
-<td class="instruction">JR NC,<a href="79D2.html#7a64">$7A64</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR NC,<a href="79D2.html#7a64">Drift_Right</a></td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="7a58"></span>
+<div class="comments">
+<div class="paragraph">
+Drifting left: subtract 02 from the body X position.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Drift_Left</td>
 <td class="address-1"><span id="7a58"></span>7A58</td>
 <td class="instruction">SUB $02</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Subtract 02 from the X position.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a5a"></span>7A5A</td>
 <td class="instruction">CP $04</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Jump to <a href="79D2.html#7a94">Reset_Parachute</a> if it has gone below 04 (off-screen to the left).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a5c"></span>7A5C</td>
-<td class="instruction">JR C,<a href="79D2.html#7a94">$7A94</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR C,<a href="79D2.html#7a94">Reset_Parachute</a></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a5e"></span>7A5E</td>
 <td class="instruction">LD (IX+$04),A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write the updated X position to *<span class="register">IX</span>+04 (body X).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a61"></span>7A61</td>
-<td class="instruction">JP <a href="74D6.html">$74D6</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JP <a href="74D6.html">Check_Hazard_Collision</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="74D6.html">Check_Hazard_Collision</a> to check for collision with Percy or egg.</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="7a64"></span>
+<div class="comments">
+<div class="paragraph">
+Drifting right: add 02 to the body X position.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Drift_Right</td>
 <td class="address-2"><span id="7a64"></span>7A64</td>
 <td class="instruction">ADD A,$02</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Add 02 to the body X position.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a66"></span>7A66</td>
 <td class="instruction">CP $EE</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Jump to <a href="79D2.html#7a94">Reset_Parachute</a> if the body X position has reached EE (off-screen to the right).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a68"></span>7A68</td>
-<td class="instruction">JR NC,<a href="79D2.html#7a94">$7A94</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR NC,<a href="79D2.html#7a94">Reset_Parachute</a></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a6a"></span>7A6A</td>
 <td class="instruction">LD (IX+$04),A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write the updated X position to *<span class="register">IX</span>+04 (body X).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a6d"></span>7A6D</td>
 <td class="instruction">LD A,(IX+$07)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Subtract 04 from the body sprite frame to get the opposite facing walking frame.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a70"></span>7A70</td>
 <td class="instruction">SUB $04</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a72"></span>7A72</td>
 <td class="instruction">LD (IX+$07),A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a75"></span>7A75</td>
 <td class="instruction">INC IX</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="4">Advance <span class="register">IX</span> by four to the body sprite entry.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a77"></span>7A77</td>
 <td class="instruction">INC IX</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a79"></span>7A79</td>
 <td class="instruction">INC IX</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a7b"></span>7A7B</td>
 <td class="instruction">INC IX</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a7d"></span>7A7D</td>
-<td class="instruction">JP <a href="74D6.html">$74D6</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JP <a href="74D6.html">Check_Hazard_Collision</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="74D6.html">Check_Hazard_Collision</a> to check for collision with Percy or egg.</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="7a80"></span>
+<div class="comments">
+<div class="paragraph">
+Parachute has been stunned by Percy's egg; animate the stunned state.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Parachute_Stunned</td>
 <td class="address-2"><span id="7a80"></span>7A80</td>
 <td class="instruction">LD A,(IY+$03)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Jump to <a href="79D2.html#7a91">Animate_Stunned_Body</a> if *<span class="register">IY</span>+03 is non-zero (skip canopy animation).</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a83"></span>7A83</td>
 <td class="instruction">OR A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a84"></span>7A84</td>
-<td class="instruction">JR NZ,<a href="79D2.html#7a91">$7A91</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR NZ,<a href="79D2.html#7a91">Animate_Stunned_Body</a></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a86"></span>7A86</td>
-<td class="instruction">CALL <a href="74B9.html">$74B9</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">CALL <a href="74B9.html">Animate_Stunned_RedBird</a></td>
+<td class="comment-1" rowspan="1">Call <a href="74B9.html">Animate_Stunned_RedBird</a> to animate the stunned canopy.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a89"></span>7A89</td>
 <td class="instruction">INC IX</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="4">Advance <span class="register">IX</span> by four to the body sprite entry.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a8b"></span>7A8B</td>
 <td class="instruction">INC IX</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a8d"></span>7A8D</td>
 <td class="instruction">INC IX</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a8f"></span>7A8F</td>
 <td class="instruction">INC IX</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label">Animate_Stunned_Body</td>
 <td class="address-2"><span id="7a91"></span>7A91</td>
-<td class="instruction">JP <a href="74B9.html">$74B9</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JP <a href="74B9.html">Animate_Stunned_RedBird</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="74B9.html">Animate_Stunned_RedBird</a> to animate the stunned body.</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="7a94"></span>
+<div class="comments">
+<div class="paragraph">
+Reset the parachute to its starting position for this room.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Reset_Parachute</td>
 <td class="address-2"><span id="7a94"></span>7A94</td>
 <td class="instruction">LD A,($5FC5)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="9">Look up the starting X position for the current room from the table at <a href="7B04.html">Table_ParachuteXPosition</a> and write to both the canopy (*<span class="register">IX</span>+00) and body (*<span class="register">IX</span>+04) X positions.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a97"></span>7A97</td>
 <td class="instruction">DEC A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a98"></span>7A98</td>
 <td class="instruction">LD E,A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a99"></span>7A99</td>
 <td class="instruction">LD D,$00</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a9b"></span>7A9B</td>
 <td class="instruction">LD HL,$7B04</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a9e"></span>7A9E</td>
 <td class="instruction">ADD HL,DE</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7a9f"></span>7A9F</td>
 <td class="instruction">LD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7aa0"></span>7AA0</td>
 <td class="instruction">LD (IX+$00),A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7aa3"></span>7AA3</td>
 <td class="instruction">LD (IX+$04),A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7aa6"></span>7AA6</td>
 <td class="instruction">LD A,$04</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="4">Set both Y positions: canopy to 04 body to 14.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7aa8"></span>7AA8</td>
 <td class="instruction">LD (IX+$01),A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7aab"></span>7AAB</td>
 <td class="instruction">ADD A,$10</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7aad"></span>7AAD</td>
 <td class="instruction">LD (IX+$05),A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7ab0"></span>7AB0</td>
 <td class="instruction">LD (IX+$02),$07</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Set both sprite active flags to 07.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7ab4"></span>7AB4</td>
 <td class="instruction">LD (IX+$06),$07</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7ab8"></span>7AB8</td>
 <td class="instruction">XOR A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="4">Write 00 to *<span class="register">IY</span>+00 *<span class="register">IY</span>+01 and *<span class="register">IY</span>+02 to clear the stunned flag, landing counter and detach flag.</td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7ab9"></span>7AB9</td>
 <td class="instruction">LD (IY+$00),A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7abc"></span>7ABC</td>
 <td class="instruction">LD (IY+$01),A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7abf"></span>7ABF</td>
 <td class="instruction">LD (IY+$02),A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7ac2"></span>7AC2</td>
 <td class="instruction">RET</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Return.</td>
 </tr>
 </table>
 <table class="asm-navigation">

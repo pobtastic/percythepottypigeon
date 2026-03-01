@@ -142,7 +142,7 @@ Percy is airborne so deplete the energy bar. Uses a slower frame delay of 07 fra
 <td class="asm-label"></td>
 <td class="address-1"><span id="6495"></span>6495</td>
 <td class="instruction">LD A,($5FAB)</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="5FAA.html#5fab">5FAB</a>.</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="5FAB.html">EnergyBarDelayCounter</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -154,7 +154,7 @@ Percy is airborne so deplete the energy bar. Uses a slower frame delay of 07 fra
 <td class="asm-label"></td>
 <td class="address-1"><span id="6499"></span>6499</td>
 <td class="instruction">LD ($5FAB),A</td>
-<td class="comment-1" rowspan="1">Write <span class="register">A</span> back to *<a href="5FAA.html#5fab">5FAB</a>.</td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> back to *<a href="5FAB.html">EnergyBarDelayCounter</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -181,7 +181,7 @@ Reset the frame counter and check if Percy is on a platform (energy doesn't depl
 <td class="asm-label"></td>
 <td class="address-1"><span id="649f"></span>649F</td>
 <td class="instruction">XOR A</td>
-<td class="comment-1" rowspan="2">Write 00 to *<a href="5FAA.html#5fab">5FAB</a>.</td>
+<td class="comment-1" rowspan="2">Write 00 to *<a href="5FAB.html">EnergyBarDelayCounter</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -346,7 +346,7 @@ Percy is on the ground so refill the energy bar. Uses a faster frame delay of 03
 <td class="asm-label">UpdateEnergyBar_Refill</td>
 <td class="address-2"><span id="64be"></span>64BE</td>
 <td class="instruction">LD A,($5FAB)</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="5FAA.html#5fab">5FAB</a>.</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="5FAB.html">EnergyBarDelayCounter</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -358,7 +358,7 @@ Percy is on the ground so refill the energy bar. Uses a faster frame delay of 03
 <td class="asm-label"></td>
 <td class="address-1"><span id="64c2"></span>64C2</td>
 <td class="instruction">LD ($5FAB),A</td>
-<td class="comment-1" rowspan="1">Write <span class="register">A</span> back to *<a href="5FAA.html#5fab">5FAB</a>.</td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> back to *<a href="5FAB.html">EnergyBarDelayCounter</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -375,7 +375,7 @@ Percy is on the ground so refill the energy bar. Uses a faster frame delay of 03
 <td class="asm-label"></td>
 <td class="address-1"><span id="64c8"></span>64C8</td>
 <td class="instruction">XOR A</td>
-<td class="comment-1" rowspan="2">Write 00 to *<a href="5FAA.html#5fab">5FAB</a>.</td>
+<td class="comment-1" rowspan="2">Write 00 to *<a href="5FAB.html">EnergyBarDelayCounter</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>

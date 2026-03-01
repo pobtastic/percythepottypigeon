@@ -135,12 +135,12 @@ Used by the routine at <a href="7680.html">Handler_Plane</a>.
 <td class="asm-label"></td>
 <td class="address-1"><span id="76ab"></span>76AB</td>
 <td class="instruction">BIT 7,(IY+$00)</td>
-<td class="comment-1" rowspan="2">Jump to <a href="74B9.html">74B9</a> if  bit 7 of *<span class="register">IY</span>+00 is set.</td>
+<td class="comment-1" rowspan="2">Jump to <a href="74B9.html">Animate_Stunned_RedBird</a> if  bit 7 of *<span class="register">IY</span>+00 is set.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="76af"></span>76AF</td>
-<td class="instruction">JP NZ,<a href="74B9.html">$74B9</a></td>
+<td class="instruction">JP NZ,<a href="74B9.html">Animate_Stunned_RedBird</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -250,8 +250,8 @@ Used by the routine at <a href="7680.html">Handler_Plane</a>.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="76db"></span>76DB</td>
-<td class="instruction">JP <a href="74D6.html">$74D6</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="74D6.html">74D6</a>.</td>
+<td class="instruction">JP <a href="74D6.html">Check_Hazard_Collision</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="74D6.html">Check_Hazard_Collision</a>.</td>
 </tr>
 <tr>
 <td class="asm-label">UpdatePlaneFlightPath_4</td>
@@ -840,7 +840,7 @@ Plane States.
 <td class="asm-label"></td>
 <td class="address-1"><span id="77b4"></span>77B4</td>
 <td class="instruction">LD IY,$7B04</td>
-<td class="comment-1" rowspan="1"><span class="register">IY</span>=<a href="7AC3.html#7b04">7B04</a>.</td>
+<td class="comment-1" rowspan="1"><span class="register">IY</span>=<a href="7B04.html">Table_ParachuteXPosition</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -1020,8 +1020,8 @@ This entry point is used by the routines at <a href="723F.html">Handler_Room01</
 <tr>
 <td class="asm-label">UpdatePlaneFlightPath_15</td>
 <td class="address-2"><span id="77f3"></span>77F3</td>
-<td class="instruction">CALL <a href="7930.html">$7930</a></td>
-<td class="comment-1" rowspan="1">Call <a href="7930.html">7930</a>.</td>
+<td class="instruction">CALL <a href="7930.html">Generate_Random_Number</a></td>
+<td class="comment-1" rowspan="1">Call <a href="7930.html">Generate_Random_Number</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -1178,8 +1178,8 @@ This entry point is used by the routines at <a href="723F.html">Handler_Room01</
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="782e"></span>782E</td>
-<td class="instruction">JP <a href="74D6.html#74e3">$74E3</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="74D6.html#74e3">74E3</a>.</td>
+<td class="instruction">JP <a href="74D6.html#74e3">Hazard_Hit_Percy</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="74D6.html#74e3">Hazard_Hit_Percy</a>.</td>
 </tr>
 <tr>
 <td class="asm-label">UpdatePlaneFlightPath_18</td>
@@ -1229,8 +1229,8 @@ This entry point is used by the routines at <a href="723F.html">Handler_Room01</
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="7843"></span>7843</td>
-<td class="instruction">JP <a href="74D6.html#74ff">$74FF</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="74D6.html#74ff">74FF</a>.</td>
+<td class="instruction">JP <a href="74D6.html#74ff">Stun_Hazard_And_Score</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="74D6.html#74ff">Stun_Hazard_And_Score</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -1329,8 +1329,8 @@ This entry point is used by the routines at <a href="723F.html">Handler_Room01</
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="7864"></span>7864</td>
-<td class="instruction">CALL <a href="7930.html">$7930</a></td>
-<td class="comment-1" rowspan="1">Call <a href="7930.html">7930</a>.</td>
+<td class="instruction">CALL <a href="7930.html">Generate_Random_Number</a></td>
+<td class="comment-1" rowspan="1">Call <a href="7930.html">Generate_Random_Number</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -1412,8 +1412,8 @@ This entry point is used by the routines at <a href="723F.html">Handler_Room01</
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="7886"></span>7886</td>
-<td class="instruction">CALL <a href="7930.html">$7930</a></td>
-<td class="comment-1" rowspan="1">Call <a href="7930.html">7930</a>.</td>
+<td class="instruction">CALL <a href="7930.html">Generate_Random_Number</a></td>
+<td class="comment-1" rowspan="1">Call <a href="7930.html">Generate_Random_Number</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>

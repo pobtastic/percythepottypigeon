@@ -33,7 +33,7 @@ Next: <a href="28207.html">28207</a>
 </td>
 </tr>
 </table>
-<div class="description">28075: Dispatch Game State</div>
+<div class="description">28075: Handle Cars</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
@@ -41,332 +41,394 @@ Next: <a href="28207.html">28207</a>
 <div class="paragraph">
 Used by the routine at <a href="27047.html">Run_Main_Loop_Body</a>.
 </div>
+<div class="paragraph">
+Dispatches to the appropriate car handler based on the current room, then manages the car movement and crash animation. Cars move left across the screen and are randomised when they go off-screen. When hit by Percy's egg, a crash animation plays using frames 36-39 before the car resets.
+</div>
 </div>
 </td>
 </tr>
 <tr>
-<td class="asm-label">Dispatch_Game_State</td>
+<td class="routine-comment" colspan="5">
+<span id="28075"></span>
+<div class="comments">
+<div class="paragraph">
+Check if respawning; if so, reset the car state.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Handle_Cars</td>
 <td class="address-2"><span id="28075"></span>28075</td>
 <td class="instruction">LD A,(24507)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Jump to <a href="28075.html#28088">Dispatch_Car_Handler</a> if *<a href="24507.html">RoomBufferFlag</a> (respawn flag) is zero.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28078"></span>28078</td>
 <td class="instruction">OR A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28079"></span>28079</td>
-<td class="instruction">JR Z,<a href="28075.html#28088">Dispatch_Game_State_0</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR Z,<a href="28075.html#28088">Dispatch_Car_Handler</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28081"></span>28081</td>
 <td class="instruction">XOR A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Write 0 to; <ul class="">
+<li>*<a href="29192.html">CarCrashTimer</a></li>
+<li>*<a href="29192.html#29193">CarCrashCounter</a></li>
+</ul></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28082"></span>28082</td>
 <td class="instruction">LD (29192),A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28085"></span>28085</td>
 <td class="instruction">LD (29193),A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
-<td class="asm-label">Dispatch_Game_State_0</td>
+<td class="routine-comment" colspan="5">
+<span id="28088"></span>
+<div class="comments">
+<div class="paragraph">
+Dispatch to the correct car handler based on the current room.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Dispatch_Car_Handler</td>
 <td class="address-2"><span id="28088"></span>28088</td>
 <td class="instruction">LD A,(24517)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Jump to <a href="28712.html">Handler_CarType3</a> if *<a href="24517.html">CurrentRoom</a> is equal to 2.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28091"></span>28091</td>
 <td class="instruction">CP 2</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28093"></span>28093</td>
 <td class="instruction">JP Z,<a href="28712.html">Handler_CarType3</a></td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28096"></span>28096</td>
 <td class="instruction">CP 1</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Jump to <a href="28075.html#28110">Handle_Car_Movement</a> if the current room is equal to 1, else jump to <a href="28075.html#28102">Check_Room_09</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28098"></span>28098</td>
-<td class="instruction">JR NZ,<a href="28075.html#28102">Dispatch_Game_State_1</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR NZ,<a href="28075.html#28102">Check_Room_09</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28100"></span>28100</td>
-<td class="instruction">JR <a href="28075.html#28110">Dispatch_Game_State_2</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR <a href="28075.html#28110">Handle_Car_Movement</a></td>
 </tr>
 <tr>
-<td class="asm-label">Dispatch_Game_State_1</td>
+<td class="asm-label">Check_Room_09</td>
 <td class="address-2"><span id="28102"></span>28102</td>
 <td class="instruction">CP 9</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Return if the current room is less than 9.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28104"></span>28104</td>
 <td class="instruction">RET C</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28105"></span>28105</td>
 <td class="instruction">CP 9</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Jump to <a href="28557.html">Handler_CarType2</a> if the current room is equal to 9.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28107"></span>28107</td>
 <td class="instruction">JP Z,<a href="28557.html">Handler_CarType2</a></td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
-<td class="asm-label">Dispatch_Game_State_2</td>
+<td class="asm-label">Handle_Car_Movement</td>
 <td class="address-2"><span id="28110"></span>28110</td>
 <td class="instruction">CALL <a href="28253.html">Handler_Car_Type1</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Call <a href="28253.html">Handler_Car_Type1</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28113"></span>28113</td>
 <td class="instruction">LD IX,56016</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Point <span class="register">IX</span> at <a href="56016.html">Sprite04_3Wide_X_Position</a> (car sprite data).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28117"></span>28117</td>
 <td class="instruction">LD A,(24507)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Call <a href="28207.html">Randomise_Car_Position</a> if *<a href="24507.html">RoomBufferFlag</a> (respawn flag) is non-zero to randomise the car.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28120"></span>28120</td>
 <td class="instruction">OR A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28121"></span>28121</td>
-<td class="instruction">CALL NZ,<a href="28207.html">28207</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">CALL NZ,<a href="28207.html">Randomise_Car_Position</a></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="28124"></span>
+<div class="comments">
+<div class="paragraph">
+Check if the car is in the crash animation.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28124"></span>28124</td>
 <td class="instruction">LD A,(29193)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Jump to <a href="28075.html#28157">Move_Car</a> if *<a href="29192.html#29193">CarCrashCounter</a> is zero, indicating there's been no crash.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28127"></span>28127</td>
 <td class="instruction">OR A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28128"></span>28128</td>
-<td class="instruction">JR Z,<a href="28075.html#28157">Dispatch_Game_State_4</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR Z,<a href="28075.html#28157">Move_Car</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28130"></span>28130</td>
 <td class="instruction">CP 1</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Jump to <a href="28075.html#28151">Crash_Animation_Done</a> if the crash counter is equal to 1 (crash animation complete).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28132"></span>28132</td>
-<td class="instruction">JR Z,<a href="28075.html#28151">Dispatch_Game_State_3</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR Z,<a href="28075.html#28151">Crash_Animation_Done</a></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="28134"></span>
+<div class="comments">
+<div class="paragraph">
+Crash animation is playing; update the explosion frames.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28134"></span>28134</td>
 <td class="instruction">DEC A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Decrement the crash counter and write it back to *<a href="29192.html#29193">CarCrashCounter</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28135"></span>28135</td>
 <td class="instruction">LD (29193),A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28138"></span>28138</td>
-<td class="instruction">AND 2</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">AND %00000010</td>
+<td class="comment-1" rowspan="2">Mask and add 36 to select the front crash frame.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28140"></span>28140</td>
 <td class="instruction">ADD A,36</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28142"></span>28142</td>
 <td class="instruction">LD (IX+3),A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write the frame to *<span class="register">IX</span>+3 (front sprite).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28145"></span>28145</td>
 <td class="instruction">INC A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Increment by one for the rear crash frame and write to *<span class="register">IX</span>+7.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28146"></span>28146</td>
 <td class="instruction">LD (IX+7),A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28149"></span>28149</td>
-<td class="instruction">JR <a href="28075.html#28196">Dispatch_Game_State_5</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR <a href="28075.html#28196">Check_Car_Percy_Collision</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="28075.html#28196">Check_Car_Percy_Collision</a>.</td>
 </tr>
 <tr>
-<td class="asm-label">Dispatch_Game_State_3</td>
+<td class="routine-comment" colspan="5">
+<span id="28151"></span>
+<div class="comments">
+<div class="paragraph">
+Crash animation complete; reset the crash counter.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Crash_Animation_Done</td>
 <td class="address-2"><span id="28151"></span>28151</td>
 <td class="instruction">XOR A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Write 0 to *<a href="29192.html#29193">CarCrashCounter</a> to clear it.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28152"></span>28152</td>
 <td class="instruction">LD (29193),A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28155"></span>28155</td>
-<td class="instruction">JR <a href="28075.html#28196">Dispatch_Game_State_5</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">JR <a href="28075.html#28196">Check_Car_Percy_Collision</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="28075.html#28196">Check_Car_Percy_Collision</a>.</td>
 </tr>
 <tr>
-<td class="asm-label">Dispatch_Game_State_4</td>
+<td class="routine-comment" colspan="5">
+<span id="28157"></span>
+<div class="comments">
+<div class="paragraph">
+No crash; move the car left across the screen.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Move_Car</td>
 <td class="address-2"><span id="28157"></span>28157</td>
 <td class="instruction">LD HL,29195</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Point <span class="register">HL</span> at <a href="29192.html#29195">CarSpeed</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28160"></span>28160</td>
 <td class="instruction">LD A,(IX+0)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Load the car's X position from *<span class="register">IX</span>+0.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28163"></span>28163</td>
 <td class="instruction">SUB (HL)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Subtract the car speed; if the car has gone off-screen (carry set), call <a href="28207.html">Randomise_Car_Position</a> to randomise a new car.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28164"></span>28164</td>
-<td class="instruction">CALL C,<a href="28207.html">28207</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">CALL C,<a href="28207.html">Randomise_Car_Position</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28167"></span>28167</td>
 <td class="instruction">LD (IX+0),A</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write the updated X position to *<span class="register">IX</span>+0 (front X).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28170"></span>28170</td>
 <td class="instruction">ADD A,16</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Set the rear X position to the front X plus 16.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28172"></span>28172</td>
 <td class="instruction">LD (IX+4),A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28175"></span>28175</td>
 <td class="instruction">LD (IX+3),30</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Set the front sprite frame to 30 (car front).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28179"></span>28179</td>
 <td class="instruction">LD (IX+7),31</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Set the rear sprite frame to 31 (car rear).</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="28183"></span>
+<div class="comments">
+<div class="paragraph">
+Check if Percy's egg has hit the car.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28183"></span>28183</td>
 <td class="instruction">LD BC,29193</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Point <span class="register">BC</span> at <a href="29192.html#29193">CarCrashCounter</a> and <span class="register">HL</span> at <a href="56016.html">Sprite04_3Wide_X_Position</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28186"></span>28186</td>
 <td class="instruction">LD HL,56016</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28189"></span>28189</td>
 <td class="instruction">LD A,(24489)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Call <a href="28500.html#28506">CheckCarEggCollision_Test</a> if *<a href="24489.html">EggDropFlag</a> (egg drop flag) is non-zero to check for egg collision with the car.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28192"></span>28192</td>
 <td class="instruction">OR A</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28193"></span>28193</td>
 <td class="instruction">CALL NZ,<a href="28500.html#28506">CheckCarEggCollision_Test</a></td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
-<td class="asm-label">Dispatch_Game_State_5</td>
+<td class="routine-comment" colspan="5">
+<span id="28196"></span>
+<div class="comments">
+<div class="paragraph">
+Check if the car has collided with Percy.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Check_Car_Percy_Collision</td>
 <td class="address-2"><span id="28196"></span>28196</td>
 <td class="instruction">LD IX,56000</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Point <span class="register">IX</span> at <a href="56000.html">Percy_X_Position</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28200"></span>28200</td>
 <td class="instruction">LD IY,56016</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Point <span class="register">IY</span> at <a href="56016.html">Sprite04_3Wide_X_Position</a> (car sprite data).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28204"></span>28204</td>
 <td class="instruction">JP <a href="28253.html#28407">Handler_CarCheckPercyCollision_Test</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Jump to <a href="28253.html#28407">Handler_CarCheckPercyCollision_Test</a> to check if the car has collided with Percy.</td>
 </tr>
 </table>
 <table class="asm-navigation">

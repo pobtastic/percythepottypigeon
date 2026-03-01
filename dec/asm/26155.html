@@ -33,7 +33,7 @@ Next: <a href="26243.html">26243</a>
 </td>
 </tr>
 </table>
-<div class="description">26155: Handle Worm Collection and Delivery</div>
+<div class="description">26155: Handler: Worm Collection and Delivery</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
@@ -58,7 +58,7 @@ Calculate Percy's tile map position from his pixel coordinates.
 </td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Worms</td>
+<td class="asm-label">Handler_Worms</td>
 <td class="address-2"><span id="26155"></span>26155</td>
 <td class="instruction">LD IX,56000</td>
 <td class="comment-1" rowspan="1">Point <span class="register">IX</span> at <a href="56000.html">Percy_X_Position</a>.</td>
@@ -160,7 +160,7 @@ Calculate Percy's tile map position from his pixel coordinates.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26186"></span>26186</td>
-<td class="instruction">JR NZ,<a href="26155.html#26189">Handle_Worms_0</a></td>
+<td class="instruction">JR NZ,<a href="26155.html#26189">Scan_Worms</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -179,7 +179,7 @@ Scan the room attribute entries to find active worm tiles.
 </td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Worms_0</td>
+<td class="asm-label">Scan_Worms</td>
 <td class="address-2"><span id="26189"></span>26189</td>
 <td class="instruction">LD HL,(24501)</td>
 <td class="comment-1" rowspan="1">Load the room attribute pointer from *<a href="24501.html">RoomAttributePointer</a> into <span class="register">HL</span>.</td>

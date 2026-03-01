@@ -195,12 +195,24 @@ Set to 255 when Percy is dropping an egg, and cleared to 0 when the egg routine 
 </tr>
 <tr>
 <td class="map-g"><span id="24490"></span><a href="../asm/24490.html">24490</a></td>
-<td class="map-length">2</td>
+<td class="map-length">1</td>
 <td class="map-g-desc">
 <div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24490.html">Flag: Carrying A Worm</a></div>
 <div class="map-entry-desc">
 <div class="paragraph">
 Set to 255 when Percy is carrying a worm, and cleared to 0 when he's not.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="24491"></span><a href="../asm/24491.html">24491</a></td>
+<td class="map-length">1</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24491.html">Energy Bar Delay Counter</a></div>
+<div class="map-entry-desc">
+<div class="paragraph">
+A delay so Percys energy bar doesn't deplete too quickly while he's flying.
 </div>
 </div>
 </td>
@@ -524,7 +536,7 @@ Copy of the initial stun timer value, stored when the red bird is first stunned.
 <div class="map-entry-title-11"><a class="map-entry-title" href="../asm/27830.html">Red Bird Current Room</a></div>
 <div class="map-entry-desc">
 <div class="paragraph">
-The room number the red bird is currently in. May differ from *<a href="../asm/24517.html">CurrentRoom</a> when the red bird is transitioning between rooms.
+The room number the red bird is currently in.
 </div>
 </div>
 </td>
@@ -677,10 +689,19 @@ Crash animation timer. When non-zero, the car cycles through crash frames. Count
 </td>
 </tr>
 <tr>
+<td class="map-g"><span id="29959"></span><a href="../asm/29959.html">29959</a></td>
+<td class="map-length">1</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/29959.html">Game status buffer entry at 7507</a></div>
+<div class="map-entry-desc">
+</div>
+</td>
+</tr>
+<tr>
 <td class="map-g"><span id="29960"></span><a href="../asm/29960.html">29960</a></td>
 <td class="map-length">10</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/29960.html">Game status buffer entry at 7508</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/29960.html">Red Bird Data States</a></div>
 <div class="map-entry-desc">
 </div>
 </td>
@@ -705,9 +726,18 @@ Crash animation timer. When non-zero, the car cycles through crash frames. Count
 </tr>
 <tr>
 <td class="map-g"><span id="31013"></span><a href="../asm/31013.html">31013</a></td>
-<td class="map-length">3</td>
+<td class="map-length">2</td>
 <td class="map-g-desc">
 <div class="map-entry-title-11"><a class="map-entry-title" href="../asm/31013.html">Game status buffer entry at 7925</a></div>
+<div class="map-entry-desc">
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="31015"></span><a href="../asm/31015.html">31015</a></td>
+<td class="map-length">1</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/31015.html">Game status buffer entry at 7927</a></div>
 <div class="map-entry-desc">
 </div>
 </td>
@@ -731,43 +761,74 @@ Crash animation timer. When non-zero, the car cycles through crash frames. Count
 </td>
 </tr>
 <tr>
+<td class="map-g"><span id="31427"></span><a href="../asm/31427.html">31427</a></td>
+<td class="map-length">4</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/31427.html">Parachute State Data</a></div>
+<div class="map-entry-desc">
+<div class="paragraph">
+State variables for the parachute hazard. <table class="default">
+<tr>
+<th colspan="1" rowspan="1">Offset</th>
+<th colspan="1" rowspan="1">Description</th>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">0</td>
+<td class="centre" colspan="1" rowspan="1">Stunned flag (bit 7 set = stunned by egg)</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">1</td>
+<td class="centre" colspan="1" rowspan="1">Landing counter</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">2</td>
+<td class="centre" colspan="1" rowspan="1">Detach flag</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">3</td>
+<td class="centre" colspan="1" rowspan="1">Animation counter</td>
+</tr>
+</table>
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="31431"></span><a href="../asm/31431.html">31431</a></td>
+<td class="map-length">61</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/31431.html">Game status buffer entry at 7AC7</a></div>
+<div class="map-entry-desc">
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="31492"></span><a href="../asm/31492.html">31492</a></td>
+<td class="map-length">9</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/31492.html">Table: Parachute Starting X Positions</a></div>
+<div class="map-entry-desc">
+<div class="paragraph">
+Lookup table of starting X positions for the parachute, indexed by room number minus one.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="31501"></span><a href="../asm/31501.html">31501</a></td>
+<td class="map-length">33</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/31501.html">Game status buffer entry at 7B0D</a></div>
+<div class="map-entry-desc">
+</div>
+</td>
+</tr>
+<tr>
 <td class="map-g"><span id="31534"></span><a href="../asm/31534.html">31534</a></td>
 <td class="map-length">22</td>
 <td class="map-g-desc">
 <div class="map-entry-title-11"><a class="map-entry-title" href="../asm/31534.html">Jump Table: Room Handlers</a></div>
 <div class="map-entry-desc">
-</div>
-</td>
-</tr>
-<tr>
-<td class="map-g"><span id="38874"></span><a href="../asm/38874.html">38874</a></td>
-<td class="map-length">149</td>
-<td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/38874.html">Room 14: Level 3</a></div>
-<div class="map-entry-desc">
-<div class="paragraph">
-<table class="">
-<tr>
-<td class="" colspan="1" rowspan="1"><img alt="room-14" src="../../images/scr/room-14.png" /></td>
-</tr>
-</table>
-</div>
-</div>
-</td>
-</tr>
-<tr>
-<td class="map-g"><span id="39023"></span><a href="../asm/39023.html">39023</a></td>
-<td class="map-length">149</td>
-<td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/39023.html">Room 15: Level 4</a></div>
-<div class="map-entry-desc">
-<div class="paragraph">
-<table class="">
-<tr>
-<td class="" colspan="1" rowspan="1"><img alt="room-15" src="../../images/scr/room-15.png" /></td>
-</tr>
-</table>
-</div>
 </div>
 </td>
 </tr>

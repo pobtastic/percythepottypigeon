@@ -29,11 +29,11 @@ Prev: <a href="48478.html">48478</a>
 </td>
 <td class="up">Up: <a href="../maps/all.html#48550">Map</a></td>
 <td class="next">
-Next: <a href="48640.html">48640</a>
+Next: <a href="48612.html">48612</a>
 </td>
 </tr>
 </table>
-<div class="description">48550: Routine at BDA6</div>
+<div class="description">48550: Draw 2-Wide Sprite Column</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
@@ -41,368 +41,311 @@ Next: <a href="48640.html">48640</a>
 <div class="paragraph">
 Used by the routine at <a href="47900.html">Draw_Sprites</a>.
 </div>
+<div class="paragraph">
+Draws a two-column-wide sprite to the screen buffer. Looks up the sprite graphic data from the frame table at <a href="42851.html">Graphics_ChickFrame_01</a>, then shifts and ORs the pixel data across two adjacent screen columns. The shift amount is self-modified at <a href="48550.html#48580">48581</a>.
 </div>
+</div>
+<table class="input">
+<tr class="asm-input-header">
+<th colspan="2">Input</th>
+</tr>
+<tr>
+<td class="register">A</td>
+<td class="register-desc">Shift amount (self-modified into the code)</td>
+</tr>
+<tr>
+<td class="register">HL</td>
+<td class="register-desc">Screen buffer address</td>
+</tr>
+<tr>
+<td class="register">IX</td>
+<td class="register-desc">Pointer to sprite data (IX+3 = one-indexed frame number)</td>
+</tr>
+</table>
 </td>
-</tr>
-<tr>
-<td class="address-2"><span id="48550"></span>48550</td>
-<td class="instruction">LD (48581),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48553"></span>48553</td>
-<td class="instruction">PUSH HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48554"></span>48554</td>
-<td class="instruction">LD DE,42851</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48557"></span>48557</td>
-<td class="instruction">LD A,(IX+3)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48560"></span>48560</td>
-<td class="instruction">DEC A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48561"></span>48561</td>
-<td class="instruction">LD L,A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48562"></span>48562</td>
-<td class="instruction">LD H,0</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48564"></span>48564</td>
-<td class="instruction">ADD HL,HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48565"></span>48565</td>
-<td class="instruction">ADD HL,HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48566"></span>48566</td>
-<td class="instruction">ADD HL,HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48567"></span>48567</td>
-<td class="instruction">ADD HL,DE</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48568"></span>48568</td>
-<td class="instruction">EX DE,HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48569"></span>48569</td>
-<td class="instruction">POP HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48570"></span>48570</td>
-<td class="instruction">LD B,8</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48572"></span>48572</td>
-<td class="instruction">LD C,7</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-2"><span id="48574"></span>48574</td>
-<td class="instruction">PUSH DE</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48575"></span>48575</td>
-<td class="instruction">PUSH HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48576"></span>48576</td>
-<td class="instruction">LD A,(DE)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48577"></span>48577</td>
-<td class="instruction">LD L,A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48578"></span>48578</td>
-<td class="instruction">LD H,0</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48580"></span>48580</td>
-<td class="instruction">JR <a href="48550.html#48587">48587</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48582"></span>48582</td>
-<td class="instruction">ADD HL,HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48583"></span>48583</td>
-<td class="instruction">ADD HL,HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48584"></span>48584</td>
-<td class="instruction">ADD HL,HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48585"></span>48585</td>
-<td class="instruction">ADD HL,HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48586"></span>48586</td>
-<td class="instruction">ADD HL,HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-2"><span id="48587"></span>48587</td>
-<td class="instruction">ADD HL,HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48588"></span>48588</td>
-<td class="instruction">ADD HL,HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48589"></span>48589</td>
-<td class="instruction">ADD HL,HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48590"></span>48590</td>
-<td class="instruction">POP DE</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48591"></span>48591</td>
-<td class="instruction">PUSH DE</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48592"></span>48592</td>
-<td class="instruction">EX DE,HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48593"></span>48593</td>
-<td class="instruction">LD A,D</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48594"></span>48594</td>
-<td class="instruction">OR (HL)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48595"></span>48595</td>
-<td class="instruction">LD (HL),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48596"></span>48596</td>
-<td class="instruction">INC L</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48597"></span>48597</td>
-<td class="instruction">LD A,E</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48598"></span>48598</td>
-<td class="instruction">OR (HL)</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48599"></span>48599</td>
-<td class="instruction">LD (HL),A</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48600"></span>48600</td>
-<td class="instruction">POP HL</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48601"></span>48601</td>
-<td class="instruction">POP DE</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48602"></span>48602</td>
-<td class="instruction">INC H</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48603"></span>48603</td>
-<td class="instruction">INC DE</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48604"></span>48604</td>
-<td class="instruction">LD A,H</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48605"></span>48605</td>
-<td class="instruction">AND C</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48606"></span>48606</td>
-<td class="instruction">CALL Z,<a href="48183.html">48183</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48609"></span>48609</td>
-<td class="instruction">DJNZ <a href="48550.html#48574">48574</a></td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="address-1"><span id="48611"></span>48611</td>
-<td class="instruction">RET</td>
-<td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
-<span id="48612"></span>
+<span id="48550"></span>
 <div class="comments">
 <div class="paragraph">
-This entry point is used by the routine at <a href="47900.html">Draw_Sprites</a>.
+Look up the sprite graphic data address.
 </div>
 </div>
 </td>
 </tr>
 <tr>
-<td class="address-2"><span id="48612"></span>48612</td>
-<td class="instruction">PUSH BC</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="asm-label">Draw_2Wide_Sprite_Column</td>
+<td class="address-2"><span id="48550"></span>48550</td>
+<td class="instruction">LD (48581),A</td>
+<td class="comment-1" rowspan="1">Self-modify the shift jump offset at <a href="48550.html#48580">48581</a>.</td>
 </tr>
 <tr>
-<td class="address-1"><span id="48613"></span>48613</td>
-<td class="instruction">LD B,200</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48553"></span>48553</td>
+<td class="instruction">PUSH HL</td>
+<td class="comment-1" rowspan="1">Stash the screen buffer address on the stack.</td>
 </tr>
 <tr>
-<td class="address-2"><span id="48615"></span>48615</td>
-<td class="instruction">NOP</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48554"></span>48554</td>
+<td class="instruction">LD DE,42851</td>
+<td class="comment-1" rowspan="1">Point <span class="register">DE</span> at <a href="42851.html">Graphics_ChickFrame_01</a> (2-wide sprite frame table base).</td>
 </tr>
 <tr>
-<td class="address-1"><span id="48616"></span>48616</td>
-<td class="instruction">NOP</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48557"></span>48557</td>
+<td class="instruction">LD A,(IX+3)</td>
+<td class="comment-1" rowspan="2">Load the frame ID from *<span class="register">IX</span>+3 and decrement to make it zero-indexed.</td>
 </tr>
 <tr>
-<td class="address-1"><span id="48617"></span>48617</td>
-<td class="instruction">NOP</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48560"></span>48560</td>
+<td class="instruction">DEC A</td>
 </tr>
 <tr>
-<td class="address-1"><span id="48618"></span>48618</td>
-<td class="instruction">NOP</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48561"></span>48561</td>
+<td class="instruction">LD L,A</td>
+<td class="comment-1" rowspan="6">Multiply the frame index by 8 and add to the table base to get the graphic data address.</td>
 </tr>
 <tr>
-<td class="address-1"><span id="48619"></span>48619</td>
-<td class="instruction">NOP</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48562"></span>48562</td>
+<td class="instruction">LD H,0</td>
 </tr>
 <tr>
-<td class="address-1"><span id="48620"></span>48620</td>
-<td class="instruction">NOP</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48564"></span>48564</td>
+<td class="instruction">ADD HL,HL</td>
 </tr>
 <tr>
-<td class="address-1"><span id="48621"></span>48621</td>
-<td class="instruction">NOP</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48565"></span>48565</td>
+<td class="instruction">ADD HL,HL</td>
 </tr>
 <tr>
-<td class="address-1"><span id="48622"></span>48622</td>
-<td class="instruction">NOP</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48566"></span>48566</td>
+<td class="instruction">ADD HL,HL</td>
 </tr>
 <tr>
-<td class="address-1"><span id="48623"></span>48623</td>
-<td class="instruction">NOP</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48567"></span>48567</td>
+<td class="instruction">ADD HL,DE</td>
 </tr>
 <tr>
-<td class="address-1"><span id="48624"></span>48624</td>
-<td class="instruction">NOP</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48568"></span>48568</td>
+<td class="instruction">EX DE,HL</td>
+<td class="comment-1" rowspan="1">Exchange so <span class="register">DE</span> points to the sprite graphic data.</td>
 </tr>
 <tr>
-<td class="address-1"><span id="48625"></span>48625</td>
-<td class="instruction">NOP</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48569"></span>48569</td>
+<td class="instruction">POP HL</td>
+<td class="comment-1" rowspan="1">Restore the screen buffer address from the stack.</td>
 </tr>
 <tr>
-<td class="address-1"><span id="48626"></span>48626</td>
-<td class="instruction">DJNZ <a href="48550.html#48615">48615</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="routine-comment" colspan="5">
+<span id="48570"></span>
+<div class="comments">
+<div class="paragraph">
+Draw eight pixel rows of the sprite across two columns.
+</div>
+</div>
+</td>
 </tr>
 <tr>
-<td class="address-1"><span id="48628"></span>48628</td>
-<td class="instruction">POP BC</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48570"></span>48570</td>
+<td class="instruction">LD B,8</td>
+<td class="comment-1" rowspan="1">Set the row counter to 8 in <span class="register">B</span>.</td>
 </tr>
 <tr>
-<td class="address-1"><span id="48629"></span>48629</td>
-<td class="instruction">JP <a href="47900.html#47964">Advance_To_Next_Sprite</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48572"></span>48572</td>
+<td class="instruction">LD C,7</td>
+<td class="comment-1" rowspan="1">Set the row boundary mask to 7 in <span class="register">C</span>.</td>
 </tr>
 <tr>
-<td class="address-1"><span id="48632"></span>48632</td>
-<td class="instruction">NOP</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="asm-label">Draw_2Wide_Row_Loop</td>
+<td class="address-2"><span id="48574"></span>48574</td>
+<td class="instruction">PUSH DE</td>
+<td class="comment-1" rowspan="2">Stash the graphic data pointer and screen buffer address on the stack.</td>
 </tr>
 <tr>
-<td class="address-1"><span id="48633"></span>48633</td>
-<td class="instruction">JR NZ,<a href="48550.html#48635">48635</a></td>
-<td class="comment-0" rowspan="1"></td>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48575"></span>48575</td>
+<td class="instruction">PUSH HL</td>
 </tr>
 <tr>
-<td class="address-2"><span id="48635"></span>48635</td>
-<td class="instruction">ADD HL,BC</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48576"></span>48576</td>
+<td class="instruction">LD A,(DE)</td>
+<td class="comment-1" rowspan="3">Load the graphic byte from *<span class="register">DE</span> into <span class="register">L</span>; set <span class="register">H</span> to 0.</td>
 </tr>
 <tr>
-<td class="address-1"><span id="48636"></span>48636</td>
-<td class="instruction">LD A,(HL)</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48577"></span>48577</td>
+<td class="instruction">LD L,A</td>
 </tr>
 <tr>
-<td class="address-1"><span id="48637"></span>48637</td>
-<td class="instruction">AND 248</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48578"></span>48578</td>
+<td class="instruction">LD H,0</td>
 </tr>
 <tr>
-<td class="address-1"><span id="48639"></span>48639</td>
-<td class="instruction">OR E</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48580"></span>48580</td>
+<td class="instruction">JR <a href="48550.html#48587">Shift_Fine</a></td>
+<td class="comment-1" rowspan="1">Jump into the shift sequence (self-modified offset controls the number of shifts applied).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48582"></span>48582</td>
+<td class="instruction">ADD HL,HL</td>
+<td class="comment-1" rowspan="5">Shift <span class="register">HL</span> left five positions (coarse shift).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48583"></span>48583</td>
+<td class="instruction">ADD HL,HL</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48584"></span>48584</td>
+<td class="instruction">ADD HL,HL</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48585"></span>48585</td>
+<td class="instruction">ADD HL,HL</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48586"></span>48586</td>
+<td class="instruction">ADD HL,HL</td>
+</tr>
+<tr>
+<td class="asm-label">Shift_Fine</td>
+<td class="address-2"><span id="48587"></span>48587</td>
+<td class="instruction">ADD HL,HL</td>
+<td class="comment-1" rowspan="3">Shift <span class="register">HL</span> left three more positions (fine shift); the total shift spreads the sprite byte across <span class="register">H</span> and <span class="register">L</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48588"></span>48588</td>
+<td class="instruction">ADD HL,HL</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48589"></span>48589</td>
+<td class="instruction">ADD HL,HL</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48590"></span>48590</td>
+<td class="instruction">POP DE</td>
+<td class="comment-1" rowspan="2">Restore the screen buffer address onto the stack and copy to <span class="register">DE</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48591"></span>48591</td>
+<td class="instruction">PUSH DE</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48592"></span>48592</td>
+<td class="instruction">EX DE,HL</td>
+<td class="comment-1" rowspan="4">OR the high byte of the shifted data onto the first screen column at *<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48593"></span>48593</td>
+<td class="instruction">LD A,D</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48594"></span>48594</td>
+<td class="instruction">OR (HL)</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48595"></span>48595</td>
+<td class="instruction">LD (HL),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48596"></span>48596</td>
+<td class="instruction">INC L</td>
+<td class="comment-1" rowspan="4">Advance to the next column and OR the low byte onto the second screen column at *<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48597"></span>48597</td>
+<td class="instruction">LD A,E</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48598"></span>48598</td>
+<td class="instruction">OR (HL)</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48599"></span>48599</td>
+<td class="instruction">LD (HL),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48600"></span>48600</td>
+<td class="instruction">POP HL</td>
+<td class="comment-1" rowspan="2">Restore the screen buffer address and graphic data pointer from the stack.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48601"></span>48601</td>
+<td class="instruction">POP DE</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48602"></span>48602</td>
+<td class="instruction">INC H</td>
+<td class="comment-1" rowspan="1">Advance to the next pixel row in the screen buffer.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48603"></span>48603</td>
+<td class="instruction">INC DE</td>
+<td class="comment-1" rowspan="1">Advance to the next graphic byte.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48604"></span>48604</td>
+<td class="instruction">LD A,H</td>
+<td class="comment-1" rowspan="3">If the pixel row has crossed a character boundary (masked with <span class="register">C</span>), call <a href="48183.html">Adjust_Screen_Address</a> to adjust the screen buffer address.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48605"></span>48605</td>
+<td class="instruction">AND C</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48606"></span>48606</td>
+<td class="instruction">CALL Z,<a href="48183.html">Adjust_Screen_Address</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48609"></span>48609</td>
+<td class="instruction">DJNZ <a href="48550.html#48574">Draw_2Wide_Row_Loop</a></td>
+<td class="comment-1" rowspan="1">Decrease the row counter and loop back to <a href="48550.html#48574">Draw_2Wide_Row_Loop</a> until all 8 rows are drawn.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48611"></span>48611</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
 </tr>
 </table>
 <table class="asm-navigation">
@@ -412,7 +355,7 @@ Prev: <a href="48478.html">48478</a>
 </td>
 <td class="up">Up: <a href="../maps/all.html#48550">Map</a></td>
 <td class="next">
-Next: <a href="48640.html">48640</a>
+Next: <a href="48612.html">48612</a>
 </td>
 </tr>
 </table>
