@@ -39,7 +39,7 @@ Next: <a href="6C0C.html">6C0C</a>
 <td class="routine-comment" colspan="5">
 <div class="details">
 <div class="paragraph">
-Used by the routines at <a href="6AF6.html">UpdateRedBirdMovement</a>, <a href="7439.html">Handle_Red_Bird</a> and <a href="7512.html">7512</a>.
+Used by the routines at <a href="6AF6.html">UpdateRedBirdMovement</a>, <a href="7439.html">Handle_Red_Bird</a> and <a href="759A.html">Handle_UFO</a>.
 </div>
 <div class="paragraph">
 Movement direction jump table. The entry point is self-modified at <a href="6BC8.html">6BC9</a> to jump to one of 8 directional movement handlers. Each handler adjusts <span class="register">B</span> (Y) and/or <span class="register">C</span> (X) by the flight speed value at *<span class="register">HL</span>, then falls through to <a href="6C0C.html">ValidateRedBirdPosition</a> to validate the position. <table class="default">

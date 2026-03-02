@@ -212,7 +212,7 @@ Enemy is idle; check if Percy is directly below to trigger a swoop.
 <td class="asm-label"></td>
 <td class="address-1"><span id="78c3"></span>78C3</td>
 <td class="instruction">LD A,($DAC0)</td>
-<td class="comment-1" rowspan="6">Compare Percy's X position (masked with FC) against the enemies X position (masked with FC); jump to <a href="7512.html#7527">7527</a> if they don't match.</td>
+<td class="comment-1" rowspan="6">Compare Percy's X position (masked with FC) against the enemies X position (masked with FC); jump to <a href="7512.html#7527">Cat_Entry</a> if they don't match.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -242,14 +242,14 @@ Enemy is idle; check if Percy is directly below to trigger a swoop.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="78cf"></span>78CF</td>
-<td class="instruction">JP NZ,<a href="7512.html#7527">$7527</a></td>
+<td class="instruction">JP NZ,<a href="7512.html#7527">Cat_Entry</a></td>
 <td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="78d2"></span>78D2</td>
 <td class="instruction">LD A,($DAC1)</td>
-<td class="comment-1" rowspan="3">Jump to <a href="7512.html#7527">7527</a> if Percy's Y position is less than 28 (too high to trigger a swoop).</td>
+<td class="comment-1" rowspan="3">Jump to <a href="7512.html#7527">Cat_Entry</a> if Percy's Y position is less than 28 (too high to trigger a swoop).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -259,18 +259,18 @@ Enemy is idle; check if Percy is directly below to trigger a swoop.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="78d7"></span>78D7</td>
-<td class="instruction">JP C,<a href="7512.html#7527">$7527</a></td>
+<td class="instruction">JP C,<a href="7512.html#7527">Cat_Entry</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="78da"></span>78DA</td>
 <td class="instruction">CP (IX+$01)</td>
-<td class="comment-1" rowspan="2">Jump to <a href="7512.html#7527">7527</a> if Percy's Y position is greater than or equal to the enemies Y position (Percy is below the enemy).</td>
+<td class="comment-1" rowspan="2">Jump to <a href="7512.html#7527">Cat_Entry</a> if Percy's Y position is greater than or equal to the enemies Y position (Percy is below the enemy).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="78dd"></span>78DD</td>
-<td class="instruction">JP NC,<a href="7512.html#7527">$7527</a></td>
+<td class="instruction">JP NC,<a href="7512.html#7527">Cat_Entry</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -504,8 +504,8 @@ Update the swoop state and continue with animation.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="7921"></span>7921</td>
-<td class="instruction">JP <a href="7512.html#755f">$755F</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="7512.html#755f">755F</a>.</td>
+<td class="instruction">JP <a href="7512.html#755f">Update_Cat_Frame</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="7512.html#755f">Update_Cat_Frame</a>.</td>
 </tr>
 </table>
 <table class="asm-navigation">

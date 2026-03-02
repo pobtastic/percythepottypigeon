@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Percy the Potty Pigeon: Routine at 7628</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-dark.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-wide.css" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-75RERFCHBG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-75RERFCHBG');
+</script>
+</head>
+<body class="Asm-c">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html"><img alt="logo" src="../images/logo.png" /></a></td>
+<td class="page-header">Routines</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="759A.html">759A</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#7628">Map</a></td>
+<td class="next">
+Next: <a href="7633.html">7633</a>
+</td>
+</tr>
+</table>
+<div class="description">7628: Reset UFO Position</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="5">
+<div class="details">
+<div class="paragraph">
+Used by the routine at <a href="759A.html">Handle_UFO</a>.
+</div>
+<div class="paragraph">
+Resets the UFO to a random position and clears the abduction timer.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Reset_UFO_Position</td>
+<td class="address-2"><span id="7628"></span>7628</td>
+<td class="instruction">LD IY,$0000</td>
+<td class="comment-1" rowspan="1">Point <span class="register">IY</span> at 0000.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="762c"></span>762C</td>
+<td class="instruction">XOR A</td>
+<td class="comment-1" rowspan="2">Write 00 to clear *<a href="7679.html#767e">UFO_Abduction_Timer</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="762d"></span>762D</td>
+<td class="instruction">LD ($767E),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7630"></span>7630</td>
+<td class="instruction">JP <a href="74A7.html">Randomise_Position_Loop</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="74A7.html">Randomise_Position_Loop</a> to generate a random valid position.</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="759A.html">759A</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#7628">Map</a></td>
+<td class="next">
+Next: <a href="7633.html">7633</a>
+</td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
+<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
+<div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
+<div><a href="../dec/asm/30248.html">Switch to decimal</a>.</div>
+</footer>
+</body>
+</html>

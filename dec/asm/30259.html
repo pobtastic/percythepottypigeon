@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Percy the Potty Pigeon: Routine at 30259</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-dark.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-wide.css" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-75RERFCHBG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-75RERFCHBG');
+</script>
+</head>
+<body class="Asm-c">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html"><img alt="logo" src="../images/logo.png" /></a></td>
+<td class="page-header">Routines</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="30248.html">30248</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#30259">Map</a></td>
+<td class="next">
+Next: <a href="30329.html">30329</a>
+</td>
+</tr>
+</table>
+<div class="description">30259: UFO Abduct Percy</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="5">
+<div class="details">
+<div class="paragraph">
+Used by the routine at <a href="30106.html">Handle_UFO</a>.
+</div>
+<div class="paragraph">
+Handles the UFO's abduction of Percy. Teleports Percy to the UFO's position while playing a tractor beam sound effect, then on the final frame drops Percy downward.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">UFO_Abduct_Percy</td>
+<td class="address-2"><span id="30259"></span>30259</td>
+<td class="instruction">CP 1</td>
+<td class="comment-1" rowspan="2">Jump to <a href="30259.html#30313">UFO_Drop_Percy</a> if the abduction timer is equal to 1 (final frame of abduction).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30261"></span>30261</td>
+<td class="instruction">JR Z,<a href="30259.html#30313">UFO_Drop_Percy</a></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="30263"></span>
+<div class="comments">
+<div class="paragraph">
+Play the tractor beam sound effect.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30263"></span>30263</td>
+<td class="instruction">LD HL,30335</td>
+<td class="comment-1" rowspan="1">Point <span class="register">HL</span> at <a href="30329.html#30335">UFO_Tractor_Beam_Pitch</a> (tractor beam sound pitch).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30266"></span>30266</td>
+<td class="instruction">LD E,(HL)</td>
+<td class="comment-1" rowspan="2">Load the pitch into <span class="register">E</span> and <span class="register">C</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30267"></span>30267</td>
+<td class="instruction">LD C,(HL)</td>
+</tr>
+<tr>
+<td class="asm-label">Tractor_Beam_SoundStep_Loop</td>
+<td class="address-2"><span id="30268"></span>30268</td>
+<td class="instruction">LD B,E</td>
+<td class="comment-1" rowspan="1">Copy to <span class="register">B</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30269"></span>30269</td>
+<td class="instruction">LD A,1</td>
+<td class="comment-1" rowspan="1">Set initial speaker state to 1.</td>
+</tr>
+<tr>
+<td class="asm-label">Tractor_Beam_Sound_Inner</td>
+<td class="address-2"><span id="30271"></span>30271</td>
+<td class="instruction">NOP</td>
+<td class="comment-1" rowspan="2">Action a delay loop.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30272"></span>30272</td>
+<td class="instruction">DJNZ <a href="30259.html#30271">Tractor_Beam_Sound_Inner</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30274"></span>30274</td>
+<td class="instruction">XOR %00011000</td>
+<td class="comment-1" rowspan="2">Toggle the speaker bits and output to the speaker port.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30276"></span>30276</td>
+<td class="instruction">OUT (254),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30278"></span>30278</td>
+<td class="instruction">DEC C</td>
+<td class="comment-1" rowspan="2">Decrement <span class="register">C</span> and loop back to <a href="30259.html#30268">Tractor_Beam_SoundStep_Loop</a> until the sound step is complete.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30279"></span>30279</td>
+<td class="instruction">JR NZ,<a href="30259.html#30268">Tractor_Beam_SoundStep_Loop</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30281"></span>30281</td>
+<td class="instruction">LD A,(HL)</td>
+<td class="comment-1" rowspan="3">Complement and mask the pitch value.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30282"></span>30282</td>
+<td class="instruction">CPL</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30283"></span>30283</td>
+<td class="instruction">AND %00111111</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30285"></span>30285</td>
+<td class="instruction">LD (HL),A</td>
+<td class="comment-1" rowspan="1">Write back to *<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="30286"></span>
+<div class="comments">
+<div class="paragraph">
+Teleport Percy to the UFO's position.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30286"></span>30286</td>
+<td class="instruction">LD A,(IX+0)</td>
+<td class="comment-1" rowspan="2">Copy the UFO's X position to Percy's X at *<a href="56000.html">Percy_X_Position</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30289"></span>30289</td>
+<td class="instruction">LD (56000),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30292"></span>30292</td>
+<td class="instruction">LD A,(IX+1)</td>
+<td class="comment-1" rowspan="3">Copy the UFO's Y position plus 10 to Percy's Y at *<a href="56000.html#56001">Percy_Y_Position</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30295"></span>30295</td>
+<td class="instruction">ADD A,10</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30297"></span>30297</td>
+<td class="instruction">LD (56001),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30300"></span>30300</td>
+<td class="instruction">LD A,(IX+2)</td>
+<td class="comment-1" rowspan="2">Copy the UFO's sprite active value to Percy's at *<a href="56000.html#56002">Percy_Colour</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30303"></span>30303</td>
+<td class="instruction">LD (56002),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30306"></span>30306</td>
+<td class="instruction">XOR A</td>
+<td class="comment-1" rowspan="2">Write 0 to clear *<a href="24487.html">FallingState</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30307"></span>30307</td>
+<td class="instruction">LD (24487),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30310"></span>30310</td>
+<td class="instruction">JP <a href="29153.html">CancelEggDrop</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="29153.html">CancelEggDrop</a>.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="30313"></span>
+<div class="comments">
+<div class="paragraph">
+Final frame of abduction; drop Percy downward.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">UFO_Drop_Percy</td>
+<td class="address-2"><span id="30313"></span>30313</td>
+<td class="instruction">LD A,(56001)</td>
+<td class="comment-1" rowspan="3">Add 20 to Percy's Y position at *<a href="56000.html#56001">Percy_Y_Position</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30316"></span>30316</td>
+<td class="instruction">ADD A,20</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30318"></span>30318</td>
+<td class="instruction">LD (56001),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30321"></span>30321</td>
+<td class="instruction">LD (24487),A</td>
+<td class="comment-1" rowspan="1">Write the result to *<a href="24487.html">FallingState</a> (set collision flag).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30324"></span>30324</td>
+<td class="instruction">XOR A</td>
+<td class="comment-1" rowspan="2">Write 0 to clear *<a href="30329.html#30334">UFO_Abduction_Timer</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30325"></span>30325</td>
+<td class="instruction">LD (30334),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30328"></span>30328</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="30248.html">30248</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#30259">Map</a></td>
+<td class="next">
+Next: <a href="30329.html">30329</a>
+</td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
+<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
+<div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
+<div><a href="../../asm/7633.html">Switch to hexadecimal</a>.</div>
+</footer>
+</body>
+</html>

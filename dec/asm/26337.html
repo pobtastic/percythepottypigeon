@@ -581,7 +581,11 @@ Reset the worm-carrying state.
 <td class="asm-label">Reset_Worm_State</td>
 <td class="address-2"><span id="26513"></span>26513</td>
 <td class="instruction">XOR A</td>
-<td class="comment-1" rowspan="4">Write 0 to *<a href="24490.html">CarryingWormFlag</a>, *<a href="24492.html">24492</a> and *<span class="register">IX</span>+35 to clear the worm carrying flag, worm drop flag and worm-in-beak sprite frame.</td>
+<td class="comment-1" rowspan="4">Write 0 to clear; <ul class="">
+<li>*<a href="24490.html">CarryingWormFlag</a></li>
+<li>*<a href="24492.html">24492</a></li>
+<li>*<span class="register">IX</span>+35 (worm-in-beak sprite frame)</li>
+</ul> worm carrying flag, worm drop flag and worm-in-beak sprite frame.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>

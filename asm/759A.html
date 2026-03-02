@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Percy the Potty Pigeon: Routine at 759A</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-dark.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-wide.css" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-75RERFCHBG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-75RERFCHBG');
+</script>
+</head>
+<body class="Asm-c">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html"><img alt="logo" src="../images/logo.png" /></a></td>
+<td class="page-header">Routines</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="7597.html">7597</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#759a">Map</a></td>
+<td class="next">
+Next: <a href="7628.html">7628</a>
+</td>
+</tr>
+</table>
+<div class="description">759A: Handle UFO</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="5">
+<div class="details">
+<div class="paragraph">
+Used by the routines at <a href="7286.html">Handler_Room03</a>, <a href="730E.html">Handler_Room06</a>, <a href="7367.html">Handler_Room07</a> and <a href="7413.html">Handler_Room11</a>.
+</div>
+<div class="paragraph">
+Controls the UFO hazard. The UFO wanders randomly around the screen and attempts to abduct Percy. When it catches Percy, it teleports him to the UFO's position, plays a tractor beam sound effect, then drops him downward. The UFO cannot be stunned by Percy's egg, but a hit will cancel the egg.
+</div>
+</div>
+<table class="input">
+<tr class="asm-input-header">
+<th colspan="2">Input</th>
+</tr>
+<tr>
+<td class="register">IX</td>
+<td class="register-desc">Pointer to the UFO sprite data</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="759a"></span>
+<div class="comments">
+<div class="paragraph">
+Check for respawn.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Handle_UFO</td>
+<td class="address-2"><span id="759a"></span>759A</td>
+<td class="instruction">LD A,($5FBB)</td>
+<td class="comment-1" rowspan="3">Call <a href="7628.html">Reset_UFO_Position</a> if *<a href="5FBB.html">RoomBufferFlag</a> (respawn flag) is set to reset the UFO.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="759d"></span>759D</td>
+<td class="instruction">OR A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="759e"></span>759E</td>
+<td class="instruction">CALL NZ,<a href="7628.html">Reset_UFO_Position</a></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="75a1"></span>
+<div class="comments">
+<div class="paragraph">
+Decrement the movement delay timer.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="75a1"></span>75A1</td>
+<td class="instruction">LD HL,$7679</td>
+<td class="comment-1" rowspan="2">Decrement *<a href="7679.html">UFO_Movement_Delay</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="75a4"></span>75A4</td>
+<td class="instruction">DEC (HL)</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="75a5"></span>75A5</td>
+<td class="instruction">JR NZ,<a href="759A.html#75c9">Move_UFO</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="759A.html#75c9">Move_UFO</a> if *<a href="7679.html">UFO_Movement_Delay</a> hasn't reached zero.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="75a7"></span>
+<div class="comments">
+<div class="paragraph">
+Movement delay expired; generate new random direction and delay.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">New_UFO_Direction</td>
+<td class="address-2"><span id="75a7"></span>75A7</td>
+<td class="instruction">CALL <a href="7930.html">Generate_Random_Number</a></td>
+<td class="comment-1" rowspan="1">Call <a href="7930.html">Generate_Random_Number</a> to generate a random number.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="75aa"></span>75AA</td>
+<td class="instruction">LD HL,$7679</td>
+<td class="comment-1" rowspan="1">Point <span class="register">HL</span> at <a href="7679.html">UFO_Movement_Delay</a> (UFO movement delay).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="75ad"></span>75AD</td>
+<td class="instruction">PUSH AF</td>
+<td class="comment-1" rowspan="1">Stash the random value on the stack.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="75ae"></span>75AE</td>
+<td class="instruction">AND %00000111</td>
+<td class="comment-1" rowspan="1">Keep only bits 0-2.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="75b0"></span>75B0</td>
+<td class="instruction">INC HL</td>
+<td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one to <a href="7679.html#767a">UFO_Direction</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="75b1"></span>75B1</td>
+<td class="instruction">LD (HL),A</td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">HL</span> to set the new direction.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="75b2"></span>75B2</td>
+<td class="instruction">DEC HL</td>
+<td class="comment-1" rowspan="1">Move <span class="register">HL</span> back to <a href="7679.html">UFO_Movement_Delay</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="75b3"></span>75B3</td>
+<td class="instruction">POP AF</td>
+<td class="comment-1" rowspan="1">Restore the random value from the stack.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="75b4"></span>75B4</td>
+<td class="instruction">RRCA</td>
+<td class="comment-1" rowspan="3">Rotate the random value right three times.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="75b5"></span>75B5</td>
+<td class="instruction">RRCA</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="75b6"></span>75B6</td>
+<td class="instruction">RRCA</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="75b7"></span>75B7</td>
+<td class="instruction">AND %00011111</td>
+<td class="comment-1" rowspan="1">Keep only bits 0-4.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="75b9"></span>75B9</td>
+<td class="instruction">OR %00000100</td>
+<td class="comment-1" rowspan="1">Set bit 2 to produce a delay.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="75bb"></span>75BB</td>
+<td class="instruction">LD (HL),A</td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<a href="7679.html">UFO_Movement_Delay</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="75bc"></span>75BC</td>
+<td class="instruction">PUSH HL</td>
+<td class="comment-1" rowspan="1">Stash the UFO state data pointer on the stack.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="75bd"></span>
+<div class="comments">
+<div class="paragraph">
+Set a random value for the UFO speed between 01-03.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Generate_UFO_Speed</td>
+<td class="address-2"><span id="75bd"></span>75BD</td>
+<td class="instruction">CALL <a href="7930.html">Generate_Random_Number</a></td>
+<td class="comment-1" rowspan="1">Call <a href="7930.html">Generate_Random_Number</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="75c0"></span>75C0</td>
+<td class="instruction">AND %00000011</td>
+<td class="comment-1" rowspan="1">Keep only bits 0-1 to limit the random number to between 00-03.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="75c2"></span>75C2</td>
+<td class="instruction">OR A</td>
+<td class="comment-1" rowspan="2">Jump back to <a href="759A.html#75bd">Generate_UFO_Speed</a> to try again if the speed is zero.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="75c3"></span>75C3</td>
+<td class="instruction">JR Z,<a href="759A.html#75bd">Generate_UFO_Speed</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="75c5"></span>75C5</td>
+<td class="instruction">LD ($767B),A</td>
+<td class="comment-1" rowspan="1">Write the random speed to *<a href="7679.html#767b">UFO_Speed</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="75c8"></span>75C8</td>
+<td class="instruction">POP HL</td>
+<td class="comment-1" rowspan="1">Restore the UFO state data pointer from the stack.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="75c9"></span>
+<div class="comments">
+<div class="paragraph">
+Move the UFO in its current direction.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Move_UFO</td>
+<td class="address-2"><span id="75c9"></span>75C9</td>
+<td class="instruction">INC HL</td>
+<td class="comment-1" rowspan="4">Load the direction from *<span class="register">HL</span>+01 mask with 07 and double to form a jump table index.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="75ca"></span>75CA</td>
+<td class="instruction">LD A,(HL)</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="75cb"></span>75CB</td>
+<td class="instruction">AND $07</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="75cd"></span>75CD</td>
+<td class="instruction">ADD A,A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="75ce"></span>75CE</td>
+<td class="instruction">LD ($6BC9),A</td>
+<td class="comment-1" rowspan="1">Write the direction index to *<a href="6BC8.html">6BC9</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="75d1"></span>75D1</td>
+<td class="instruction">LD HL,$767B</td>
+<td class="comment-1" rowspan="1">Point <span class="register">HL</span> at <a href="7679.html#767b">UFO_Speed</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="75d4"></span>75D4</td>
+<td class="instruction">LD C,(IX+$00)</td>
+<td class="comment-1" rowspan="2">Load the UFO's X position into <span class="register">C</span> and Y position into <span class="register">B</span> from *<span class="register">IX</span>+00 and *<span class="register">IX</span>+01.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="75d7"></span>75D7</td>
+<td class="instruction">LD B,(IX+$01)</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="75da"></span>75DA</td>
+<td class="instruction">CALL <a href="6BC8.html">RedBirdDirectionJumpTable</a></td>
+<td class="comment-1" rowspan="1">Call <a href="6AF6.html#6ba0">6BA0</a> to move the UFO in the current direction.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="75dd"></span>75DD</td>
+<td class="instruction">JR C,<a href="759A.html#75a7">New_UFO_Direction</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="759A.html#75a7">New_UFO_Direction</a> if the move was invalid (carry set) and pick a new direction.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="75df"></span>
+<div class="comments">
+<div class="paragraph">
+Update the UFO's animation frame, wrapping at 03.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="75df"></span>75DF</td>
+<td class="instruction">LD HL,$767C</td>
+<td class="comment-1" rowspan="1">Point <span class="register">HL</span> at <a href="7679.html#767c">UFO_Animation_Counter</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="75e2"></span>75E2</td>
+<td class="instruction">LD A,(HL)</td>
+<td class="comment-1" rowspan="4">Increment the animation counter, skip to <a href="759A.html#75e9">Set_UFO_Frame</a> if it's not yet at frame 03.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="75e3"></span>75E3</td>
+<td class="instruction">INC A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="75e4"></span>75E4</td>
+<td class="instruction">CP $03</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="75e6"></span>75E6</td>
+<td class="instruction">JR NZ,<a href="759A.html#75e9">Set_UFO_Frame</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="75e8"></span>75E8</td>
+<td class="instruction">XOR A</td>
+<td class="comment-1" rowspan="1">Reset the frame back to 00.</td>
+</tr>
+<tr>
+<td class="asm-label">Set_UFO_Frame</td>
+<td class="address-2"><span id="75e9"></span>75E9</td>
+<td class="instruction">LD (HL),A</td>
+<td class="comment-1" rowspan="1">Write the UFO frame to *<a href="7679.html#767c">UFO_Animation_Counter</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="75ea"></span>75EA</td>
+<td class="instruction">ADD A,$4F</td>
+<td class="comment-1" rowspan="2">Add <a href="AB3B.html#b4fb">4F</a> as the base UFO frame and write it to *<span class="register">IX</span>+03.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="75ec"></span>75EC</td>
+<td class="instruction">LD (IX+$03),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="75ef"></span>75EF</td>
+<td class="instruction">LD A,($767D)</td>
+<td class="comment-1" rowspan="4">Toggle the sprite flicker flag at *<a href="7679.html#767d">UFO_Flicker_Flag</a> between 00 and 01.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="75f2"></span>75F2</td>
+<td class="instruction">INC A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="75f3"></span>75F3</td>
+<td class="instruction">AND %00000001</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="75f5"></span>75F5</td>
+<td class="instruction">LD ($767D),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="75f8"></span>75F8</td>
+<td class="instruction">INC A</td>
+<td class="comment-1" rowspan="2">Write 01 to *<span class="register">IX</span>+02 (sprite active value).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="75f9"></span>75F9</td>
+<td class="instruction">LD (IX+$02),A</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="75fc"></span>
+<div class="comments">
+<div class="paragraph">
+Check if the UFO has recently abducted Percy.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="75fc"></span>75FC</td>
+<td class="instruction">LD A,($767E)</td>
+<td class="comment-1" rowspan="3">Jump to <a href="759A.html#7608">Check_UFO_Percy</a> if *<a href="7679.html#767e">UFO_Abduction_Timer</a> is zero.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="75ff"></span>75FF</td>
+<td class="instruction">OR A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7600"></span>7600</td>
+<td class="instruction">JR Z,<a href="759A.html#7608">Check_UFO_Percy</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7602"></span>7602</td>
+<td class="instruction">DEC A</td>
+<td class="comment-1" rowspan="2">Decrement the abduction timer and write it back to *<a href="7679.html#767e">UFO_Abduction_Timer</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7603"></span>7603</td>
+<td class="instruction">LD ($767E),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7606"></span>7606</td>
+<td class="instruction">JR <a href="7633.html">UFO_Abduct_Percy</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="7633.html">UFO_Abduct_Percy</a>.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="7608"></span>
+<div class="comments">
+<div class="paragraph">
+Check for collision with Percy.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Check_UFO_Percy</td>
+<td class="address-2"><span id="7608"></span>7608</td>
+<td class="instruction">LD IY,$DAC0</td>
+<td class="comment-1" rowspan="1">Point <span class="register">IY</span> at <a href="DAC0.html">Percy_X_Position</a> (Percy sprite data).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="760c"></span>760C</td>
+<td class="instruction">CALL <a href="6C53.html">CheckSpriteCollision</a></td>
+<td class="comment-1" rowspan="1">Call <a href="6C53.html">CheckSpriteCollision</a> to check for collision with Percy.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="760f"></span>760F</td>
+<td class="instruction">JR C,<a href="759A.html#7617">Check_UFO_Egg</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="759A.html#7617">Check_UFO_Egg</a> if carry is set (no collision).</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="7611"></span>
+<div class="comments">
+<div class="paragraph">
+UFO has caught Percy; set the abduction timer.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7611"></span>7611</td>
+<td class="instruction">LD A,$64</td>
+<td class="comment-1" rowspan="2">Set 64 as the *<a href="7679.html#767e">UFO_Abduction_Timer</a> value.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7613"></span>7613</td>
+<td class="instruction">LD ($767E),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7616"></span>7616</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="7617"></span>
+<div class="comments">
+<div class="paragraph">
+No collision with Percy; check if Percy's egg hits the UFO.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Check_UFO_Egg</td>
+<td class="address-2"><span id="7617"></span>7617</td>
+<td class="instruction">LD A,($5FA9)</td>
+<td class="comment-1" rowspan="3">Return if *<a href="5FA9.html">EggDropFlag</a> is unset.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="761a"></span>761A</td>
+<td class="instruction">OR A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="761b"></span>761B</td>
+<td class="instruction">RET Z</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="761c"></span>761C</td>
+<td class="instruction">LD IY,$DAE0</td>
+<td class="comment-1" rowspan="1">Point <span class="register">IY</span> at <a href="DAE0.html">Egg_States</a> (egg sprite data).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7620"></span>7620</td>
+<td class="instruction">CALL <a href="6C85.html">CheckEggCollision</a></td>
+<td class="comment-1" rowspan="1">Call <a href="6C85.html">CheckEggCollision</a> to check for egg collision with the UFO.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7623"></span>7623</td>
+<td class="instruction">RET C</td>
+<td class="comment-1" rowspan="1">Return if carry is set (no collision).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7624"></span>7624</td>
+<td class="instruction">CALL <a href="71E1.html">CancelEggDrop</a></td>
+<td class="comment-1" rowspan="1">Call <a href="71E1.html">CancelEggDrop</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7627"></span>7627</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="7597.html">7597</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#759a">Map</a></td>
+<td class="next">
+Next: <a href="7628.html">7628</a>
+</td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
+<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
+<div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
+<div><a href="../dec/asm/30106.html">Switch to decimal</a>.</div>
+</footer>
+</body>
+</html>

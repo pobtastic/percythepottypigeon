@@ -25,7 +25,7 @@ gtag('config', 'G-75RERFCHBG');
 <table class="asm-navigation">
 <tr>
 <td class="prev">
-Prev: <a href="7512.html">7512</a>
+Prev: <a href="7633.html">7633</a>
 </td>
 <td class="up">Up: <a href="../maps/all.html#7679">Map</a></td>
 <td class="next">
@@ -33,24 +33,64 @@ Next: <a href="7680.html">7680</a>
 </td>
 </tr>
 </table>
-<div class="description">7679: Game status buffer entry at 7679</div>
+<div class="description">7679: UFO State Data</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
 <div class="details">
+<div class="paragraph">
+State variables for the UFO hazard.
+</div>
 </div>
 </td>
 </tr>
 <tr>
+<td class="asm-label">UFO_Movement_Delay</td>
 <td class="address-1"><span id="7679"></span>7679</td>
-<td class="instruction">DEFB $00,$00,$02,$00,$00,$00,$0E</td>
+<td class="instruction">DEFB $00</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label">UFO_Direction</td>
+<td class="address-1"><span id="767a"></span>767A</td>
+<td class="instruction">DEFB $00</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label">UFO_Speed</td>
+<td class="address-1"><span id="767b"></span>767B</td>
+<td class="instruction">DEFB $02</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label">UFO_Animation_Counter</td>
+<td class="address-1"><span id="767c"></span>767C</td>
+<td class="instruction">DEFB $00</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label">UFO_Flicker_Flag</td>
+<td class="address-1"><span id="767d"></span>767D</td>
+<td class="instruction">DEFB $00</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label">UFO_Abduction_Timer</td>
+<td class="address-1"><span id="767e"></span>767E</td>
+<td class="instruction">DEFB $00</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label">UFO_Tractor_Beam_Pitch</td>
+<td class="address-1"><span id="767f"></span>767F</td>
+<td class="instruction">DEFB $0E</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 </table>
 <table class="asm-navigation">
 <tr>
 <td class="prev">
-Prev: <a href="7512.html">7512</a>
+Prev: <a href="7633.html">7633</a>
 </td>
 <td class="up">Up: <a href="../maps/all.html#7679">Map</a></td>
 <td class="next">
