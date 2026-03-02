@@ -936,7 +936,7 @@ N $6239 Check if up is pressed while on a platform.
   $6239,$04 Jump to #R$6241 if up is not pressed.
 N $623D No platform below so clear the landed flag.
 @ $623D label=MainGameLoop_ClearLandedFlag
-  $623D,$04 Write #N$00 to *#R$5FAD.
+  $623D,$04 Write #N$00 to clear *#R$5FAD.
 @ $6241 label=MainGameLoop_UpdateAnimation
   $6241,$03 Jump to #R$6338.
 
@@ -1087,7 +1087,7 @@ N $630B If the current room is #N$0B (the last room), wrap to room #N$01.
   $630B,$04 Jump to #R$6310 if this isn't room #N$0B.
   $630F,$01 #REGa=#N$00 (will become #N$01 after increment).
 @ $6310 label=TransitionRoomRight_SetRoom
-  $6310,$04 Write #N$00 to *#REGix+#N$00 (reset Percy's X to left edge).
+  $6310,$04 Write #N$00 to reset *#REGix+#N$00 (Percy's X to left edge).
   $6314,$01 Increment room number.
   $6315,$03 Write #REGa to *#R$5FC5.
   $6318,$03 Call #R$5E24 to draw the new room.
@@ -1324,7 +1324,7 @@ N $6495 Percy is airborne so deplete the energy bar. Uses a slower frame delay
   $649C,$03 Return if it's not yet time to update the energy bar.
 N $649F Reset the frame counter and check if Percy is on a platform (energy
 . doesn't deplete while landed).
-  $649F,$04 Write #N$00 to *#R$5FAB.
+  $649F,$04 Write #N$00 to reset *#R$5FAB.
   $64A3,$05 Return if *#R$5FAD is set, indicating Percy is landed on a platform.
 N $64A8 Deplete the energy bar by shifting pixels left. Scans rightward from
 . the current position to find the rightmost filled byte, then shifts it left
@@ -1353,7 +1353,7 @@ N $64BE Percy is on the ground so refill the energy bar. Uses a faster frame
   $64C1,$01 Increment the frame delay counter.
   $64C2,$03 Write #REGa back to *#R$5FAB.
   $64C5,$03 Return if not yet time to update the bar.
-  $64C8,$04 Write #N$00 to *#R$5FAB.
+  $64C8,$04 Write #N$00 to reset *#R$5FAB.
 N $64CC Refill the energy bar by shifting pixels right (filling from the left).
 . Scans leftward to find the first non-full byte and fills it one pixel at a
 . time.
@@ -1757,7 +1757,11 @@ N $6778 #HTML(#AUDIO(fed-chicks.wav)(#INCLUDE(FedChicks)))
   $678E,$03 Call #R$68B8.
 N $6791 Reset the worm-carrying state.
 @ $6791 label=Reset_Worm_State
-  $6791,$0A Write #N$00 to *#R$5FAA, *#R$5FAC and *#REGix+#N$23 to clear the
+  $6791,$0A Write #N$00 to clear; #LIST
+. { *#R$5FAA }
+. { *#R$5FAC }
+. { *#REGix+#N$23 (worm-in-beak sprite frame) }
+. LIST#
 . worm carrying flag, worm drop flag and worm-in-beak sprite frame.
   $679B,$01 Return.
 
@@ -2825,8 +2829,8 @@ N $6DFD No crash; move the car left across the screen.
   $6E13,$04 Set the rear sprite frame to #N$1F (car rear).
 N $6E17 Check if Percy's egg has hit the car.
   $6E17,$06 Point #REGbc at #R$7209 and #REGhl at #R$DAD0.
-  $6E1D,$07 Call #R$6F5A if *#R$5FA9 (egg drop flag) is non-zero to check for
-. egg collision with the car.
+  $6E1D,$07 Call #R$6F5A if *#R$5FA9 is non-zero to check for an egg collision
+. with the car.
 N $6E24 Check if the car has collided with Percy.
 @ $6E24 label=Check_Car_Percy_Collision
   $6E24,$04 Point #REGix at #R$DAC0.
@@ -3609,30 +3613,244 @@ g $7508 Red Bird Data States
 @ $7508 label=RedBird_DataStates
 B $7508,$0A,$01
 
-c $7512
-  $7512,$04 #REGiy=#R$7AC8.
-  $7516,$03 #REGhl=#R$7589.
-  $7519,$03 #REGbc=#N$0739.
-  $751C,$07 #REGe=(*#R$5FC5 - #N$01) * #N$04.
-  $7523,$02 #REGd=#N$00.
-  $7525,$02 #REGiy+=#REGde.
-  $7527,$07 Call #R$7574 if *#R$5FBB is non-zero.
-  $752E,$04 Test bit 7 of *#REGiy+#N$00.
-  $7532,$02 Jump to #R$74B9 if #REGa is not equal to #REGa.
-  $7534,$01 #REGa=*#REGhl.
-  $7535,$02 Test bit 7 of #REGa.
-  $7537,$01 Increment #REGhl by one.
-  $7538,$02 Jump to #R$754E if #REGhl is not equal to #REGa.
-  $753A,$03 #REGa=*#REGix+#N$00.
-  $753D,$01 #REGa+=*#REGhl.
-  $753E,$03 Compare #REGa with *#REGiy+#N$03.
-  $7541,$01 Decrease #REGhl by one.
-  $7542,$02 Jump to #R$7549 if #REGhl is less than #REGa.
-  $7544,$03 Write #N$80 to *#REGhl.
+c $7512 Handle Cat
+@ $7512 label=Handle_Cat
+D $7512 Controls the cat hazard that patrols horizontally along a platform. The
+. cat bounces between left and right boundaries, animates through walking frames,
+. and checks for collision with Percy and Percy's egg. The cat parameters vary
+. per room, looked up from state data indexed by the current room number.
+R $7512 IX Pointer to the cat sprite data
+N $7512 Set up the cat state pointer and movement parameters.
+  $7512,$04 Point #REGiy at #R$7AC8.
+  $7516,$03 Point #REGhl at #R$7589.
+  $7519,$03 Set #REGb=#N$07 (sprite active value) and #REGc=#R$B23B(#N$39)
+. (base cat frame).
+@ $751C label=Calculate_Hazard_Room_Offset
+  $751C,$0B Calculate the state data offset: (*#R$5FC5 - #N$01) * #N$04, and
+. add to #REGiy to point at this room's cat state entry.
+@ $7527 label=Cat_Entry
+  $7527,$07 Call #R$7574 if *#R$5FBB (respawn flag) is non-zero to reset the
+. cat position.
+  $752E,$06 Jump to #R$74B9 if bit 7 of *#REGiy+#N$00 is set (cat is stunned
+. by egg).
+N $7534 Determine movement direction and update X position.
+  $7534,$03 Load the direction byte from *#REGhl; test bit 7.
+  $7537,$01 Advance #REGhl to the step size byte.
+  $7538,$02 Jump to #R$754E if bit 7 is set (moving left).
+N $753A Moving right: add the step size to the X position.
+  $753A,$03 Load the cat X position from *#REGix+#N$00.
+  $753D,$01 Add the step size from *#REGhl.
+  $753E,$03 Compare with the right boundary at *#REGiy+#N$03.
+  $7541,$01 Move #REGhl back to the direction byte.
+  $7542,$02 Jump to #R$7549 if the X position hasn't reached the right boundary.
+  $7544,$03 Write #N$80 to *#REGhl to switch direction to moving left.
   $7547,$02 Jump to #R$755F.
+@ $7549 label=Cat_Update_X_Right
+  $7549,$03 Write the updated X position to *#REGix+#N$00.
+  $754C,$02 Jump to #R$755F.
+N $754E Moving left: subtract the step size from the X position.
+@ $754E label=Cat_Moving_Left
+  $754E,$03 Load the cat X position from *#REGix+#N$00.
+  $7551,$01 Subtract the step size from *#REGhl.
+  $7552,$03 Compare with the left boundary at *#REGiy+#N$02.
+  $7555,$01 Move #REGhl back to the direction byte.
+  $7556,$02 Jump to #R$755C if the X position hasn't reached the left boundary.
+  $7558,$02 Write #N$00 to *#REGhl to switch direction to moving right.
+  $755A,$02 Jump to #R$755F.
+@ $755C label=Cat_Update_X_Left
+  $755C,$03 Write the updated X position to *#REGix+#N$00.
+N $755F Update the cat's walking animation frame and check for collisions.
+@ $755F label=Update_Cat_Frame
+  $755F,$01 Move #REGhl back to the animation counter.
+M $7560,$05 Increment the animation counter, wrapping at #N$07.
+  $7562,$02,b$01 Keep only bits 0-2.
+  $7565,$01 Divide by two.
+  $7566,$01 Add the base frame from #REGc.
+  $7567,$01 Advance #REGhl to the direction byte.
+  $7568,$04 Skip to #R$756E if bit 7 of *#REGhl is unset (moving right).
+  $756C,$02 Add #N$04 for the left-facing frame set.
+@ $756E label=Set_Hazard_Frame
+  $756E,$03 Write the sprite frame to *#REGix+#N$03.
+  $7571,$03 Jump to #R$74D6 to check for collision with Percy or egg.
 
-g $7679
-B $7679,$07
+c $7574 Reset Cat Position
+@ $7574 label=Reset_Cat_Position
+D $7574 Resets the cat to its starting position and clears the stunned flag.
+R $7574 B Sprite active value
+  $7574,$06 Set the Y position from *#REGiy+#N$01.
+  $757A,$06 Set the X position from *#REGiy+#N$02.
+  $7580,$04 Write #N$00 to *#REGiy+#N$00 (clear the stunned flag).
+  $7584,$03 Set the sprite active value from #REGb.
+  $7587,$01 Return.
+
+g $7588 Cat Direction Data
+@ $7588 label=Cat_Animation_Counter
+D $7588 Animation counter, direction flag and step size for the cat.
+B $7588,$01
+@ $7589 label=Cat_Direction_Flag
+B $7589,$01
+@ $758A label=Cat_Step_Size
+B $758A,$01
+
+c $758B Handle Dog
+@ $758B label=Handle_Dog
+D $758B Controls the dog hazard that patrols horizontally along a platform. Uses
+. the same movement logic as the cat but with different state data, boundaries
+. and sprite frames.
+R $758B IX Pointer to the dog sprite data
+  $758B,$04 Point #REGiy at #R$7AE8.
+  $758F,$03 Set #REGb=#N$00 (sprite active value) and #REGc=#R$B33B(#N$41)
+. (base dog frame).
+  $7592,$03 Point #REGhl at #R$7598.
+  $7595,$02 Jump to #R$751C.
+
+g $7597 Dog Direction Data
+@ $7597 label=Dog_Animation_Counter
+D $7597 Animation counter, direction flag and step size for the dog.
+B $7597,$01
+@ $7598 label=Dog_Direction_Flag
+B $7598,$01
+@ $7599 label=Dog_Step_Size
+B $7599,$01
+
+c $759A Handle UFO
+@ $759A label=Handle_UFO
+D $759A Controls the UFO hazard. The UFO wanders randomly around the screen and
+. attempts to abduct Percy. When it catches Percy, it teleports him to the UFO's
+. position, plays a tractor beam sound effect, then drops him downward. The UFO
+. cannot be stunned by Percy's egg, but a hit will cancel the egg.
+R $759A IX Pointer to the UFO sprite data
+N $759A Check for respawn.
+  $759A,$07 Call #R$7628 if *#R$5FBB (respawn flag) is set to reset the UFO.
+N $75A1 Decrement the movement delay timer.
+  $75A1,$04 Decrement *#R$7679.
+  $75A5,$02 Jump to #R$75C9 if *#R$7679 hasn't reached zero.
+N $75A7 Movement delay expired; generate new random direction and delay.
+@ $75A7 label=New_UFO_Direction
+  $75A7,$03 Call #R$7930 to generate a random number.
+  $75AA,$03 Point #REGhl at #R$7679 (UFO movement delay).
+  $75AD,$01 Stash the random value on the stack.
+  $75AE,$02,b$01 Keep only bits 0-2.
+  $75B0,$01 Increment #REGhl by one to #R$767A.
+  $75B1,$01 Write #REGa to *#REGhl to set the new direction.
+  $75B2,$01 Move #REGhl back to #R$7679.
+  $75B3,$01 Restore the random value from the stack.
+  $75B4,$03 Rotate the random value right three times.
+  $75B7,$02,b$01 Keep only bits 0-4.
+  $75B9,$02,b$01 Set bit 2 to produce a delay.
+  $75BB,$01 Write #REGa to *#R$7679.
+  $75BC,$01 Stash the UFO state data pointer on the stack.
+N $75BD Set a random value for the UFO speed between #N$01-#N$03.
+@ $75BD label=Generate_UFO_Speed
+  $75BD,$03 Call #R$7930.
+  $75C0,$02,b$01 Keep only bits 0-1 to limit the random number to between
+. #N$00-#N$03.
+  $75C2,$03 Jump back to #R$75BD to try again if the speed is zero.
+  $75C5,$03 Write the random speed to *#R$767B.
+  $75C8,$01 Restore the UFO state data pointer from the stack.
+N $75C9 Move the UFO in its current direction.
+@ $75C9 label=Move_UFO
+  $75C9,$05 Load the direction from *#REGhl+#N$01, mask with #N$07 and double
+. to form a jump table index.
+  $75CE,$03 Write the direction index to *#R$6BC8(#N$6BC9).
+  $75D1,$03 Point #REGhl at #R$767B.
+  $75D4,$06 Load the UFO's X position into #REGc and Y position into #REGb from
+. *#REGix+#N$00 and *#REGix+#N$01.
+  $75DA,$03 Call #R$6BA0 to move the UFO in the current direction.
+  $75DD,$02 Jump to #R$75A7 if the move was invalid (carry set) and pick a new
+. direction.
+N $75DF Update the UFO's animation frame, wrapping at #N$03.
+  $75DF,$03 Point #REGhl at #R$767C.
+  $75E2,$06 Increment the animation counter, skip to #R$75E9 if it's not yet at
+. frame #N$03.
+  $75E8,$01 Reset the frame back to #N$00.
+@ $75E9 label=Set_UFO_Frame
+  $75E9,$01 Write the UFO frame to *#R$767C.
+  $75EA,$05 Add #R$B4FB(#N$4F) as the base UFO frame and write it to
+. *#REGix+#N$03.
+M $75EF,$09 Toggle the sprite flicker flag at *#R$767D between #N$00 and
+. #N$01.
+  $75F3,$02,b$01 Keep only bit 0.
+  $75F8,$04 Write #N$01 to *#REGix+#N$02 (sprite active value).
+N $75FC Check if the UFO has recently abducted Percy.
+  $75FC,$06 Jump to #R$7608 if *#R$767E is zero.
+  $7602,$04 Decrement the abduction timer and write it back to *#R$767E.
+  $7606,$02 Jump to #R$7633.
+N $7608 Check for collision with Percy.
+@ $7608 label=Check_UFO_Percy
+  $7608,$04 Point #REGiy at #R$DAC0 (Percy sprite data).
+  $760C,$03 Call #R$6C53 to check for collision with Percy.
+  $760F,$02 Jump to #R$7617 if carry is set (no collision).
+N $7611 UFO has caught Percy; set the abduction timer.
+  $7611,$05 Set #N$64 as the *#R$767E value.
+  $7616,$01 Return.
+N $7617 No collision with Percy; check if Percy's egg hits the UFO.
+@ $7617 label=Check_UFO_Egg
+  $7617,$05 Return if *#R$5FA9 is unset.
+  $761C,$04 Point #REGiy at #R$DAE0 (egg sprite data).
+  $7620,$03 Call #R$6C85 to check for egg collision with the UFO.
+  $7623,$01 Return if carry is set (no collision).
+  $7624,$03 Call #R$71E1.
+  $7627,$01 Return.
+
+c $7628 Reset UFO Position
+@ $7628 label=Reset_UFO_Position
+D $7628 Resets the UFO to a random position and clears the abduction timer.
+  $7628,$04 Point #REGiy at #N($0000,$04,$04).
+  $762C,$04 Write #N$00 to clear *#R$767E.
+  $7630,$03 Jump to #R$74A7 to generate a random valid position.
+
+c $7633 UFO Abduct Percy
+@ $7633 label=UFO_Abduct_Percy
+D $7633 Handles the UFO's abduction of Percy. Teleports Percy to the UFO's
+. position while playing a tractor beam sound effect, then on the final frame
+. drops Percy downward.
+  $7633,$04 Jump to #R$7669 if the abduction timer is equal to #N$01 (final
+. frame of abduction).
+N $7637 Play the tractor beam sound effect.
+  $7637,$03 Point #REGhl at #R$767F (tractor beam sound pitch).
+  $763A,$02 Load the pitch into #REGe and #REGc.
+@ $763C label=Tractor_Beam_SoundStep_Loop
+  $763C,$01 Copy to #REGb.
+  $763D,$02 Set initial speaker state to #N$01.
+@ $763F label=Tractor_Beam_Sound_Inner
+  $763F,$03 Action a delay loop.
+M $7642,$04 Toggle the speaker bits and output to the speaker port.
+  $7642,$02,b$01 Flip bits 3-4.
+  $7646,$03 Decrement #REGc and loop back to #R$763C until the sound step is
+. complete.
+M $7649,$04 Complement and mask the pitch value.
+  $764B,$02,b$01 Keep only bits 0-5.
+  $764D,$01 Write back to *#REGhl.
+N $764E Teleport Percy to the UFO's position.
+  $764E,$06 Copy the UFO's X position to Percy's X at *#R$DAC0.
+  $7654,$08 Copy the UFO's Y position plus #N$0A to Percy's Y at *#R$DAC1.
+  $765C,$06 Copy the UFO's sprite active value to Percy's at *#R$DAC2.
+  $7662,$04 Write #N$00 to clear *#R$5FA7.
+  $7666,$03 Jump to #R$71E1.
+N $7669 Final frame of abduction; drop Percy downward.
+@ $7669 label=UFO_Drop_Percy
+  $7669,$08 Add #N$14 to Percy's Y position at *#R$DAC1.
+  $7671,$03 Write the result to *#R$5FA7 (set collision flag).
+  $7674,$04 Write #N$00 to clear *#R$767E.
+  $7678,$01 Return.
+
+g $7679 UFO State Data
+@ $7679 label=UFO_Movement_Delay
+D $7679 State variables for the UFO hazard.
+B $7679,$01
+@ $767A label=UFO_Direction
+B $767A,$01
+@ $767B label=UFO_Speed
+B $767B,$01
+@ $767C label=UFO_Animation_Counter
+B $767C,$01
+@ $767D label=UFO_Flicker_Flag
+B $767D,$01
+@ $767E label=UFO_Abduction_Timer
+B $767E,$01
+@ $767F label=UFO_Tractor_Beam_Pitch
+B $767F,$01
 
 c $7680 Handler: Plane
 @ $7680 label=Handler_Plane
@@ -4086,7 +4304,16 @@ D $7AC3 State variables for the parachute hazard.
 B $7AC3,$04,$01
 
 g $7AC7
-  $7AC8
+
+g $7AC8 Cat State Data
+@ $7AC8 label=Cat_State_Data
+D $7AC8 State variables for the cat hazard.
+B $7AC8,$04,$01
+
+g $7AE8 Dog State Data
+@ $7AE8 label=Dog_State_Data
+D $7AE8 State variables for the dog hazard.
+B $7AE8,$04,$01
 
 g $7B04 Table: Parachute Starting X Positions
 @ $7B04 label=Table_ParachuteXPosition

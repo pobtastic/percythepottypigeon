@@ -1385,7 +1385,7 @@ c$5FE9 LD A,($5FA7)    ; {If *#R$5FA7 is unset, call #R$653D.
  $623B JR NZ,$6241     ; }
 ; No platform below so clear the landed flag.
 @label=MainGameLoop_ClearLandedFlag
-*$623D XOR A           ; {Write #N$00 to *#R$5FAD.
+*$623D XOR A           ; {Write #N$00 to clear *#R$5FAD.
  $623E LD ($5FAD),A    ; }
 @label=MainGameLoop_UpdateAnimation
 *$6241 JP $6338        ; Jump to #R$6338.
@@ -1584,7 +1584,7 @@ c$6307 PUSH AF         ; Stash #REGaf on the stack.
  $630D JR NZ,$6310     ; }
  $630F XOR A           ; #REGa=#N$00 (will become #N$01 after increment).
 @label=TransitionRoomRight_SetRoom
-*$6310 LD (IX+$00),$00 ; Write #N$00 to *#REGix+#N$00 (reset Percy's X to left
+*$6310 LD (IX+$00),$00 ; Write #N$00 to reset *#REGix+#N$00 (Percy's X to left
                        ; edge).
  $6314 INC A           ; Increment room number.
  $6315 LD ($5FC5),A    ; Write #REGa to *#R$5FC5.
@@ -1897,7 +1897,7 @@ c$6480 LD HL,$52EC   ; #REGhl=#N$52EC (screen buffer location for the energy
  $649E RET NZ        ; }
 ; Reset the frame counter and check if Percy is on a platform (energy
 ; doesn't deplete while landed).
- $649F XOR A         ; {Write #N$00 to *#R$5FAB.
+ $649F XOR A         ; {Write #N$00 to reset *#R$5FAB.
  $64A0 LD ($5FAB),A  ; }
  $64A3 LD A,($5FAD)  ; {Return if *#R$5FAD is set, indicating Percy is landed
  $64A6 OR A          ; on a platform.
@@ -1939,7 +1939,7 @@ c$6480 LD HL,$52EC   ; #REGhl=#N$52EC (screen buffer location for the energy
  $64C2 LD ($5FAB),A  ; Write #REGa back to *#R$5FAB.
  $64C5 CP $03        ; {Return if not yet time to update the bar.
  $64C7 RET C         ; }
- $64C8 XOR A         ; {Write #N$00 to *#R$5FAB.
+ $64C8 XOR A         ; {Write #N$00 to reset *#R$5FAB.
  $64C9 LD ($5FAB),A  ; }
 ; This entry point is used by the routine at #R$655C.
 ; .
@@ -2534,10 +2534,13 @@ c$66E1 LD A,($5FAA)   ; {Return if *#R$5FAA (worm carrying flag) is zero.
 ; .
 ; Reset the worm-carrying state.
 @label=Reset_Worm_State
-*$6791 XOR A          ; {Write #N$00 to *#R$5FAA, *#R$5FAC and *#REGix+#N$23 to clear the
- $6792 LD ($5FAA),A   ; worm carrying flag, worm drop flag and worm-in-beak sprite frame.
- $6795 LD ($5FAC),A   ;
- $6798 LD (IX+$23),A  ; }
+*$6791 XOR A          ; {Write #N$00 to clear; #LIST
+ $6792 LD ($5FAA),A   ; { *#R$5FAA }
+ $6795 LD ($5FAC),A   ; { *#R$5FAC }
+ $6798 LD (IX+$23),A  ; { *#REGix+#N$23 (worm-in-beak sprite frame) }
+                      ; LIST#
+                      ; worm carrying flag, worm drop flag and worm-in-beak sprite frame.
+                      ; }
  $679B RET            ; Return.
 
 ; Drop Worm
@@ -3470,7 +3473,7 @@ c$6AF6 LD IX,$DAC4     ; #REGix=#R$DAC4 (red bird sprite data).
 
 ; Red Bird Direction Jump Table
 ;
-; Used by the routines at #R$6AF6, #R$7439 and #R$7512.
+; Used by the routines at #R$6AF6, #R$7439 and #R$759A.
 ; .
 ; Movement direction jump table. The entry point is self-modified at
 ; #R$6BC8(#N$6BC9) to jump to one of 8 directional movement handlers. Each
@@ -3655,7 +3658,7 @@ c$6C39 LD A,($6CB7)  ; {#REGh=*#R$6CB7.
 
 ; Check Sprite Collision
 ;
-; Used by the routines at #R$69F7, #R$6E5D, #R$7082, #R$74D6, #R$7512, #R$768C
+; Used by the routines at #R$69F7, #R$6E5D, #R$7082, #R$74D6, #R$759A, #R$768C
 ; and #R$794A.
 ; .
 ; Checks if two sprites overlap by comparing their X and Y positions.
@@ -3712,7 +3715,7 @@ c$6C53 LD A,(IX+$00) ; Load #REGa with the first sprite's X position (from
 
 ; Check Egg Collision
 ;
-; Used by the routines at #R$69F7, #R$6F54, #R$7190, #R$74D6, #R$7512 and
+; Used by the routines at #R$69F7, #R$6F54, #R$7190, #R$74D6, #R$759A and
 ; #R$768C.
 ; .
 ; Checks if an egg overlaps with a sprite by comparing their positions.
@@ -3984,8 +3987,8 @@ c$6DAB LD A,($5FBB)    ; {Jump to #R$6DB8 if *#R$5FBB (respawn flag) is zero.
 ; Check if Percy's egg has hit the car.
  $6E17 LD BC,$7209     ; {Point #REGbc at #R$7209 and #REGhl at #R$DAD0.
  $6E1A LD HL,$DAD0     ; }
- $6E1D LD A,($5FA9)    ; {Call #R$6F5A if *#R$5FA9 (egg drop flag) is non-zero to check for
- $6E20 OR A            ; egg collision with the car.
+ $6E1D LD A,($5FA9)    ; {Call #R$6F5A if *#R$5FA9 is non-zero to check for an egg collision
+ $6E20 OR A            ; with the car.
  $6E21 CALL NZ,$6F5A   ; }
 ; Check if the car has collided with Percy.
 @label=Check_Car_Percy_Collision
@@ -4656,7 +4659,7 @@ c$7190 LD A,($5FA9)  ; {Return if *#R$5FA9 is unset.
 
 ; Cancel Egg Drop
 ;
-; Used by the routines at #R$69F7, #R$7190, #R$74D6 and #R$7512.
+; Used by the routines at #R$69F7, #R$7190, #R$74D6, #R$759A and #R$7633.
 @label=CancelEggDrop
 c$71E1 XOR A         ; {Write #N$00 to; #LIST
  $71E2 LD ($DAE3),A  ; { *#R$DAE3 }
@@ -5123,7 +5126,7 @@ c$7439 LD IY,$7508     ; Point #REGiy at #R$7508.
 
 ; Randomise Red Bird Position
 ;
-; Used by the routines at #R$7439 and #R$7512.
+; Used by the routines at #R$7439 and #R$7628.
 ; .
 ; Generates a random position for the red bird and validates it. Keeps
 ; generating new coordinates until a valid position is found, then clears the
@@ -5225,197 +5228,324 @@ g$7508 DEFB $00
  $7510 DEFB $00
  $7511 DEFB $00
 
-; Routine at 7512
+; Handle Cat
 ;
 ; Used by the routines at #R$7265, #R$7286, #R$72E1, #R$730E, #R$7367 and
 ; #R$73A4.
-c$7512 LD IY,$7AC8    ; #REGiy=#R$7AC8.
- $7516 LD HL,$7589    ; #REGhl=#R$7589.
- $7519 LD BC,$0739    ; #REGbc=#N$0739.
-*$751C LD A,($5FC5)   ; {#REGe=(*#R$5FC5 - #N$01) * #N$04.
- $751F DEC A          ;
+; .
+; Controls the cat hazard that patrols horizontally along a platform. The
+; cat bounces between left and right boundaries, animates through walking frames,
+; and checks for collision with Percy and Percy's egg. The cat parameters vary
+; per room, looked up from state data indexed by the current room number.
+;
+; IX Pointer to the cat sprite data
+;
+; Set up the cat state pointer and movement parameters.
+@label=Handle_Cat
+c$7512 LD IY,$7AC8    ; Point #REGiy at #R$7AC8.
+ $7516 LD HL,$7589    ; Point #REGhl at #R$7589.
+ $7519 LD BC,$0739    ; Set #REGb=#N$07 (sprite active value) and #REGc=#R$B23B(#N$39)
+                      ; (base cat frame).
+; This entry point is used by the routine at #R$758B.
+@label=Calculate_Hazard_Room_Offset
+*$751C LD A,($5FC5)   ; {Calculate the state data offset: (*#R$5FC5 - #N$01) * #N$04, and
+ $751F DEC A          ; add to #REGiy to point at this room's cat state entry.
  $7520 ADD A,A        ;
  $7521 ADD A,A        ;
- $7522 LD E,A         ; }
- $7523 LD D,$00       ; #REGd=#N$00.
- $7525 ADD IY,DE      ; #REGiy+=#REGde.
+ $7522 LD E,A         ;
+ $7523 LD D,$00       ;
+ $7525 ADD IY,DE      ; }
 ; This entry point is used by the routine at #R$7893.
-*$7527 LD A,($5FBB)   ; {Call #R$7574 if *#R$5FBB is non-zero.
- $752A OR A           ;
+@label=Cat_Entry
+*$7527 LD A,($5FBB)   ; {Call #R$7574 if *#R$5FBB (respawn flag) is non-zero to reset the
+ $752A OR A           ; cat position.
  $752B CALL NZ,$7574  ; }
- $752E BIT 7,(IY+$00) ; Test bit 7 of *#REGiy+#N$00.
- $7532 JR NZ,$74B9    ; Jump to #R$74B9 if #REGa is not equal to #REGa.
- $7534 LD A,(HL)      ; #REGa=*#REGhl.
- $7535 BIT 7,A        ; Test bit 7 of #REGa.
- $7537 INC HL         ; Increment #REGhl by one.
- $7538 JR NZ,$754E    ; Jump to #R$754E if #REGhl is not equal to #REGa.
- $753A LD A,(IX+$00)  ; #REGa=*#REGix+#N$00.
- $753D ADD A,(HL)     ; #REGa+=*#REGhl.
- $753E CP (IY+$03)    ; Compare #REGa with *#REGiy+#N$03.
- $7541 DEC HL         ; Decrease #REGhl by one.
- $7542 JR C,$7549     ; Jump to #R$7549 if #REGhl is less than #REGa.
- $7544 LD A,$80       ; {Write #N$80 to *#REGhl.
- $7546 LD (HL),A      ; }
+ $752E BIT 7,(IY+$00) ; {Jump to #R$74B9 if bit 7 of *#REGiy+#N$00 is set (cat is stunned
+ $7532 JR NZ,$74B9    ; by egg).}
+; Determine movement direction and update X position.
+ $7534 LD A,(HL)      ; {Load the direction byte from *#REGhl; test bit 7.
+ $7535 BIT 7,A        ; }
+ $7537 INC HL         ; Advance #REGhl to the step size byte.
+ $7538 JR NZ,$754E    ; Jump to #R$754E if bit 7 is set (moving left).
+; Moving right: add the step size to the X position.
+ $753A LD A,(IX+$00)  ; Load the cat X position from *#REGix+#N$00.
+ $753D ADD A,(HL)     ; Add the step size from *#REGhl.
+ $753E CP (IY+$03)    ; Compare with the right boundary at *#REGiy+#N$03.
+ $7541 DEC HL         ; Move #REGhl back to the direction byte.
+ $7542 JR C,$7549     ; Jump to #R$7549 if the X position hasn't reached the
+                      ; right boundary.
+ $7544 LD A,$80       ; {Write #N$80 to *#REGhl to switch direction to moving
+ $7546 LD (HL),A      ; left.}
  $7547 JR $755F       ; Jump to #R$755F.
-*$7549 LD (IX+$00),A  ;
- $754C JR $755F       ;
-*$754E LD A,(IX+$00)  ;
- $7551 SUB (HL)       ;
- $7552 CP (IY+$02)    ;
- $7555 DEC HL         ;
- $7556 JR NC,$755C    ;
- $7558 XOR A          ;
- $7559 LD (HL),A      ;
- $755A JR $755F       ;
-*$755C LD (IX+$00),A  ;
+@label=Cat_Update_X_Right
+*$7549 LD (IX+$00),A  ; Write the updated X position to *#REGix+#N$00.
+ $754C JR $755F       ; Jump to #R$755F.
+; Moving left: subtract the step size from the X position.
+@label=Cat_Moving_Left
+*$754E LD A,(IX+$00)  ; Load the cat X position from *#REGix+#N$00.
+ $7551 SUB (HL)       ; Subtract the step size from *#REGhl.
+ $7552 CP (IY+$02)    ; Compare with the left boundary at *#REGiy+#N$02.
+ $7555 DEC HL         ; Move #REGhl back to the direction byte.
+ $7556 JR NC,$755C    ; Jump to #R$755C if the X position hasn't reached the
+                      ; left boundary.
+ $7558 XOR A          ; {Write #N$00 to *#REGhl to switch direction to moving
+ $7559 LD (HL),A      ; right.}
+ $755A JR $755F       ; Jump to #R$755F.
+@label=Cat_Update_X_Left
+*$755C LD (IX+$00),A  ; Write the updated X position to *#REGix+#N$00.
 ; This entry point is used by the routine at #R$7893.
-*$755F DEC HL         ;
- $7560 LD A,(HL)      ;
+; .
+; Update the cat's walking animation frame and check for collisions.
+@label=Update_Cat_Frame
+*$755F DEC HL         ; Move #REGhl back to the animation counter.
+ $7560 LD A,(HL)      ; {Increment the animation counter, wrapping at #N$07.
  $7561 INC A          ;
- $7562 AND $07        ;
- $7564 LD (HL),A      ;
- $7565 RRA            ;
- $7566 ADD A,C        ;
- $7567 INC HL         ;
- $7568 BIT 7,(HL)     ;
- $756A JR Z,$756E     ;
- $756C ADD A,$04      ;
-*$756E LD (IX+$03),A  ;
- $7571 JP $74D6       ;
-*$7574 LD A,(IY+$01)  ;
- $7577 LD (IX+$01),A  ;
- $757A LD A,(IY+$02)  ;
- $757D LD (IX+$00),A  ;
- $7580 XOR A          ;
- $7581 LD (IY+$00),A  ;
- $7584 LD (IX+$02),B  ;
- $7587 RET            ;
- $7588 NOP            ;
- $7589 NOP            ;
- $758A LD (BC),A      ;
-; This entry point is used by the routines at #R$7286 and #R$7367.
-*$758B LD IY,$7AE8    ;
- $758F LD BC,$0041    ;
- $7592 LD HL,$7598    ;
- $7595 JR $751C       ;
- $7597 NOP            ;
- $7598 NOP            ;
- $7599 INC BC         ;
-; This entry point is used by the routines at #R$7286, #R$730E, #R$7367 and
-; #R$7413.
-*$759A LD A,($5FBB)   ;
- $759D OR A           ;
- $759E CALL NZ,$7628  ;
- $75A1 LD HL,$7679    ;
- $75A4 DEC (HL)       ;
- $75A5 JR NZ,$75C9    ;
-*$75A7 CALL $7930     ;
- $75AA LD HL,$7679    ;
- $75AD PUSH AF        ;
- $75AE AND $07        ;
- $75B0 INC HL         ;
- $75B1 LD (HL),A      ;
- $75B2 DEC HL         ;
- $75B3 POP AF         ;
- $75B4 RRCA           ;
- $75B5 RRCA           ;
- $75B6 RRCA           ;
- $75B7 AND $1F        ;
- $75B9 OR $04         ;
- $75BB LD (HL),A      ;
- $75BC PUSH HL        ;
-*$75BD CALL $7930     ;
- $75C0 AND $03        ;
- $75C2 OR A           ;
- $75C3 JR Z,$75BD     ;
- $75C5 LD ($767B),A   ;
- $75C8 POP HL         ;
-*$75C9 INC HL         ;
- $75CA LD A,(HL)      ;
- $75CB AND $07        ;
- $75CD ADD A,A        ;
- $75CE LD ($6BC9),A   ;
- $75D1 LD HL,$767B    ;
- $75D4 LD C,(IX+$00)  ;
- $75D7 LD B,(IX+$01)  ;
- $75DA CALL $6BC8     ;
- $75DD JR C,$75A7     ;
- $75DF LD HL,$767C    ;
- $75E2 LD A,(HL)      ;
- $75E3 INC A          ;
- $75E4 CP $03         ;
- $75E6 JR NZ,$75E9    ;
- $75E8 XOR A          ;
-*$75E9 LD (HL),A      ;
- $75EA ADD A,$4F      ;
- $75EC LD (IX+$03),A  ;
- $75EF LD A,($767D)   ;
- $75F2 INC A          ;
- $75F3 AND $01        ;
- $75F5 LD ($767D),A   ;
- $75F8 INC A          ;
- $75F9 LD (IX+$02),A  ;
- $75FC LD A,($767E)   ;
- $75FF OR A           ;
- $7600 JR Z,$7608     ;
- $7602 DEC A          ;
- $7603 LD ($767E),A   ;
- $7606 JR $7633       ;
-*$7608 LD IY,$DAC0    ;
- $760C CALL $6C53     ;
- $760F JR C,$7617     ;
- $7611 LD A,$64       ;
- $7613 LD ($767E),A   ;
- $7616 RET            ;
-*$7617 LD A,($5FA9)   ;
- $761A OR A           ;
- $761B RET Z          ;
- $761C LD IY,$DAE0    ;
- $7620 CALL $6C85     ;
- $7623 RET C          ;
- $7624 CALL $71E1     ;
- $7627 RET            ;
-*$7628 LD IY,$0000    ;
- $762C XOR A          ;
- $762D LD ($767E),A   ;
- $7630 JP $74A7       ;
-*$7633 CP $01         ;
- $7635 JR Z,$7669     ;
- $7637 LD HL,$767F    ;
- $763A LD E,(HL)      ;
- $763B LD C,(HL)      ;
-*$763C LD B,E         ;
- $763D LD A,$01       ;
-*$763F NOP            ;
- $7640 DJNZ $763F     ;
- $7642 XOR $18        ;
- $7644 OUT ($FE),A    ;
- $7646 DEC C          ;
- $7647 JR NZ,$763C    ;
- $7649 LD A,(HL)      ;
- $764A CPL            ;
- $764B AND $3F        ;
- $764D LD (HL),A      ;
- $764E LD A,(IX+$00)  ;
- $7651 LD ($DAC0),A   ;
- $7654 LD A,(IX+$01)  ;
- $7657 ADD A,$0A      ;
- $7659 LD ($DAC1),A   ;
- $765C LD A,(IX+$02)  ;
- $765F LD ($DAC2),A   ;
- $7662 XOR A          ;
- $7663 LD ($5FA7),A   ;
- $7666 JP $71E1       ;
-*$7669 LD A,($DAC1)   ;
- $766C ADD A,$14      ;
- $766E LD ($DAC1),A   ;
- $7671 LD ($5FA7),A   ;
- $7674 XOR A          ;
- $7675 LD ($767E),A   ;
- $7678 RET            ;
+ $7562 AND %00000111  ;
+ $7564 LD (HL),A      ; }
+ $7565 RRA            ; Divide by two.
+ $7566 ADD A,C        ; Add the base frame from #REGc.
+ $7567 INC HL         ; Advance #REGhl to the direction byte.
+ $7568 BIT 7,(HL)     ; {Skip to #R$756E if bit 7 of *#REGhl is unset (moving
+ $756A JR Z,$756E     ; right).}
+ $756C ADD A,$04      ; Add #N$04 for the left-facing frame set.
+@label=Set_Hazard_Frame
+*$756E LD (IX+$03),A  ; Write the sprite frame to *#REGix+#N$03.
+ $7571 JP $74D6       ; Jump to #R$74D6 to check for collision with Percy or
+                      ; egg.
 
-; Game status buffer entry at 7679
-g$7679 DEFB $00,$00,$02,$00,$00,$00,$0E
+; Reset Cat Position
+;
+; Used by the routine at #R$7512.
+; .
+; Resets the cat to its starting position and clears the stunned flag.
+;
+; B Sprite active value
+@label=Reset_Cat_Position
+c$7574 LD A,(IY+$01) ; {Set the Y position from *#REGiy+#N$01.
+ $7577 LD (IX+$01),A ; }
+ $757A LD A,(IY+$02) ; {Set the X position from *#REGiy+#N$02.
+ $757D LD (IX+$00),A ; }
+ $7580 XOR A         ; {Write #N$00 to *#REGiy+#N$00 (clear the stunned flag).
+ $7581 LD (IY+$00),A ; }
+ $7584 LD (IX+$02),B ; Set the sprite active value from #REGb.
+ $7587 RET           ; Return.
+
+; Cat Direction Data
+;
+; Animation counter, direction flag and step size for the cat.
+@label=Cat_Animation_Counter
+g$7588 DEFB $00
+@label=Cat_Direction_Flag
+ $7589 DEFB $00
+@label=Cat_Step_Size
+ $758A DEFB $02
+
+; Handle Dog
+;
+; Used by the routines at #R$7286 and #R$7367.
+; .
+; Controls the dog hazard that patrols horizontally along a platform. Uses
+; the same movement logic as the cat but with different state data, boundaries
+; and sprite frames.
+;
+; IX Pointer to the dog sprite data
+@label=Handle_Dog
+c$758B LD IY,$7AE8   ; Point #REGiy at #R$7AE8.
+ $758F LD BC,$0041   ; Set #REGb=#N$00 (sprite active value) and #REGc=#R$B33B(#N$41)
+                     ; (base dog frame).
+ $7592 LD HL,$7598   ; Point #REGhl at #R$7598.
+ $7595 JR $751C      ; Jump to #R$751C.
+
+; Dog Direction Data
+;
+; Animation counter, direction flag and step size for the dog.
+@label=Dog_Animation_Counter
+g$7597 DEFB $00
+@label=Dog_Direction_Flag
+ $7598 DEFB $00
+@label=Dog_Step_Size
+ $7599 DEFB $03
+
+; Handle UFO
+;
+; Used by the routines at #R$7286, #R$730E, #R$7367 and #R$7413.
+; .
+; Controls the UFO hazard. The UFO wanders randomly around the screen and
+; attempts to abduct Percy. When it catches Percy, it teleports him to the UFO's
+; position, plays a tractor beam sound effect, then drops him downward. The UFO
+; cannot be stunned by Percy's egg, but a hit will cancel the egg.
+;
+; IX Pointer to the UFO sprite data
+;
+; Check for respawn.
+@label=Handle_UFO
+c$759A LD A,($5FBB)  ; {Call #R$7628 if *#R$5FBB (respawn flag) is set to reset
+ $759D OR A          ; the UFO.
+ $759E CALL NZ,$7628 ; }
+; Decrement the movement delay timer.
+ $75A1 LD HL,$7679   ; {Decrement *#R$7679.
+ $75A4 DEC (HL)      ; }
+ $75A5 JR NZ,$75C9   ; Jump to #R$75C9 if *#R$7679 hasn't reached zero.
+; Movement delay expired; generate new random direction and delay.
+@label=New_UFO_Direction
+*$75A7 CALL $7930    ; Call #R$7930 to generate a random number.
+ $75AA LD HL,$7679   ; Point #REGhl at #R$7679 (UFO movement delay).
+ $75AD PUSH AF       ; Stash the random value on the stack.
+ $75AE AND %00000111 ; Keep only bits 0-2.
+ $75B0 INC HL        ; Increment #REGhl by one to #R$767A.
+ $75B1 LD (HL),A     ; Write #REGa to *#REGhl to set the new direction.
+ $75B2 DEC HL        ; Move #REGhl back to #R$7679.
+ $75B3 POP AF        ; Restore the random value from the stack.
+ $75B4 RRCA          ; {Rotate the random value right three times.
+ $75B5 RRCA          ;
+ $75B6 RRCA          ; }
+ $75B7 AND %00011111 ; Keep only bits 0-4.
+ $75B9 OR %00000100  ; Set bit 2 to produce a delay.
+ $75BB LD (HL),A     ; Write #REGa to *#R$7679.
+ $75BC PUSH HL       ; Stash the UFO state data pointer on the stack.
+; Set a random value for the UFO speed between #N$01-#N$03.
+@label=Generate_UFO_Speed
+*$75BD CALL $7930    ; Call #R$7930.
+ $75C0 AND %00000011 ; Keep only bits 0-1 to limit the random number to between
+                     ; #N$00-#N$03.
+ $75C2 OR A          ; {Jump back to #R$75BD to try again if the speed is zero.
+ $75C3 JR Z,$75BD    ; }
+ $75C5 LD ($767B),A  ; Write the random speed to *#R$767B.
+ $75C8 POP HL        ; Restore the UFO state data pointer from the stack.
+; Move the UFO in its current direction.
+@label=Move_UFO
+*$75C9 INC HL        ; {Load the direction from *#REGhl+#N$01, mask with #N$07 and double
+ $75CA LD A,(HL)     ; to form a jump table index.
+ $75CB AND $07       ;
+ $75CD ADD A,A       ; }
+ $75CE LD ($6BC9),A  ; Write the direction index to *#R$6BC8(#N$6BC9).
+ $75D1 LD HL,$767B   ; Point #REGhl at #R$767B.
+ $75D4 LD C,(IX+$00) ; {Load the UFO's X position into #REGc and Y position into #REGb from
+ $75D7 LD B,(IX+$01) ; *#REGix+#N$00 and *#REGix+#N$01.}
+ $75DA CALL $6BC8    ; Call #R$6BA0 to move the UFO in the current direction.
+ $75DD JR C,$75A7    ; Jump to #R$75A7 if the move was invalid (carry set) and pick a new
+                     ; direction.
+; Update the UFO's animation frame, wrapping at #N$03.
+ $75DF LD HL,$767C   ; Point #REGhl at #R$767C.
+ $75E2 LD A,(HL)     ; {Increment the animation counter, skip to #R$75E9 if it's not yet at
+ $75E3 INC A         ; frame #N$03.
+ $75E4 CP $03        ;
+ $75E6 JR NZ,$75E9   ; }
+ $75E8 XOR A         ; Reset the frame back to #N$00.
+@label=Set_UFO_Frame
+*$75E9 LD (HL),A     ; Write the UFO frame to *#R$767C.
+ $75EA ADD A,$4F     ; {Add #R$B4FB(#N$4F) as the base UFO frame and write it to
+ $75EC LD (IX+$03),A ; *#REGix+#N$03.}
+ $75EF LD A,($767D)  ; {Toggle the sprite flicker flag at *#R$767D between #N$00 and
+ $75F2 INC A         ; #N$01.
+ $75F3 AND %00000001 ;
+ $75F5 LD ($767D),A  ; }
+ $75F8 INC A         ; {Write #N$01 to *#REGix+#N$02 (sprite active value).
+ $75F9 LD (IX+$02),A ; }
+; Check if the UFO has recently abducted Percy.
+ $75FC LD A,($767E)  ; {Jump to #R$7608 if *#R$767E is zero.
+ $75FF OR A          ;
+ $7600 JR Z,$7608    ; }
+ $7602 DEC A         ; {Decrement the abduction timer and write it back to
+ $7603 LD ($767E),A  ; *#R$767E.}
+ $7606 JR $7633      ; Jump to #R$7633.
+; Check for collision with Percy.
+@label=Check_UFO_Percy
+*$7608 LD IY,$DAC0   ; Point #REGiy at #R$DAC0 (Percy sprite data).
+ $760C CALL $6C53    ; Call #R$6C53 to check for collision with Percy.
+ $760F JR C,$7617    ; Jump to #R$7617 if carry is set (no collision).
+; UFO has caught Percy; set the abduction timer.
+ $7611 LD A,$64      ; {Set #N$64 as the *#R$767E value.
+ $7613 LD ($767E),A  ; }
+ $7616 RET           ; Return.
+; No collision with Percy; check if Percy's egg hits the UFO.
+@label=Check_UFO_Egg
+*$7617 LD A,($5FA9)  ; {Return if *#R$5FA9 is unset.
+ $761A OR A          ;
+ $761B RET Z         ; }
+ $761C LD IY,$DAE0   ; Point #REGiy at #R$DAE0 (egg sprite data).
+ $7620 CALL $6C85    ; Call #R$6C85 to check for egg collision with the UFO.
+ $7623 RET C         ; Return if carry is set (no collision).
+ $7624 CALL $71E1    ; Call #R$71E1.
+ $7627 RET           ; Return.
+
+; Reset UFO Position
+;
+; Used by the routine at #R$759A.
+; .
+; Resets the UFO to a random position and clears the abduction timer.
+@label=Reset_UFO_Position
+c$7628 LD IY,$0000   ; Point #REGiy at #N($0000,$04,$04).
+ $762C XOR A         ; {Write #N$00 to clear *#R$767E.
+ $762D LD ($767E),A  ; }
+ $7630 JP $74A7      ; Jump to #R$74A7 to generate a random valid position.
+
+; UFO Abduct Percy
+;
+; Used by the routine at #R$759A.
+; .
+; Handles the UFO's abduction of Percy. Teleports Percy to the UFO's
+; position while playing a tractor beam sound effect, then on the final frame
+; drops Percy downward.
+@label=UFO_Abduct_Percy
+c$7633 CP $01        ; {Jump to #R$7669 if the abduction timer is equal to #N$01 (final
+ $7635 JR Z,$7669    ; frame of abduction).}
+; Play the tractor beam sound effect.
+ $7637 LD HL,$767F   ; Point #REGhl at #R$767F (tractor beam sound pitch).
+ $763A LD E,(HL)     ; {Load the pitch into #REGe and #REGc.
+ $763B LD C,(HL)     ; }
+@label=Tractor_Beam_SoundStep_Loop
+*$763C LD B,E        ; Copy to #REGb.
+ $763D LD A,$01      ; Set initial speaker state to #N$01.
+@label=Tractor_Beam_Sound_Inner
+*$763F NOP           ; {Action a delay loop.
+ $7640 DJNZ $763F    ; }
+ $7642 XOR %00011000 ; {Toggle the speaker bits and output to the speaker port.
+ $7644 OUT ($FE),A   ; }
+ $7646 DEC C         ; {Decrement #REGc and loop back to #R$763C until the sound step is
+ $7647 JR NZ,$763C   ; complete.}
+ $7649 LD A,(HL)     ; {Complement and mask the pitch value.
+ $764A CPL           ;
+ $764B AND %00111111 ; }
+ $764D LD (HL),A     ; Write back to *#REGhl.
+; Teleport Percy to the UFO's position.
+ $764E LD A,(IX+$00) ; {Copy the UFO's X position to Percy's X at *#R$DAC0.
+ $7651 LD ($DAC0),A  ; }
+ $7654 LD A,(IX+$01) ; {Copy the UFO's Y position plus #N$0A to Percy's Y at
+ $7657 ADD A,$0A     ; *#R$DAC1.
+ $7659 LD ($DAC1),A  ; }
+ $765C LD A,(IX+$02) ; {Copy the UFO's sprite active value to Percy's at
+ $765F LD ($DAC2),A  ; *#R$DAC2.}
+ $7662 XOR A         ; {Write #N$00 to clear *#R$5FA7.
+ $7663 LD ($5FA7),A  ; }
+ $7666 JP $71E1      ; Jump to #R$71E1.
+; Final frame of abduction; drop Percy downward.
+@label=UFO_Drop_Percy
+*$7669 LD A,($DAC1)  ; {Add #N$14 to Percy's Y position at *#R$DAC1.
+ $766C ADD A,$14     ;
+ $766E LD ($DAC1),A  ; }
+ $7671 LD ($5FA7),A  ; Write the result to *#R$5FA7 (set collision flag).
+ $7674 XOR A         ; {Write #N$00 to clear *#R$767E.
+ $7675 LD ($767E),A  ; }
+ $7678 RET           ; Return.
+
+; UFO State Data
+;
+; State variables for the UFO hazard.
+@label=UFO_Movement_Delay
+g$7679 DEFB $00
+@label=UFO_Direction
+ $767A DEFB $00
+@label=UFO_Speed
+ $767B DEFB $02
+@label=UFO_Animation_Counter
+ $767C DEFB $00
+@label=UFO_Flicker_Flag
+ $767D DEFB $00
+@label=UFO_Abduction_Timer
+ $767E DEFB $00
+@label=UFO_Tractor_Beam_Pitch
+ $767F DEFB $0E
 
 ; Handler: Plane
 ;
@@ -5788,7 +5918,7 @@ g$7928 DEFB $00
 
 ; Generate Random Number
 ;
-; Used by the routines at #R$7439, #R$74A7, #R$74B9, #R$7512 and #R$768C.
+; Used by the routines at #R$7439, #R$74A7, #R$74B9, #R$759A and #R$768C.
 ; .
 ; Generates a pseudo-random number using a linear decay formula. Reads the
 ; current seed from #R$7AC7, computes (seed + #N$01) * #N$FE, then derives the
@@ -6058,14 +6188,31 @@ g$7AC3 DEFB $00
 
 ; Game status buffer entry at 7AC7
 g$7AC7 DEFB $00
- $7AC8 DEFB $00,$00,$00,$00,$00,$A0,$48,$EF
- $7AD0 DEFB $00,$88,$70,$EF,$00,$00,$00,$00
- $7AD8 DEFB $00,$A0,$04,$EF,$00,$90,$32,$99
- $7AE0 DEFB $00,$A0,$39,$A0,$00,$A0,$04,$50
- $7AE8 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $7AF0 DEFB $00,$78,$70,$EF,$00,$00,$00,$00
- $7AF8 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $7B00 DEFB $00,$90,$90,$EF
+
+; Cat State Data
+;
+; State variables for the cat hazard.
+@label=Cat_State_Data
+g$7AC8 DEFB $00
+ $7AC9 DEFB $00
+ $7ACA DEFB $00
+ $7ACB DEFB $00
+ $7ACC DEFB $00,$A0,$48,$EF,$00,$88,$70,$EF
+ $7AD4 DEFB $00,$00,$00,$00,$00,$A0,$04,$EF
+ $7ADC DEFB $00,$90,$32,$99,$00,$A0,$39,$A0
+ $7AE4 DEFB $00,$A0,$04,$50
+
+; Dog State Data
+;
+; State variables for the dog hazard.
+@label=Dog_State_Data
+g$7AE8 DEFB $00
+ $7AE9 DEFB $00
+ $7AEA DEFB $00
+ $7AEB DEFB $00
+ $7AEC DEFB $00,$00,$00,$00,$00,$78,$70,$EF
+ $7AF4 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7AFC DEFB $00,$00,$00,$00,$00,$90,$90,$EF
 
 ; Table: Parachute Starting X Positions
 ;
