@@ -6,6 +6,8 @@
 > $4000 @start
 > $4000 @expand=#DEF(#POKE #LINK:Pokes)
 > $4000 @expand=#DEF(#ANIMATE(delay,count=$50)(name=$a)*$name-1,$delay;#FOR$02,$count||x|$name-x|;||($name-animation))
+> $4000 @expand=#DEF(#COLOUR(id)#LET(ink=$id&$07)#IF({ink}>=$00)(INK:#MAP({ink})(UNKNOWN,0:BLACK,1:BLUE,2:RED,3:MAGENTA,4:GREEN,5:CYAN,6:YELLOW,7:WHITE)), #LET(paper=$id>>$03&$07)#IF({paper}>=$00)(PAPER:#MAP({paper})(UNKNOWN,0:BLACK,1:BLUE,2:RED,3:MAGENTA,4:GREEN,5:CYAN,6:YELLOW,7:WHITE))#LET(bright=$id&$40)#IF({bright}>$00)( (BRIGHT))#LET(flash=$id&$80)#IF({flash}>$00)( (FLASH: ON)))
+> $4000 @expand=#DEF(#INK(id)#LET(bright=$id&$40)#LET(flash=$id&$80)#LET(ink=$id&$07)#IF({ink}>=$00)(#MAP({ink})(UNKNOWN,0:BLACK,1:BLUE,2:RED,3:MAGENTA,4:GREEN,5:CYAN,6:YELLOW,7:WHITE))#IF({bright}>$00)( (BRIGHT))#IF({flash}>$00)( (FLASH: ON)))
 > $4000 @expand=#DEF(#ROOM(id)#SIM(start=$5DD0,stop=$5DDD)#UDGTABLE { #POKES$5FC5,$id;$5FA1,$01#SIM(start=$65A3,stop=$65A6,sp=$5BFE)#SCR$02(room-$id) } TABLE#)
 > $4000 @set-handle-unsupported-macros=1
 b $4000 Loading Screen
@@ -3229,23 +3231,106 @@ N $70D3 Percy has collided with the second frog.
   $70D8,$03 Jump to #R$7190.
 
 c $70DB Update Frog
-@ $70DB label=UpdateFrog
-D $70DB Updates a single frog's behaviour through the jump cycle.
-R $70DB BC Ground position
-R $70DB HL Pointer to frog state data
-R $70DB IX Pointer to frog sprite data
-  $70DB,$01 Fetch the timer value for the frog.
-  $70DC,$03 Jump to #R$70ED if the timer is zero (the frog is idle).
-  $70DF,$01 Decrement the timer by one.
-  $70E0,$02 Jump to #R$70ED if the timer has now reached zero.
-N $70E2 This Frog is mid-jump, cycle through the animation frames.
-  $70E2,$03 #REGa=*#REGix+#N$02.
-  $70E5,$01 Increment #REGa.
-  $70E6,$02,b$01 Keep only bits 0-1 (cycle through #N$00-#N$03).
-  $70E8,$03 Write #REGa to *#REGix+#N$02.
+@ $70DB label=Update_Frog
+D $70DB Updates a single frog's animation and sound state. Frogs sit idle on
+. their platform, then randomly jump upward through a series of animation frames.
+. A croaking sound effect plays during the jump, rising in pitch on the way up
+. and falling on the way down.
+R $70DB B Platform Y position
+R $70DB C Platform X position (left frog)
+R $70DB HL Pointer to the frog's state data (jump timer, sound counters)
+R $70DB IX Pointer to the frog's sprite data
+N $70DB Check the jump timer to determine if the frog is mid-jump or idle.
+  $70DB,$02 Fetch the jump timer value from *#REGhl.
+  $70DD,$02 Jump to #R$70ED if the timer is zero (frog is idle).
+  $70DF,$01 Decrement the jump timer by one.
+  $70E0,$02 Jump to #R$70ED if the timer has now reached zero (jump complete).
+N $70E2 Frog is mid-jump; cycle through animation frames #N$00-#N$03.
+  $70E2,$09 Increment the animation frame at *#REGix+#N$02, wrapping at #N$03.
   $70EB,$02 Jump to #R$70F1.
-@ $70ED label=UpdateFrog_SetIdle
-  $70ED,$04 Write #N$06 to *#REGix+#N$02.
+N $70ED Frog is idle; set the idle frame.
+@ $70ED label=Set_Frog_Idle
+  $70ED,$04 Write #N$06 to *#REGix+#N$02 (idle animation frame).
+N $70F1 Handle the frog's croak sound effect. The sound has two phases:
+. ascending pitch (counter rises from #N$01 to #N$18), then descending pitch
+. (counter falls back to #N$00).
+@ $70F1 label=Handle_Frog_Sound
+  $70F1,$02 Advance to the ascending sound counter.
+  $70F3,$03 Jump to #R$7129 if the sound counter is zero (no sound playing).
+  $70F6,$01 Advance to the descending flag.
+  $70F7,$04 Jump to #R$7117 if the descending flag is non-zero (sound is
+. descending).
+N $70FB Ascending phase: increment the pitch and output to the speaker.
+  $70FB,$01 Move back to the ascending counter.
+  $70FC,$08 Calculate the speaker output from the counter: add #N$03, rotate
+. left, mask with #N$18 and set bit 0 for the border; output to port #N$FE.
+  $7106,$04 Increment the ascending counter; jump to #R$7114 if it has not
+. reached #N$19.
+N $710C Ascending phase complete; switch to descending.
+  $710C,$06 Write #N$00 to the ascending counter, set the descending flag to
+. #N$FF, and move back.
+  $7112,$02 Jump to #R$7144.
+@ $7114 label=Store_Ascending_Counter
+  $7114,$01 Write the updated ascending counter back.
+  $7115,$02 Jump to #R$7144.
+N $7117 Descending phase: decrement the pitch and output to the speaker.
+@ $7117 label=Frog_Sound_Descending
+  $7117,$01 Move back to the ascending counter (used as pitch value).
+  $7118,$06 Calculate the speaker output from the counter: rotate left, mask
+. with #N$18 and set bit 0 for the border; output to port #N$FE.
+  $7120,$03 Decrement the counter; jump to #R$7144 if it is non-zero.
+  $7123,$04 Counter has reached zero; clear the descending flag and move back.
+  $7127,$02 Jump to #R$7144.
+N $7129 No sound playing; randomly trigger a new croak if the frog is idle.
+@ $7129 label=Check_Random_Croak
+  $7129,$06 Read the R register and mask with #N$3F; jump to #R$7144 if it does
+. not equal #N$0F (random chance to croak).
+  $7131,$07 Jump to #R$7144 if the animation frame at *#REGix+#N$02 is not
+. #N$06 (frog must be idle to start a croak).
+  $7138,$04 Advance to the descending flag; check if it is non-zero and move
+. back.
+  $713C,$02 Jump to #R$7142 if the descending flag is non-zero.
+  $713E,$02 Write #N$01 to start the ascending sound counter.
+  $7140,$02 Jump to #R$7144.
+@ $7142 label=Start_Descending_Croak
+  $7142,$02 Write #N$19 to the ascending counter (start from maximum pitch).
+N $7144 Calculate the frog's screen position based on its jump state and
+. facing direction.
+@ $7144 label=Position_Frog_Sprite
+  $7144,$03 Load the ascending counter into #REGe and descending flag into
+. #REGd.
+  $7147,$04 Jump to #R$716C if the ascending counter is zero (frog is on the
+. platform).
+N $714B Frog is mid-jump; calculate the Y position from the jump height table.
+  $714B,$01 Decrement the counter to form a zero-based table index.
+  $714C,$01 Stash #REGde on the stack.
+  $714D,$07 Look up the jump height from the table at #R$71EF.
+  $7154,$01 Restore #REGde from the stack.
+  $7155,$02 Subtract from the platform Y position in #REGb.
+  $7157,$03 Write it to *#REGix+#N$01.
+  $715A,$04 Calculate the X position: ascending counter * #N$04 + platform X.
+  $715E,$03 Write it to *#REGix+#N$00.
+  $7161,$04 Set the sprite frame to #R$B01B(#N$28) (frog jumping right).
+  $7165,$02 Return if bit 7 of #REGd is not set (facing right).
+  $7168,$03 Increment the sprite frame to #R$B03B(#N$29) (frog jumping left).
+  $716B,$01 Return.
+N $716C Frog is on the platform; set its resting position.
+@ $716C label=Frog_On_Platform
+  $716C,$03 Set the Y position to the platform Y from #REGb.
+  $716F,$02 Jump to #R$7184 if bit 7 of #REGd is set (frog faces left).
+  $7173,$03 Set the X position to the platform X from #REGc.
+  $7176,$04 Set the sprite frame to #R$B05B(#N$2A) (frog sitting right).
+@ $717A label=Random_Tongue_Flick
+M $717A,$04 Read the R register and mask.
+  $717C,$02,b$01 Keep only bits 0-4.
+  $717E,$02 Return if the result is non-zero (random chance to flick tongue).
+  $7180,$03 Increment the sprite frame by one (tongue-out variant).
+  $7183,$01 Return.
+N $7184 Left-facing frog on platform.
+@ $7184 label=Frog_Facing_Left
+  $7184,$06 Set the X position to platform X plus #N$68.
+  $718A,$04 Set the sprite frame to #R$B09B(#N$2C) (frog sitting left).
+  $718E,$02 Jump to #R$717A.
 
 c $7190 Handler: Frogs Check Egg Collision
 @ $7190 label=HandlerFrog01_CheckEggCollision
@@ -4732,10 +4817,10 @@ N $B01B Frog: jumping right.
 @ $B01B label=Sprite_28
 N $B03B Frog: jumping left.
 @ $B03B label=Sprite_29
-N $B05B Frog: sitting left.
+N $B05B Frog: sitting right.
 @ $B05B label=Sprite_2A
 @ $B07B label=Sprite_2B
-N $B09B Frog: sitting right.
+N $B09B Frog: sitting left.
 @ $B09B label=Sprite_2C
 @ $B0BB label=Sprite_2D
 N $B0DB Helicopter: flying left.

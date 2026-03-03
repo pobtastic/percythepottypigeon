@@ -2,6 +2,8 @@
 @start
 @expand=#DEF(#POKE #LINK:Pokes)
 @expand=#DEF(#ANIMATE(delay,count=$50)(name=$a)*$name-1,$delay;#FOR$02,$count||x|$name-x|;||($name-animation))
+@expand=#DEF(#COLOUR(id)#LET(ink=$id&$07)#IF({ink}>=$00)(INK:#MAP({ink})(UNKNOWN,0:BLACK,1:BLUE,2:RED,3:MAGENTA,4:GREEN,5:CYAN,6:YELLOW,7:WHITE)), #LET(paper=$id>>$03&$07)#IF({paper}>=$00)(PAPER:#MAP({paper})(UNKNOWN,0:BLACK,1:BLUE,2:RED,3:MAGENTA,4:GREEN,5:CYAN,6:YELLOW,7:WHITE))#LET(bright=$id&$40)#IF({bright}>$00)( (BRIGHT))#LET(flash=$id&$80)#IF({flash}>$00)( (FLASH: ON)))
+@expand=#DEF(#INK(id)#LET(bright=$id&$40)#LET(flash=$id&$80)#LET(ink=$id&$07)#IF({ink}>=$00)(#MAP({ink})(UNKNOWN,0:BLACK,1:BLUE,2:RED,3:MAGENTA,4:GREEN,5:CYAN,6:YELLOW,7:WHITE))#IF({bright}>$00)( (BRIGHT))#IF({flash}>$00)( (FLASH: ON)))
 @expand=#DEF(#ROOM(id)#SIM(start=$5DD0,stop=$5DDD)#UDGTABLE { #POKES$5FC5,$id;$5FA1,$01#SIM(start=$65A3,stop=$65A6,sp=$5BFE)#SCR$02(room-$id) } TABLE#)
 @set-handle-unsupported-macros=1
 
@@ -4483,122 +4485,160 @@ c$7082 LD IX,$DAC8   ; #REGix=#R$DAC8.
 ;
 ; Used by the routine at #R$7082.
 ; .
-; Updates a single frog's behaviour through the jump cycle.
+; Updates a single frog's animation and sound state. Frogs sit idle on
+; their platform, then randomly jump upward through a series of animation frames.
+; A croaking sound effect plays during the jump, rising in pitch on the way up
+; and falling on the way down.
 ;
-; BC Ground position
-; HL Pointer to frog state data
-; IX Pointer to frog sprite data
-@label=UpdateFrog
-c$70DB LD A,(HL)       ; Fetch the timer value for the frog.
- $70DC OR A            ; {Jump to #R$70ED if the timer is zero (the frog is
- $70DD JR Z,$70ED      ; idle).}
- $70DF DEC (HL)        ; Decrement the timer by one.
- $70E0 JR Z,$70ED      ; Jump to #R$70ED if the timer has now reached zero.
-; This Frog is mid-jump, cycle through the animation frames.
- $70E2 LD A,(IX+$02)   ; #REGa=*#REGix+#N$02.
- $70E5 INC A           ; Increment #REGa.
- $70E6 AND %00000011   ; Keep only bits 0-1 (cycle through #N$00-#N$03).
- $70E8 LD (IX+$02),A   ; Write #REGa to *#REGix+#N$02.
+; B Platform Y position
+; C Platform X position (left frog)
+; HL Pointer to the frog's state data (jump timer, sound counters)
+; IX Pointer to the frog's sprite data
+;
+; Check the jump timer to determine if the frog is mid-jump or idle.
+@label=Update_Frog
+c$70DB LD A,(HL)       ; {Fetch the jump timer value from *#REGhl.
+ $70DC OR A            ; }
+ $70DD JR Z,$70ED      ; Jump to #R$70ED if the timer is zero (frog is idle).
+ $70DF DEC (HL)        ; Decrement the jump timer by one.
+ $70E0 JR Z,$70ED      ; Jump to #R$70ED if the timer has now reached zero
+                       ; (jump complete).
+; Frog is mid-jump; cycle through animation frames #N$00-#N$03.
+ $70E2 LD A,(IX+$02)   ; {Increment the animation frame at *#REGix+#N$02,
+ $70E5 INC A           ; wrapping at #N$03.
+ $70E6 AND $03         ;
+ $70E8 LD (IX+$02),A   ; }
  $70EB JR $70F1        ; Jump to #R$70F1.
-@label=UpdateFrog_SetIdle
-*$70ED LD (IX+$02),$06 ; Write #N$06 to *#REGix+#N$02.
-*$70F1 INC HL          ;
- $70F2 LD A,(HL)       ;
- $70F3 OR A            ;
- $70F4 JR Z,$7129      ;
- $70F6 INC HL          ;
- $70F7 LD A,(HL)       ;
- $70F8 OR A            ;
- $70F9 JR NZ,$7117     ;
- $70FB DEC HL          ;
- $70FC LD A,(HL)       ;
- $70FD ADD A,$03       ;
+; Frog is idle; set the idle frame.
+@label=Set_Frog_Idle
+*$70ED LD (IX+$02),$06 ; Write #N$06 to *#REGix+#N$02 (idle animation frame).
+; Handle the frog's croak sound effect. The sound has two phases:
+; ascending pitch (counter rises from #N$01 to #N$18), then descending pitch
+; (counter falls back to #N$00).
+@label=Handle_Frog_Sound
+*$70F1 INC HL          ; {Advance to the ascending sound counter.
+ $70F2 LD A,(HL)       ; }
+ $70F3 OR A            ; {Jump to #R$7129 if the sound counter is zero (no
+ $70F4 JR Z,$7129      ; sound playing).}
+ $70F6 INC HL          ; Advance to the descending flag.
+ $70F7 LD A,(HL)       ; {Jump to #R$7117 if the descending flag is non-zero (sound is
+ $70F8 OR A            ; descending).
+ $70F9 JR NZ,$7117     ; }
+; Ascending phase: increment the pitch and output to the speaker.
+ $70FB DEC HL          ; Move back to the ascending counter.
+ $70FC LD A,(HL)       ; {Calculate the speaker output from the counter: add #N$03, rotate
+ $70FD ADD A,$03       ; left, mask with #N$18 and set bit 0 for the border; output to port #N$FE.
  $70FF RLCA            ;
  $7100 AND $18         ;
- $7102 OR $01          ;
+ $7102 OR $01          ; }
  $7104 OUT ($FE),A     ;
- $7106 LD A,(HL)       ;
- $7107 INC A           ;
- $7108 CP $19          ;
+ $7106 LD A,(HL)       ; {Increment the ascending counter; jump to #R$7114 if it has not
+ $7107 INC A           ; reached #N$19.
+ $7108 CP $19          ; }
  $710A JR NZ,$7114     ;
- $710C XOR A           ;
- $710D LD (HL),A       ;
+; Ascending phase complete; switch to descending.
+ $710C XOR A           ; {Write #N$00 to the ascending counter, set the descending flag to
+ $710D LD (HL),A       ; #N$FF, and move back.
  $710E INC HL          ;
  $710F DEC A           ;
  $7110 LD (HL),A       ;
- $7111 DEC HL          ;
- $7112 JR $7144        ;
-*$7114 LD (HL),A       ;
- $7115 JR $7144        ;
-*$7117 DEC HL          ;
- $7118 LD A,(HL)       ;
- $7119 RLCA            ;
+ $7111 DEC HL          ; }
+ $7112 JR $7144        ; Jump to #R$7144.
+@label=Store_Ascending_Counter
+*$7114 LD (HL),A       ; Write the updated ascending counter back.
+ $7115 JR $7144        ; Jump to #R$7144.
+; Descending phase: decrement the pitch and output to the speaker.
+@label=Frog_Sound_Descending
+*$7117 DEC HL          ; Move back to the ascending counter (used as pitch
+                       ; value).
+ $7118 LD A,(HL)       ; {Calculate the speaker output from the counter: rotate left, mask
+ $7119 RLCA            ; with #N$18 and set bit 0 for the border; output to port #N$FE.
  $711A AND $18         ;
- $711C OR $01          ;
+ $711C OR $01          ; }
  $711E OUT ($FE),A     ;
- $7120 DEC (HL)        ;
- $7121 JR NZ,$7144     ;
- $7123 INC HL          ;
- $7124 LD (HL),$00     ;
- $7126 DEC HL          ;
- $7127 JR $7144        ;
-*$7129 LD A,R          ;
- $712B AND $3F         ;
- $712D CP $0F          ;
+ $7120 DEC (HL)        ; {Decrement the counter; jump to #R$7144 if it is
+ $7121 JR NZ,$7144     ; non-zero.}
+ $7123 INC HL          ; {Counter has reached zero; clear the descending flag
+ $7124 LD (HL),$00     ; and move back.
+ $7126 DEC HL          ; }
+ $7127 JR $7144        ; Jump to #R$7144.
+; No sound playing; randomly trigger a new croak if the frog is idle.
+@label=Check_Random_Croak
+*$7129 LD A,R          ; {Read the R register and mask with #N$3F; jump to #R$7144 if it does
+ $712B AND $3F         ; not equal #N$0F (random chance to croak).
+ $712D CP $0F          ; }
  $712F JR NZ,$7144     ;
- $7131 LD A,(IX+$02)   ;
- $7134 CP $06          ;
- $7136 JR NZ,$7144     ;
- $7138 INC HL          ;
- $7139 LD A,(HL)       ;
+ $7131 LD A,(IX+$02)   ; {Jump to #R$7144 if the animation frame at *#REGix+#N$02 is not
+ $7134 CP $06          ; #N$06 (frog must be idle to start a croak).
+ $7136 JR NZ,$7144     ; }
+ $7138 INC HL          ; {Advance to the descending flag; check if it is non-zero and move
+ $7139 LD A,(HL)       ; back.
  $713A OR A            ;
- $713B DEC HL          ;
- $713C JR NZ,$7142     ;
- $713E LD (HL),$01     ;
- $7140 JR $7144        ;
-*$7142 LD (HL),$19     ;
-*$7144 LD E,(HL)       ;
- $7145 INC HL          ;
- $7146 LD D,(HL)       ;
- $7147 LD A,E          ;
- $7148 OR A            ;
- $7149 JR Z,$716C      ;
- $714B DEC A           ;
- $714C PUSH DE         ;
- $714D LD DE,$71EF     ;
+ $713B DEC HL          ; }
+ $713C JR NZ,$7142     ; Jump to #R$7142 if the descending flag is non-zero.
+ $713E LD (HL),$01     ; Write #N$01 to start the ascending sound counter.
+ $7140 JR $7144        ; Jump to #R$7144.
+@label=Start_Descending_Croak
+*$7142 LD (HL),$19     ; Write #N$19 to the ascending counter (start from
+                       ; maximum pitch).
+; Calculate the frog's screen position based on its jump state and
+; facing direction.
+@label=Position_Frog_Sprite
+*$7144 LD E,(HL)       ; {Load the ascending counter into #REGe and descending flag into
+ $7145 INC HL          ; #REGd.
+ $7146 LD D,(HL)       ; }
+ $7147 LD A,E          ; {Jump to #R$716C if the ascending counter is zero (frog is on the
+ $7148 OR A            ; platform).
+ $7149 JR Z,$716C      ; }
+; Frog is mid-jump; calculate the Y position from the jump height table.
+ $714B DEC A           ; Decrement the counter to form a zero-based table
+                       ; index.
+ $714C PUSH DE         ; Stash #REGde on the stack.
+ $714D LD DE,$71EF     ; {Look up the jump height from the table at #R$71EF.
  $7150 LD L,A          ;
  $7151 LD H,$00        ;
- $7153 ADD HL,DE       ;
- $7154 POP DE          ;
- $7155 LD A,B          ;
- $7156 SUB (HL)        ;
- $7157 LD (IX+$01),A   ;
- $715A LD A,E          ;
- $715B ADD A,A         ;
+ $7153 ADD HL,DE       ; }
+ $7154 POP DE          ; Restore #REGde from the stack.
+ $7155 LD A,B          ; {Subtract from the platform Y position in #REGb.
+ $7156 SUB (HL)        ; }
+ $7157 LD (IX+$01),A   ; Write it to *#REGix+#N$01.
+ $715A LD A,E          ; {Calculate the X position: ascending counter * #N$04 +
+ $715B ADD A,A         ; platform X.
  $715C ADD A,A         ;
- $715D ADD A,C         ;
- $715E LD (IX+$00),A   ;
- $7161 LD (IX+$03),$28 ;
- $7165 BIT 7,D         ;
+ $715D ADD A,C         ; }
+ $715E LD (IX+$00),A   ; Write it to *#REGix+#N$00.
+ $7161 LD (IX+$03),$28 ; Set the sprite frame to #R$B01B(#N$28) (frog jumping
+                       ; right).
+ $7165 BIT 7,D         ; Return if bit 7 of #REGd is not set (facing right).
  $7167 RET Z           ;
- $7168 INC (IX+$03)    ;
- $716B RET             ;
-*$716C LD (IX+$01),B   ;
- $716F BIT 7,D         ;
+ $7168 INC (IX+$03)    ; Increment the sprite frame to #R$B03B(#N$29) (frog
+                       ; jumping left).
+ $716B RET             ; Return.
+; Frog is on the platform; set its resting position.
+@label=Frog_On_Platform
+*$716C LD (IX+$01),B   ; Set the Y position to the platform Y from #REGb.
+ $716F BIT 7,D         ; Jump to #R$7184 if bit 7 of #REGd is set (frog faces
+                       ; left).
  $7171 JR NZ,$7184     ;
- $7173 LD (IX+$00),C   ;
- $7176 LD (IX+$03),$2A ;
-*$717A LD A,R          ;
- $717C AND $1F         ;
- $717E OR A            ;
- $717F RET NZ          ;
- $7180 INC (IX+$03)    ;
- $7183 RET             ;
-*$7184 LD A,C          ;
+ $7173 LD (IX+$00),C   ; Set the X position to the platform X from #REGc.
+ $7176 LD (IX+$03),$2A ; Set the sprite frame to #R$B05B(#N$2A) (frog sitting
+                       ; right).
+@label=Random_Tongue_Flick
+*$717A LD A,R          ; {Read the R register and mask.
+ $717C AND %00011111   ; }
+ $717E OR A            ; {Return if the result is non-zero (random chance to
+ $717F RET NZ          ; flick tongue).}
+ $7180 INC (IX+$03)    ; Increment the sprite frame by one (tongue-out
+                       ; variant).
+ $7183 RET             ; Return.
+; Left-facing frog on platform.
+@label=Frog_Facing_Left
+*$7184 LD A,C          ; {Set the X position to platform X plus #N$68.
  $7185 ADD A,$68       ;
- $7187 LD (IX+$00),A   ;
- $718A LD (IX+$03),$2C ;
- $718E JR $717A        ;
+ $7187 LD (IX+$00),A   ; }
+ $718A LD (IX+$03),$2C ; Set the sprite frame to #R$B09B(#N$2C) (frog sitting
+                       ; left).
+ $718E JR $717A        ; Jump to #R$717A.
 
 ; Handler: Frogs Check Egg Collision
 ;
@@ -8318,7 +8358,7 @@ b$AB3B DEFB $00,$01,$01,$03,$03,$37,$57,$FF ; {#UDGTABLE { =h Sprite ID: #N($01+
  $B04B DEFB $00,$00,$00,$00,$00,$80,$C0,$C0 ;   #UDG(#PC+$08*($02*$x+$y))(*udg)
  $B053 DEFB $F0,$DE,$E3,$71,$3D,$06,$02,$02 ;   udg
                                             ; ) } TABLE#}
-; Frog: sitting left.
+; Frog: sitting right.
 @label=Sprite_2A
  $B05B DEFB $00,$00,$00,$00,$01,$01,$17,$3B ; {#UDGTABLE { =h Sprite ID: #N($01+(#PC-$AB3B)/$20) }
  $B063 DEFB $7B,$ED,$F6,$7A,$3B,$00,$00,$00 ; { #UDGS$02,$02(udg#PC-56x4)(
@@ -8331,7 +8371,7 @@ b$AB3B DEFB $00,$01,$01,$03,$03,$37,$57,$FF ; {#UDGTABLE { =h Sprite ID: #N($01+
  $B08B DEFB $00,$00,$00,$81,$F3,$6C,$D0,$F0 ;   #UDG(#PC+$08*($02*$x+$y))(*udg)
  $B093 DEFB $40,$E0,$30,$1C,$C0,$00,$00,$00 ;   udg
                                             ; ) } TABLE#}
-; Frog: sitting right.
+; Frog: sitting left.
 @label=Sprite_2C
  $B09B DEFB $00,$00,$00,$01,$0F,$06,$0B,$07 ; {#UDGTABLE { =h Sprite ID: #N($01+(#PC-$AB3B)/$20) }
  $B0A3 DEFB $02,$07,$0C,$38,$03,$00,$00,$00 ; { #UDGS$02,$02(udg#PC-56x4)(
