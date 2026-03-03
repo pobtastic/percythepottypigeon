@@ -221,8 +221,11 @@ A delay so Percys energy bar doesn't deplete too quickly while he's flying.
 <td class="map-g"><span id="24492"></span><a href="../asm/24492.html">24492</a></td>
 <td class="map-length">1</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24492.html">Flag:</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24492.html">Flag: Worm Drop</a></div>
 <div class="map-entry-desc">
+<div class="paragraph">
+Set to 255 when a worm has been dropped. Cleared to 0 when there's no worm being processed.
+</div>
 </div>
 </td>
 </tr>
@@ -365,10 +368,10 @@ The low byte is the column and the high byte is the row.
 <td class="map-g"><span id="24507"></span><a href="../asm/24507.html">24507</a></td>
 <td class="map-length">1</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24507.html">Room Buffer Flag</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/24507.html">Respawn Flag</a></div>
 <div class="map-entry-desc">
 <div class="paragraph">
-Set to 255 at the start of <a href="../asm/24100.html">PopulateRoomBuffer</a> when the room buffer is being populated. Used to trigger initialisation of room objects.
+Set to 255 when entering a new room. Checked by hazard handlers to reset their positions and state when the room is repopulated.
 </div>
 </div>
 </td>
@@ -744,28 +747,13 @@ State variables for the UFO hazard.
 </tr>
 <tr>
 <td class="map-g"><span id="31012"></span><a href="../asm/31012.html">31012</a></td>
-<td class="map-length">1</td>
+<td class="map-length">4</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/31012.html">Game status buffer entry at 7924</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/31012.html">Paratrooper Data</a></div>
 <div class="map-entry-desc">
+<div class="paragraph">
+Animation counter, direction flag and boundary data for the walking paratrooper.
 </div>
-</td>
-</tr>
-<tr>
-<td class="map-g"><span id="31013"></span><a href="../asm/31013.html">31013</a></td>
-<td class="map-length">2</td>
-<td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/31013.html">Game status buffer entry at 7925</a></div>
-<div class="map-entry-desc">
-</div>
-</td>
-</tr>
-<tr>
-<td class="map-g"><span id="31015"></span><a href="../asm/31015.html">31015</a></td>
-<td class="map-length">1</td>
-<td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/31015.html">Game status buffer entry at 7927</a></div>
-<div class="map-entry-desc">
 </div>
 </td>
 </tr>
@@ -773,8 +761,11 @@ State variables for the UFO hazard.
 <td class="map-g"><span id="31016"></span><a href="../asm/31016.html">31016</a></td>
 <td class="map-length">8</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/31016.html">Game status buffer entry at 7928</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/31016.html">Table: Paratrooper Walking Speed</a></div>
 <div class="map-entry-desc">
+<div class="paragraph">
+Walking speed for the paratrooper, indexed by room number minus one. Only rooms 5 6 and 8 have active paratrooper entries.
+</div>
 </div>
 </td>
 </tr>
@@ -824,7 +815,7 @@ State variables for the parachute hazard. <table class="default">
 <td class="map-g"><span id="31431"></span><a href="../asm/31431.html">31431</a></td>
 <td class="map-length">1</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/31431.html">Game status buffer entry at 7AC7</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/31431.html">Random Seed</a></div>
 <div class="map-entry-desc">
 </div>
 </td>
@@ -867,10 +858,34 @@ Lookup table of starting X positions for the parachute, indexed by room number m
 </tr>
 <tr>
 <td class="map-g"><span id="31501"></span><a href="../asm/31501.html">31501</a></td>
-<td class="map-length">33</td>
+<td class="map-length">32</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/31501.html">Game status buffer entry at 7B0D</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/31501.html">Paratrooper Room State Data</a></div>
 <div class="map-entry-desc">
+<div class="paragraph">
+Per-room state data for the walking paratrooper, with four bytes per room. Indexed by (room number - 1) * 4. Only rooms 5 6 and 8 have active entries. <table class="default">
+<tr>
+<th colspan="1" rowspan="1">Offset</th>
+<th colspan="1" rowspan="1">Description</th>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">0</td>
+<td class="centre" colspan="1" rowspan="1">Stunned flag (bit 7 set = stunned by egg)</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">1</td>
+<td class="centre" colspan="1" rowspan="1">Platform Y position</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">2</td>
+<td class="centre" colspan="1" rowspan="1">Left boundary X position</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">3</td>
+<td class="centre" colspan="1" rowspan="1">Right boundary X position</td>
+</tr>
+</table>
+</div>
 </div>
 </td>
 </tr>

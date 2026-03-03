@@ -29,41 +29,168 @@ Prev: <a href="7B04.html">7B04</a>
 </td>
 <td class="up">Up: <a href="../maps/all.html#7b0d">Map</a></td>
 <td class="next">
-Next: <a href="7B2E.html">7B2E</a>
+Next: <a href="7B2D.html">7B2D</a>
 </td>
 </tr>
 </table>
-<div class="description">7B0D: Game status buffer entry at 7B0D</div>
+<div class="description">7B0D: Paratrooper Room State Data</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
 <div class="details">
+<div class="paragraph">
+Per-room state data for the walking paratrooper, with four bytes per room. Indexed by (room number - 01) * 04. Only rooms 05 06 and 08 have active entries. <table class="default">
+<tr>
+<th colspan="1" rowspan="1">Offset</th>
+<th colspan="1" rowspan="1">Description</th>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">00</td>
+<td class="centre" colspan="1" rowspan="1">Stunned flag (bit 7 set = stunned by egg)</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">01</td>
+<td class="centre" colspan="1" rowspan="1">Platform Y position</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">02</td>
+<td class="centre" colspan="1" rowspan="1">Left boundary X position</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">03</td>
+<td class="centre" colspan="1" rowspan="1">Right boundary X position</td>
+</tr>
+</table>
+</div>
 </div>
 </td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="7b0d"></span>
+<div class="comments">
+<div class="paragraph">
+Room 01:
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Paratrooper_Room_State_Data</td>
 <td class="address-1"><span id="7b0d"></span>7B0D</td>
-<td class="instruction">DEFB $00,$00,$00,$00,$00,$00,$00,$00</td>
+<td class="instruction">DEFB $00,$00,$00,$00</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="7b11"></span>
+<div class="comments">
+<div class="paragraph">
+Room 02:
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7b11"></span>7B11</td>
+<td class="instruction">DEFB $00,$00,$00,$00</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="7b15"></span>
+<div class="comments">
+<div class="paragraph">
+Room 03:
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7b15"></span>7B15</td>
-<td class="instruction">DEFB $00,$00,$00,$00,$00,$00,$00,$00</td>
+<td class="instruction">DEFB $00,$00,$00,$00</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="7b19"></span>
+<div class="comments">
+<div class="paragraph">
+Room 04:
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7b19"></span>7B19</td>
+<td class="instruction">DEFB $00,$00,$00,$00</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="7b1d"></span>
+<div class="comments">
+<div class="paragraph">
+Room 05:
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7b1d"></span>7B1D</td>
-<td class="instruction">DEFB $00,$68,$50,$78,$00,$88,$BC,$EF</td>
+<td class="instruction">DEFB $00,$68,$50,$78</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="7b21"></span>
+<div class="comments">
+<div class="paragraph">
+Room 06:
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7b21"></span>7B21</td>
+<td class="instruction">DEFB $00,$88,$BC,$EF</td>
+<td class="comment-0" rowspan="1"></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="7b25"></span>
+<div class="comments">
+<div class="paragraph">
+Room 07:
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
 <td class="address-1"><span id="7b25"></span>7B25</td>
-<td class="instruction">DEFB $00,$00,$00,$00,$00,$98,$78,$EF</td>
+<td class="instruction">DEFB $00,$00,$00,$00</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 <tr>
-<td class="address-1"><span id="7b2d"></span>7B2D</td>
-<td class="instruction">DEFB $00</td>
+<td class="routine-comment" colspan="5">
+<span id="7b29"></span>
+<div class="comments">
+<div class="paragraph">
+Room 08:
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7b29"></span>7B29</td>
+<td class="instruction">DEFB $00,$98,$78,$EF</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 </table>
@@ -74,7 +201,7 @@ Prev: <a href="7B04.html">7B04</a>
 </td>
 <td class="up">Up: <a href="../maps/all.html#7b0d">Map</a></td>
 <td class="next">
-Next: <a href="7B2E.html">7B2E</a>
+Next: <a href="7B2D.html">7B2D</a>
 </td>
 </tr>
 </table>

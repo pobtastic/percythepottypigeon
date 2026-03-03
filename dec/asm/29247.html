@@ -57,19 +57,18 @@ Handles room 1 logic. The phase counter in <span class="register">B</span> contr
 <td class="asm-label">Handler_Room01</td>
 <td class="address-2"><span id="29247"></span>29247</td>
 <td class="instruction">LD A,B</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=<span class="register">B</span>.</td>
+<td class="comment-1" rowspan="1">Copy the phase counter into <span class="register">A</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29248"></span>29248</td>
 <td class="instruction">CP 1</td>
-<td class="comment-1" rowspan="1">Return if the phase counter is 1.</td>
+<td class="comment-1" rowspan="2">Return if the phase counter is 1.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29250"></span>29250</td>
 <td class="instruction">RET Z</td>
-<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">

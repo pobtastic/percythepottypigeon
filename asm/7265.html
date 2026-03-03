@@ -57,7 +57,7 @@ Handles room 02 logic. The phase counter in <span class="register">B</span> cont
 <td class="asm-label">Handler_Room02</td>
 <td class="address-2"><span id="7265"></span>7265</td>
 <td class="instruction">LD A,B</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=<span class="register">B</span>.</td>
+<td class="comment-1" rowspan="1">Copy the phase counter into <span class="register">A</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -69,7 +69,7 @@ Handles room 02 logic. The phase counter in <span class="register">B</span> cont
 <td class="asm-label"></td>
 <td class="address-1"><span id="726a"></span>726A</td>
 <td class="instruction">CP $02</td>
-<td class="comment-1" rowspan="1">Compare <span class="register">A</span> with 02.</td>
+<td class="comment-1" rowspan="1">Is the phase counter equal to 02?</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -105,7 +105,7 @@ Handles room 02 logic. The phase counter in <span class="register">B</span> cont
 <td class="asm-label"></td>
 <td class="address-1"><span id="7276"></span>7276</td>
 <td class="instruction">CP $04</td>
-<td class="comment-1" rowspan="1">Compare the phase counter with 04.</td>
+<td class="comment-1" rowspan="1">Is the phase counter equal to 04?</td>
 </tr>
 <tr>
 <td class="asm-label"></td>

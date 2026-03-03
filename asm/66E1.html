@@ -83,7 +83,7 @@ After scanning all entries, check if Percy is carrying a worm and handle the wor
 <td class="asm-label"></td>
 <td class="address-1"><span id="66ed"></span>66ED</td>
 <td class="instruction">LD A,($5FAC)</td>
-<td class="comment-1" rowspan="3">Jump to <a href="69F7.html#6a17">6A17</a> if *<a href="5FAC.html">5FAC</a> (worm drop flag) is non-zero (worm is being dropped to a chick).</td>
+<td class="comment-1" rowspan="3">Jump to <a href="69F7.html#6a17">6A17</a> if *<a href="5FAC.html">WormDropFlag</a> is set (a worm is being dropped to a chick).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -115,7 +115,7 @@ After scanning all entries, check if Percy is carrying a worm and handle the wor
 <td class="asm-label"></td>
 <td class="address-1"><span id="66fb"></span>66FB</td>
 <td class="instruction">OR $FF</td>
-<td class="comment-1" rowspan="2">Set *<a href="5FAC.html">5FAC</a> to FF (enable worm drop).</td>
+<td class="comment-1" rowspan="2">Set *<a href="5FAC.html">WormDropFlag</a> to FF (enable worm drop).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -583,9 +583,9 @@ Reset the worm-carrying state.
 <td class="instruction">XOR A</td>
 <td class="comment-1" rowspan="4">Write 00 to clear; <ul class="">
 <li>*<a href="5FAA.html">CarryingWormFlag</a></li>
-<li>*<a href="5FAC.html">5FAC</a></li>
+<li>*<a href="5FAC.html">WormDropFlag</a></li>
 <li>*<span class="register">IX</span>+23 (worm-in-beak sprite frame)</li>
-</ul> worm carrying flag, worm drop flag and worm-in-beak sprite frame.</td>
+</ul></td>
 </tr>
 <tr>
 <td class="asm-label"></td>

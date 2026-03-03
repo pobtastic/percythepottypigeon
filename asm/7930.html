@@ -42,7 +42,7 @@ Next: <a href="794A.html">794A</a>
 Used by the routines at <a href="7439.html">Handle_Red_Bird</a>, <a href="74A7.html">Randomise_Position_Loop</a>, <a href="74B9.html">Animate_Stunned_RedBird</a>, <a href="759A.html">Handle_UFO</a> and <a href="768C.html">UpdatePlaneFlightPath</a>.
 </div>
 <div class="paragraph">
-Generates a pseudo-random number using a linear decay formula. Reads the current seed from <a href="7AC7.html">7AC7</a>, computes (seed + 01) * FE then derives the new seed from the difference of the low and high bytes of the result. Returns the new value in <span class="register">A</span>.
+Generates a pseudo-random number using a linear decay formula. Reads the current seed from <a href="7AC7.html">RandomSeed</a>, computes (seed + 01) * FE then derives the new seed from the difference of the low and high bytes of the result. Returns the new value in <span class="register">A</span>.
 </div>
 </div>
 </td>
@@ -51,7 +51,7 @@ Generates a pseudo-random number using a linear decay formula. Reads the current
 <td class="asm-label">Generate_Random_Number</td>
 <td class="address-2"><span id="7930"></span>7930</td>
 <td class="instruction">LD A,($7AC7)</td>
-<td class="comment-1" rowspan="1">Fetch the current random seed from *<a href="7AC7.html">7AC7</a>.</td>
+<td class="comment-1" rowspan="1">Fetch the current random seed from *<a href="7AC7.html">RandomSeed</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -126,7 +126,7 @@ Generates a pseudo-random number using a linear decay formula. Reads the current
 <td class="asm-label">Store_Random_Seed</td>
 <td class="address-2"><span id="7946"></span>7946</td>
 <td class="instruction">LD ($7AC7),A</td>
-<td class="comment-1" rowspan="1">Write the new random seed to *<a href="7AC7.html">7AC7</a>.</td>
+<td class="comment-1" rowspan="1">Write the new random seed to *<a href="7AC7.html">RandomSeed</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
