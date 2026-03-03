@@ -442,8 +442,11 @@ D $5FAB A delay so Percys energy bar doesn't deplete too quickly while he's
 . flying.
 B $5FAB,$01
 
-g $5FAC Flag:
-B $5FAC
+g $5FAC Flag: Worm Drop
+@ $5FAC label=WormDropFlag
+D $5FAC Set to #N$FF when a worm has been dropped. Cleared to #N$00 when
+. there's no worm being processed.
+B $5FAC,$01
 
 g $5FAD Flag: Landed On Platform Flag
 @ $5FAD label=LandedOnPlatformFlag
@@ -515,10 +518,10 @@ D $5FB9 The two-byte drawing position used by #R$5F35 to track where the next
 . The low byte is the column and the high byte is the row.
 B $5FB9,$02
 
-g $5FBB Room Buffer Flag
-@ $5FBB label=RoomBufferFlag
-D $5FBB Set to #N$FF at the start of #R$5E24 when the room buffer is being
-. populated. Used to trigger initialisation of room objects.
+g $5FBB Respawn Flag
+@ $5FBB label=RespawnFlag
+D $5FBB Set to #N$FF when entering a new room. Checked by hazard handlers to
+. reset their positions and state when the room is repopulated.
 B $5FBB,$01
 
 g $5FBC Pause Flag
@@ -1696,8 +1699,8 @@ D $66E1 After scanning all entries, check if Percy is carrying a worm and
 . handle the worm-in-beak sprite positioning.
   $66E1,$05 Return if *#R$5FAA (worm carrying flag) is zero.
   $66E6,$07 Jump to #R$66F4 if Percy's Y position is less than #N$8F.
-  $66ED,$07 Jump to #R$6A17 if *#R$5FAC (worm drop flag) is non-zero (worm is
-. being dropped to a chick).
+  $66ED,$07 Jump to #R$6A17 if *#R$5FAC is set (a worm is being dropped to a
+. chick).
 @ $66F4 label=Update_Worm_In_Beak
   $66F4,$07 Jump to #R$6700 if Percy's Y position is not less than #N$8D.
   $66FB,$05 Set *#R$5FAC to #N$FF (enable worm drop).
@@ -1762,7 +1765,6 @@ N $6791 Reset the worm-carrying state.
 . { *#R$5FAC }
 . { *#REGix+#N$23 (worm-in-beak sprite frame) }
 . LIST#
-. worm carrying flag, worm drop flag and worm-in-beak sprite frame.
   $679B,$01 Return.
 
 c $679C Drop Worm
@@ -3364,8 +3366,8 @@ c $723F Handler: Room #N$01
 D $723F Handles room #N$01 logic. The phase counter in #REGb controls which
 . objects are initialised or updated on each pass.
 R $723F B Room phase counter (from *#R$5FB1)
-  $723F,$01 #REGa=#REGb.
-  $7240,$02 Return if the phase counter is #N$01.
+  $723F,$01 Copy the phase counter into #REGa.
+  $7240,$03 Return if the phase counter is #N$01.
 N $7243 Set up the first object.
   $7243,$04 #REGix=#R$DAD8.
   $7247,$04 #REGiy=#R$7508.
@@ -3388,15 +3390,15 @@ c $7265 Handler: Room #N$02
 D $7265 Handles room #N$02 logic. The phase counter in #REGb controls which
 . objects are initialised or updated on each pass.
 R $7265 B Room phase counter (from *#R$5FB1)
-  $7265,$01 #REGa=#REGb.
+  $7265,$01 Copy the phase counter into #REGa.
   $7266,$04 #REGix=#R$DAD0.
-  $726A,$02 Compare #REGa with #N$02.
+  $726A,$02 Is the phase counter equal to #N$02?
   $726C,$01 Stash the phase counter on the stack.
   $726D,$03 Call #R$7512 if the phase counter is not equal to #N$02.
   $7270,$01 Restore the phase counter from the stack.
   $7271,$04 #REGix=#R$DAD8.
   $7275,$01 Stash the phase counter on the stack.
-  $7276,$02 Compare the phase counter with #N$04.
+  $7276,$02 Is the phase counter equal to #N$04?
   $7278,$03 Call #R$79D2 if the phase counter is greater than #N$04.
   $727B,$01 Restore the phase counter from the stack.
   $727C,$04 #REGix=#R$DAD4.
@@ -3405,12 +3407,75 @@ R $7265 B Room phase counter (from *#R$5FB1)
 
 c $7286 Handler: Room #N$03
 @ $7286 label=Handler_Room03
+D $7286 Handles room #N$03 logic. The phase counter in #REGb controls which
+. objects are initialised or updated on each pass.
+R $7286 B Room phase counter (from *#R$5FB1)
+  $7286,$01 Copy the phase counter into #REGa.
+  $7287,$04 #REGix=#R$DAC8.
+  $728B,$01 Stash the phase counter on the stack.
+  $728C,$05 Call #R$7439 if the phase counter is not equal to #N$02.
+  $7291,$01 Restore the phase counter from the stack.
+  $7292,$04 #REGix=#R$DACC.
+  $7296,$02 Is the phase counter equal to #N$01?
+  $7298,$01 Stash the phase counter on the stack.
+  $7299,$03 Call #R$7512 if the phase counter is not equal to #N$01.
+  $729C,$01 Restore the phase counter from the stack.
+  $729D,$04 #REGix=#R$DAD0.
+  $72A1,$01 Stash the phase counter on the stack.
+  $72A2,$05 Call #R$758B if the phase counter is not equal to #N$01.
+  $72A7,$01 Restore the phase counter from the stack.
+  $72A8,$04 #REGix=#R$DAD8.
+  $72AC,$02 Is the phase counter equal to #N$04?
+  $72AE,$01 Stash the phase counter on the stack.
+  $72AF,$03 Call #R$7680 if the phase counter is greater than #N$04.
+  $72B2,$01 Restore the phase counter from the stack.
+  $72B3,$04 #REGix=#R$DADC.
+  $72B7,$05 Call #R$759A if the phase counter is equal to #N$05.
+  $72BC,$01 Return.
 
 c $72BD Handler: Room #N$04
 @ $72BD label=Handler_Room04
+D $72BD Handles room #N$04 logic. The phase counter in #REGb controls which
+. objects are initialised or updated on each pass.
+R $72BD B Room phase counter (from *#R$5FB1)
+  $72BD,$01 Copy the phase counter into #REGa.
+  $72BE,$03 Return if #REGa is equal to #N$01.
+  $72C1,$01 Stash the phase counter on the stack.
+  $72C2,$04 #REGix=#R$DAD0.
+  $72C6,$05 Call #R$7439 if the phase counter is not equal to #N$05.
+  $72CB,$01 Restore the phase counter from the stack.
+  $72CC,$04 #REGix=#R$DAD4.
+  $72D0,$01 Stash the phase counter on the stack.
+  $72D1,$05 Call #R$7680 if the phase counter is greater than #N$03.
+  $72D6,$01 Restore the phase counter from the stack.
+  $72D7,$04 #REGix=#R$DAD8.
+  $72DB,$05 Call #R$77B9 if the phase counter is equal to #N$04.
+  $72E0,$01 Return.
 
 c $72E1 Handler: Room #N$05
 @ $72E1 label=Handler_Room05
+D $72E1 Handles room #N$05 logic. The phase counter in #REGb controls which
+. objects are initialised or updated on each pass.
+R $72E1 B Room phase counter (from *#R$5FB1)
+  $72E1,$01 Copy the phase counter into #REGa.
+  $72E2,$04 #REGix=#R$DAC8.
+  $72E6,$01 Stash the phase counter on the stack.
+  $72E7,$03 Call #R$7439.
+  $72EA,$01 Restore the phase counter from the stack.
+  $72EB,$03 Return if the phase counter is equal to #N$01.
+  $72EE,$01 Stash the phase counter on the stack.
+  $72EF,$04 #REGix=#R$DACC.
+  $72F3,$03 Call #R$7512.
+  $72F6,$01 Restore the phase counter from the stack.
+  $72F7,$03 Return if the phase counter is equal to #N$02.
+  $72FA,$04 #REGix=#R$DAD0.
+  $72FE,$01 Stash the phase counter on the stack.
+  $72FF,$03 Call #R$7680.
+  $7302,$01 Restore the phase counter from the stack.
+  $7303,$03 Return if the phase counter is equal to #N$03.
+  $7306,$04 #REGix=#R$DAD4.
+  $730A,$03 Call #R$7893.
+  $730D,$01 Return.
 
 c $730E Handler: Room #N$06
 @ $730E label=Handler_Room06
@@ -3418,7 +3483,7 @@ D $730E Handles room #N$06 logic (the starting screen). The phase counter in
 . #REGb controls which objects are initialised or activated on each pass,
 . progressively setting up more objects as the phase increases.
 R $730E B Room phase counter (from *#R$5FB1)
-  $730E,$01 #REGa=#REGb.
+  $730E,$01 Copy the phase counter into #REGa.
 N $730F First object; initialised during phases #N$01, #N$03 and #N$04.
   $730F,$04 #REGix=#R$DAC8.
   $7313,$01 Stash the phase counter on the stack.
@@ -3463,18 +3528,111 @@ N $735F Update the fourth object.
 
 c $7367 Handler: Room #N$07
 @ $7367 label=Handler_Room07
+D $7367 Handles room #N$07 logic. The phase counter in #REGb controls which
+. objects are initialised or updated on each pass.
+R $7367 B Room phase counter (from *#R$5FB1)
+  $7367,$01 Copy the phase counter into #REGa.
+  $7368,$04 #REGix=#R$DAC8.
+  $736C,$01 Stash the phase counter on the stack.
+  $736D,$03 Call #R$7439.
+  $7370,$01 Restore the phase counter from the stack.
+  $7371,$04 #REGix=#R$DACC.
+  $7375,$01 Stash the phase counter on the stack.
+  $7376,$0A Call #R$7512 if the phase counter is equal to either #N$02 or #N$05.
+  $7380,$01 Restore the phase counter from the stack.
+  $7381,$06 Return if the phase counter is equal to #N$01 or less than #N$04.
+  $7387,$04 #REGix=#R$DAD0.
+  $738B,$01 Stash the phase counter on the stack.
+  $738C,$03 Call #R$77B9.
+  $738F,$01 Restore the phase counter from the stack.
+  $7390,$03 Return if the phase counter is equal to #N$04.
+  $7393,$04 #REGix=#R$DAD8.
+  $7397,$01 Stash the phase counter on the stack.
+  $7398,$03 Call #R$758B.
+  $739B,$01 Restore the phase counter from the stack.
+  $739C,$04 #REGix=#R$DADC.
+  $73A0,$03 Call #R$759A.
+  $73A3,$01 Return.
 
 c $73A4 Handler: Room #N$08
 @ $73A4 label=Handler_Room08
+D $73A4 Handles room #N$08 logic. The phase counter in #REGb controls which
+. objects are initialised or updated on each pass.
+R $73A4 B Room phase counter (from *#R$5FB1)
+  $73A4,$01 Copy the phase counter into #REGa.
+  $73A5,$04 #REGix=#R$DAC8.
+  $73A9,$01 Stash the phase counter on the stack.
+  $73AA,$03 Call #R$7439.
+  $73AD,$01 Restore the phase counter from the stack.
+  $73AE,$04 #REGix=#R$DACC.
+  $73B2,$03 Return if the phase counter is equal to #N$01.
+  $73B5,$01 Stash the phase counter on the stack.
+  $73B6,$05 Call #R$7512 if the phase counter is not equal to #N$03.
+  $73BB,$01 Restore the phase counter from the stack.
+  $73BC,$06 Return if the phase counter is equal to either #N$02 or #N$03.
+  $73C2,$01 Stash the phase counter on the stack.
+  $73C3,$04 #REGix=#R$DAD0.
+  $73C7,$03 Call #R$77B9.
+  $73CA,$01 Restore the phase counter from the stack.
+  $73CB,$01 Stash the phase counter on the stack.
+  $73CC,$04 #REGix=#R$DAD8.
+  $73D0,$05 Call #R$79D2 if the phase counter is greater than #N$03.
+  $73D5,$01 Restore the phase counter from the stack.
+  $73D6,$03 Return if the phase counter is equal to #N$04.
+  $73D9,$04 #REGix=#R$DAD4.
+  $73DD,$03 Call #R$7893.
+  $73E0,$01 Return.
 
 c $73E1 Handler: Room #N$09
 @ $73E1 label=Handler_Room09
+D $73E1 Handles room #N$09 logic. The phase counter in #REGb controls which
+. objects are initialised or updated on each pass.
+R $73E1 B Room phase counter (from *#R$5FB1)
+  $73E1,$01 Copy the phase counter into #REGa.
+  $73E2,$03 Return if the phase counter is equal to #N$01.
+  $73E5,$04 #REGix=#R$DAD0.
+  $73E9,$01 Stash the phase counter on the stack.
+  $73EA,$05 Call #R$7439 if the phase counter is not equal to #N$03.
+  $73EF,$01 Restore the phase counter from the stack.
+  $73F0,$04 #REGix=#R$DAD8.
+  $73F4,$05 Call #R$79D2 if the phase counter is greater than #N$03.
+  $73F9,$01 Return.
 
 c $73FA Handler: Room #N$0A
 @ $73FA label=Handler_Room10
+D $73FA Handles room #N$0A logic. The phase counter in #REGb controls which
+. objects are initialised or updated on each pass.
+R $73FA B Room phase counter (from *#R$5FB1)
+  $73FA,$01 Copy the phase counter into #REGa.
+  $73FB,$03 Return if the phase counter is less than #N$03.
+  $73FE,$04 #REGix=#R$DAD8.
+  $7402,$01 Stash the phase counter on the stack.
+  $7403,$05 Call #R$7439 if the phase counter is not equal to #N$04.
+  $7408,$01 Restore the phase counter from the stack.
+  $7409,$04 #REGix=#R$DADC.
+  $740D,$05 Call #R$77B9 if the phase counter is not equal to #N$03.
+  $7412,$01 Return.
 
 c $7413 Handler: Room #N$0B
 @ $7413 label=Handler_Room11
+D $7413 Handles room #N$0B logic. The phase counter in #REGb controls which
+. objects are initialised or updated on each pass.
+R $7413 B Room phase counter (from *#R$5FB1)
+  $7413,$01 Copy the phase counter into #REGa.
+  $7414,$03 Return if the phase counter is less than #N$03.
+  $7417,$04 #REGix=#R$DAD8.
+  $741B,$01 Stash the phase counter on the stack.
+  $741C,$05 Call #R$7439 if the phase counter is not equal to #N$05.
+  $7421,$01 Restore the phase counter from the stack.
+  $7422,$03 Return if the phase counter is equal to #N$03.
+  $7425,$04 #REGix=#R$DADC.
+  $7429,$01 Stash the phase counter on the stack.
+  $742A,$03 Call #R$77B9.
+  $742D,$01 Restore the phase counter from the stack.
+  $742E,$03 Return if the phase counter is equal to #N$04.
+  $7431,$04 #REGix=#R$DAD8.
+  $7435,$03 Call #R$759A.
+  $7438,$01 Return.
 
 c $7439 Handle Red Bird Movement
 @ $7439 label=Handle_Red_Bird
@@ -4083,72 +4241,99 @@ B $7783,$01
 B $7891,$01
 B $7892,$01
 
-c $7893 Handler:
-@ $7893 label=Handler_
-  $7893,$04 Point #REGiy at #R$7B0D (state data).
-  $7897,$03 Point #REGhl at #R$7928 (per-room speed table).
+c $7893 Handle Walking Paratrooper
+@ $7893 label=Handle_Walking_Paratrooper
+D $7893 Controls the paratrooper after landing. The paratrooper walks left and
+. right along a platform, and will leap upward to try to catch Percy if he flies
+. directly overhead. The paratrooper jumps up by #N$02 pixels per frame to a
+. maximum height of #N$10, then drops back down to his platform. Walking speed
+. and boundaries vary per room.
+R $7893 IX Pointer to the paratrooper sprite data
+N $7893 Set up the paratrooper state pointer and movement parameters.
+  $7893,$04 Point #REGiy at #R$7B0D (paratrooper state data).
+  $7897,$03 Point #REGhl at #R$7928 (per-room walking speed table).
   $789A,$09 Fetch the current room from *#R$5FC5, decrement to form a zero-based
-. index and load the swoop speed for this room into #REGb.
-  $78A3,$03 Point #REGhl at #R$7925 (swoop boundary data).
-  $78A6,$02 Set the base sprite frame in #REGc to #N$53.
+. index and load the walking speed for this room into #REGb.
+  $78A3,$03 Point #REGhl at #R$7925 (paratrooper movement boundary data).
+  $78A6,$02 Set the base sprite frame in #REGc to #R$B57B(#N$53) (paratrooper
+. walking right).
   $78A8,$0B Fetch the current room from *#R$5FC5, decrement and multiply by
 . #N$04 to index into the state data; add offset to #REGiy.
-N $78B3 Check if the enemy needs to reset after Percy respawns.
-  $78B3,$06 If *#R$5FBB (respawn flag) is non-zero.
-  $78B9,$04 Write #N$00 to *#R$7927 to reset the swoop state to idle.
-N $78BD Check the current swoop state to determine behaviour.
-@ $78BD label=Check_Swoop_State
-  $78BD,$06 Jump to #R$78E1 if *#R$7927 (swoop state) is non-zero (already
-. swooping).
-N $78C3 Enemy is idle; check if Percy is directly below to trigger a swoop.
-  $78C3,$0C Compare Percy's X position (masked with #N$FC) against the enemies X
-. position (masked with #N$FC); jump to #R$7527 if they don't match.
-  $78D2,$08 Jump to #R$7527 if Percy's Y position is less than #N$28 (too high
-. to trigger a swoop).
-  $78DA,$06 Jump to #R$7527 if Percy's Y position is greater than or equal to
-. the enemies Y position (Percy is below the enemy).
-  $78E0,$01 Set #REGa to #N$00 (begin new swoop).
-N $78E1 Process the swoop movement based on the current state.
-@ $78E1 label=Process_Swoop
-  $78E1,$04 Jump to #R$78FC if bit 7 of the swoop state is set (enemy is
-. ascending).
-N $78E5 Enemy is descending.
-  $78E5,$04 Add #N$02 to the swoop state; if it has reached #N$10 (maximum
-. descent), set bit 7 to begin ascending and jump to #R$7917.
-  $78EF,$03 Write the updated swoop state to *#R$7927.
-  $78F2,$05 Calculate the enemies new Y position by subtracting the swoop
-. distance from the perch Y position at *#REGiy+#N$01; write to
+N $78B3 Check if the paratrooper needs to reset after Percy respawns.
+  $78B3,$06 Skip to #R$78BD if *#R$5FBB (respawn flag) is unset.
+  $78B9,$04 Write #N$00 to reset *#R$7927 (set the leap state to idle).
+N $78BD Check the current leap state to determine behaviour.
+@ $78BD label=Check_Paratrooper_Leap_State
+  $78BD,$06 Jump to #R$78E1 if *#R$7927 (leap state) is non-zero (already
+. leaping).
+N $78C3 Paratrooper is idle; check if Percy is flying directly overhead to
+. trigger a leap.
+M $78C3,$0C Compare Percy's X position against the paratrooper's X position.
+  $78C6,$02,b$01 Keep only bits 2-7.
+  $78CC,$02,b$01 Keep only bits 2-7.
+  $78CF,$03 Jump to #R$7527 if they don't match.
+  $78D2,$0E Jump to #R$7527 if Percy's Y position is less than #N$28 (too high
+. above) or greater than or equal to the paratrooper's Y position (Percy is
+. not above the paratrooper).
+  $78E0,$01 Set #REGa to #N$00 (begin new leap).
+N $78E1 Process the leap movement based on the current state.
+@ $78E1 label=Process_Paratrooper_Leap
+  $78E1,$04 Jump to #R$78FC if bit 7 of the leap state is set (paratrooper is
+. descending back down).
+N $78E5 Paratrooper is leaping upward.
+  $78E5,$02 Add #N$02 to the leap state.
+  $78E7,$04 Skip to #R$78EF if the leap state is still less than the maximum
+. height (#N$10).
+  $78EB,$04 Else the leap state has reached #N$10 (maximum height), set bit 7
+. to begin descending and jump to #R$7917.
+@ $78EF label=Continue_Paratrooper_Leap
+  $78EF,$03 Write the updated leap state to *#R$7927.
+  $78F2,$08 Calculate the paratrooper's new Y position by subtracting the leap
+. height from the platform Y position at *#REGiy+#N$01; write to
 . *#REGix+#N$01.
   $78FA,$02 Jump to #R$791A.
-N $78FC Enemy is ascending back to its perch.
-@ $78FC label=Swoop_Ascending
-  $78FC,$04 Mask off bit 7 and decrement the ascent counter; jump to #R$7911 if
-. it has reached zero (back at perch).
-  $7902,$08 Calculate the enemies new Y position by subtracting the remaining
-. ascent distance from the perch Y position; write to *#REGix+#N$01.
-  $790A,$05 Decrement the swoop state and write it back to *#R$7927.
+N $78FC Paratrooper is descending back to his platform.
+@ $78FC label=Paratrooper_Descending
+  $78FC,$01 Copy the leap state into #REGe.
+  $78FD,$02,b$01 Keep only bits 0-6.
+  $78FF,$01 Decrease the descent counter by one.
+  $7900,$02 Jump to #R$7911 if the descent counter has reached zero (back on platform).
+  $7902,$08 Calculate the paratrooper's new Y position by subtracting the
+. remaining height from the platform Y position; write to *#REGix+#N$01.
+  $790A,$05 Decrement the leap state and write it back to *#R$7927.
   $790F,$02 Jump to #R$791A.
-N $7911 Swoop is complete; reset to idle.
-@ $7911 label=Swoop_Complete
+N $7911 Leap is complete; reset to idle.
+@ $7911 label=Paratrooper_Leap_Complete
   $7911,$04 Write #N$00 to *#R$7927 (return to idle state).
   $7915,$02 Jump to #R$791A.
-N $7917 Update the swoop state and continue with animation.
-@ $7917 label=Update_Swoop_State
-  $7917,$03 Write the swoop state to *#R$7927.
-@ $791A label=Swoop_Animate
-  $791A,$07 Jump to #R$74B9 if bit 7 of *#REGiy+#N$00 is set (enemy is
-. spawning/inactive).
-  $7921,$03 Jump to #R$755F.
+@ $7917 label=Store_Paratrooper_Leap_State
+  $7917,$03 Write the leap state to *#R$7927.
+N $791A Resume the paratrooper's walking animation or handle stunned state.
+@ $791A label=Paratrooper_Walk_Or_Stunned
+  $791A,$07 Jump to #R$74B9 if bit 7 of *#REGiy+#N$00 is set (paratrooper is
+. stunned by egg).
+  $7921,$03 Jump to #R$755F to update the walking animation frame and check for
+. collisions.
 
-g $7924
-
-g $7925
-
-g $7927
+g $7924 Paratrooper Data
+@ $7924 label=Paratrooper_Animation_Counter
+D $7924 Animation counter, direction flag and boundary data for the walking
+. paratrooper.
+B $7924,$01
+@ $7925 label=Paratrooper_Direction_Flag
+B $7925,$01
+@ $7926 label=Paratrooper_Step_Size
+B $7926,$01
+@ $7927 label=Paratrooper_Leap_State
 B $7927,$01
 
-g $7928
+g $7928 Table: Paratrooper Walking Speed
+@ $7928 label=Table_ParatrooperSpeed
+D $7928 Walking speed for the paratrooper, indexed by room number minus one.
+. Only rooms #N$05, #N$06 and #N$08 have active paratrooper entries.
+N $7928 Room #N($01+#PC-$7928):
 B $7928,$01
+L $7928,$01,$08
 
 c $7930 Generate Random Number
 @ $7930 label=Generate_Random_Number
@@ -4303,7 +4488,9 @@ D $7AC3 State variables for the parachute hazard.
 . TABLE#
 B $7AC3,$04,$01
 
-g $7AC7
+g $7AC7 Random Seed
+@ $7AC7 label=RandomSeed
+B $7AC7,$01
 
 g $7AC8 Cat State Data
 @ $7AC8 label=Cat_State_Data
@@ -4321,7 +4508,24 @@ D $7B04 Lookup table of starting X positions for the parachute, indexed by
 . room number minus one.
 B $7B04,$09,$01
 
-g $7B0D
+g $7B0D Paratrooper Room State Data
+@ $7B0D label=Paratrooper_Room_State_Data
+D $7B0D Per-room state data for the walking paratrooper, with four bytes per
+. room. Indexed by (room number - #N$01) * #N$04. Only rooms #N$05, #N$06 and
+. #N$08 have active entries.
+. #TABLE(default,centre,centre)
+. { =h Offset | =h Description }
+. { #N$00 | Stunned flag (bit 7 set = stunned by egg) }
+. { #N$01 | Platform Y position }
+. { #N$02 | Left boundary X position }
+. { #N$03 | Right boundary X position }
+. TABLE#
+N $7B0D Room #N($01+(#PC-$7B0D)/$04):
+B $7B0D,$04
+L $7B0D,$04,$08
+
+u $7B2D
+B $7B2D,$01
 
 g $7B2E Jump Table: Room Handlers
 @ $7B2E label=JumpTable_RoomHandler
