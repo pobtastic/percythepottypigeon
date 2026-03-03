@@ -42,7 +42,7 @@ Next: <a href="29072.html">29072</a>
 Used by the routine at <a href="28802.html">Handler_Frogs</a>.
 </div>
 <div class="paragraph">
-Updates a single frog's behaviour through the jump cycle.
+Updates a single frog's animation and sound state. Frogs sit idle on their platform, then randomly jump upward through a series of animation frames. A croaking sound effect plays during the jump, rising in pitch on the way up and falling on the way down.
 </div>
 </div>
 <table class="input">
@@ -50,55 +50,69 @@ Updates a single frog's behaviour through the jump cycle.
 <th colspan="2">Input</th>
 </tr>
 <tr>
-<td class="register">BC</td>
-<td class="register-desc">Ground position</td>
+<td class="register">B</td>
+<td class="register-desc">Platform Y position</td>
+</tr>
+<tr>
+<td class="register">C</td>
+<td class="register-desc">Platform X position (left frog)</td>
 </tr>
 <tr>
 <td class="register">HL</td>
-<td class="register-desc">Pointer to frog state data</td>
+<td class="register-desc">Pointer to the frog's state data (jump timer, sound counters)</td>
 </tr>
 <tr>
 <td class="register">IX</td>
-<td class="register-desc">Pointer to frog sprite data</td>
+<td class="register-desc">Pointer to the frog's sprite data</td>
 </tr>
 </table>
 </td>
 </tr>
 <tr>
-<td class="asm-label">UpdateFrog</td>
+<td class="routine-comment" colspan="5">
+<span id="28891"></span>
+<div class="comments">
+<div class="paragraph">
+Check the jump timer to determine if the frog is mid-jump or idle.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Update_Frog</td>
 <td class="address-2"><span id="28891"></span>28891</td>
 <td class="instruction">LD A,(HL)</td>
-<td class="comment-1" rowspan="1">Fetch the timer value for the frog.</td>
+<td class="comment-1" rowspan="2">Fetch the jump timer value from *<span class="register">HL</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28892"></span>28892</td>
 <td class="instruction">OR A</td>
-<td class="comment-1" rowspan="2">Jump to <a href="28891.html#28909">UpdateFrog_SetIdle</a> if the timer is zero (the frog is idle).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28893"></span>28893</td>
-<td class="instruction">JR Z,<a href="28891.html#28909">UpdateFrog_SetIdle</a></td>
+<td class="instruction">JR Z,<a href="28891.html#28909">Set_Frog_Idle</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="28891.html#28909">Set_Frog_Idle</a> if the timer is zero (frog is idle).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28895"></span>28895</td>
 <td class="instruction">DEC (HL)</td>
-<td class="comment-1" rowspan="1">Decrement the timer by one.</td>
+<td class="comment-1" rowspan="1">Decrement the jump timer by one.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28896"></span>28896</td>
-<td class="instruction">JR Z,<a href="28891.html#28909">UpdateFrog_SetIdle</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="28891.html#28909">UpdateFrog_SetIdle</a> if the timer has now reached zero.</td>
+<td class="instruction">JR Z,<a href="28891.html#28909">Set_Frog_Idle</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="28891.html#28909">Set_Frog_Idle</a> if the timer has now reached zero (jump complete).</td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
 <span id="28898"></span>
 <div class="comments">
 <div class="paragraph">
-This Frog is mid-jump, cycle through the animation frames.
+Frog is mid-jump; cycle through animation frames 0-3.
 </div>
 </div>
 </td>
@@ -107,121 +121,140 @@ This Frog is mid-jump, cycle through the animation frames.
 <td class="asm-label"></td>
 <td class="address-1"><span id="28898"></span>28898</td>
 <td class="instruction">LD A,(IX+2)</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">IX</span>+2.</td>
+<td class="comment-1" rowspan="4">Increment the animation frame at *<span class="register">IX</span>+2 wrapping at 3.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28901"></span>28901</td>
 <td class="instruction">INC A</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">A</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28902"></span>28902</td>
-<td class="instruction">AND %00000011</td>
-<td class="comment-1" rowspan="1">Keep only bits 0-1 (cycle through 0-3).</td>
+<td class="instruction">AND 3</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28904"></span>28904</td>
 <td class="instruction">LD (IX+2),A</td>
-<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">IX</span>+2.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28907"></span>28907</td>
-<td class="instruction">JR <a href="28891.html#28913">UpdateFrog_0</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="28891.html#28913">UpdateFrog_0</a>.</td>
+<td class="instruction">JR <a href="28891.html#28913">Handle_Frog_Sound</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="28891.html#28913">Handle_Frog_Sound</a>.</td>
 </tr>
 <tr>
-<td class="asm-label">UpdateFrog_SetIdle</td>
+<td class="routine-comment" colspan="5">
+<span id="28909"></span>
+<div class="comments">
+<div class="paragraph">
+Frog is idle; set the idle frame.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Set_Frog_Idle</td>
 <td class="address-2"><span id="28909"></span>28909</td>
 <td class="instruction">LD (IX+2),6</td>
-<td class="comment-1" rowspan="1">Write 6 to *<span class="register">IX</span>+2.</td>
+<td class="comment-1" rowspan="1">Write 6 to *<span class="register">IX</span>+2 (idle animation frame).</td>
 </tr>
 <tr>
-<td class="asm-label">UpdateFrog_0</td>
+<td class="routine-comment" colspan="5">
+<span id="28913"></span>
+<div class="comments">
+<div class="paragraph">
+Handle the frog's croak sound effect. The sound has two phases: ascending pitch (counter rises from 1 to 24), then descending pitch (counter falls back to 0).
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Handle_Frog_Sound</td>
 <td class="address-2"><span id="28913"></span>28913</td>
 <td class="instruction">INC HL</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Advance to the ascending sound counter.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28914"></span>28914</td>
 <td class="instruction">LD A,(HL)</td>
-<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28915"></span>28915</td>
 <td class="instruction">OR A</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Jump to <a href="28891.html#28969">Check_Random_Croak</a> if the sound counter is zero (no sound playing).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28916"></span>28916</td>
-<td class="instruction">JR Z,<a href="28891.html#28969">UpdateFrog_3</a></td>
-<td class="comment-1" rowspan="1"></td>
+<td class="instruction">JR Z,<a href="28891.html#28969">Check_Random_Croak</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28918"></span>28918</td>
 <td class="instruction">INC HL</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Advance to the descending flag.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28919"></span>28919</td>
 <td class="instruction">LD A,(HL)</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Jump to <a href="28891.html#28951">Frog_Sound_Descending</a> if the descending flag is non-zero (sound is descending).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28920"></span>28920</td>
 <td class="instruction">OR A</td>
-<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28921"></span>28921</td>
-<td class="instruction">JR NZ,<a href="28891.html#28951">UpdateFrog_2</a></td>
-<td class="comment-1" rowspan="1"></td>
+<td class="instruction">JR NZ,<a href="28891.html#28951">Frog_Sound_Descending</a></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="28923"></span>
+<div class="comments">
+<div class="paragraph">
+Ascending phase: increment the pitch and output to the speaker.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28923"></span>28923</td>
 <td class="instruction">DEC HL</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Move back to the ascending counter.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28924"></span>28924</td>
 <td class="instruction">LD A,(HL)</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="5">Calculate the speaker output from the counter: add 3 rotate left, mask with 24 and set bit 0 for the border; output to port 254.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28925"></span>28925</td>
 <td class="instruction">ADD A,3</td>
-<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28927"></span>28927</td>
 <td class="instruction">RLCA</td>
-<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28928"></span>28928</td>
 <td class="instruction">AND 24</td>
-<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28930"></span>28930</td>
 <td class="instruction">OR 1</td>
-<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -233,109 +266,119 @@ This Frog is mid-jump, cycle through the animation frames.
 <td class="asm-label"></td>
 <td class="address-1"><span id="28934"></span>28934</td>
 <td class="instruction">LD A,(HL)</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Increment the ascending counter; jump to <a href="28891.html#28948">Store_Ascending_Counter</a> if it has not reached 25.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28935"></span>28935</td>
 <td class="instruction">INC A</td>
-<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28936"></span>28936</td>
 <td class="instruction">CP 25</td>
-<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28938"></span>28938</td>
-<td class="instruction">JR NZ,<a href="28891.html#28948">UpdateFrog_1</a></td>
+<td class="instruction">JR NZ,<a href="28891.html#28948">Store_Ascending_Counter</a></td>
 <td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="28940"></span>
+<div class="comments">
+<div class="paragraph">
+Ascending phase complete; switch to descending.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28940"></span>28940</td>
 <td class="instruction">XOR A</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="6">Write 0 to the ascending counter, set the descending flag to 255 and move back.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28941"></span>28941</td>
 <td class="instruction">LD (HL),A</td>
-<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28942"></span>28942</td>
 <td class="instruction">INC HL</td>
-<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28943"></span>28943</td>
 <td class="instruction">DEC A</td>
-<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28944"></span>28944</td>
 <td class="instruction">LD (HL),A</td>
-<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28945"></span>28945</td>
 <td class="instruction">DEC HL</td>
-<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28946"></span>28946</td>
-<td class="instruction">JR <a href="28891.html#28996">UpdateFrog_5</a></td>
-<td class="comment-1" rowspan="1"></td>
+<td class="instruction">JR <a href="28891.html#28996">Position_Frog_Sprite</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="28891.html#28996">Position_Frog_Sprite</a>.</td>
 </tr>
 <tr>
-<td class="asm-label">UpdateFrog_1</td>
+<td class="asm-label">Store_Ascending_Counter</td>
 <td class="address-2"><span id="28948"></span>28948</td>
 <td class="instruction">LD (HL),A</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write the updated ascending counter back.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28949"></span>28949</td>
-<td class="instruction">JR <a href="28891.html#28996">UpdateFrog_5</a></td>
-<td class="comment-1" rowspan="1"></td>
+<td class="instruction">JR <a href="28891.html#28996">Position_Frog_Sprite</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="28891.html#28996">Position_Frog_Sprite</a>.</td>
 </tr>
 <tr>
-<td class="asm-label">UpdateFrog_2</td>
+<td class="routine-comment" colspan="5">
+<span id="28951"></span>
+<div class="comments">
+<div class="paragraph">
+Descending phase: decrement the pitch and output to the speaker.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Frog_Sound_Descending</td>
 <td class="address-2"><span id="28951"></span>28951</td>
 <td class="instruction">DEC HL</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Move back to the ascending counter (used as pitch value).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28952"></span>28952</td>
 <td class="instruction">LD A,(HL)</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="4">Calculate the speaker output from the counter: rotate left, mask with 24 and set bit 0 for the border; output to port 254.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28953"></span>28953</td>
 <td class="instruction">RLCA</td>
-<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28954"></span>28954</td>
 <td class="instruction">AND 24</td>
-<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28956"></span>28956</td>
 <td class="instruction">OR 1</td>
-<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -347,265 +390,274 @@ This Frog is mid-jump, cycle through the animation frames.
 <td class="asm-label"></td>
 <td class="address-1"><span id="28960"></span>28960</td>
 <td class="instruction">DEC (HL)</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Decrement the counter; jump to <a href="28891.html#28996">Position_Frog_Sprite</a> if it is non-zero.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28961"></span>28961</td>
-<td class="instruction">JR NZ,<a href="28891.html#28996">UpdateFrog_5</a></td>
-<td class="comment-1" rowspan="1"></td>
+<td class="instruction">JR NZ,<a href="28891.html#28996">Position_Frog_Sprite</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28963"></span>28963</td>
 <td class="instruction">INC HL</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Counter has reached zero; clear the descending flag and move back.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28964"></span>28964</td>
 <td class="instruction">LD (HL),0</td>
-<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28966"></span>28966</td>
 <td class="instruction">DEC HL</td>
-<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28967"></span>28967</td>
-<td class="instruction">JR <a href="28891.html#28996">UpdateFrog_5</a></td>
-<td class="comment-1" rowspan="1"></td>
+<td class="instruction">JR <a href="28891.html#28996">Position_Frog_Sprite</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="28891.html#28996">Position_Frog_Sprite</a>.</td>
 </tr>
 <tr>
-<td class="asm-label">UpdateFrog_3</td>
+<td class="routine-comment" colspan="5">
+<span id="28969"></span>
+<div class="comments">
+<div class="paragraph">
+No sound playing; randomly trigger a new croak if the frog is idle.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Check_Random_Croak</td>
 <td class="address-2"><span id="28969"></span>28969</td>
 <td class="instruction">LD A,R</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Read the R register and mask with 63; jump to <a href="28891.html#28996">Position_Frog_Sprite</a> if it does not equal 15 (random chance to croak).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28971"></span>28971</td>
 <td class="instruction">AND 63</td>
-<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28973"></span>28973</td>
 <td class="instruction">CP 15</td>
-<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28975"></span>28975</td>
-<td class="instruction">JR NZ,<a href="28891.html#28996">UpdateFrog_5</a></td>
+<td class="instruction">JR NZ,<a href="28891.html#28996">Position_Frog_Sprite</a></td>
 <td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28977"></span>28977</td>
 <td class="instruction">LD A,(IX+2)</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Jump to <a href="28891.html#28996">Position_Frog_Sprite</a> if the animation frame at *<span class="register">IX</span>+2 is not 6 (frog must be idle to start a croak).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28980"></span>28980</td>
 <td class="instruction">CP 6</td>
-<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28982"></span>28982</td>
-<td class="instruction">JR NZ,<a href="28891.html#28996">UpdateFrog_5</a></td>
-<td class="comment-1" rowspan="1"></td>
+<td class="instruction">JR NZ,<a href="28891.html#28996">Position_Frog_Sprite</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28984"></span>28984</td>
 <td class="instruction">INC HL</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="4">Advance to the descending flag; check if it is non-zero and move back.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28985"></span>28985</td>
 <td class="instruction">LD A,(HL)</td>
-<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28986"></span>28986</td>
 <td class="instruction">OR A</td>
-<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28987"></span>28987</td>
 <td class="instruction">DEC HL</td>
-<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28988"></span>28988</td>
-<td class="instruction">JR NZ,<a href="28891.html#28994">UpdateFrog_4</a></td>
-<td class="comment-1" rowspan="1"></td>
+<td class="instruction">JR NZ,<a href="28891.html#28994">Start_Descending_Croak</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="28891.html#28994">Start_Descending_Croak</a> if the descending flag is non-zero.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28990"></span>28990</td>
 <td class="instruction">LD (HL),1</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write 1 to start the ascending sound counter.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28992"></span>28992</td>
-<td class="instruction">JR <a href="28891.html#28996">UpdateFrog_5</a></td>
-<td class="comment-1" rowspan="1"></td>
+<td class="instruction">JR <a href="28891.html#28996">Position_Frog_Sprite</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="28891.html#28996">Position_Frog_Sprite</a>.</td>
 </tr>
 <tr>
-<td class="asm-label">UpdateFrog_4</td>
+<td class="asm-label">Start_Descending_Croak</td>
 <td class="address-2"><span id="28994"></span>28994</td>
 <td class="instruction">LD (HL),25</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write 25 to the ascending counter (start from maximum pitch).</td>
 </tr>
 <tr>
-<td class="asm-label">UpdateFrog_5</td>
+<td class="routine-comment" colspan="5">
+<span id="28996"></span>
+<div class="comments">
+<div class="paragraph">
+Calculate the frog's screen position based on its jump state and facing direction.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Position_Frog_Sprite</td>
 <td class="address-2"><span id="28996"></span>28996</td>
 <td class="instruction">LD E,(HL)</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Load the ascending counter into <span class="register">E</span> and descending flag into <span class="register">D</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28997"></span>28997</td>
 <td class="instruction">INC HL</td>
-<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28998"></span>28998</td>
 <td class="instruction">LD D,(HL)</td>
-<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28999"></span>28999</td>
 <td class="instruction">LD A,E</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Jump to <a href="28891.html#29036">Frog_On_Platform</a> if the ascending counter is zero (frog is on the platform).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29000"></span>29000</td>
 <td class="instruction">OR A</td>
-<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29001"></span>29001</td>
-<td class="instruction">JR Z,<a href="28891.html#29036">UpdateFrog_6</a></td>
-<td class="comment-1" rowspan="1"></td>
+<td class="instruction">JR Z,<a href="28891.html#29036">Frog_On_Platform</a></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="29003"></span>
+<div class="comments">
+<div class="paragraph">
+Frog is mid-jump; calculate the Y position from the jump height table.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29003"></span>29003</td>
 <td class="instruction">DEC A</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Decrement the counter to form a zero-based table index.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29004"></span>29004</td>
 <td class="instruction">PUSH DE</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Stash <span class="register">DE</span> on the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29005"></span>29005</td>
 <td class="instruction">LD DE,29167</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="4">Look up the jump height from the table at <a href="29167.html">Table_FrogJumpHeight</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29008"></span>29008</td>
 <td class="instruction">LD L,A</td>
-<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29009"></span>29009</td>
 <td class="instruction">LD H,0</td>
-<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29011"></span>29011</td>
 <td class="instruction">ADD HL,DE</td>
-<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29012"></span>29012</td>
 <td class="instruction">POP DE</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Restore <span class="register">DE</span> from the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29013"></span>29013</td>
 <td class="instruction">LD A,B</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Subtract from the platform Y position in <span class="register">B</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29014"></span>29014</td>
 <td class="instruction">SUB (HL)</td>
-<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29015"></span>29015</td>
 <td class="instruction">LD (IX+1),A</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write it to *<span class="register">IX</span>+1.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29018"></span>29018</td>
 <td class="instruction">LD A,E</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="4">Calculate the X position: ascending counter * 4 + platform X.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29019"></span>29019</td>
 <td class="instruction">ADD A,A</td>
-<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29020"></span>29020</td>
 <td class="instruction">ADD A,A</td>
-<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29021"></span>29021</td>
 <td class="instruction">ADD A,C</td>
-<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29022"></span>29022</td>
 <td class="instruction">LD (IX+0),A</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write it to *<span class="register">IX</span>+0.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29025"></span>29025</td>
 <td class="instruction">LD (IX+3),40</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Set the sprite frame to <a href="43835.html#45083">40</a> (frog jumping right).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29029"></span>29029</td>
 <td class="instruction">BIT 7,D</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Return if bit 7 of <span class="register">D</span> is not set (facing right).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -617,109 +669,125 @@ This Frog is mid-jump, cycle through the animation frames.
 <td class="asm-label"></td>
 <td class="address-1"><span id="29032"></span>29032</td>
 <td class="instruction">INC (IX+3)</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Increment the sprite frame to <a href="43835.html#45115">41</a> (frog jumping left).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29035"></span>29035</td>
 <td class="instruction">RET</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Return.</td>
 </tr>
 <tr>
-<td class="asm-label">UpdateFrog_6</td>
+<td class="routine-comment" colspan="5">
+<span id="29036"></span>
+<div class="comments">
+<div class="paragraph">
+Frog is on the platform; set its resting position.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Frog_On_Platform</td>
 <td class="address-2"><span id="29036"></span>29036</td>
 <td class="instruction">LD (IX+1),B</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Set the Y position to the platform Y from <span class="register">B</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29039"></span>29039</td>
 <td class="instruction">BIT 7,D</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Jump to <a href="28891.html#29060">Frog_Facing_Left</a> if bit 7 of <span class="register">D</span> is set (frog faces left).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29041"></span>29041</td>
-<td class="instruction">JR NZ,<a href="28891.html#29060">UpdateFrog_8</a></td>
+<td class="instruction">JR NZ,<a href="28891.html#29060">Frog_Facing_Left</a></td>
 <td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29043"></span>29043</td>
 <td class="instruction">LD (IX+0),C</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Set the X position to the platform X from <span class="register">C</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29046"></span>29046</td>
 <td class="instruction">LD (IX+3),42</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Set the sprite frame to <a href="43835.html#45147">42</a> (frog sitting right).</td>
 </tr>
 <tr>
-<td class="asm-label">UpdateFrog_7</td>
+<td class="asm-label">Random_Tongue_Flick</td>
 <td class="address-2"><span id="29050"></span>29050</td>
 <td class="instruction">LD A,R</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Read the R register and mask.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29052"></span>29052</td>
-<td class="instruction">AND 31</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="instruction">AND %00011111</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29054"></span>29054</td>
 <td class="instruction">OR A</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Return if the result is non-zero (random chance to flick tongue).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29055"></span>29055</td>
 <td class="instruction">RET NZ</td>
-<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29056"></span>29056</td>
 <td class="instruction">INC (IX+3)</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Increment the sprite frame by one (tongue-out variant).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29059"></span>29059</td>
 <td class="instruction">RET</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Return.</td>
 </tr>
 <tr>
-<td class="asm-label">UpdateFrog_8</td>
+<td class="routine-comment" colspan="5">
+<span id="29060"></span>
+<div class="comments">
+<div class="paragraph">
+Left-facing frog on platform.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Frog_Facing_Left</td>
 <td class="address-2"><span id="29060"></span>29060</td>
 <td class="instruction">LD A,C</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Set the X position to platform X plus 104.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29061"></span>29061</td>
 <td class="instruction">ADD A,104</td>
-<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29063"></span>29063</td>
 <td class="instruction">LD (IX+0),A</td>
-<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29066"></span>29066</td>
 <td class="instruction">LD (IX+3),44</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Set the sprite frame to <a href="43835.html#45211">44</a> (frog sitting left).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29070"></span>29070</td>
-<td class="instruction">JR <a href="28891.html#29050">UpdateFrog_7</a></td>
-<td class="comment-1" rowspan="1"></td>
+<td class="instruction">JR <a href="28891.html#29050">Random_Tongue_Flick</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="28891.html#29050">Random_Tongue_Flick</a>.</td>
 </tr>
 </table>
 <table class="asm-navigation">
