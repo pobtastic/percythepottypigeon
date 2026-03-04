@@ -42,7 +42,7 @@ Next: <a href="6456.html">6456</a>
 Used by the routine at <a href="5F35.html">DrawRoomTile</a>.
 </div>
 <div class="paragraph">
-Loop B times: call <a href="6456.html">DrawRow_Room</a> (draw row), advance <span class="register">HL</span>. Then call <a href="63BB.html">Print_HUD_Header</a> if header not drawn, and <a href="63BB.html#63cb">Print_HUD_Header_0</a> to colour bottom rows.
+Draws multiple character rows from the room buffer to the screen buffer. After all rows are drawn, prints the HUD header if it hasn't been drawn yet, and applies random colours to the bottom ground strip.
 </div>
 </div>
 <table class="input">
@@ -55,16 +55,16 @@ Loop B times: call <a href="6456.html">DrawRow_Room</a> (draw row), advance <spa
 </tr>
 <tr>
 <td class="register">HL</td>
-<td class="register-desc">Buffer to use</td>
+<td class="register-desc">Pointer to the room buffer</td>
 </tr>
 </table>
 </td>
 </tr>
 <tr>
-<td class="asm-label">DrawRows_Room</td>
+<td class="asm-label">Draw_Room_Rows_Loop</td>
 <td class="address-2"><span id="6438"></span>6438</td>
 <td class="instruction">PUSH BC</td>
-<td class="comment-1" rowspan="2">Stash the row counter and room buffer on the stack.</td>
+<td class="comment-1" rowspan="2">Stash the row counter and room buffer pointer on the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -74,14 +74,14 @@ Loop B times: call <a href="6456.html">DrawRow_Room</a> (draw row), advance <spa
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="643a"></span>643A</td>
-<td class="instruction">CALL <a href="6456.html">DrawRow_Room</a></td>
-<td class="comment-1" rowspan="1">Call <a href="6456.html">DrawRow_Room</a>.</td>
+<td class="instruction">CALL <a href="6456.html">Draw_Room_Row</a></td>
+<td class="comment-1" rowspan="1">Call <a href="6456.html">Draw_Room_Row</a> to draw a single character row.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="643d"></span>643D</td>
 <td class="instruction">POP HL</td>
-<td class="comment-1" rowspan="2">Restore the room buffer and row countr from the stack.</td>
+<td class="comment-1" rowspan="2">Restore the room buffer pointer and row counter from the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -93,7 +93,7 @@ Loop B times: call <a href="6456.html">DrawRow_Room</a> (draw row), advance <spa
 <span id="643f"></span>
 <div class="comments">
 <div class="paragraph">
-Advance the room buffer pointer to the next character row. Each row is 20 bytes wide; if adding 20 to <span class="register">L</span> overflows, carry into <span class="register">H</span> by adding 08 (into the next screen third).
+Advance the room buffer pointer to the next character row. Each row is 20 bytes wide; if adding 20 to <span class="register">L</span> overflows, advance <span class="register">H</span> by 08 to move into the next screen third.
 </div>
 </div>
 </td>
@@ -102,7 +102,7 @@ Advance the room buffer pointer to the next character row. Each row is 20 bytes 
 <td class="asm-label"></td>
 <td class="address-1"><span id="643f"></span>643F</td>
 <td class="instruction">LD A,$20</td>
-<td class="comment-1" rowspan="3"><span class="register">L</span>+=20.</td>
+<td class="comment-1" rowspan="3">Add 20 to <span class="register">L</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -118,18 +118,18 @@ Advance the room buffer pointer to the next character row. Each row is 20 bytes 
 <td class="asm-label"></td>
 <td class="address-1"><span id="6443"></span>6443</td>
 <td class="instruction">OR A</td>
-<td class="comment-1" rowspan="2">Jump to <a href="6438.html#644a">DrawRoomRows_Next</a> if there was no overflow.</td>
+<td class="comment-1" rowspan="2">Jump to <a href="6438.html#644a">Draw_Room_Rows_Next</a> if there was no overflow.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6444"></span>6444</td>
-<td class="instruction">JR NZ,<a href="6438.html#644a">DrawRoomRows_Next</a></td>
+<td class="instruction">JR NZ,<a href="6438.html#644a">Draw_Room_Rows_Next</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6446"></span>6446</td>
 <td class="instruction">LD A,$08</td>
-<td class="comment-1" rowspan="3"><span class="register">H</span>+=08.</td>
+<td class="comment-1" rowspan="3">Add 08 to <span class="register">H</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -142,16 +142,26 @@ Advance the room buffer pointer to the next character row. Each row is 20 bytes 
 <td class="instruction">LD H,A</td>
 </tr>
 <tr>
-<td class="asm-label">DrawRoomRows_Next</td>
+<td class="asm-label">Draw_Room_Rows_Next</td>
 <td class="address-2"><span id="644a"></span>644A</td>
-<td class="instruction">DJNZ <a href="6438.html#6438">DrawRows_Room</a></td>
-<td class="comment-1" rowspan="1">Decrease the row counter by one and loop back to <a href="6438.html">DrawRows_Room</a> until all of the rows have been drawn to the screen buffer.</td>
+<td class="instruction">DJNZ <a href="6438.html#6438">Draw_Room_Rows_Loop</a></td>
+<td class="comment-1" rowspan="1">Decrease the row counter by one and loop back to <a href="6438.html">Draw_Room_Rows_Loop</a> until all rows have been drawn.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="644c"></span>
+<div class="comments">
+<div class="paragraph">
+Print the HUD header if the screen hasn't been fully initialised yet.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="644c"></span>644C</td>
 <td class="instruction">LD A,($5FA1)</td>
-<td class="comment-1" rowspan="3">Call <a href="63BB.html">Print_HUD_Header</a> if *<a href="5FA1.html">GameStateFlag</a> is zero.</td>
+<td class="comment-1" rowspan="3">Call <a href="63BB.html">Print_HUD_Header</a> if *<a href="5FA1.html">Screen_Initialised_Flag</a> is unset (HUD header not yet drawn).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -166,8 +176,8 @@ Advance the room buffer pointer to the next character row. Each row is 20 bytes 
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6453"></span>6453</td>
-<td class="instruction">JP <a href="63BB.html#63cb">Print_HUD_Header_0</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="63BB.html#63cb">Print_HUD_Header_0</a>.</td>
+<td class="instruction">JP <a href="63BB.html#63cb">Colour_Ground_Strip</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="63BB.html#63cb">Colour_Ground_Strip</a>.</td>
 </tr>
 </table>
 <table class="asm-navigation">

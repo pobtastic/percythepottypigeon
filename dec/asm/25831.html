@@ -41,14 +41,27 @@ Next: <a href="25917.html">25917</a>
 <div class="paragraph">
 Used by the routine at <a href="24553.html">MainGameLoop</a>.
 </div>
+<div class="paragraph">
+Handles Percy losing a life. Plays the lose-a-life sound effect, resets any collected worm markers in the room attribute data, decrements the lives counter and updates the display.
+</div>
 </div>
 </td>
 </tr>
 <tr>
-<td class="asm-label">LoseLife</td>
+<td class="routine-comment" colspan="5">
+<span id="25831"></span>
+<div class="comments">
+<div class="paragraph">
+Set Percy's position and frame for the death animation.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Lose_Life</td>
 <td class="address-2"><span id="25831"></span>25831</td>
 <td class="instruction">LD HL,56001</td>
-<td class="comment-1" rowspan="2">Write 144 to *<a href="56000.html#56001">Percy_Y_Position</a>.</td>
+<td class="comment-1" rowspan="2">Write 144 to *<a href="56000.html#56001">Percy_Y_Position</a> (set Percy's Y position to the ground).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -56,10 +69,24 @@ Used by the routine at <a href="24553.html">MainGameLoop</a>.
 <td class="instruction">LD (HL),144</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="25836"></span>
+<div class="comments">
+<div class="paragraph">
+Set Percy's sprite frame to the death frame: <table class="">
+<tr>
+<td class="" colspan="1" rowspan="1"><img alt="udg44347-56x4" src="../../images/udgs/udg44347-56x4.png" /></td>
+</tr>
+</table>
+</div>
+</div>
+</td>
+</tr>
+<tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25836"></span>25836</td>
 <td class="instruction">INC HL</td>
-<td class="comment-1" rowspan="3">Write 17 to *<a href="56000.html#56003">Percy_Frame_ID</a>.</td>
+<td class="comment-1" rowspan="3">Write sprite ID 17 to *<a href="56000.html#56003">Percy_Frame_ID</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -102,121 +129,118 @@ Play the "lose a life" sound effect.
 <td class="asm-label"></td>
 <td class="address-1"><span id="25845"></span>25845</td>
 <td class="instruction">LD HL,0</td>
-<td class="comment-1" rowspan="1"><span class="register">HL</span>=0000.</td>
+<td class="comment-1" rowspan="1">Set <span class="register">HL</span> to 0000 (sound data pointer).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25848"></span>25848</td>
 <td class="instruction">LD A,1</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=1.</td>
+<td class="comment-1" rowspan="1">Set <span class="register">A</span> to 1 (initial speaker state).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25850"></span>25850</td>
 <td class="instruction">LD B,0</td>
-<td class="comment-1" rowspan="1"><span class="register">B</span>=0.</td>
+<td class="comment-1" rowspan="1">Set <span class="register">B</span> to 0 (outer loop counter, 256 iterations).</td>
 </tr>
 <tr>
-<td class="asm-label">LoseLife_0</td>
+<td class="asm-label">Lose_Life_Sound_Outer</td>
 <td class="address-2"><span id="25852"></span>25852</td>
 <td class="instruction">PUSH BC</td>
-<td class="comment-1" rowspan="1">Stash <span class="register">BC</span> on the stack.</td>
+<td class="comment-1" rowspan="1">Stash the outer counter on the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25853"></span>25853</td>
 <td class="instruction">LD D,B</td>
-<td class="comment-1" rowspan="1"><span class="register">D</span>=<span class="register">B</span>.</td>
+<td class="comment-1" rowspan="1">Copy <span class="register">B</span> to <span class="register">D</span> (inner delay length).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25854"></span>25854</td>
 <td class="instruction">RR B</td>
-<td class="comment-1" rowspan="1">Rotate <span class="register">B</span> right.</td>
+<td class="comment-1" rowspan="1">Rotate <span class="register">B</span> right to vary the pitch.</td>
 </tr>
 <tr>
-<td class="asm-label">LoseLife_1</td>
+<td class="asm-label">Lose_Life_Sound_Inner</td>
 <td class="address-2"><span id="25856"></span>25856</td>
 <td class="instruction">OUT (254),A</td>
-<td class="comment-1" rowspan="1">Send to the speaker.</td>
+<td class="comment-1" rowspan="1">Output to the speaker port.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25858"></span>25858</td>
 <td class="instruction">NOP</td>
-<td class="comment-1" rowspan="1">No operation.</td>
+<td class="comment-1" rowspan="4">Four NOPs as a timing delay.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25859"></span>25859</td>
 <td class="instruction">NOP</td>
-<td class="comment-1" rowspan="1">No operation.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25860"></span>25860</td>
 <td class="instruction">NOP</td>
-<td class="comment-1" rowspan="1">No operation.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25861"></span>25861</td>
 <td class="instruction">NOP</td>
-<td class="comment-1" rowspan="1">No operation.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25862"></span>25862</td>
-<td class="instruction">DJNZ <a href="25831.html#25856">LoseLife_1</a></td>
-<td class="comment-1" rowspan="1">Decrease counter by one and loop back to <a href="25831.html#25856">LoseLife_1</a> until counter is zero.</td>
+<td class="instruction">DJNZ <a href="25831.html#25856">Lose_Life_Sound_Inner</a></td>
+<td class="comment-1" rowspan="1">Decrease the inner counter and loop back to <a href="25831.html#25856">Lose_Life_Sound_Inner</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25864"></span>25864</td>
 <td class="instruction">POP BC</td>
-<td class="comment-1" rowspan="1">Restore <span class="register">BC</span> from the stack.</td>
+<td class="comment-1" rowspan="1">Restore the outer counter from the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25865"></span>25865</td>
 <td class="instruction">XOR %00011000</td>
-<td class="comment-1" rowspan="1">Flip bits 3-4.</td>
+<td class="comment-1" rowspan="1">Toggle the speaker bits by flipping bits 3-4.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25867"></span>25867</td>
 <td class="instruction">OR D</td>
-<td class="comment-1" rowspan="1">Set the bits from <span class="register">D</span>.</td>
+<td class="comment-1" rowspan="1">Merge in the delay value from <span class="register">D</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25868"></span>25868</td>
 <td class="instruction">AND (HL)</td>
-<td class="comment-1" rowspan="1">Merge the bits from *<span class="register">HL</span>.</td>
+<td class="comment-1" rowspan="1">OR with the sound data byte at *<span class="register">HL</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25869"></span>25869</td>
 <td class="instruction">AND %11111000</td>
-<td class="comment-1" rowspan="1">Keep only bits 3-7.</td>
+<td class="comment-1" rowspan="1">Mask with 248 to keep only the upper bits.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25871"></span>25871</td>
 <td class="instruction">OR %00000001</td>
-<td class="comment-1" rowspan="1">Set bit 0.</td>
+<td class="comment-1" rowspan="1">Set bit 0 for the border colour.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25873"></span>25873</td>
 <td class="instruction">INC HL</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
+<td class="comment-1" rowspan="1">Advance the sound data pointer.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25874"></span>25874</td>
-<td class="instruction">DJNZ <a href="25831.html#25852">LoseLife_0</a></td>
-<td class="comment-1" rowspan="1">Decrease counter by one and loop back to <a href="25831.html#25852">LoseLife_0</a> until counter is zero.</td>
+<td class="instruction">DJNZ <a href="25831.html#25852">Lose_Life_Sound_Outer</a></td>
+<td class="comment-1" rowspan="1">Decrease the outer counter and loop back to <a href="25831.html#25852">Lose_Life_Sound_Outer</a> until all 256 iterations are complete.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -225,22 +249,32 @@ Play the "lose a life" sound effect.
 <td class="comment-1" rowspan="1">Restore <span class="register">IX</span> from the stack.</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="25878"></span>
+<div class="comments">
+<div class="paragraph">
+Reset any collected worm markers in the room attribute data back to 0.
+</div>
+</div>
+</td>
+</tr>
+<tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25878"></span>25878</td>
 <td class="instruction">LD HL,56990</td>
-<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="56990.html">RoomAttribute_Data</a>.</td>
+<td class="comment-1" rowspan="1">Point <span class="register">HL</span> at <a href="56990.html">RoomAttribute_Data</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25881"></span>25881</td>
 <td class="instruction">LD BC,352</td>
-<td class="comment-1" rowspan="1"><span class="register">BC</span>=0352.</td>
+<td class="comment-1" rowspan="1">Set the byte counter to 352 in <span class="register">BC</span>.</td>
 </tr>
 <tr>
-<td class="asm-label">LoseLife_2</td>
+<td class="asm-label">Reset_Worm_Markers</td>
 <td class="address-2"><span id="25884"></span>25884</td>
 <td class="instruction">LD A,(HL)</td>
-<td class="comment-1" rowspan="3">Jump to <a href="25831.html#25891">LoseLife_3</a> if *<span class="register">HL</span> is not equal to 30.</td>
+<td class="comment-1" rowspan="3">Jump to <a href="25831.html#25891">Reset_Worm_Markers_Next</a> if *<span class="register">HL</span> is not equal to 30 (not a collected marker).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -250,31 +284,31 @@ Play the "lose a life" sound effect.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25887"></span>25887</td>
-<td class="instruction">JR NZ,<a href="25831.html#25891">LoseLife_3</a></td>
+<td class="instruction">JR NZ,<a href="25831.html#25891">Reset_Worm_Markers_Next</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25889"></span>25889</td>
 <td class="instruction">LD (HL),0</td>
-<td class="comment-1" rowspan="1">Write 0 to *<span class="register">HL</span>.</td>
+<td class="comment-1" rowspan="1">Write 0 to *<span class="register">HL</span> to reset the marker.</td>
 </tr>
 <tr>
-<td class="asm-label">LoseLife_3</td>
+<td class="asm-label">Reset_Worm_Markers_Next</td>
 <td class="address-2"><span id="25891"></span>25891</td>
 <td class="instruction">DEC BC</td>
-<td class="comment-1" rowspan="1">Decrease <span class="register">BC</span> by one.</td>
+<td class="comment-1" rowspan="1">Decrement the byte counter by one.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25892"></span>25892</td>
 <td class="instruction">INC HL</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
+<td class="comment-1" rowspan="1">Advance <span class="register">HL</span> to the next byte.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25893"></span>25893</td>
 <td class="instruction">LD A,B</td>
-<td class="comment-1" rowspan="3">Jump to <a href="25831.html#25884">LoseLife_2</a> until <span class="register">BC</span> is zero.</td>
+<td class="comment-1" rowspan="3">Loop back to <a href="25831.html#25884">Reset_Worm_Markers</a> until all 352 bytes are processed.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -284,23 +318,23 @@ Play the "lose a life" sound effect.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25895"></span>25895</td>
-<td class="instruction">JR NZ,<a href="25831.html#25884">LoseLife_2</a></td>
+<td class="instruction">JR NZ,<a href="25831.html#25884">Reset_Worm_Markers</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25897"></span>25897</td>
 <td class="instruction">CALL <a href="26337.html#26513">Reset_Worm_State</a></td>
-<td class="comment-1" rowspan="1">Call <a href="26337.html#26513">Reset_Worm_State</a>.</td>
+<td class="comment-1" rowspan="1">Call <a href="26337.html#26513">Reset_Worm_State</a> to reset the worm-carrying state.</td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
 <span id="25900"></span>
 <div class="comments">
 <div class="paragraph">
-See <a href="../reference/pokes.html#infinite_lives">Infinite Lives</a>.
+Decrease the lives counter by one.
 </div>
 <div class="paragraph">
-Decrease the lives counter by one.
+See <a href="../reference/pokes.html#infinite_lives">Infinite Lives</a>.
 </div>
 </div>
 </td>
@@ -309,19 +343,19 @@ Decrease the lives counter by one.
 <td class="asm-label"></td>
 <td class="address-1"><span id="25900"></span>25900</td>
 <td class="instruction">LD HL,24499</td>
-<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="24499.html">LivesDisplayCharacter</a>.</td>
+<td class="comment-1" rowspan="1">Point <span class="register">HL</span> at <a href="24499.html">LivesDisplayCharacter</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25903"></span>25903</td>
 <td class="instruction">DEC (HL)</td>
-<td class="comment-1" rowspan="1">Decrease *<span class="register">HL</span> by one.</td>
+<td class="comment-1" rowspan="1">Decrement the lives counter at *<span class="register">HL</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25904"></span>25904</td>
 <td class="instruction">LD A,(HL)</td>
-<td class="comment-1" rowspan="3">Jump to <a href="25948.html">Start_Level</a> if *<a href="24499.html">LivesDisplayCharacter</a> is not yet equal to ASCII 48 ("&#48;").</td>
+<td class="comment-1" rowspan="3">Jump to <a href="25948.html">Start_Level</a> if *<a href="24499.html">LivesDisplayCharacter</a> has not reached ASCII "&#48;" (48).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -337,13 +371,13 @@ Decrease the lives counter by one.
 <td class="asm-label"></td>
 <td class="address-1"><span id="25909"></span>25909</td>
 <td class="instruction">LD A,48</td>
-<td class="comment-1" rowspan="1">Load <span class="register">A</span> with ASCII 48 ("&#48;").</td>
+<td class="comment-1" rowspan="1">Load <span class="register">A</span> with ASCII "&#48;" (48).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25911"></span>25911</td>
 <td class="instruction">LD HL,20720</td>
-<td class="comment-1" rowspan="1"><span class="register">HL</span>=20720 (screen buffer location).</td>
+<td class="comment-1" rowspan="1">Point <span class="register">HL</span> at 20720 (screen buffer position for the lives display).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>

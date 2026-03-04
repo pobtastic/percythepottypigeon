@@ -33,16 +33,19 @@ Next: <a href="24482.html">24482</a>
 </td>
 </tr>
 </table>
-<div class="description">24481: Game State Flag</div>
+<div class="description">24481: Screen Initialised Flag</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
 <div class="details">
+<div class="paragraph">
+Tracks whether the current screen has been fully initialised. Set to 1 after the HUD header is drawn, and cleared to 0 when a fresh screen setup is needed.
+</div>
 </div>
 </td>
 </tr>
 <tr>
-<td class="asm-label">GameStateFlag</td>
+<td class="asm-label">Screen_Initialised_Flag</td>
 <td class="address-1"><span id="24481"></span>24481</td>
 <td class="instruction">DEFB 0</td>
 <td class="comment-0" rowspan="1"></td>

@@ -44,80 +44,100 @@ Next: <a href="25656.html">25656</a>
 <tr>
 <td class="asm-label">Messaging_Header</td>
 <td class="address-1"><span id="25577"></span>25577</td>
-<td class="instruction">DEFM 22,0,0</td>
+<td class="instruction">DEFB 22,0,0</td>
 <td class="comment-1" rowspan="1">PRINT AT: 0, 0.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25580"></span>25580</td>
-<td class="instruction">DEFM 17,0</td>
+<td class="instruction">DEFB 17,0</td>
 <td class="comment-1" rowspan="1">Set PAPER: BLACK.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25582"></span>25582</td>
-<td class="instruction">DEFM 19,1</td>
+<td class="instruction">DEFB 19,1</td>
 <td class="comment-1" rowspan="1">BRIGHT "ON".</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25584"></span>25584</td>
 <td class="instruction">DEFM " "</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><img alt="header-01" src="../../images/font/header-01.png" /></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25585"></span>25585</td>
-<td class="instruction">DEFM 16,7</td>
+<td class="instruction">DEFB 16,7</td>
 <td class="comment-1" rowspan="1">Set INK: WHITE.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25587"></span>25587</td>
 <td class="instruction">DEFM " Energy      Lives     Score    "</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><img alt="header-02" src="../../images/font/header-02.png" /></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="25619"></span>
+<div class="comments">
+<div class="paragraph">
+Forms the energy bar:
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25619"></span>25619</td>
-<td class="instruction">DEFM 16,2</td>
+<td class="instruction">DEFB 16,2</td>
 <td class="comment-1" rowspan="1">Set INK: RED.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25621"></span>25621</td>
 <td class="instruction">DEFM 163,163</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><img alt="header-03" src="../../images/font/header-03.png" /></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25623"></span>25623</td>
-<td class="instruction">DEFM 16,6</td>
+<td class="instruction">DEFB 16,6</td>
 <td class="comment-1" rowspan="1">Set INK: YELLOW.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25625"></span>25625</td>
 <td class="instruction">DEFM 163,163,163,163,163,163,163,163,163,163</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><img alt="header-04" src="../../images/font/header-04.png" /></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25635"></span>25635</td>
-<td class="instruction">DEFM 16,7</td>
+<td class="instruction">DEFB 16,7</td>
 <td class="comment-1" rowspan="1">Set INK: WHITE.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25637"></span>25637</td>
-<td class="instruction">DEFM "$"+128</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="instruction">DEFB 164</td>
+<td class="comment-1" rowspan="1"><img alt="header-06" src="../../images/font/header-06.png" /></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="25638"></span>
+<div class="comments">
+<div class="paragraph">
+Prints lives and score:
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="25638"></span>25638</td>
 <td class="instruction">DEFM "  3      0000000  "</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><img alt="header-07" src="../../images/font/header-07.png" /></td>
 </tr>
 </table>
 <table class="asm-navigation">

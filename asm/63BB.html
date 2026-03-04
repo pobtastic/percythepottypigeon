@@ -39,10 +39,10 @@ Next: <a href="63E9.html">63E9</a>
 <td class="routine-comment" colspan="5">
 <div class="details">
 <div class="paragraph">
-Used by the routine at <a href="6438.html">DrawRows_Room</a>.
+Used by the routine at <a href="6438.html">Draw_Room_Rows_Loop</a>.
 </div>
 <div class="paragraph">
-Set header-drawn flag, open channel 02 print Energy/Lives/Score string at <a href="63E9.html">Messaging_Header</a>. Then <a href="63BB.html#63cb">Print_HUD_Header_0</a> colours bottom rows.
+Prints the heads-up display header showing Energy, Lives and Score, then applies random colours to the bottom two rows of the screen attributes to create a colourful ground strip.
 </div>
 </div>
 </td>
@@ -51,7 +51,7 @@ Set header-drawn flag, open channel 02 print Energy/Lives/Score string at <a hre
 <td class="asm-label">Print_HUD_Header</td>
 <td class="address-2"><span id="63bb"></span>63BB</td>
 <td class="instruction">LD A,$01</td>
-<td class="comment-1" rowspan="2">Write 01 to *<a href="5FA1.html">GameStateFlag</a>.</td>
+<td class="comment-1" rowspan="2">Write 01 to *<a href="5FA1.html">Screen_Initialised_Flag</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -63,7 +63,7 @@ Set header-drawn flag, open channel 02 print Energy/Lives/Score string at <a hre
 <span id="63c0"></span>
 <div class="comments">
 <div class="paragraph">
-Open channel 02 (upper screen).
+Print the HUD string to the upper screen.
 </div>
 </div>
 </td>
@@ -72,19 +72,19 @@ Open channel 02 (upper screen).
 <td class="asm-label"></td>
 <td class="address-1"><span id="63c0"></span>63C0</td>
 <td class="instruction">CALL $1601</td>
-<td class="comment-1" rowspan="1">Call <a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/1601.html">CHAN_OPEN</a>.</td>
+<td class="comment-1" rowspan="1">Call <a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/1601.html">CHAN_OPEN</a> to open channel 02 (upper screen).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="63c3"></span>63C3</td>
 <td class="instruction">LD HL,$63E9</td>
-<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="63E9.html">Messaging_Header</a>.</td>
+<td class="comment-1" rowspan="1">Point <span class="register">HL</span> at <a href="63E9.html">Messaging_Header</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="63c6"></span>63C6</td>
 <td class="instruction">LD B,$4F</td>
-<td class="comment-1" rowspan="1">Set a counter in <span class="register">B</span> for the length of the string to print (4F characters).</td>
+<td class="comment-1" rowspan="1">Set a counter in <span class="register">B</span> for the length of the string (4F characters).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -97,19 +97,19 @@ Open channel 02 (upper screen).
 <span id="63cb"></span>
 <div class="comments">
 <div class="paragraph">
-This entry point is used by the routine at <a href="6438.html">DrawRows_Room</a>.
+This entry point is used by the routine at <a href="6438.html">Draw_Room_Rows_Loop</a>.
 </div>
 <div class="paragraph">
-Use the Memory Refresh Register as a pointer offset into memory to source pseudo-random values.
+Apply pseudo-random colours to the bottom two rows of screen attributes to create a colourful ground strip. Uses the Memory Refresh Register as a seed to pick unpredictable colour values.
 </div>
 </div>
 </td>
 </tr>
 <tr>
-<td class="asm-label">Print_HUD_Header_0</td>
+<td class="asm-label">Colour_Ground_Strip</td>
 <td class="address-2"><span id="63cb"></span>63CB</td>
 <td class="instruction">LD A,R</td>
-<td class="comment-1" rowspan="2"><span class="register">E</span>=the contents of the Memory Refresh Register.</td>
+<td class="comment-1" rowspan="2">Load the Memory Refresh Register into <span class="register">E</span> as a pointer offset.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -120,7 +120,7 @@ Use the Memory Refresh Register as a pointer offset into memory to source pseudo
 <td class="asm-label"></td>
 <td class="address-1"><span id="63ce"></span>63CE</td>
 <td class="instruction">LD D,$00</td>
-<td class="comment-1" rowspan="1"><span class="register">D</span>=00.</td>
+<td class="comment-1" rowspan="1">Set <span class="register">D</span> to 00 so <span class="register">DE</span> is an offset into low memory.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -129,103 +129,93 @@ Use the Memory Refresh Register as a pointer offset into memory to source pseudo
 <td class="comment-1" rowspan="1">Set a counter in <span class="register">B</span> for 20 attribute cells.</td>
 </tr>
 <tr>
-<td class="routine-comment" colspan="5">
-<span id="63d2"></span>
-<div class="comments">
-<div class="paragraph">
-Point to the bottom two rows of the attribute buffer.
-</div>
-</div>
-</td>
-</tr>
-<tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="63d2"></span>63D2</td>
 <td class="instruction">LD HL,$5AC0</td>
-<td class="comment-1" rowspan="1"><span class="register">HL</span>=5AC0 (attribute buffer location).</td>
+<td class="comment-1" rowspan="1">Point <span class="register">HL</span> at 5AC0 (start of the bottom two attribute rows).</td>
 </tr>
 <tr>
-<td class="asm-label">Colour_Loop</td>
+<td class="asm-label">Colour_Ground_Loop</td>
 <td class="address-2"><span id="63d5"></span>63D5</td>
 <td class="instruction">LD A,(DE)</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">DE</span>.</td>
+<td class="comment-1" rowspan="1">Fetch a pseudo-random byte from *<span class="register">DE</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="63d6"></span>63D6</td>
 <td class="instruction">AND %00000111</td>
-<td class="comment-1" rowspan="1">Keep only bits 0-2.</td>
+<td class="comment-1" rowspan="1">Keep only bits 0-2 (INK colour).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="63d8"></span>63D8</td>
 <td class="instruction">INC DE</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">DE</span> by one.</td>
+<td class="comment-1" rowspan="1">Advance the source pointer.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="63d9"></span>63D9</td>
 <td class="instruction">CP $03</td>
-<td class="comment-1" rowspan="2">Jump to <a href="63BB.html#63d5">Colour_Loop</a> if <span class="register">A</span> is less than 03.</td>
+<td class="comment-1" rowspan="2">Jump back to <a href="63BB.html#63d5">Colour_Ground_Loop</a> if the colour is less than 03 (reject dark colours to keep the ground strip bright).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="63db"></span>63DB</td>
-<td class="instruction">JR C,<a href="63BB.html#63d5">Colour_Loop</a></td>
+<td class="instruction">JR C,<a href="63BB.html#63d5">Colour_Ground_Loop</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="63dd"></span>63DD</td>
 <td class="instruction">PUSH DE</td>
-<td class="comment-1" rowspan="1">Stash <span class="register">DE</span> on the stack.</td>
+<td class="comment-1" rowspan="1">Stash the source pointer on the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="63de"></span>63DE</td>
 <td class="instruction">LD E,A</td>
-<td class="comment-1" rowspan="1"><span class="register">E</span>=<span class="register">A</span>.</td>
+<td class="comment-1" rowspan="1">Copy the chosen colour into <span class="register">E</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="63df"></span>63DF</td>
 <td class="instruction">LD A,(HL)</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">HL</span>.</td>
+<td class="comment-1" rowspan="1">Fetch the current attribute byte from *<span class="register">HL</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="63e0"></span>63E0</td>
 <td class="instruction">AND %11110111</td>
-<td class="comment-1" rowspan="1">Keep only bits 0-2, 4-7.</td>
+<td class="comment-1" rowspan="1">Mask off the existing INK bits (keep PAPER, BRIGHT, FLASH).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="63e2"></span>63E2</td>
 <td class="instruction">OR E</td>
-<td class="comment-1" rowspan="1">Set the bits from <span class="register">E</span>.</td>
+<td class="comment-1" rowspan="1">OR in the new INK colour from <span class="register">E</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="63e3"></span>63E3</td>
 <td class="instruction">LD (HL),E</td>
-<td class="comment-1" rowspan="1">Write <span class="register">E</span> to *<span class="register">HL</span>.</td>
+<td class="comment-1" rowspan="1">Write the updated attribute byte to *<span class="register">HL</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="63e4"></span>63E4</td>
 <td class="instruction">POP DE</td>
-<td class="comment-1" rowspan="1">Restore <span class="register">DE</span> from the stack.</td>
+<td class="comment-1" rowspan="1">Restore the source pointer from the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="63e5"></span>63E5</td>
 <td class="instruction">INC HL</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">HL</span> by one.</td>
+<td class="comment-1" rowspan="1">Advance to the next attribute cell.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="63e6"></span>63E6</td>
-<td class="instruction">DJNZ <a href="63BB.html#63d5">Colour_Loop</a></td>
-<td class="comment-1" rowspan="1">Decrease counter by one and loop back to <a href="63BB.html#63d5">Colour_Loop</a> until counter is zero.</td>
+<td class="instruction">DJNZ <a href="63BB.html#63d5">Colour_Ground_Loop</a></td>
+<td class="comment-1" rowspan="1">Decrease the counter and loop back to <a href="63BB.html#63d5">Colour_Ground_Loop</a> until all 20 cells are coloured.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>

@@ -42,7 +42,7 @@ Next: <a href="65EA.html">65EA</a>
 Used by the routine at <a href="653D.html">Initialise_Lives</a>.
 </div>
 <div class="paragraph">
-Displays the pre-game title screen.
+Displays the pre-game title screen and waits for the player to press ENTER to start the game. The title screen is stored as room 0C.
 </div>
 </div>
 </td>
@@ -52,7 +52,7 @@ Displays the pre-game title screen.
 <span id="659b"></span>
 <div class="comments">
 <div class="paragraph">
-Room 0C is the title page.
+Load and display the title screen.
 </div>
 </div>
 </td>
@@ -63,7 +63,7 @@ Room 0C is the title page.
 <td class="instruction">LD A,$0C</td>
 <td class="comment-1" rowspan="3">Write 0C to; <ul class="">
 <li>*<a href="5FC5.html">CurrentRoom</a></li>
-<li>*<a href="5FA1.html">GameStateFlag</a></li>
+<li>*<a href="5FA1.html">Screen_Initialised_Flag</a></li>
 </ul></td>
 </tr>
 <tr>
@@ -86,7 +86,7 @@ Room 0C is the title page.
 <td class="asm-label"></td>
 <td class="address-1"><span id="65a6"></span>65A6</td>
 <td class="instruction">XOR A</td>
-<td class="comment-1" rowspan="2">Write 00 to *<a href="5FA1.html">GameStateFlag</a>.</td>
+<td class="comment-1" rowspan="2">Write 00 to *<a href="5FA1.html">Screen_Initialised_Flag</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -94,16 +94,26 @@ Room 0C is the title page.
 <td class="instruction">LD ($5FA1),A</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="65aa"></span>
+<div class="comments">
+<div class="paragraph">
+Print the credits text onto the title screen.
+</div>
+</div>
+</td>
+</tr>
+<tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="65aa"></span>65AA</td>
 <td class="instruction">LD HL,$4896</td>
-<td class="comment-1" rowspan="1"><span class="register">HL</span>=4896 (screen buffer location).</td>
+<td class="comment-1" rowspan="1">Point <span class="register">HL</span> at 4896 (screen buffer position for the credits).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="65ad"></span>65AD</td>
 <td class="instruction">LD B,$04</td>
-<td class="comment-1" rowspan="1">Set a counter in <span class="register">B</span> for 04 rows of text data.</td>
+<td class="comment-1" rowspan="1">Set the row counter to 04 in <span class="register">B</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -112,7 +122,7 @@ Room 0C is the title page.
 <td class="comment-1" rowspan="1">Point <span class="register">DE</span> to <a href="660D.html">Messaging_PressEnterToStart</a>.</td>
 </tr>
 <tr>
-<td class="asm-label">MainMenu_0</td>
+<td class="asm-label">Print_Credits_Row_Loop</td>
 <td class="address-2"><span id="65b2"></span>65B2</td>
 <td class="instruction">PUSH BC</td>
 <td class="comment-1" rowspan="2">Stash the row counter and screen buffer pointer on the stack.</td>
@@ -129,7 +139,7 @@ Room 0C is the title page.
 <td class="comment-1" rowspan="1">Set a counter in <span class="register">B</span> for 05 characters to print in each row.</td>
 </tr>
 <tr>
-<td class="asm-label">MainMenu_1</td>
+<td class="asm-label">Print_Credits_Char_Loop</td>
 <td class="address-2"><span id="65b6"></span>65B6</td>
 <td class="instruction">PUSH HL</td>
 <td class="comment-1" rowspan="3">Stash the screen buffer pointer, message pointer and the character counter on the stack.</td>
@@ -148,7 +158,7 @@ Room 0C is the title page.
 <td class="asm-label"></td>
 <td class="address-1"><span id="65b9"></span>65B9</td>
 <td class="instruction">LD A,(DE)</td>
-<td class="comment-1" rowspan="1">Fetch a character from the message string and store it in <span class="register">A</span>.</td>
+<td class="comment-1" rowspan="1">Fetch the next character from the text data.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -176,31 +186,31 @@ Room 0C is the title page.
 <td class="asm-label"></td>
 <td class="address-1"><span id="65c0"></span>65C0</td>
 <td class="instruction">INC L</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">L</span> by one.</td>
+<td class="comment-1" rowspan="1">Advance to the next screen column.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="65c1"></span>65C1</td>
 <td class="instruction">INC DE</td>
-<td class="comment-1" rowspan="1">Increment <span class="register">DE</span> by one.</td>
+<td class="comment-1" rowspan="1">Advance to the next character in the text data.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="65c2"></span>65C2</td>
-<td class="instruction">DJNZ <a href="659B.html#65b6">MainMenu_1</a></td>
-<td class="comment-1" rowspan="1">Decrease counter by one and loop back to <a href="659B.html#65b6">MainMenu_1</a> until counter is zero.</td>
+<td class="instruction">DJNZ <a href="659B.html#65b6">Print_Credits_Char_Loop</a></td>
+<td class="comment-1" rowspan="1">Decrease the character counter and loop back to <a href="659B.html#65b6">Print_Credits_Char_Loop</a> until all 05 characters in the row are printed.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="65c4"></span>65C4</td>
 <td class="instruction">POP HL</td>
-<td class="comment-1" rowspan="1">Restore <span class="register">HL</span> from the stack.</td>
+<td class="comment-1" rowspan="1">Restore the screen buffer pointer from the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="65c5"></span>65C5</td>
 <td class="instruction">LD BC,$0020</td>
-<td class="comment-1" rowspan="2"><span class="register">HL</span>+=0020.</td>
+<td class="comment-1" rowspan="2">Advance <span class="register">HL</span> by 0020 to move to the next character row.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -211,13 +221,23 @@ Room 0C is the title page.
 <td class="asm-label"></td>
 <td class="address-1"><span id="65c9"></span>65C9</td>
 <td class="instruction">POP BC</td>
-<td class="comment-1" rowspan="1">Restore <span class="register">BC</span> from the stack.</td>
+<td class="comment-1" rowspan="1">Restore the row counter from the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="65ca"></span>65CA</td>
-<td class="instruction">DJNZ <a href="659B.html#65b2">MainMenu_0</a></td>
-<td class="comment-1" rowspan="1">Decrease counter by one and loop back to <a href="659B.html#65b2">MainMenu_0</a> until counter is zero.</td>
+<td class="instruction">DJNZ <a href="659B.html#65b2">Print_Credits_Row_Loop</a></td>
+<td class="comment-1" rowspan="1">Decrease the row counter and loop back to <a href="659B.html#65b2">Print_Credits_Row_Loop</a> until all 04 rows are printed.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="65cc"></span>
+<div class="comments">
+<div class="paragraph">
+Play the title screen music.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -230,6 +250,16 @@ Room 0C is the title page.
 <td class="address-1"><span id="65ce"></span>65CE</td>
 <td class="instruction">CALL <a href="FC1B.html">Print_AuthorByline</a></td>
 <td class="comment-1" rowspan="1">Call <a href="FC1B.html">Print_AuthorByline</a>.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="65d1"></span>
+<div class="comments">
+<div class="paragraph">
+Wait for the player to press ENTER to start the game.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -274,6 +304,16 @@ Room 0C is the title page.
 <td class="instruction">JR C,<a href="659B.html#65d4">WaitForEnterToStart_Loop</a></td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="65d9"></span>
+<div class="comments">
+<div class="paragraph">
+ENTER pressed; initialise the game state and start the game.
+</div>
+</div>
+</td>
+</tr>
+<tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="65d9"></span>65D9</td>
 <td class="instruction">LD A,$01</td>
@@ -288,16 +328,16 @@ Room 0C is the title page.
 <td class="asm-label"></td>
 <td class="address-1"><span id="65dd"></span>65DD</td>
 <td class="instruction">LD B,$0A</td>
-<td class="comment-1" rowspan="1"><span class="register">B</span>=0A.</td>
+<td class="comment-1" rowspan="1">Set the clear counter to 0A in <span class="register">B</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="65df"></span>65DF</td>
 <td class="instruction">LD HL,$5FA1</td>
-<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="5FA1.html">GameStateFlag</a>.</td>
+<td class="comment-1" rowspan="1">Point <span class="register">HL</span> at <a href="5FA1.html">Screen_Initialised_Flag</a>.</td>
 </tr>
 <tr>
-<td class="asm-label">MainMenu_2</td>
+<td class="asm-label">Clear_Game_State_Loop</td>
 <td class="address-2"><span id="65e2"></span>65E2</td>
 <td class="instruction">LD (HL),$00</td>
 <td class="comment-1" rowspan="1">Write 00 to *<span class="register">HL</span>.</td>
@@ -311,8 +351,8 @@ Room 0C is the title page.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="65e5"></span>65E5</td>
-<td class="instruction">DJNZ <a href="659B.html#65e2">MainMenu_2</a></td>
-<td class="comment-1" rowspan="1">Decrease counter by one and loop back to <a href="659B.html#65e2">MainMenu_2</a> until counter is zero.</td>
+<td class="instruction">DJNZ <a href="659B.html#65e2">Clear_Game_State_Loop</a></td>
+<td class="comment-1" rowspan="1">Decrease the counter and loop back to <a href="659B.html#65e2">Clear_Game_State_Loop</a> until 0A bytes from <a href="5FA1.html">Screen_Initialised_Flag</a> onwards are cleared.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
