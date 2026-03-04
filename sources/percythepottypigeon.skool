@@ -1,11 +1,5 @@
 @rom
 @start
-@expand=#DEF(#POKE #LINK:Pokes)
-@expand=#DEF(#ANIMATE(delay,count=$50)(name=$a)*$name-1,$delay;#FOR$02,$count||x|$name-x|;||($name-animation))
-@expand=#DEF(#COLOUR(id)#LET(ink=$id&$07)#IF({ink}>=$00)(INK:#MAP({ink})(UNKNOWN,0:BLACK,1:BLUE,2:RED,3:MAGENTA,4:GREEN,5:CYAN,6:YELLOW,7:WHITE)), #LET(paper=$id>>$03&$07)#IF({paper}>=$00)(PAPER:#MAP({paper})(UNKNOWN,0:BLACK,1:BLUE,2:RED,3:MAGENTA,4:GREEN,5:CYAN,6:YELLOW,7:WHITE))#LET(bright=$id&$40)#IF({bright}>$00)( (BRIGHT))#LET(flash=$id&$80)#IF({flash}>$00)( (FLASH: ON)))
-@expand=#DEF(#INK(id)#LET(bright=$id&$40)#LET(flash=$id&$80)#LET(ink=$id&$07)#IF({ink}>=$00)(#MAP({ink})(UNKNOWN,0:BLACK,1:BLUE,2:RED,3:MAGENTA,4:GREEN,5:CYAN,6:YELLOW,7:WHITE))#IF({bright}>$00)( (BRIGHT))#IF({flash}>$00)( (FLASH: ON)))
-@expand=#DEF(#ROOM(id)#SIM(start=$5DD0,stop=$5DDD)#UDGTABLE { #POKES$5FC5,$id;$5FA1,$01#SIM(start=$65A3,stop=$65A6,sp=$5BFE)#SCR$02(room-$id) } TABLE#)
-@set-handle-unsupported-macros=1
 
 ; Loading Screen
 ;
@@ -240,6 +234,14 @@ i$5B00
 g$5BFE DEFB $00
 
 i$5BFF
+
+@expand=#DEF(#POKE #LINK:Pokes)
+@expand=#DEF(#ANIMATE(delay,count=$50)(name=$a)*$name-1,$delay;#FOR$02,$count||x|$name-x|;||($name-animation))
+@expand=#DEF(#COLOUR(id)#LET(ink=$id&$07)#IF({ink}>=$00)(INK:#MAP({ink})(UNKNOWN,0:BLACK,1:BLUE,2:RED,3:MAGENTA,4:GREEN,5:CYAN,6:YELLOW,7:WHITE)), #LET(paper=$id>>$03&$07)#IF({paper}>=$00)(PAPER:#MAP({paper})(UNKNOWN,0:BLACK,1:BLUE,2:RED,3:MAGENTA,4:GREEN,5:CYAN,6:YELLOW,7:WHITE))#LET(bright=$id&$40)#IF({bright}>$00)( (BRIGHT))#LET(flash=$id&$80)#IF({flash}>$00)( (FLASH: ON)))
+@expand=#DEF(#INK(id)#LET(bright=$id&$40)#LET(flash=$id&$80)#LET(ink=$id&$07)#IF({ink}>=$00)(#MAP({ink})(UNKNOWN,0:BLACK,1:BLUE,2:RED,3:MAGENTA,4:GREEN,5:CYAN,6:YELLOW,7:WHITE))#IF({bright}>$00)( (BRIGHT))#IF({flash}>$00)( (FLASH: ON)))
+@expand=#DEF(#ROOM(id)#SIM(start=$5DD0,stop=$5DDD)#UDGTABLE { #POKES$5FC5,$id;$5FA1,$01#SIM(start=$65A3,stop=$65A6,sp=$5BFE)#SCR$02(room-$id) } TABLE#)
+@set-handle-unsupported-macros=1
+@org
 
 ; Game Initialise
 @label=Game_Initialise
@@ -696,8 +698,12 @@ c$5F35 LD BC,($5FB9) ; #REGbc=*#R$5FB9.
  $5F9B LD HL,$C000   ; Point #REGhl at #R$C000.
  $5F9E JP $6438      ; Jump to #R$6438.
 
-; Game State Flag
-@label=GameStateFlag
+; Screen Initialised Flag
+;
+; Tracks whether the current screen has been fully initialised. Set to
+; #N$01 after the HUD header is drawn, and cleared to #N$00 when a fresh
+; screen setup is needed.
+@label=Screen_Initialised_Flag
 g$5FA1 DEFB $00
 
 ; Input State
@@ -1730,143 +1736,160 @@ c$6338 LD A,($5FB0)  ; #REGa=*#R$5FB0.
 ;
 ; Used by the routine at #R$6438.
 ; .
-; Set header-drawn flag, open channel #N$02, print Energy/Lives/Score
-; string at #R$63E9. Then #R$63CB colours bottom rows.
+; Prints the heads-up display header showing Energy, Lives and Score, then
+; applies random colours to the bottom two rows of the screen attributes to
+; create a colourful ground strip.
 @label=Print_HUD_Header
 c$63BB LD A,$01      ; {Write #N$01 to *#R$5FA1.
  $63BD LD ($5FA1),A  ; }
-; Open channel #N$02 (upper screen).
- $63C0 CALL $1601    ; #HTML(Call <a rel="noopener nofollow"
-                     ; href="https://skoolkit.ca/disassemblies/rom/hex/asm/1601.html">CHAN_OPEN</a>.)
- $63C3 LD HL,$63E9   ; #REGhl=#R$63E9.
- $63C6 LD B,$4F      ; Set a counter in #REGb for the length of the string to print (#N$4F
+; Print the HUD string to the upper screen.
+ $63C0 CALL $1601    ; #HTML(Call <a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/1601.html">CHAN_OPEN</a>
+                     ; to open channel #N$02 (upper screen).)
+ $63C3 LD HL,$63E9   ; Point #REGhl at #R$63E9.
+ $63C6 LD B,$4F      ; Set a counter in #REGb for the length of the string (#N$4F
                      ; characters).
  $63C8 CALL $6621    ; Call #R$6621.
 ; This entry point is used by the routine at #R$6438.
 ; .
-; Use the Memory Refresh Register as a pointer offset into memory to
-; source pseudo-random values.
-*$63CB LD A,R        ; {#REGe=the contents of the Memory Refresh Register.
- $63CD LD E,A        ; }
- $63CE LD D,$00      ; #REGd=#N$00.
+; Apply pseudo-random colours to the bottom two rows of screen attributes
+; to create a colourful ground strip. Uses the Memory Refresh Register as a
+; seed to pick unpredictable colour values.
+@label=Colour_Ground_Strip
+*$63CB LD A,R        ; {Load the Memory Refresh Register into #REGe as a
+ $63CD LD E,A        ; pointer offset.}
+ $63CE LD D,$00      ; Set #REGd to #N$00 so #REGde is an offset into low
+                     ; memory.
  $63D0 LD B,$20      ; Set a counter in #REGb for #N$20 attribute cells.
-; Point to the bottom two rows of the attribute buffer.
- $63D2 LD HL,$5AC0   ; #REGhl=#N$5AC0 (attribute buffer location).
-@label=Colour_Loop
-*$63D5 LD A,(DE)     ; #REGa=*#REGde.
- $63D6 AND %00000111 ; Keep only bits 0-2.
- $63D8 INC DE        ; Increment #REGde by one.
- $63D9 CP $03        ; {Jump to #R$63D5 if #REGa is less than #N$03.
- $63DB JR C,$63D5    ; }
- $63DD PUSH DE       ; Stash #REGde on the stack.
- $63DE LD E,A        ; #REGe=#REGa.
- $63DF LD A,(HL)     ; #REGa=*#REGhl.
- $63E0 AND %11110111 ; Keep only bits 0-2, 4-7.
- $63E2 OR E          ; Set the bits from #REGe.
- $63E3 LD (HL),E     ; Write #REGe to *#REGhl.
- $63E4 POP DE        ; Restore #REGde from the stack.
- $63E5 INC HL        ; Increment #REGhl by one.
- $63E6 DJNZ $63D5    ; Decrease counter by one and loop back to #R$63D5 until
-                     ; counter is zero.
+ $63D2 LD HL,$5AC0   ; Point #REGhl at #N$5AC0 (start of the bottom two
+                     ; attribute rows).
+@label=Colour_Ground_Loop
+*$63D5 LD A,(DE)     ; Fetch a pseudo-random byte from *#REGde.
+ $63D6 AND %00000111 ; Keep only bits 0-2 (INK colour).
+ $63D8 INC DE        ; Advance the source pointer.
+ $63D9 CP $03        ; {Jump back to #R$63D5 if the colour is less than #N$03 (reject
+ $63DB JR C,$63D5    ; dark colours to keep the ground strip bright).}
+ $63DD PUSH DE       ; Stash the source pointer on the stack.
+ $63DE LD E,A        ; Copy the chosen colour into #REGe.
+ $63DF LD A,(HL)     ; Fetch the current attribute byte from *#REGhl.
+ $63E0 AND %11110111 ; Mask off the existing INK bits (keep PAPER, BRIGHT,
+                     ; FLASH).
+ $63E2 OR E          ; OR in the new INK colour from #REGe.
+ $63E3 LD (HL),E     ; Write the updated attribute byte to *#REGhl.
+ $63E4 POP DE        ; Restore the source pointer from the stack.
+ $63E5 INC HL        ; Advance to the next attribute cell.
+ $63E6 DJNZ $63D5    ; Decrease the counter and loop back to #R$63D5 until all #N$20
+                     ; cells are coloured.
  $63E8 RET           ; Return.
 
 ; Messaging: Header
 @label=Messaging_Header
-t$63E9 DEFM $16,$00,$00                             ; PRINT AT:
+t$63E9 DEFB $16,$00,$00                             ; PRINT AT:
                                                     ; #N(#PEEK(#PC+$01)),
                                                     ; #N(#PEEK(#PC+$02)).
- $63EC DEFM $11,$00                                 ; Set PAPER:
+ $63EC DEFB $11,$00                                 ; Set PAPER:
                                                     ; #INK(#PEEK(#PC+$01)).
- $63EE DEFM $13,$01                                 ; BRIGHT
+ $63EE DEFB $13,$01                                 ; BRIGHT
                                                     ; "#MAP(#PEEK(#PC+$01))(?,0:OFF,1:ON)".
- $63F0 DEFM " "
- $63F1 DEFM $10,$07                                 ; Set INK:
+ $63F0 DEFM " "                                     ; #FONT#(:(#STR(#PC,$04,$01)))$3D00,attr=$47(header-01)
+ $63F1 DEFB $10,$07                                 ; Set INK:
                                                     ; #INK(#PEEK(#PC+$01)).
- $63F3 DEFM " Energy      Lives     Score    "
- $6413 DEFM $10,$02                                 ; Set INK:
+ $63F3 DEFM " Energy      Lives     Score    "      ; #FONT#(:(#STR(#PC,$04,$20)))$3D00,attr=$47(header-02)
+; Forms the energy bar:
+ $6413 DEFB $10,$02                                 ; Set INK:
                                                     ; #INK(#PEEK(#PC+$01)).
- $6415 DEFM $A3,$A3
- $6417 DEFM $10,$06                                 ; Set INK:
+ $6415 DEFM $A3,$A3                                 ; #FONT#(:(#STR(#PC,$04,$02)))$FBD8,attr=$42(header-03)
+ $6417 DEFB $10,$06                                 ; Set INK:
                                                     ; #INK(#PEEK(#PC+$01)).
- $6419 DEFM $A3,$A3,$A3,$A3,$A3,$A3,$A3,$A3,$A3,$A3
- $6423 DEFM $10,$07                                 ; Set INK:
+ $6419 DEFM $A3,$A3,$A3,$A3,$A3,$A3,$A3,$A3,$A3,$A3 ; #FONT#(:(#STR(#PC,$04,$0A)))$FBD8,attr=$46(header-04)
+ $6423 DEFB $10,$07                                 ; Set INK:
                                                     ; #INK(#PEEK(#PC+$01)).
- $6425 DEFM "$"+$80
- $6426 DEFM "  3      0000000  "
+ $6425 DEFB $A4                                     ; #FONT#(:(#STR(#PC,$04,$01)))$FBD8,attr=$47(header-06)
+; Prints lives and score:
+ $6426 DEFM "  3      0000000  "                    ; #FONT#(:(#STR(#PC,$04,$12)))$3D00,attr=$47(header-07)
 
 ; Draw Room Rows
 ;
 ; Used by the routine at #R$5F35.
 ; .
-; Loop B times: call #R$6456 (draw row), advance #REGhl. Then call #R$63BB
-; if header not drawn, and #R$63CB to colour bottom rows.
+; Draws multiple character rows from the room buffer to the screen buffer.
+; After all rows are drawn, prints the HUD header if it hasn't been drawn yet,
+; and applies random colours to the bottom ground strip.
 ;
 ; B Number of rows to draw
-; HL Buffer to use
-@label=DrawRows_Room
-c$6438 PUSH BC       ; {Stash the row counter and room buffer on the stack.
- $6439 PUSH HL       ; }
- $643A CALL $6456    ; Call #R$6456.
- $643D POP HL        ; {Restore the room buffer and row countr from the stack.
- $643E POP BC        ; }
+; HL Pointer to the room buffer
+@label=Draw_Room_Rows
+@label=Draw_Room_Rows_Loop
+c$6438 PUSH BC       ; {Stash the row counter and room buffer pointer on the
+ $6439 PUSH HL       ; stack.}
+ $643A CALL $6456    ; Call #R$6456 to draw a single character row.
+ $643D POP HL        ; {Restore the room buffer pointer and row counter from
+ $643E POP BC        ; the stack.}
 ; Advance the room buffer pointer to the next character row. Each row is
-; #N$20 bytes wide; if adding #N$20 to #REGl overflows, carry into #REGh by
-; adding #N$08 (into the next screen third).
- $643F LD A,$20      ; {#REGl+=#N$20.
+; #N$20 bytes wide; if adding #N$20 to #REGl overflows, advance #REGh by
+; #N$08 to move into the next screen third.
+ $643F LD A,$20      ; {Add #N$20 to #REGl.
  $6441 ADD A,L       ;
  $6442 LD L,A        ; }
  $6443 OR A          ; {Jump to #R$644A if there was no overflow.
  $6444 JR NZ,$644A   ; }
- $6446 LD A,$08      ; {#REGh+=#N$08.
+ $6446 LD A,$08      ; {Add #N$08 to #REGh.
  $6448 ADD A,H       ;
  $6449 LD H,A        ; }
-@label=DrawRoomRows_Next
+@label=Draw_Room_Rows_Next
 *$644A DJNZ $6438    ; Decrease the row counter by one and loop back to #R$6438 until all
-                     ; of the rows have been drawn to the screen buffer.
- $644C LD A,($5FA1)  ; {Call #R$63BB if *#R$5FA1 is zero.
- $644F OR A          ;
+                     ; rows have been drawn.
+; Print the HUD header if the screen hasn't been fully initialised yet.
+ $644C LD A,($5FA1)  ; {Call #R$63BB if *#R$5FA1 is unset (HUD header not yet
+ $644F OR A          ; drawn).
  $6450 CALL Z,$63BB  ; }
  $6453 JP $63CB      ; Jump to #R$63CB.
 
 ; Draw Room Row
 ;
 ; Used by the routine at #R$6438.
+; .
+; Copies a single character row (#N$08 pixel lines) from the room buffer
+; to the screen buffer, then copies the corresponding colour attributes.
 ;
 ; HL Pointer to the room buffer row
-@label=DrawRow_Room
-c$6456 LD B,$08      ; Set a counter in #REGb for #N$08 pixel lines.
+;
+; Copy eight pixel lines from the room buffer to the screen buffer.
+@label=Draw_Room_Row
+c$6456 LD B,$08      ; Set the pixel line counter to #N$08 in #REGb.
  $6458 PUSH HL       ; Stash the room buffer pointer on the stack.
-@label=DrawRoomRow_PixelLoop
-*$6459 PUSH BC       ; {Stash the line counter and room buffer pointer on the
- $645A PUSH HL       ; stack.}
+@label=Draw_Room_Row_Pixel_Loop
+*$6459 PUSH BC       ; {Stash the pixel line counter and room buffer pointer on
+ $645A PUSH HL       ; the stack.}
  $645B LD D,H        ; {Copy the room buffer pointer to #REGde.
  $645C LD E,L        ; }
- $645D RES 7,D       ; Reset bit 7 of #REGd to convert from a room buffer address to a
-                     ; screen buffer address.
- $645F LD BC,$0020   ; {Copy #N($0020,$04,$04) bytes of data from the room buffer to the
- $6462 LDIR          ; screen buffer.}
- $6464 POP HL        ; {Restore the room buffer pointer and line counter from
- $6465 POP BC        ; the stack.}
- $6466 INC H         ; Move down one pixel line in the room buffer.
- $6467 DJNZ $6459    ; Decrease the line counter by one and loop back to #R$6459 until all
-                     ; #N$08 pixel lines are copied.
+ $645D RES 7,D       ; Reset bit 7 of #REGd to convert from a room buffer address to the
+                     ; corresponding screen buffer address.
+ $645F LD BC,$0020   ; {Copy #N$20 bytes from the room buffer to the screen
+ $6462 LDIR          ; buffer.}
+ $6464 POP HL        ; {Restore the room buffer pointer and pixel line counter from the
+ $6465 POP BC        ; stack.}
+ $6466 INC H         ; Advance to the next pixel line in the room buffer.
+ $6467 DJNZ $6459    ; Decrease the pixel line counter and loop back to #R$6459 until all
+                     ; #N$08 lines are copied.
+; Copy the colour attributes for this character row. Convert the room
+; buffer address to the source and destination attribute buffer addresses.
  $6469 POP HL        ; Restore the original room buffer pointer from the stack.
- $646A LD A,H        ; #REGa=#REGh.
- $646B RRCA          ; {Rotate right three positions to extract the character
- $646C RRCA          ; row.
+ $646A LD A,H        ; {Rotate the high byte right three positions.
+ $646B RRCA          ;
+ $646C RRCA          ;
  $646D RRCA          ; }
- $646E AND %00000011 ; Keep only bits 0-1.
- $6470 OR %11011000  ; Set bits 3-4, 6-7 to form the attribute buffer high
+ $646E AND %00000011 ; Mask to extract the character row index.
+ $6470 OR %11011000  ; Set bits 3-4 and 6-7 to form the source attribute buffer high
                      ; byte.
- $6472 LD H,A        ; #REGh=#REGa.
- $6473 LD E,L        ; #REGe=#REGl.
- $6474 LD A,H        ; #REGa=#REGh.
- $6475 AND %00000011 ; Keep only bits 0-1.
- $6477 OR %01011000  ; Set bits 3-4, 6 to form the destination attribute buffer high
-                     ; byte.
- $6479 LD D,A        ; #REGd=#REGa.
- $647A LD BC,$0020   ; {Copy #N($0020,$04,$04) bytes to the attribute buffer.
- $647D LDIR          ; }
+ $6472 LD H,A        ; {Set #REGh to the source high byte and copy #REGl to
+ $6473 LD E,L        ; #REGe.}
+ $6474 LD A,H        ; {Mask the high byte again.
+ $6475 AND %00000011 ; }
+ $6477 OR %01011000  ; Set bits 3-4 and 6 to form the destination attribute buffer
+                     ; high byte.
+ $6479 LD D,A        ; Set #REGd to the destination high byte.
+ $647A LD BC,$0020   ; {Copy #N($0020,$04,$04) attribute bytes to the screen attribute
+ $647D LDIR          ; buffer.}
  $647F RET           ; Return.
 
 ; Update Energy Bar
@@ -1896,9 +1919,9 @@ c$6480 LD HL,$52EC   ; #REGhl=#N$52EC (screen buffer location for the energy
  $6493 JR NC,$64BE   ; level (#N$90).}
 ; Percy is airborne so deplete the energy bar. Uses a slower frame delay
 ; of #N$07 frames between each step.
- $6495 LD A,($5FAB)  ; #REGa=*#R$5FAB.
- $6498 INC A         ; Increment the frame delay counter.
- $6499 LD ($5FAB),A  ; Write #REGa back to *#R$5FAB.
+ $6495 LD A,($5FAB)  ; {Increment the *#R$5FAB.
+ $6498 INC A         ;
+ $6499 LD ($5FAB),A  ; }
  $649C CP $07        ; {Return if it's not yet time to update the energy bar.
  $649E RET NZ        ; }
 ; Reset the frame counter and check if Percy is on a platform (energy
@@ -1940,9 +1963,9 @@ c$6480 LD HL,$52EC   ; #REGhl=#N$52EC (screen buffer location for the energy
 ; Percy is on the ground so refill the energy bar. Uses a faster frame
 ; delay of #N$03 frames between each step.
 @label=UpdateEnergyBar_Refill
-*$64BE LD A,($5FAB)  ; #REGa=*#R$5FAB.
- $64C1 INC A         ; Increment the frame delay counter.
- $64C2 LD ($5FAB),A  ; Write #REGa back to *#R$5FAB.
+*$64BE LD A,($5FAB)  ; {Increment the *#R$5FAB.
+ $64C1 INC A         ;
+ $64C2 LD ($5FAB),A  ; }
  $64C5 CP $03        ; {Return if not yet time to update the bar.
  $64C7 RET C         ; }
  $64C8 XOR A         ; {Write #N$00 to reset *#R$5FAB.
@@ -1978,10 +2001,23 @@ c$6480 LD HL,$52EC   ; #REGhl=#N$52EC (screen buffer location for the energy
 ; Lose Life
 ;
 ; Used by the routine at #R$5FE9.
-@label=LoseLife
-c$64E7 LD HL,$DAC1   ; {Write #N$90 to *#R$DAC1.
- $64EA LD (HL),$90   ; }
- $64EC INC HL        ; {Write #N$11 to *#R$DAC3.
+; .
+; Handles Percy losing a life. Plays the lose-a-life sound effect, resets
+; any collected worm markers in the room attribute data, decrements the lives
+; counter and updates the display.
+;
+; .
+;
+; Set Percy's position and frame for the death animation.
+@label=Lose_Life
+c$64E7 LD HL,$DAC1   ; {Write #N$90 to *#R$DAC1 (set Percy's Y position to the
+ $64EA LD (HL),$90   ; ground).}
+; Set Percy's sprite frame to the death frame:
+; #UDGTABLE { #UDGS$02,$02(udg44347-56x4)(
+;   #UDG($AD3B+$08*($02*$x+$y))(*udg)
+;   udg
+; ) } TABLE#
+ $64EC INC HL        ; {Write sprite ID #N$11 to *#R$DAC3.
  $64ED INC HL        ;
  $64EE LD (HL),$11   ; }
  $64F0 PUSH IX       ; Stash #REGix on the stack.
@@ -1989,51 +2025,58 @@ c$64E7 LD HL,$DAC1   ; {Write #N$90 to *#R$DAC1.
 ; Play the "lose a life" sound effect.
 ; .
 ; #HTML(#AUDIO(lose-life.wav)(#INCLUDE(LoseLife)))
- $64F5 LD HL,$0000   ; #REGhl=#N($0000,$04,$04).
- $64F8 LD A,$01      ; #REGa=#N$01.
- $64FA LD B,$00      ; #REGb=#N$00.
-*$64FC PUSH BC       ; Stash #REGbc on the stack.
- $64FD LD D,B        ; #REGd=#REGb.
- $64FE RR B          ; Rotate #REGb right.
-*$6500 OUT ($FE),A   ; Send to the speaker.
- $6502 NOP           ; No operation.
- $6503 NOP           ; No operation.
- $6504 NOP           ; No operation.
- $6505 NOP           ; No operation.
- $6506 DJNZ $6500    ; Decrease counter by one and loop back to #R$6500 until
-                     ; counter is zero.
- $6508 POP BC        ; Restore #REGbc from the stack.
- $6509 XOR %00011000 ; Flip bits 3-4.
- $650B OR D          ; Set the bits from #REGd.
- $650C AND (HL)      ; Merge the bits from *#REGhl.
- $650D AND %11111000 ; Keep only bits 3-7.
- $650F OR %00000001  ; Set bit 0.
- $6511 INC HL        ; Increment #REGhl by one.
- $6512 DJNZ $64FC    ; Decrease counter by one and loop back to #R$64FC until
-                     ; counter is zero.
+ $64F5 LD HL,$0000   ; Set #REGhl to #N($0000,$04,$04) (sound data pointer).
+ $64F8 LD A,$01      ; Set #REGa to #N$01 (initial speaker state).
+ $64FA LD B,$00      ; Set #REGb to #N$00 (outer loop counter, #N$100
+                     ; iterations).
+@label=Lose_Life_Sound_Outer
+*$64FC PUSH BC       ; Stash the outer counter on the stack.
+ $64FD LD D,B        ; Copy #REGb to #REGd (inner delay length).
+ $64FE RR B          ; Rotate #REGb right to vary the pitch.
+@label=Lose_Life_Sound_Inner
+*$6500 OUT ($FE),A   ; Output to the speaker port.
+ $6502 NOP           ; {Four NOPs as a timing delay.
+ $6503 NOP           ;
+ $6504 NOP           ;
+ $6505 NOP           ; }
+ $6506 DJNZ $6500    ; Decrease the inner counter and loop back to #R$6500.
+ $6508 POP BC        ; Restore the outer counter from the stack.
+ $6509 XOR %00011000 ; Toggle the speaker bits by flipping bits 3-4.
+ $650B OR D          ; Merge in the delay value from #REGd.
+ $650C AND (HL)      ; OR with the sound data byte at *#REGhl.
+ $650D AND %11111000 ; Mask with #N$F8 to keep only the upper bits.
+ $650F OR %00000001  ; Set bit 0 for the border colour.
+ $6511 INC HL        ; Advance the sound data pointer.
+ $6512 DJNZ $64FC    ; Decrease the outer counter and loop back to #R$64FC until all
+                     ; #N$100 iterations are complete.
  $6514 POP IX        ; Restore #REGix from the stack.
- $6516 LD HL,$DE9E   ; #REGhl=#R$DE9E.
- $6519 LD BC,$0160   ; #REGbc=#N($0160,$04,$04).
-*$651C LD A,(HL)     ; {Jump to #R$6523 if *#REGhl is not equal to #N$1E.
- $651D CP $1E        ;
+; Reset any collected worm markers in the room attribute data back to
+; #N$00.
+ $6516 LD HL,$DE9E   ; Point #REGhl at #R$DE9E.
+ $6519 LD BC,$0160   ; Set the byte counter to #N$0160 in #REGbc.
+@label=Reset_Worm_Markers
+*$651C LD A,(HL)     ; {Jump to #R$6523 if *#REGhl is not equal to #N$1E (not a collected
+ $651D CP $1E        ; marker).
  $651F JR NZ,$6523   ; }
- $6521 LD (HL),$00   ; Write #N$00 to *#REGhl.
-*$6523 DEC BC        ; Decrease #REGbc by one.
- $6524 INC HL        ; Increment #REGhl by one.
- $6525 LD A,B        ; {Jump to #R$651C until #REGbc is zero.
- $6526 OR C          ;
+ $6521 LD (HL),$00   ; Write #N$00 to *#REGhl to reset the marker.
+@label=Reset_Worm_Markers_Next
+*$6523 DEC BC        ; Decrement the byte counter by one.
+ $6524 INC HL        ; Advance #REGhl to the next byte.
+ $6525 LD A,B        ; {Loop back to #R$651C until all #N$0160 bytes are
+ $6526 OR C          ; processed.
  $6527 JR NZ,$651C   ; }
- $6529 CALL $6791    ; Call #R$6791.
-; See #POKE#infinite_lives(Infinite Lives).
-; .
+ $6529 CALL $6791    ; Call #R$6791 to reset the worm-carrying state.
 ; Decrease the lives counter by one.
- $652C LD HL,$5FB3   ; #REGhl=#R$5FB3.
- $652F DEC (HL)      ; Decrease *#REGhl by one.
- $6530 LD A,(HL)     ; {Jump to #R$655C if *#R$5FB3 is not yet equal to ASCII #N$30
- $6531 CP $30        ; ("#CHR$30").
+; .
+; See #POKE#infinite_lives(Infinite Lives).
+ $652C LD HL,$5FB3   ; Point #REGhl at #R$5FB3.
+ $652F DEC (HL)      ; Decrement the lives counter at *#REGhl.
+ $6530 LD A,(HL)     ; {Jump to #R$655C if *#R$5FB3 has not reached ASCII "#CHR$30"
+ $6531 CP $30        ; (#N$30).
  $6533 JR NZ,$655C   ; }
- $6535 LD A,$30      ; Load #REGa with ASCII #N$30 ("#CHR$30").
- $6537 LD HL,$50F0   ; #REGhl=#N$50F0 (screen buffer location).
+ $6535 LD A,$30      ; Load #REGa with ASCII "#CHR$30" (#N$30).
+ $6537 LD HL,$50F0   ; Point #REGhl at #N$50F0 (screen buffer position for the lives
+                     ; display).
  $653A CALL $6581    ; Call #R$6581.
 ; Continue on to #R$653D.
 
@@ -2135,11 +2178,12 @@ c$6581 PUSH HL       ; Stash the screen buffer pointer on the stack.
 ;
 ; Used by the routine at #R$653D.
 ; .
-; Displays the pre-game title screen.
+; Displays the pre-game title screen and waits for the player to press
+; ENTER to start the game. The title screen is stored as room #N$0C.
 ;
 ; .
 ;
-; Room #N$0C is the title page.
+; Load and display the title screen.
 @label=MainMenu
 c$659B LD A,$0C      ; {Write #N$0C to; #LIST
  $659D LD ($5FC5),A  ; { *#R$5FC5 }
@@ -2148,34 +2192,39 @@ c$659B LD A,$0C      ; {Write #N$0C to; #LIST
  $65A3 CALL $5E24    ; Call #R$5E24.
  $65A6 XOR A         ; {Write #N$00 to *#R$5FA1.
  $65A7 LD ($5FA1),A  ; }
- $65AA LD HL,$4896   ; #REGhl=#N$4896 (screen buffer location).
- $65AD LD B,$04      ; Set a counter in #REGb for #N$04 rows of text data.
+; Print the credits text onto the title screen.
+ $65AA LD HL,$4896   ; Point #REGhl at #N$4896 (screen buffer position for the
+                     ; credits).
+ $65AD LD B,$04      ; Set the row counter to #N$04 in #REGb.
  $65AF LD DE,$660D   ; Point #REGde to #R$660D.
+@label=Print_Credits_Row_Loop
 *$65B2 PUSH BC       ; {Stash the row counter and screen buffer pointer on the
  $65B3 PUSH HL       ; stack.}
  $65B4 LD B,$05      ; Set a counter in #REGb for #N$05 characters to print in
                      ; each row.
+@label=Print_Credits_Char_Loop
 *$65B6 PUSH HL       ; {Stash the screen buffer pointer, message pointer and the character
  $65B7 PUSH DE       ; counter on the stack.
  $65B8 PUSH BC       ; }
- $65B9 LD A,(DE)     ; Fetch a character from the message string and store it
-                     ; in #REGa.
+ $65B9 LD A,(DE)     ; Fetch the next character from the text data.
  $65BA CALL $6581    ; Call #R$6581.
  $65BD POP BC        ; {Restore the character counter, message pointer and the screen
  $65BE POP DE        ; buffer pointer from the stack.
  $65BF POP HL        ; }
- $65C0 INC L         ; Increment #REGl by one.
- $65C1 INC DE        ; Increment #REGde by one.
- $65C2 DJNZ $65B6    ; Decrease counter by one and loop back to #R$65B6 until
-                     ; counter is zero.
- $65C4 POP HL        ; Restore #REGhl from the stack.
- $65C5 LD BC,$0020   ; {#REGhl+=#N($0020,$04,$04).
- $65C8 ADD HL,BC     ; }
- $65C9 POP BC        ; Restore #REGbc from the stack.
- $65CA DJNZ $65B2    ; Decrease counter by one and loop back to #R$65B2 until
-                     ; counter is zero.
+ $65C0 INC L         ; Advance to the next screen column.
+ $65C1 INC DE        ; Advance to the next character in the text data.
+ $65C2 DJNZ $65B6    ; Decrease the character counter and loop back to #R$65B6 until all
+                     ; #N$05 characters in the row are printed.
+ $65C4 POP HL        ; Restore the screen buffer pointer from the stack.
+ $65C5 LD BC,$0020   ; {Advance #REGhl by #N($0020,$04,$04) to move to the next
+ $65C8 ADD HL,BC     ; character row.}
+ $65C9 POP BC        ; Restore the row counter from the stack.
+ $65CA DJNZ $65B2    ; Decrease the row counter and loop back to #R$65B2 until all #N$04
+                     ; rows are printed.
+; Play the title screen music.
  $65CC LD B,$3D      ; #REGb=#N$3D.
  $65CE CALL $FC1B    ; Call #R$FC1B.
+; Wait for the player to press ENTER to start the game.
  $65D1 LD BC,$BFFE   ; {Read from the keyboard;
 @label=WaitForEnterToStart_Loop
 *$65D4 IN A,(C)      ; #TABLE(default,centre,centre,centre,centre,centre,centre)
@@ -2185,14 +2234,16 @@ c$659B LD A,$0C      ; {Write #N$0C to; #LIST
                      ; TABLE#}
  $65D6 RRCA          ; {Jump to #R$65D4 if "ENTER" is not being pressed.
  $65D7 JR C,$65D4    ; }
+; ENTER pressed; initialise the game state and start the game.
  $65D9 LD A,$01      ; {Set the border to #INK$01.
  $65DB OUT ($FE),A   ; }
- $65DD LD B,$0A      ; #REGb=#N$0A.
- $65DF LD HL,$5FA1   ; #REGhl=#R$5FA1.
+ $65DD LD B,$0A      ; Set the clear counter to #N$0A in #REGb.
+ $65DF LD HL,$5FA1   ; Point #REGhl at #R$5FA1.
+@label=Clear_Game_State_Loop
 *$65E2 LD (HL),$00   ; Write #N$00 to *#REGhl.
  $65E4 INC HL        ; Increment #REGhl by one.
- $65E5 DJNZ $65E2    ; Decrease counter by one and loop back to #R$65E2 until
-                     ; counter is zero.
+ $65E5 DJNZ $65E2    ; Decrease the counter and loop back to #R$65E2 until #N$0A bytes
+                     ; from #R$5FA1 onwards are cleared.
  $65E7 JP $6562      ; Jump to #R$6562.
 
 ; Draw Chicks In The Nest
