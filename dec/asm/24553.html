@@ -1607,12 +1607,13 @@ Calculate the room attribute buffer address from Percy's position.
 <td class="asm-label"></td>
 <td class="address-1"><span id="24997"></span>24997</td>
 <td class="instruction">LD A,B</td>
-<td class="comment-1" rowspan="2"><span class="register">A</span>=<span class="register">B</span>, keep only bits 0-2 (sub-character Y offset).</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=<span class="register">B</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="24998"></span>24998</td>
-<td class="instruction">AND 7</td>
+<td class="instruction">AND %00000111</td>
+<td class="comment-1" rowspan="1">Keep only bits 0-2 (sub-character Y offset).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>

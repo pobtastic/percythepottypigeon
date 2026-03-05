@@ -131,7 +131,7 @@ Frog is mid-jump; cycle through animation frames 00-03.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="70e6"></span>70E6</td>
-<td class="instruction">AND $03</td>
+<td class="instruction">AND %00000011</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -234,7 +234,7 @@ Ascending phase: increment the pitch and output to the speaker.
 <td class="asm-label"></td>
 <td class="address-1"><span id="70fc"></span>70FC</td>
 <td class="instruction">LD A,(HL)</td>
-<td class="comment-1" rowspan="5">Calculate the speaker output from the counter: add 03 rotate left, mask with 18 and set bit 0 for the border; output to port FE.</td>
+<td class="comment-1" rowspan="5">Calculate the speaker output from the counter: add 03 rotate left, mask and set bit 0 for the border; output to the speaker port.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -249,12 +249,12 @@ Ascending phase: increment the pitch and output to the speaker.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="7100"></span>7100</td>
-<td class="instruction">AND $18</td>
+<td class="instruction">AND %00011000</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="7102"></span>7102</td>
-<td class="instruction">OR $01</td>
+<td class="instruction">OR %00000001</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -363,7 +363,7 @@ Descending phase: decrement the pitch and output to the speaker.
 <td class="asm-label"></td>
 <td class="address-1"><span id="7118"></span>7118</td>
 <td class="instruction">LD A,(HL)</td>
-<td class="comment-1" rowspan="4">Calculate the speaker output from the counter: rotate left, mask with 18 and set bit 0 for the border; output to port FE.</td>
+<td class="comment-1" rowspan="4">Calculate the speaker output from the counter: rotate left, mask and set bit 0 for the border; output to the speaker port.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -373,12 +373,12 @@ Descending phase: decrement the pitch and output to the speaker.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="711a"></span>711A</td>
-<td class="instruction">AND $18</td>
+<td class="instruction">AND %00011000</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="711c"></span>711C</td>
-<td class="instruction">OR $01</td>
+<td class="instruction">OR %00000001</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -433,12 +433,12 @@ No sound playing; randomly trigger a new croak if the frog is idle.
 <td class="asm-label">Check_Random_Croak</td>
 <td class="address-2"><span id="7129"></span>7129</td>
 <td class="instruction">LD A,R</td>
-<td class="comment-1" rowspan="3">Read the R register and mask with 3F; jump to <a href="70DB.html#7144">Position_Frog_Sprite</a> if it does not equal 0F (random chance to croak).</td>
+<td class="comment-1" rowspan="4">Read the R register and mask; jump to <a href="70DB.html#7144">Position_Frog_Sprite</a> if it does not equal 0F (random chance to croak).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="712b"></span>712B</td>
-<td class="instruction">AND $3F</td>
+<td class="instruction">AND %00111111</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -449,7 +449,6 @@ No sound playing; randomly trigger a new croak if the frog is idle.
 <td class="asm-label"></td>
 <td class="address-1"><span id="712f"></span>712F</td>
 <td class="instruction">JR NZ,<a href="70DB.html#7144">Position_Frog_Sprite</a></td>
-<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>

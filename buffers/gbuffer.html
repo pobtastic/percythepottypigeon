@@ -55,7 +55,7 @@ Tracks whether the current screen has been fully initialised. Set to 01 after th
 </tr>
 <tr>
 <td class="map-g"><span id="5fa2"></span><a href="../asm/5FA2.html">5FA2</a></td>
-<td class="map-length">2</td>
+<td class="map-length">1</td>
 <td class="map-g-desc">
 <div class="map-entry-title-11"><a class="map-entry-title" href="../asm/5FA2.html">Input State</a></div>
 <div class="map-entry-desc">
@@ -770,7 +770,7 @@ Animation counter, direction flag and boundary data for the walking paratrooper.
 <div class="map-entry-title-11"><a class="map-entry-title" href="../asm/7928.html">Table: Paratrooper Walking Speed</a></div>
 <div class="map-entry-desc">
 <div class="paragraph">
-Walking speed for the paratrooper, indexed by room number minus one. Only rooms 05 06 and 08 have active paratrooper entries.
+Walking speed for the paratrooper, indexed by room number minus one. Only rooms 05, 06 and 08 have active paratrooper entries.
 </div>
 </div>
 </td>
@@ -794,28 +794,7 @@ Direction flag for the spider. 00 = ascending, FF = descending.
 <div class="map-entry-title-11"><a class="map-entry-title" href="../asm/7AC3.html">Parachute State Data</a></div>
 <div class="map-entry-desc">
 <div class="paragraph">
-State variables for the parachute hazard. <table class="default">
-<tr>
-<th colspan="1" rowspan="1">Offset</th>
-<th colspan="1" rowspan="1">Description</th>
-</tr>
-<tr>
-<td class="centre" colspan="1" rowspan="1">00</td>
-<td class="centre" colspan="1" rowspan="1">Stunned flag (bit 7 set = stunned by egg)</td>
-</tr>
-<tr>
-<td class="centre" colspan="1" rowspan="1">01</td>
-<td class="centre" colspan="1" rowspan="1">Landing counter</td>
-</tr>
-<tr>
-<td class="centre" colspan="1" rowspan="1">02</td>
-<td class="centre" colspan="1" rowspan="1">Detach flag</td>
-</tr>
-<tr>
-<td class="centre" colspan="1" rowspan="1">03</td>
-<td class="centre" colspan="1" rowspan="1">Animation counter</td>
-</tr>
-</table>
+State variables for the parachute hazard.
 </div>
 </div>
 </td>
@@ -836,7 +815,7 @@ State variables for the parachute hazard. <table class="default">
 <div class="map-entry-title-11"><a class="map-entry-title" href="../asm/7AC8.html">Cat State Data</a></div>
 <div class="map-entry-desc">
 <div class="paragraph">
-State variables for the cat hazard.
+State variables for the cat hazard. Only rooms 02, 03, 05, 06, 07 and 08 have active entries.
 </div>
 </div>
 </td>
@@ -848,7 +827,7 @@ State variables for the cat hazard.
 <div class="map-entry-title-11"><a class="map-entry-title" href="../asm/7AE8.html">Dog State Data</a></div>
 <div class="map-entry-desc">
 <div class="paragraph">
-State variables for the dog hazard.
+State variables for the dog hazard. Only rooms 03 and 07 have active entries.
 </div>
 </div>
 </td>
@@ -860,7 +839,7 @@ State variables for the dog hazard.
 <div class="map-entry-title-11"><a class="map-entry-title" href="../asm/7B04.html">Table: Parachute Starting X Positions</a></div>
 <div class="map-entry-desc">
 <div class="paragraph">
-Lookup table of starting X positions for the parachute, indexed by room number minus one.
+Lookup table of starting X positions for the parachute, indexed by room number minus one. Only rooms 02, 08 and 09 have active paratrooper entries.
 </div>
 </div>
 </td>
@@ -869,31 +848,10 @@ Lookup table of starting X positions for the parachute, indexed by room number m
 <td class="map-g"><span id="7b0d"></span><a href="../asm/7B0D.html">7B0D</a></td>
 <td class="map-length">32</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/7B0D.html">Paratrooper Room State Data</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/7B0D.html">Paratrooper State Data</a></div>
 <div class="map-entry-desc">
 <div class="paragraph">
-Per-room state data for the walking paratrooper, with four bytes per room. Indexed by (room number - 01) * 04. Only rooms 05 06 and 08 have active entries. <table class="default">
-<tr>
-<th colspan="1" rowspan="1">Offset</th>
-<th colspan="1" rowspan="1">Description</th>
-</tr>
-<tr>
-<td class="centre" colspan="1" rowspan="1">00</td>
-<td class="centre" colspan="1" rowspan="1">Stunned flag (bit 7 set = stunned by egg)</td>
-</tr>
-<tr>
-<td class="centre" colspan="1" rowspan="1">01</td>
-<td class="centre" colspan="1" rowspan="1">Platform Y position</td>
-</tr>
-<tr>
-<td class="centre" colspan="1" rowspan="1">02</td>
-<td class="centre" colspan="1" rowspan="1">Left boundary X position</td>
-</tr>
-<tr>
-<td class="centre" colspan="1" rowspan="1">03</td>
-<td class="centre" colspan="1" rowspan="1">Right boundary X position</td>
-</tr>
-</table>
+State variables for the walking paratrooper hazard. Only rooms 05, 06 and 08 have active entries.
 </div>
 </div>
 </td>

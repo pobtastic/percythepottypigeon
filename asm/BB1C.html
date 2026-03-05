@@ -584,7 +584,7 @@ Merge the sprite column pixels with the background. Derives the sprite buffer, b
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="bbbd"></span>BBBD</td>
-<td class="instruction">AND $03</td>
+<td class="instruction">AND %00000011</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -604,8 +604,8 @@ Merge the sprite column pixels with the background. Derives the sprite buffer, b
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="bbc2"></span>BBC2</td>
-<td class="instruction">OR $C0</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="instruction">OR %11000000</td>
+<td class="comment-1" rowspan="1">Set bits 6-7.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>

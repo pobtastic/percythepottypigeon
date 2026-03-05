@@ -266,7 +266,7 @@ Move the UFO in its current direction.
 <td class="asm-label">Move_UFO</td>
 <td class="address-2"><span id="30153"></span>30153</td>
 <td class="instruction">INC HL</td>
-<td class="comment-1" rowspan="4">Load the direction from *<span class="register">HL</span>+1 mask with 7 and double to form a jump table index.</td>
+<td class="comment-1" rowspan="4">Load the direction from *<span class="register">HL</span>+1 mask and double to form a jump table index.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -276,7 +276,7 @@ Move the UFO in its current direction.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="30155"></span>30155</td>
-<td class="instruction">AND 7</td>
+<td class="instruction">AND %00000111</td>
 </tr>
 <tr>
 <td class="asm-label"></td>

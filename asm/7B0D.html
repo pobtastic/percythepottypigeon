@@ -33,34 +33,13 @@ Next: <a href="7B2D.html">7B2D</a>
 </td>
 </tr>
 </table>
-<div class="description">7B0D: Paratrooper Room State Data</div>
+<div class="description">7B0D: Paratrooper State Data</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
 <div class="details">
 <div class="paragraph">
-Per-room state data for the walking paratrooper, with four bytes per room. Indexed by (room number - 01) * 04. Only rooms 05 06 and 08 have active entries. <table class="default">
-<tr>
-<th colspan="1" rowspan="1">Offset</th>
-<th colspan="1" rowspan="1">Description</th>
-</tr>
-<tr>
-<td class="centre" colspan="1" rowspan="1">00</td>
-<td class="centre" colspan="1" rowspan="1">Stunned flag (bit 7 set = stunned by egg)</td>
-</tr>
-<tr>
-<td class="centre" colspan="1" rowspan="1">01</td>
-<td class="centre" colspan="1" rowspan="1">Platform Y position</td>
-</tr>
-<tr>
-<td class="centre" colspan="1" rowspan="1">02</td>
-<td class="centre" colspan="1" rowspan="1">Left boundary X position</td>
-</tr>
-<tr>
-<td class="centre" colspan="1" rowspan="1">03</td>
-<td class="centre" colspan="1" rowspan="1">Right boundary X position</td>
-</tr>
-</table>
+State variables for the walking paratrooper hazard. Only rooms 05, 06 and 08 have active entries.
 </div>
 </div>
 </td>
@@ -76,10 +55,28 @@ Room 01:
 </td>
 </tr>
 <tr>
-<td class="asm-label">Paratrooper_Room_State_Data</td>
+<td class="asm-label">Paratrooper_State_Data</td>
 <td class="address-1"><span id="7b0d"></span>7B0D</td>
-<td class="instruction">DEFB $00,$00,$00,$00</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">DEFB $00</td>
+<td class="comment-1" rowspan="1">Stunned flag (bit 7 set = stunned by egg).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7b0e"></span>7B0E</td>
+<td class="instruction">DEFB $00</td>
+<td class="comment-1" rowspan="1">Platform Y position.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7b0f"></span>7B0F</td>
+<td class="instruction">DEFB $00</td>
+<td class="comment-1" rowspan="1">Left boundary X position.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7b10"></span>7B10</td>
+<td class="instruction">DEFB $00</td>
+<td class="comment-1" rowspan="1">Right boundary X position.</td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
@@ -94,8 +91,26 @@ Room 02:
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="7b11"></span>7B11</td>
-<td class="instruction">DEFB $00,$00,$00,$00</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">DEFB $00</td>
+<td class="comment-1" rowspan="1">Stunned flag (bit 7 set = stunned by egg).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7b12"></span>7B12</td>
+<td class="instruction">DEFB $00</td>
+<td class="comment-1" rowspan="1">Platform Y position.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7b13"></span>7B13</td>
+<td class="instruction">DEFB $00</td>
+<td class="comment-1" rowspan="1">Left boundary X position.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7b14"></span>7B14</td>
+<td class="instruction">DEFB $00</td>
+<td class="comment-1" rowspan="1">Right boundary X position.</td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
@@ -110,8 +125,26 @@ Room 03:
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="7b15"></span>7B15</td>
-<td class="instruction">DEFB $00,$00,$00,$00</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">DEFB $00</td>
+<td class="comment-1" rowspan="1">Stunned flag (bit 7 set = stunned by egg).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7b16"></span>7B16</td>
+<td class="instruction">DEFB $00</td>
+<td class="comment-1" rowspan="1">Platform Y position.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7b17"></span>7B17</td>
+<td class="instruction">DEFB $00</td>
+<td class="comment-1" rowspan="1">Left boundary X position.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7b18"></span>7B18</td>
+<td class="instruction">DEFB $00</td>
+<td class="comment-1" rowspan="1">Right boundary X position.</td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
@@ -126,8 +159,26 @@ Room 04:
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="7b19"></span>7B19</td>
-<td class="instruction">DEFB $00,$00,$00,$00</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">DEFB $00</td>
+<td class="comment-1" rowspan="1">Stunned flag (bit 7 set = stunned by egg).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7b1a"></span>7B1A</td>
+<td class="instruction">DEFB $00</td>
+<td class="comment-1" rowspan="1">Platform Y position.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7b1b"></span>7B1B</td>
+<td class="instruction">DEFB $00</td>
+<td class="comment-1" rowspan="1">Left boundary X position.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7b1c"></span>7B1C</td>
+<td class="instruction">DEFB $00</td>
+<td class="comment-1" rowspan="1">Right boundary X position.</td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
@@ -142,8 +193,26 @@ Room 05:
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="7b1d"></span>7B1D</td>
-<td class="instruction">DEFB $00,$68,$50,$78</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">DEFB $00</td>
+<td class="comment-1" rowspan="1">Stunned flag (bit 7 set = stunned by egg).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7b1e"></span>7B1E</td>
+<td class="instruction">DEFB $68</td>
+<td class="comment-1" rowspan="1">Platform Y position.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7b1f"></span>7B1F</td>
+<td class="instruction">DEFB $50</td>
+<td class="comment-1" rowspan="1">Left boundary X position.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7b20"></span>7B20</td>
+<td class="instruction">DEFB $78</td>
+<td class="comment-1" rowspan="1">Right boundary X position.</td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
@@ -158,8 +227,26 @@ Room 06:
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="7b21"></span>7B21</td>
-<td class="instruction">DEFB $00,$88,$BC,$EF</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">DEFB $00</td>
+<td class="comment-1" rowspan="1">Stunned flag (bit 7 set = stunned by egg).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7b22"></span>7B22</td>
+<td class="instruction">DEFB $88</td>
+<td class="comment-1" rowspan="1">Platform Y position.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7b23"></span>7B23</td>
+<td class="instruction">DEFB $BC</td>
+<td class="comment-1" rowspan="1">Left boundary X position.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7b24"></span>7B24</td>
+<td class="instruction">DEFB $EF</td>
+<td class="comment-1" rowspan="1">Right boundary X position.</td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
@@ -174,8 +261,26 @@ Room 07:
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="7b25"></span>7B25</td>
-<td class="instruction">DEFB $00,$00,$00,$00</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">DEFB $00</td>
+<td class="comment-1" rowspan="1">Stunned flag (bit 7 set = stunned by egg).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7b26"></span>7B26</td>
+<td class="instruction">DEFB $00</td>
+<td class="comment-1" rowspan="1">Platform Y position.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7b27"></span>7B27</td>
+<td class="instruction">DEFB $00</td>
+<td class="comment-1" rowspan="1">Left boundary X position.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7b28"></span>7B28</td>
+<td class="instruction">DEFB $00</td>
+<td class="comment-1" rowspan="1">Right boundary X position.</td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
@@ -190,8 +295,26 @@ Room 08:
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="7b29"></span>7B29</td>
-<td class="instruction">DEFB $00,$98,$78,$EF</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">DEFB $00</td>
+<td class="comment-1" rowspan="1">Stunned flag (bit 7 set = stunned by egg).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7b2a"></span>7B2A</td>
+<td class="instruction">DEFB $98</td>
+<td class="comment-1" rowspan="1">Platform Y position.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7b2b"></span>7B2B</td>
+<td class="instruction">DEFB $78</td>
+<td class="comment-1" rowspan="1">Left boundary X position.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7b2c"></span>7B2C</td>
+<td class="instruction">DEFB $EF</td>
+<td class="comment-1" rowspan="1">Right boundary X position.</td>
 </tr>
 </table>
 <table class="asm-navigation">
