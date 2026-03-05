@@ -394,6 +394,9 @@ D $5FA2 Bitmask representing the current directional input. #N$1F means no
 . TABLE#
 B $5FA2,$01
 
+u $5FA3
+B $5FA3,$01
+
 g $5FA4 Previous Input State
 @ $5FA4 label=PreviousInputState
 D $5FA4 Stores the last directional input for animation and speed purposes.
@@ -850,7 +853,8 @@ N $619E Calculate the room attribute buffer address from Percy's position.
   $619F,$03 Rotate right three positions (divide X by #N$08).
   $61A2,$02,b$01 Keep only bits 0-4 (character column).
   $61A4,$01 #REGl=#REGa.
-  $61A5,$03 #REGa=#REGb, keep only bits 0-2 (sub-character Y offset).
+  $61A5,$01 #REGa=#REGb.
+  $61A6,$02,b$01 Keep only bits 0-2 (sub-character Y offset).
   $61A8,$03 Jump to #R$61AD if #REGa is zero (aligned to character row).
   $61AB,$02 Set bit 1 of #REGd (not Y-aligned).
 @ $61AD label=MainGameLoop_CalcAttributeAddress_2
@@ -997,7 +1001,7 @@ R $6280 D Number of pixels to move
   $6280,$05 Write #N$01 to *#R$5FA5 (Percy is facing left).
 N $6285 If *#R$5FAA is set, apply an extra boundary check.
   $6285,$06 Jump to #R$6297 if *#R$5FAA is set.
-  $628B,$03 Load #REGa with Percy's X position (*#REGix+#N$00) - #N$05.
+  $628B,$05 Load #REGa with Percy's X position (*#REGix+#N$00) - #N$05.
 N $6290 If Percy has gone past the left edge transition into the previous room.
   $6290,$03 Jump to #R$631F if Percy's new position is less than #N$00
 . (transition to the previous room).
@@ -1728,7 +1732,8 @@ R $66A8 IX Pointer to Percy's state data
   $66AF,$06 Jump to #R$666A if *#R$5FAA is set (so Percy is already carrying a
 . worm).
 N $66B5 Percy is in position and not carrying; collect the worm.
-  $66B5,$05 Set *#R$5FAA to #N$FF (mark Percy as carrying a worm).
+M $66B5,$05 Set *#R$5FAA to #N$FF (mark Percy as carrying a worm).
+  $66B5,$02,b$01 Set bits 0-7.
   $66BA,$03 Stash the position, worm counter and room attribute pointer on the
 . stack.
   $66BD,$05 Move back three bytes in the room attribute data and write #N$1E to
@@ -1755,7 +1760,8 @@ R $66E1 IX Pointer to Percy's state data (and worm sprite at +#N$20)
 . chick).
 @ $66F4 label=Update_Worm_In_Beak
   $66F4,$07 Jump to #R$6700 if Percy's Y position is not less than #N$8D.
-  $66FB,$05 Set *#R$5FAC to #N$FF (enable worm drop).
+M $66FB,$05 Set *#R$5FAC to #N$FF (enable worm drop).
+  $66FB,$02,b$01 Set bits 0-7.
 @ $6700 label=Set_Worm_Sprite_X
   $6700,$0A Calculate the worm-in-beak X position: if *#R$5FA5 (facing
 . direction) is zero (facing right), add #N$0C to Percy's X, otherwise add
@@ -1806,8 +1812,10 @@ N $6778 #HTML(#AUDIO(fed-chicks.wav)(#INCLUDE(FedChicks)))
 @ $677D label=Delivery_Sound_Inner
   $677D,$02 Output the speaker state to port #N$FE.
   $677F,$02 Loop the inner delay for #REGb iterations.
-  $6781,$09 Toggle the speaker bit pattern using XOR #N$18, mixed with duration
+M $6781,$09 Toggle the speaker bit pattern using XOR #N$18, mixed with duration
 . bits for a warbling effect.
+  $6783,$02,b$01 Keep only bits 3-4.
+  $6787,$02,b$01 Flip bits 3-4.
   $678A,$04 Advance the frequency and loop back to #R$677C until #REGe wraps to
 . zero.
   $678E,$03 Call #R$68B8.
@@ -3299,7 +3307,8 @@ N $70DB Check the jump timer to determine if the frog is mid-jump or idle.
   $70DF,$01 Decrement the jump timer by one.
   $70E0,$02 Jump to #R$70ED if the timer has now reached zero (jump complete).
 N $70E2 Frog is mid-jump; cycle through animation frames #N$00-#N$03.
-  $70E2,$09 Increment the animation frame at *#REGix+#N$02, wrapping at #N$03.
+M $70E2,$09 Increment the animation frame at *#REGix+#N$02, wrapping at #N$03.
+  $70E6,$02,b$01 Keep only bits 0-1.
   $70EB,$02 Jump to #R$70F1.
 N $70ED Frog is idle; set the idle frame.
 @ $70ED label=Set_Frog_Idle
@@ -3315,8 +3324,10 @@ N $70F1 Handle the frog's croak sound effect. The sound has two phases:
 . descending).
 N $70FB Ascending phase: increment the pitch and output to the speaker.
   $70FB,$01 Move back to the ascending counter.
-  $70FC,$08 Calculate the speaker output from the counter: add #N$03, rotate
-. left, mask with #N$18 and set bit 0 for the border; output to port #N$FE.
+M $70FC,$08 Calculate the speaker output from the counter: add #N$03, rotate
+. left, mask and set bit 0 for the border; output to the speaker port.
+  $7100,$02,b$01 Keep only bits 3-4.
+  $7102,$02,b$01 Set bit 0.
   $7106,$04 Increment the ascending counter; jump to #R$7114 if it has not
 . reached #N$19.
 N $710C Ascending phase complete; switch to descending.
@@ -3329,15 +3340,18 @@ N $710C Ascending phase complete; switch to descending.
 N $7117 Descending phase: decrement the pitch and output to the speaker.
 @ $7117 label=Frog_Sound_Descending
   $7117,$01 Move back to the ascending counter (used as pitch value).
-  $7118,$06 Calculate the speaker output from the counter: rotate left, mask
-. with #N$18 and set bit 0 for the border; output to port #N$FE.
+M $7118,$06 Calculate the speaker output from the counter: rotate left, mask
+. and set bit 0 for the border; output to the speaker port.
+  $711A,$02,b$01 Keep only bits 3-4.
+  $711C,$02,b$01 Set bit 0.
   $7120,$03 Decrement the counter; jump to #R$7144 if it is non-zero.
   $7123,$04 Counter has reached zero; clear the descending flag and move back.
   $7127,$02 Jump to #R$7144.
 N $7129 No sound playing; randomly trigger a new croak if the frog is idle.
 @ $7129 label=Check_Random_Croak
-  $7129,$06 Read the R register and mask with #N$3F; jump to #R$7144 if it does
+M $7129,$06 Read the R register and mask; jump to #R$7144 if it does
 . not equal #N$0F (random chance to croak).
+  $712B,$02,b$01 Keep only bits 0-5.
   $7131,$07 Jump to #R$7144 if the animation frame at *#REGix+#N$02 is not
 . #N$06 (frog must be idle to start a croak).
   $7138,$04 Advance to the descending flag; check if it is non-zero and move
@@ -4053,8 +4067,9 @@ N $75BD Set a random value for the UFO speed between #N$01-#N$03.
   $75C8,$01 Restore the UFO state data pointer from the stack.
 N $75C9 Move the UFO in its current direction.
 @ $75C9 label=Move_UFO
-  $75C9,$05 Load the direction from *#REGhl+#N$01, mask with #N$07 and double
-. to form a jump table index.
+M $75C9,$05 Load the direction from *#REGhl+#N$01, mask and double to form a
+. jump table index.
+  $75CB,$02,b$01 Keep only bits 0-2.
   $75CE,$03 Write the direction index to *#R$6BC8(#N$6BC9).
   $75D1,$03 Point #REGhl at #R$767B.
   $75D4,$06 Load the UFO's X position into #REGc and Y position into #REGb from
@@ -4477,7 +4492,7 @@ B $7927,$01
 g $7928 Table: Paratrooper Walking Speed
 @ $7928 label=Table_ParatrooperSpeed
 D $7928 Walking speed for the paratrooper, indexed by room number minus one.
-. Only rooms #N$05, #N$06 and #N$08 have active paratrooper entries.
+. Only rooms #N$05#RAW(,) #N$06 and #N$08 have active paratrooper entries.
 N $7928 Room #N($01+#PC-$7928):
 B $7928,$01
 L $7928,$01,$08
@@ -4659,8 +4674,9 @@ N $7A21 Paratrooper has reached the bottom boundary; begin folding the
 N $7A41 Detach phase: the parachute drifts sideways while the paratrooper
 . separates.
 @ $7A41 label=Parachute_Detach
-  $7A41,$09 Increment the animation counter at *#REGiy+#N$03, wrapping at
+M $7A41,$09 Increment the animation counter at *#REGiy+#N$03, wrapping at
 . #N$07.
+  $7A45,$02,b$01 Keep only bits 0-2.
   $7A4A,$04 Divide by two and add #N$57 to calculate the drifting paratrooper
 . walking frame.
   $7A4E,$03 Write the frame to *#REGix+#N$07 (body sprite frame).
@@ -4706,14 +4722,10 @@ N $7A94 Reset the parachute to its starting position for this room.
 g $7AC3 Parachute State Data
 @ $7AC3 label=Parachute_State_Data
 D $7AC3 State variables for the parachute hazard.
-. #TABLE(default,centre,centre)
-. { =h Offset | =h Description }
-. { #N$00 | Stunned flag (bit 7 set = stunned by egg) }
-. { #N$01 | Landing counter }
-. { #N$02 | Detach flag }
-. { #N$03 | Animation counter }
-. TABLE#
-B $7AC3,$04,$01
+B $7AC3,$01 Stunned flag (bit 7 set = stunned by egg).
+B $7AC4,$01 Landing counter.
+B $7AC5,$01 Detach flag.
+B $7AC6,$01 Animation counter.
 
 g $7AC7 Random Seed
 @ $7AC7 label=RandomSeed
@@ -4722,33 +4734,43 @@ B $7AC7,$01
 g $7AC8 Cat State Data
 @ $7AC8 label=Cat_State_Data
 D $7AC8 State variables for the cat hazard.
-B $7AC8,$04,$01
+. Only rooms #N$02#RAW(,) #N$03#RAW(,) #N$05#RAW(,) #N$06#RAW(,) #N$07 and
+. #N$08 have active entries.
+N $7AC8 Room #N($01+(#PC-$7AC8)/$04):
+B $7AC8,$01 Stunned flag (bit 7 set = stunned by egg).
+B $7AC9,$01 Platform Y position.
+B $7ACA,$01 Left boundary X position.
+B $7ACB,$01 Right boundary X position.
+L $7AC8,$04,$08
 
 g $7AE8 Dog State Data
 @ $7AE8 label=Dog_State_Data
 D $7AE8 State variables for the dog hazard.
-B $7AE8,$04,$01
+. Only rooms #N$03 and #N$07 have active entries.
+N $7AE8 Room #N($01+(#PC-$7AE8)/$04):
+B $7AE8,$01 Stunned flag (bit 7 set = stunned by egg).
+B $7AE9,$01 Platform Y position.
+B $7AEA,$01 Left boundary X position.
+B $7AEB,$01 Right boundary X position.
+L $7AE8,$04,$07
 
 g $7B04 Table: Parachute Starting X Positions
 @ $7B04 label=Table_ParachuteXPosition
 D $7B04 Lookup table of starting X positions for the parachute, indexed by
 . room number minus one.
-B $7B04,$09,$01
+. Only rooms #N$02#RAW(,) #N$08 and #N$09 have active paratrooper entries.
+B $7B04,$01 Room #N($01+#PC-$7B04).
+L $7B04,$01,$09
 
-g $7B0D Paratrooper Room State Data
-@ $7B0D label=Paratrooper_Room_State_Data
-D $7B0D Per-room state data for the walking paratrooper, with four bytes per
-. room. Indexed by (room number - #N$01) * #N$04. Only rooms #N$05, #N$06 and
-. #N$08 have active entries.
-. #TABLE(default,centre,centre)
-. { =h Offset | =h Description }
-. { #N$00 | Stunned flag (bit 7 set = stunned by egg) }
-. { #N$01 | Platform Y position }
-. { #N$02 | Left boundary X position }
-. { #N$03 | Right boundary X position }
-. TABLE#
+g $7B0D Paratrooper State Data
+@ $7B0D label=Paratrooper_State_Data
+D $7B0D State variables for the walking paratrooper hazard.
+. Only rooms #N$05#RAW(,) #N$06 and #N$08 have active entries.
 N $7B0D Room #N($01+(#PC-$7B0D)/$04):
-B $7B0D,$04
+B $7B0D,$01 Stunned flag (bit 7 set = stunned by egg).
+B $7B0E,$01 Platform Y position.
+B $7B0F,$01 Left boundary X position.
+B $7B10,$01 Right boundary X position.
 L $7B0D,$04,$08
 
 u $7B2D
@@ -4769,88 +4791,6867 @@ D $83A9 #ROOM$00
 b $83AA Room #N$01
 @ $83AA label=Room01
 D $83AA #ROOM$01
+  $83AA,$01 Tile ID: #R$9EF2(#N$71).
+  $83AB,$01 Tile ID: #R$9BC2(#N$0B).
+  $83AC,$01 Tile ID: #R$9BCA(#N$0C).
+  $83AD,$01 Tile ID: #R$9BD2(#N$0D).
+N $83AE Command #N$01: Skip tiles.
+  $83AE,$01 Command (#N$01).
+  $83AF,$01 Skip count: #N(#PEEK(#PC)).
+  $83B0,$01 Tile ID: #R$9BAA(#N$08).
+N $83B1 Command #N$01: Skip tiles.
+  $83B1,$01 Command (#N$01).
+  $83B2,$01 Skip count: #N(#PEEK(#PC)).
+  $83B3,$01 Tile ID: #R$9BDA(#N$0E).
+  $83B4,$01 Tile ID: #R$9BD2(#N$0D).
+  $83B5,$01 Tile ID: #R$9BC2(#N$0B).
+  $83B6,$01 Tile ID: #R$9BCA(#N$0C).
+  $83B7,$01 Tile ID: #R$9BD2(#N$0D).
+N $83B8 Command #N$01: Skip tiles.
+  $83B8,$01 Command (#N$01).
+  $83B9,$01 Skip count: #N(#PEEK(#PC)).
+  $83BA,$01 Tile ID: #R$9C4A(#N$1C).
+N $83BB Command #N$01: Skip tiles.
+  $83BB,$01 Command (#N$01).
+  $83BC,$01 Skip count: #N(#PEEK(#PC)).
+  $83BD,$01 Tile ID: #R$9BDA(#N$0E).
+  $83BE,$01 Tile ID: #R$9BE2(#N$0F).
+N $83BF Command #N$01: Skip tiles.
+  $83BF,$01 Command (#N$01).
+  $83C0,$01 Skip count: #N(#PEEK(#PC)).
+  $83C1,$01 Tile ID: #R$9C42(#N$1B).
+N $83C2 Command #N$01: Skip tiles.
+  $83C2,$01 Command (#N$01).
+  $83C3,$01 Skip count: #N(#PEEK(#PC)).
+  $83C4,$01 Tile ID: #R$9BEA(#N$10).
+N $83C5 Command #N$01: Skip tiles.
+  $83C5,$01 Command (#N$01).
+  $83C6,$01 Skip count: #N(#PEEK(#PC)).
+  $83C7,$01 Tile ID: #R$9C3A(#N$1A).
+N $83C8 Command #N$01: Skip tiles.
+  $83C8,$01 Command (#N$01).
+  $83C9,$01 Skip count: #N(#PEEK(#PC)).
+  $83CA,$01 Tile ID: #R$9C0A(#N$14).
+N $83CB Command #N$01: Skip tiles.
+  $83CB,$01 Command (#N$01).
+  $83CC,$01 Skip count: #N(#PEEK(#PC)).
+  $83CD,$01 Tile ID: #R$9BF2(#N$11).
+N $83CE Command #N$01: Skip tiles.
+  $83CE,$01 Command (#N$01).
+  $83CF,$01 Skip count: #N(#PEEK(#PC)).
+  $83D0,$01 Tile ID: #R$9C02(#N$13).
+  $83D1,$01 Tile ID: #R$9C2A(#N$18).
+  $83D2,$01 Tile ID: #R$9C22(#N$17).
+  $83D3,$01 Tile ID: #R$9C1A(#N$16).
+  $83D4,$01 Tile ID: #R$9C12(#N$15).
+  $83D5,$01 Tile ID: #R$9C2A(#N$18).
+  $83D6,$01 Tile ID: #R$9C22(#N$17).
+  $83D7,$01 Tile ID: #R$9C32(#N$19).
+  $83D8,$01 Tile ID: #R$9BFA(#N$12).
+N $83D9 Command #N$01: Skip tiles.
+  $83D9,$01 Command (#N$01).
+  $83DA,$01 Skip count: #N(#PEEK(#PC)).
+  $83DB,$01 Tile ID: #R$A152(#N$BD).
+N $83DC Command #N$01: Skip tiles.
+  $83DC,$01 Command (#N$01).
+  $83DD,$01 Skip count: #N(#PEEK(#PC)).
+  $83DE,$01 Tile ID: #R$A14A(#N$BC).
+N $83DF Command #N$01: Skip tiles.
+  $83DF,$01 Command (#N$01).
+  $83E0,$01 Skip count: #N(#PEEK(#PC)).
+  $83E1,$01 Tile ID: #R$A19A(#N$C6).
+  $83E2,$01 Tile ID: #R$A1A2(#N$C7).
+  $83E3,$01 Tile ID: #R$A1AA(#N$C8).
+  $83E4,$01 Tile ID: #R$A1B2(#N$C9).
+  $83E5,$01 Tile ID: #R$A1BA(#N$CA).
+N $83E6 Command #N$01: Skip tiles.
+  $83E6,$01 Command (#N$01).
+  $83E7,$01 Skip count: #N(#PEEK(#PC)).
+N $83E8 Command #N$02: Draw repeated tile.
+  $83E8,$01 Command (#N$02).
+  $83E9,$01 Repeat count: #N(#PEEK(#PC)).
+  $83EA,$01 Tile ID: #R$A00A(#N$94).
+N $83EB Command #N$01: Skip tiles.
+  $83EB,$01 Command (#N$01).
+  $83EC,$01 Skip count: #N(#PEEK(#PC)).
+  $83ED,$01 Tile ID: #R$A00A(#N$94).
+N $83EE Command #N$01: Skip tiles.
+  $83EE,$01 Command (#N$01).
+  $83EF,$01 Skip count: #N(#PEEK(#PC)).
+  $83F0,$01 Tile ID: #R$A02A(#N$98).
+N $83F1 Command #N$01: Skip tiles.
+  $83F1,$01 Command (#N$01).
+  $83F2,$01 Skip count: #N(#PEEK(#PC)).
+  $83F3,$01 Tile ID: #R$A312(#N$F5).
+N $83F4 Command #N$01: Skip tiles.
+  $83F4,$01 Command (#N$01).
+  $83F5,$01 Skip count: #N(#PEEK(#PC)).
+  $83F6,$01 Tile ID: #R$A1C2(#N$CB).
+N $83F7 Command #N$01: Skip tiles.
+  $83F7,$01 Command (#N$01).
+  $83F8,$01 Skip count: #N(#PEEK(#PC)).
+  $83F9,$01 Tile ID: #R$A25A(#N$DE).
+N $83FA Command #N$01: Skip tiles.
+  $83FA,$01 Command (#N$01).
+  $83FB,$01 Skip count: #N(#PEEK(#PC)).
+  $83FC,$01 Tile ID: #R$A02A(#N$98).
+  $83FD,$01 Tile ID: #R$A0BA(#N$AA).
+  $83FE,$01 Tile ID: #R$9CB2(#N$29).
+  $83FF,$01 Tile ID: #R$A0B2(#N$A9).
+  $8400,$01 Tile ID: #R$A1C2(#N$CB).
+  $8401,$01 Tile ID: #R$A1D2(#N$CD).
+  $8402,$01 Tile ID: #R$A25A(#N$DE).
+N $8403 Command #N$01: Skip tiles.
+  $8403,$01 Command (#N$01).
+  $8404,$01 Skip count: #N(#PEEK(#PC)).
+  $8405,$01 Tile ID: #R$A0CA(#N$AC).
+  $8406,$01 Tile ID: #R$9FFA(#N$92).
+  $8407,$01 Tile ID: #R$9FFA(#N$92).
+  $8408,$01 Tile ID: #R$A0CA(#N$AC).
+  $8409,$01 Tile ID: #R$9FFA(#N$92).
+  $840A,$01 Tile ID: #R$9FFA(#N$92).
+  $840B,$01 Tile ID: #R$A0CA(#N$AC).
+  $840C,$01 Tile ID: #R$9FFA(#N$92).
+  $840D,$01 Tile ID: #R$9FFA(#N$92).
+  $840E,$01 Tile ID: #R$A0CA(#N$AC).
+  $840F,$01 Tile ID: #R$9FFA(#N$92).
+  $8410,$01 Tile ID: #R$9FFA(#N$92).
+  $8411,$01 Tile ID: #R$A0CA(#N$AC).
+N $8412 Command #N$01: Skip tiles.
+  $8412,$01 Command (#N$01).
+  $8413,$01 Skip count: #N(#PEEK(#PC)).
+  $8414,$01 Tile ID: #R$A00A(#N$94).
+  $8415,$01 Tile ID: #R$A00A(#N$94).
+N $8416 Command #N$02: Draw repeated tile.
+  $8416,$01 Command (#N$02).
+  $8417,$01 Repeat count: #N(#PEEK(#PC)).
+  $8418,$01 Tile ID: #R$A272(#N$E1).
+  $8419,$01 Tile ID: #R$A1CA(#N$CC).
+  $841A,$01 Tile ID: #R$A00A(#N$94).
+  $841B,$01 Tile ID: #R$A002(#N$93).
+N $841C Command #N$01: Skip tiles.
+  $841C,$01 Command (#N$01).
+  $841D,$01 Skip count: #N(#PEEK(#PC)).
+  $841E,$01 Tile ID: #R$A0CA(#N$AC).
+  $841F,$01 Tile ID: #R$9FFA(#N$92).
+  $8420,$01 Tile ID: #R$9FFA(#N$92).
+  $8421,$01 Tile ID: #R$A0CA(#N$AC).
+  $8422,$01 Tile ID: #R$9FFA(#N$92).
+  $8423,$01 Tile ID: #R$9FFA(#N$92).
+  $8424,$01 Tile ID: #R$A0CA(#N$AC).
+  $8425,$01 Tile ID: #R$9FFA(#N$92).
+  $8426,$01 Tile ID: #R$9FFA(#N$92).
+  $8427,$01 Tile ID: #R$A0CA(#N$AC).
+  $8428,$01 Tile ID: #R$9FFA(#N$92).
+  $8429,$01 Tile ID: #R$9FFA(#N$92).
+  $842A,$01 Tile ID: #R$A0CA(#N$AC).
+N $842B Command #N$01: Skip tiles.
+  $842B,$01 Command (#N$01).
+  $842C,$01 Skip count: #N(#PEEK(#PC)).
+  $842D,$01 Tile ID: #R$A00A(#N$94).
+  $842E,$01 Tile ID: #R$A00A(#N$94).
+N $842F Command #N$01: Skip tiles.
+  $842F,$01 Command (#N$01).
+  $8430,$01 Skip count: #N(#PEEK(#PC)).
+  $8431,$01 Tile ID: #R$A272(#N$E1).
+N $8432 Command #N$02: Draw repeated tile.
+  $8432,$01 Command (#N$02).
+  $8433,$01 Repeat count: #N(#PEEK(#PC)).
+  $8434,$01 Tile ID: #R$A00A(#N$94).
+  $8435,$01 Tile ID: #R$A272(#N$E1).
+  $8436,$01 Tile ID: #R$A272(#N$E1).
+N $8437 Command #N$02: Draw repeated tile.
+  $8437,$01 Command (#N$02).
+  $8438,$01 Repeat count: #N(#PEEK(#PC)).
+  $8439,$01 Tile ID: #R$A00A(#N$94).
+  $843A,$01 Tile ID: #R$A272(#N$E1).
+  $843B,$01 Tile ID: #R$A272(#N$E1).
+N $843C Command #N$02: Draw repeated tile.
+  $843C,$01 Command (#N$02).
+  $843D,$01 Repeat count: #N(#PEEK(#PC)).
+  $843E,$01 Tile ID: #R$A00A(#N$94).
+  $843F,$01 Tile ID: #R$A272(#N$E1).
+  $8440,$01 Tile ID: #R$A272(#N$E1).
+N $8441 Command #N$02: Draw repeated tile.
+  $8441,$01 Command (#N$02).
+  $8442,$01 Repeat count: #N(#PEEK(#PC)).
+  $8443,$01 Tile ID: #R$A00A(#N$94).
+  $8444,$01 Tile ID: #R$A272(#N$E1).
+  $8445,$01 Tile ID: #R$A272(#N$E1).
+N $8446 Command #N$02: Draw repeated tile.
+  $8446,$01 Command (#N$02).
+  $8447,$01 Repeat count: #N(#PEEK(#PC)).
+  $8448,$01 Tile ID: #R$A00A(#N$94).
+  $8449,$01 Tile ID: #R$A272(#N$E1).
+  $844A,$01 Tile ID: #R$A272(#N$E1).
+N $844B Command #N$02: Draw repeated tile.
+  $844B,$01 Command (#N$02).
+  $844C,$01 Repeat count: #N(#PEEK(#PC)).
+  $844D,$01 Tile ID: #R$A00A(#N$94).
+  $844E,$01 Tile ID: #R$A272(#N$E1).
+  $844F,$01 Tile ID: #R$A272(#N$E1).
+  $8450,$01 Tile ID: #R$A00A(#N$94).
+N $8451 Command #N$03: Fill attribute buffer.
+  $8451,$01 Command (#N$03).
+  $8452,$01 Base fill colour: #COLOUR(#PEEK(#PC)).
+N $8453 Attribute overlay: skip.
+  $8453,$01 Opcode (#N$12).
+  $8454,$01 Skip count: #N(#PEEK(#PC)).
+  $8455,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8456,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8457,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8458 Attribute overlay: skip.
+  $8458,$01 Opcode (#N$12).
+  $8459,$01 Skip count: #N(#PEEK(#PC)).
+N $845A Attribute overlay: repeat colour.
+  $845A,$01 Opcode (#N$1B).
+  $845B,$01 Repeat count: #N(#PEEK(#PC)).
+  $845C,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $845D Attribute overlay: skip.
+  $845D,$01 Opcode (#N$12).
+  $845E,$01 Skip count: #N(#PEEK(#PC)).
+N $845F Attribute overlay: repeat colour.
+  $845F,$01 Opcode (#N$1B).
+  $8460,$01 Repeat count: #N(#PEEK(#PC)).
+  $8461,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8462 Attribute overlay: skip.
+  $8462,$01 Opcode (#N$12).
+  $8463,$01 Skip count: #N(#PEEK(#PC)).
+N $8464 Attribute overlay: repeat colour.
+  $8464,$01 Opcode (#N$1B).
+  $8465,$01 Repeat count: #N(#PEEK(#PC)).
+  $8466,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8467,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8468 Attribute overlay: repeat colour.
+  $8468,$01 Opcode (#N$1B).
+  $8469,$01 Repeat count: #N(#PEEK(#PC)).
+  $846A,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $846B Attribute overlay: skip.
+  $846B,$01 Opcode (#N$12).
+  $846C,$01 Skip count: #N(#PEEK(#PC)).
+N $846D Attribute overlay: repeat colour.
+  $846D,$01 Opcode (#N$1B).
+  $846E,$01 Repeat count: #N(#PEEK(#PC)).
+  $846F,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8470 Attribute overlay: skip.
+  $8470,$01 Opcode (#N$12).
+  $8471,$01 Skip count: #N(#PEEK(#PC)).
+  $8472,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8473 Attribute overlay: repeat colour.
+  $8473,$01 Opcode (#N$1B).
+  $8474,$01 Repeat count: #N(#PEEK(#PC)).
+  $8475,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8476,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8477,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8478 Attribute overlay: skip.
+  $8478,$01 Opcode (#N$12).
+  $8479,$01 Skip count: #N(#PEEK(#PC)).
+N $847A Attribute overlay: repeat colour.
+  $847A,$01 Opcode (#N$1B).
+  $847B,$01 Repeat count: #N(#PEEK(#PC)).
+  $847C,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $847D,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $847E,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $847F Attribute overlay: repeat colour.
+  $847F,$01 Opcode (#N$1B).
+  $8480,$01 Repeat count: #N(#PEEK(#PC)).
+  $8481,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8482,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8483,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8484,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8485,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8486,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8487,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8488,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8489,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $848A Attribute overlay: repeat colour.
+  $848A,$01 Opcode (#N$1B).
+  $848B,$01 Repeat count: #N(#PEEK(#PC)).
+  $848C,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $848D,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $848E,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $848F,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8490,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8491,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8492,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8493,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8494,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8495 Attribute overlay: repeat colour.
+  $8495,$01 Opcode (#N$1B).
+  $8496,$01 Repeat count: #N(#PEEK(#PC)).
+  $8497,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8498 Attribute overlay: repeat colour.
+  $8498,$01 Opcode (#N$1B).
+  $8499,$01 Repeat count: #N(#PEEK(#PC)).
+  $849A,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $849B,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $849C,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $849D Attribute overlay: repeat colour.
+  $849D,$01 Opcode (#N$1B).
+  $849E,$01 Repeat count: #N(#PEEK(#PC)).
+  $849F,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $84A0,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $84A1 Attribute overlay: repeat colour.
+  $84A1,$01 Opcode (#N$1B).
+  $84A2,$01 Repeat count: #N(#PEEK(#PC)).
+  $84A3,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $84A4 Attribute overlay: repeat colour.
+  $84A4,$01 Opcode (#N$1B).
+  $84A5,$01 Repeat count: #N(#PEEK(#PC)).
+  $84A6,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $84A7 Attribute overlay: repeat colour.
+  $84A7,$01 Opcode (#N$1B).
+  $84A8,$01 Repeat count: #N(#PEEK(#PC)).
+  $84A9,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $84AA,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $84AB,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $84AC Attribute overlay: repeat colour.
+  $84AC,$01 Opcode (#N$1B).
+  $84AD,$01 Repeat count: #N(#PEEK(#PC)).
+  $84AE,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $84AF Attribute overlay: repeat colour.
+  $84AF,$01 Opcode (#N$1B).
+  $84B0,$01 Repeat count: #N(#PEEK(#PC)).
+  $84B1,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $84B2,$01 End of attribute overlay.
   $84B3,$01 Terminator.
 
 b $84B4 Room #N$02
 @ $84B4 label=Room02
 D $84B4 #ROOM$02
+N $84B4 Command #N$01: Skip tiles.
+  $84B4,$01 Command (#N$01).
+  $84B5,$01 Skip count: #N(#PEEK(#PC)).
+  $84B6,$01 Tile ID: #R$A16A(#N$C0).
+  $84B7,$01 Tile ID: #R$A16A(#N$C0).
+N $84B8 Command #N$01: Skip tiles.
+  $84B8,$01 Command (#N$01).
+  $84B9,$01 Skip count: #N(#PEEK(#PC)).
+  $84BA,$01 Tile ID: #R$A352(#N$FD).
+  $84BB,$01 Tile ID: #R$A352(#N$FD).
+  $84BC,$01 Tile ID: #R$A35A(#N$FE).
+N $84BD Command #N$01: Skip tiles.
+  $84BD,$01 Command (#N$01).
+  $84BE,$01 Skip count: #N(#PEEK(#PC)).
+  $84BF,$01 Tile ID: #R$A35A(#N$FE).
+  $84C0,$01 Tile ID: #R$A352(#N$FD).
+  $84C1,$01 Tile ID: #R$A352(#N$FD).
+  $84C2,$01 Tile ID: #R$A35A(#N$FE).
+  $84C3,$01 Tile ID: #R$A352(#N$FD).
+  $84C4,$01 Tile ID: #R$A352(#N$FD).
+  $84C5,$01 Tile ID: #R$A35A(#N$FE).
+  $84C6,$01 Tile ID: #R$A352(#N$FD).
+  $84C7,$01 Tile ID: #R$A352(#N$FD).
+  $84C8,$01 Tile ID: #R$A35A(#N$FE).
+  $84C9,$01 Tile ID: #R$A352(#N$FD).
+  $84CA,$01 Tile ID: #R$A352(#N$FD).
+  $84CB,$01 Tile ID: #R$A35A(#N$FE).
+  $84CC,$01 Tile ID: #R$A352(#N$FD).
+N $84CD Command #N$01: Skip tiles.
+  $84CD,$01 Command (#N$01).
+  $84CE,$01 Skip count: #N(#PEEK(#PC)).
+  $84CF,$01 Tile ID: #R$A352(#N$FD).
+  $84D0,$01 Tile ID: #R$A35A(#N$FE).
+  $84D1,$01 Tile ID: #R$A352(#N$FD).
+N $84D2 Command #N$01: Skip tiles.
+  $84D2,$01 Command (#N$01).
+  $84D3,$01 Skip count: #N(#PEEK(#PC)).
+  $84D4,$01 Tile ID: #R$A352(#N$FD).
+  $84D5,$01 Tile ID: #R$A352(#N$FD).
+  $84D6,$01 Tile ID: #R$A35A(#N$FE).
+  $84D7,$01 Tile ID: #R$A352(#N$FD).
+  $84D8,$01 Tile ID: #R$A352(#N$FD).
+  $84D9,$01 Tile ID: #R$A35A(#N$FE).
+  $84DA,$01 Tile ID: #R$A352(#N$FD).
+  $84DB,$01 Tile ID: #R$A352(#N$FD).
+  $84DC,$01 Tile ID: #R$A35A(#N$FE).
+  $84DD,$01 Tile ID: #R$A352(#N$FD).
+  $84DE,$01 Tile ID: #R$A352(#N$FD).
+  $84DF,$01 Tile ID: #R$A35A(#N$FE).
+  $84E0,$01 Tile ID: #R$A352(#N$FD).
+  $84E1,$01 Tile ID: #R$A352(#N$FD).
+N $84E2 Command #N$01: Skip tiles.
+  $84E2,$01 Command (#N$01).
+  $84E3,$01 Skip count: #N(#PEEK(#PC)).
+  $84E4,$01 Tile ID: #R$A35A(#N$FE).
+  $84E5,$01 Tile ID: #R$A352(#N$FD).
+  $84E6,$01 Tile ID: #R$A352(#N$FD).
+  $84E7,$01 Tile ID: #R$A35A(#N$FE).
+  $84E8,$01 Tile ID: #R$A352(#N$FD).
+  $84E9,$01 Tile ID: #R$A352(#N$FD).
+  $84EA,$01 Tile ID: #R$A35A(#N$FE).
+  $84EB,$01 Tile ID: #R$A352(#N$FD).
+  $84EC,$01 Tile ID: #R$A352(#N$FD).
+  $84ED,$01 Tile ID: #R$A35A(#N$FE).
+  $84EE,$01 Tile ID: #R$A352(#N$FD).
+  $84EF,$01 Tile ID: #R$A352(#N$FD).
+  $84F0,$01 Tile ID: #R$A35A(#N$FE).
+  $84F1,$01 Tile ID: #R$A352(#N$FD).
+  $84F2,$01 Tile ID: #R$A352(#N$FD).
+  $84F3,$01 Tile ID: #R$A35A(#N$FE).
+  $84F4,$01 Tile ID: #R$A352(#N$FD).
+  $84F5,$01 Tile ID: #R$A352(#N$FD).
+  $84F6,$01 Tile ID: #R$A35A(#N$FE).
+N $84F7 Command #N$01: Skip tiles.
+  $84F7,$01 Command (#N$01).
+  $84F8,$01 Skip count: #N(#PEEK(#PC)).
+  $84F9,$01 Tile ID: #R$A352(#N$FD).
+  $84FA,$01 Tile ID: #R$A352(#N$FD).
+  $84FB,$01 Tile ID: #R$A35A(#N$FE).
+  $84FC,$01 Tile ID: #R$A352(#N$FD).
+  $84FD,$01 Tile ID: #R$A352(#N$FD).
+  $84FE,$01 Tile ID: #R$A35A(#N$FE).
+  $84FF,$01 Tile ID: #R$A352(#N$FD).
+  $8500,$01 Tile ID: #R$A352(#N$FD).
+  $8501,$01 Tile ID: #R$A35A(#N$FE).
+  $8502,$01 Tile ID: #R$A352(#N$FD).
+  $8503,$01 Tile ID: #R$A352(#N$FD).
+  $8504,$01 Tile ID: #R$A35A(#N$FE).
+  $8505,$01 Tile ID: #R$A352(#N$FD).
+  $8506,$01 Tile ID: #R$A352(#N$FD).
+  $8507,$01 Tile ID: #R$A35A(#N$FE).
+  $8508,$01 Tile ID: #R$A352(#N$FD).
+  $8509,$01 Tile ID: #R$A352(#N$FD).
+  $850A,$01 Tile ID: #R$A35A(#N$FE).
+  $850B,$01 Tile ID: #R$A352(#N$FD).
+N $850C Command #N$01: Skip tiles.
+  $850C,$01 Command (#N$01).
+  $850D,$01 Skip count: #N(#PEEK(#PC)).
+N $850E Command #N$02: Draw repeated tile.
+  $850E,$01 Command (#N$02).
+  $850F,$01 Repeat count: #N(#PEEK(#PC)).
+  $8510,$01 Tile ID: #R$A27A(#N$E2).
+N $8511 Command #N$01: Skip tiles.
+  $8511,$01 Command (#N$01).
+  $8512,$01 Skip count: #N(#PEEK(#PC)).
+  $8513,$01 Tile ID: #R$A00A(#N$94).
+  $8514,$01 Tile ID: #R$A00A(#N$94).
+  $8515,$01 Tile ID: #R$A002(#N$93).
+  $8516,$01 Tile ID: #R$A00A(#N$94).
+  $8517,$01 Tile ID: #R$A002(#N$93).
+  $8518,$01 Tile ID: #R$A00A(#N$94).
+  $8519,$01 Tile ID: #R$A002(#N$93).
+  $851A,$01 Tile ID: #R$A00A(#N$94).
+  $851B,$01 Tile ID: #R$A002(#N$93).
+  $851C,$01 Tile ID: #R$A00A(#N$94).
+  $851D,$01 Tile ID: #R$A002(#N$93).
+  $851E,$01 Tile ID: #R$A00A(#N$94).
+  $851F,$01 Tile ID: #R$A002(#N$93).
+  $8520,$01 Tile ID: #R$A00A(#N$94).
+  $8521,$01 Tile ID: #R$A002(#N$93).
+  $8522,$01 Tile ID: #R$A00A(#N$94).
+  $8523,$01 Tile ID: #R$A002(#N$93).
+  $8524,$01 Tile ID: #R$A00A(#N$94).
+  $8525,$01 Tile ID: #R$A002(#N$93).
+N $8526 Command #N$01: Skip tiles.
+  $8526,$01 Command (#N$01).
+  $8527,$01 Skip count: #N(#PEEK(#PC)).
+  $8528,$01 Tile ID: #R$A00A(#N$94).
+  $8529,$01 Tile ID: #R$A002(#N$93).
+  $852A,$01 Tile ID: #R$A0DA(#N$AE).
+  $852B,$01 Tile ID: #R$9FFA(#N$92).
+  $852C,$01 Tile ID: #R$9FFA(#N$92).
+  $852D,$01 Tile ID: #R$A0CA(#N$AC).
+N $852E Command #N$02: Draw repeated tile.
+  $852E,$01 Command (#N$02).
+  $852F,$01 Repeat count: #N(#PEEK(#PC)).
+  $8530,$01 Tile ID: #R$9FFA(#N$92).
+  $8531,$01 Tile ID: #R$A0CA(#N$AC).
+  $8532,$01 Tile ID: #R$A00A(#N$94).
+  $8533,$01 Tile ID: #R$A002(#N$93).
+N $8534 Command #N$02: Draw repeated tile.
+  $8534,$01 Command (#N$02).
+  $8535,$01 Repeat count: #N(#PEEK(#PC)).
+  $8536,$01 Tile ID: #R$9CB2(#N$29).
+  $8537,$01 Tile ID: #R$A00A(#N$94).
+  $8538,$01 Tile ID: #R$A00A(#N$94).
+  $8539,$01 Tile ID: #R$A0DA(#N$AE).
+  $853A,$01 Tile ID: #R$9FFA(#N$92).
+N $853B Command #N$01: Skip tiles.
+  $853B,$01 Command (#N$01).
+  $853C,$01 Skip count: #N(#PEEK(#PC)).
+  $853D,$01 Tile ID: #R$A00A(#N$94).
+  $853E,$01 Tile ID: #R$A00A(#N$94).
+  $853F,$01 Tile ID: #R$A0DA(#N$AE).
+N $8540 Command #N$02: Draw repeated tile.
+  $8540,$01 Command (#N$02).
+  $8541,$01 Repeat count: #N(#PEEK(#PC)).
+  $8542,$01 Tile ID: #R$9FFA(#N$92).
+  $8543,$01 Tile ID: #R$A0CA(#N$AC).
+  $8544,$01 Tile ID: #R$A00A(#N$94).
+  $8545,$01 Tile ID: #R$A00A(#N$94).
+N $8546 Command #N$02: Draw repeated tile.
+  $8546,$01 Command (#N$02).
+  $8547,$01 Repeat count: #N(#PEEK(#PC)).
+  $8548,$01 Tile ID: #R$9CB2(#N$29).
+  $8549,$01 Tile ID: #R$A00A(#N$94).
+  $854A,$01 Tile ID: #R$A002(#N$93).
+  $854B,$01 Tile ID: #R$A0DA(#N$AE).
+  $854C,$01 Tile ID: #R$9FFA(#N$92).
+N $854D Command #N$01: Skip tiles.
+  $854D,$01 Command (#N$01).
+  $854E,$01 Skip count: #N(#PEEK(#PC)).
+  $854F,$01 Tile ID: #R$A00A(#N$94).
+  $8550,$01 Tile ID: #R$A002(#N$93).
+  $8551,$01 Tile ID: #R$A0B2(#N$A9).
+N $8552 Command #N$01: Skip tiles.
+  $8552,$01 Command (#N$01).
+  $8553,$01 Skip count: #N(#PEEK(#PC)).
+  $8554,$01 Tile ID: #R$9BB2(#N$09).
+  $8555,$01 Tile ID: #R$9BBA(#N$0A).
+  $8556,$01 Tile ID: #R$9BB2(#N$09).
+  $8557,$01 Tile ID: #R$9BBA(#N$0A).
+N $8558 Command #N$01: Skip tiles.
+  $8558,$01 Command (#N$01).
+  $8559,$01 Skip count: #N(#PEEK(#PC)).
+  $855A,$01 Tile ID: #R$A0BA(#N$AA).
+  $855B,$01 Tile ID: #R$A00A(#N$94).
+  $855C,$01 Tile ID: #R$A002(#N$93).
+N $855D Command #N$02: Draw repeated tile.
+  $855D,$01 Command (#N$02).
+  $855E,$01 Repeat count: #N(#PEEK(#PC)).
+  $855F,$01 Tile ID: #R$9CB2(#N$29).
+  $8560,$01 Tile ID: #R$A00A(#N$94).
+  $8561,$01 Tile ID: #R$A00A(#N$94).
+  $8562,$01 Tile ID: #R$A0B2(#N$A9).
+N $8563 Command #N$01: Skip tiles.
+  $8563,$01 Command (#N$01).
+  $8564,$01 Skip count: #N(#PEEK(#PC)).
+  $8565,$01 Tile ID: #R$A00A(#N$94).
+  $8566,$01 Tile ID: #R$A00A(#N$94).
+  $8567,$01 Tile ID: #R$A0E2(#N$AF).
+  $8568,$01 Tile ID: #R$A33A(#N$FA).
+  $8569,$01 Tile ID: #R$A0E2(#N$AF).
+  $856A,$01 Tile ID: #R$A032(#N$99).
+  $856B,$01 Tile ID: #R$A032(#N$99).
+  $856C,$01 Tile ID: #R$A0D2(#N$AD).
+  $856D,$01 Tile ID: #R$A33A(#N$FA).
+  $856E,$01 Tile ID: #R$A0D2(#N$AD).
+  $856F,$01 Tile ID: #R$A00A(#N$94).
+  $8570,$01 Tile ID: #R$A00A(#N$94).
+N $8571 Command #N$02: Draw repeated tile.
+  $8571,$01 Command (#N$02).
+  $8572,$01 Repeat count: #N(#PEEK(#PC)).
+  $8573,$01 Tile ID: #R$9CB2(#N$29).
+  $8574,$01 Tile ID: #R$A00A(#N$94).
+  $8575,$01 Tile ID: #R$A002(#N$93).
+  $8576,$01 Tile ID: #R$A0E2(#N$AF).
+  $8577,$01 Tile ID: #R$A032(#N$99).
+N $8578 Command #N$01: Skip tiles.
+  $8578,$01 Command (#N$01).
+  $8579,$01 Skip count: #N(#PEEK(#PC)).
+  $857A,$01 Tile ID: #R$A30A(#N$F4).
+N $857B Command #N$01: Skip tiles.
+  $857B,$01 Command (#N$01).
+  $857C,$01 Skip count: #N(#PEEK(#PC)).
+  $857D,$01 Tile ID: #R$A30A(#N$F4).
+N $857E Command #N$01: Skip tiles.
+  $857E,$01 Command (#N$01).
+  $857F,$01 Skip count: #N(#PEEK(#PC)).
+  $8580,$01 Tile ID: #R$A30A(#N$F4).
+N $8581 Command #N$01: Skip tiles.
+  $8581,$01 Command (#N$01).
+  $8582,$01 Skip count: #N(#PEEK(#PC)).
+  $8583,$01 Tile ID: #R$A00A(#N$94).
+  $8584,$01 Tile ID: #R$A002(#N$93).
+  $8585,$01 Tile ID: #R$A00A(#N$94).
+  $8586,$01 Tile ID: #R$A002(#N$93).
+  $8587,$01 Tile ID: #R$A00A(#N$94).
+  $8588,$01 Tile ID: #R$A002(#N$93).
+  $8589,$01 Tile ID: #R$A00A(#N$94).
+  $858A,$01 Tile ID: #R$A002(#N$93).
+  $858B,$01 Tile ID: #R$A00A(#N$94).
+  $858C,$01 Tile ID: #R$A002(#N$93).
+  $858D,$01 Tile ID: #R$A00A(#N$94).
+  $858E,$01 Tile ID: #R$A002(#N$93).
+  $858F,$01 Tile ID: #R$A00A(#N$94).
+  $8590,$01 Tile ID: #R$A002(#N$93).
+  $8591,$01 Tile ID: #R$A00A(#N$94).
+  $8592,$01 Tile ID: #R$A002(#N$93).
+  $8593,$01 Tile ID: #R$A00A(#N$94).
+  $8594,$01 Tile ID: #R$A002(#N$93).
+  $8595,$01 Tile ID: #R$A00A(#N$94).
+N $8596 Command #N$01: Skip tiles.
+  $8596,$01 Command (#N$01).
+  $8597,$01 Skip count: #N(#PEEK(#PC)).
+  $8598,$01 Tile ID: #R$A2FA(#N$F2).
+  $8599,$01 Tile ID: #R$A302(#N$F3).
+  $859A,$01 Tile ID: #R$A302(#N$F3).
+  $859B,$01 Tile ID: #R$A2FA(#N$F2).
+  $859C,$01 Tile ID: #R$A302(#N$F3).
+  $859D,$01 Tile ID: #R$A302(#N$F3).
+  $859E,$01 Tile ID: #R$A2FA(#N$F2).
+  $859F,$01 Tile ID: #R$A302(#N$F3).
+  $85A0,$01 Tile ID: #R$A302(#N$F3).
+  $85A1,$01 Tile ID: #R$A00A(#N$94).
+  $85A2,$01 Tile ID: #R$A00A(#N$94).
+  $85A3,$01 Tile ID: #R$A002(#N$93).
+  $85A4,$01 Tile ID: #R$A00A(#N$94).
+  $85A5,$01 Tile ID: #R$A002(#N$93).
+  $85A6,$01 Tile ID: #R$A00A(#N$94).
+  $85A7,$01 Tile ID: #R$A002(#N$93).
+  $85A8,$01 Tile ID: #R$A00A(#N$94).
+  $85A9,$01 Tile ID: #R$A002(#N$93).
+  $85AA,$01 Tile ID: #R$A00A(#N$94).
+  $85AB,$01 Tile ID: #R$A002(#N$93).
+  $85AC,$01 Tile ID: #R$A00A(#N$94).
+  $85AD,$01 Tile ID: #R$A002(#N$93).
+  $85AE,$01 Tile ID: #R$A00A(#N$94).
+  $85AF,$01 Tile ID: #R$A002(#N$93).
+  $85B0,$01 Tile ID: #R$A00A(#N$94).
+  $85B1,$01 Tile ID: #R$A002(#N$93).
+  $85B2,$01 Tile ID: #R$A00A(#N$94).
+  $85B3,$01 Tile ID: #R$A002(#N$93).
+N $85B4 Command #N$01: Skip tiles.
+  $85B4,$01 Command (#N$01).
+  $85B5,$01 Skip count: #N(#PEEK(#PC)).
+  $85B6,$01 Tile ID: #R$A00A(#N$94).
+  $85B7,$01 Tile ID: #R$A002(#N$93).
+  $85B8,$01 Tile ID: #R$A0DA(#N$AE).
+  $85B9,$01 Tile ID: #R$A0CA(#N$AC).
+  $85BA,$01 Tile ID: #R$9FFA(#N$92).
+  $85BB,$01 Tile ID: #R$A342(#N$FB).
+  $85BC,$01 Tile ID: #R$A34A(#N$FC).
+  $85BD,$01 Tile ID: #R$9FFA(#N$92).
+  $85BE,$01 Tile ID: #R$A0DA(#N$AE).
+  $85BF,$01 Tile ID: #R$A0CA(#N$AC).
+  $85C0,$01 Tile ID: #R$A00A(#N$94).
+  $85C1,$01 Tile ID: #R$A002(#N$93).
+N $85C2 Command #N$01: Skip tiles.
+  $85C2,$01 Command (#N$01).
+  $85C3,$01 Skip count: #N(#PEEK(#PC)).
+  $85C4,$01 Tile ID: #R$A00A(#N$94).
+  $85C5,$01 Tile ID: #R$A00A(#N$94).
+  $85C6,$01 Tile ID: #R$A0DA(#N$AE).
+  $85C7,$01 Tile ID: #R$A0CA(#N$AC).
+N $85C8 Command #N$01: Skip tiles.
+  $85C8,$01 Command (#N$01).
+  $85C9,$01 Skip count: #N(#PEEK(#PC)).
+  $85CA,$01 Tile ID: #R$A17A(#N$C2).
+  $85CB,$01 Tile ID: #R$A18A(#N$C4).
+N $85CC Command #N$01: Skip tiles.
+  $85CC,$01 Command (#N$01).
+  $85CD,$01 Skip count: #N(#PEEK(#PC)).
+  $85CE,$01 Tile ID: #R$A00A(#N$94).
+  $85CF,$01 Tile ID: #R$A00A(#N$94).
+  $85D0,$01 Tile ID: #R$A0B2(#N$A9).
+  $85D1,$01 Tile ID: #R$A0BA(#N$AA).
+  $85D2,$01 Tile ID: #R$9FFA(#N$92).
+  $85D3,$01 Tile ID: #R$9C52(#N$1D).
+  $85D4,$01 Tile ID: #R$9CAA(#N$28).
+  $85D5,$01 Tile ID: #R$9FFA(#N$92).
+  $85D6,$01 Tile ID: #R$A0B2(#N$A9).
+  $85D7,$01 Tile ID: #R$A0BA(#N$AA).
+  $85D8,$01 Tile ID: #R$A00A(#N$94).
+  $85D9,$01 Tile ID: #R$A00A(#N$94).
+N $85DA Command #N$01: Skip tiles.
+  $85DA,$01 Command (#N$01).
+  $85DB,$01 Skip count: #N(#PEEK(#PC)).
+  $85DC,$01 Tile ID: #R$A00A(#N$94).
+  $85DD,$01 Tile ID: #R$A002(#N$93).
+  $85DE,$01 Tile ID: #R$A0B2(#N$A9).
+  $85DF,$01 Tile ID: #R$A0BA(#N$AA).
+N $85E0 Command #N$01: Skip tiles.
+  $85E0,$01 Command (#N$01).
+  $85E1,$01 Skip count: #N(#PEEK(#PC)).
+  $85E2,$01 Tile ID: #R$A182(#N$C3).
+  $85E3,$01 Tile ID: #R$A192(#N$C5).
+N $85E4 Command #N$01: Skip tiles.
+  $85E4,$01 Command (#N$01).
+  $85E5,$01 Skip count: #N(#PEEK(#PC)).
+  $85E6,$01 Tile ID: #R$A00A(#N$94).
+  $85E7,$01 Tile ID: #R$A002(#N$93).
+  $85E8,$01 Tile ID: #R$A0B2(#N$A9).
+  $85E9,$01 Tile ID: #R$A0BA(#N$AA).
+N $85EA Command #N$01: Skip tiles.
+  $85EA,$01 Command (#N$01).
+  $85EB,$01 Skip count: #N(#PEEK(#PC)).
+  $85EC,$01 Tile ID: #R$A032(#N$99).
+  $85ED,$01 Tile ID: #R$A032(#N$99).
+N $85EE Command #N$01: Skip tiles.
+  $85EE,$01 Command (#N$01).
+  $85EF,$01 Skip count: #N(#PEEK(#PC)).
+  $85F0,$01 Tile ID: #R$A0B2(#N$A9).
+  $85F1,$01 Tile ID: #R$A0BA(#N$AA).
+  $85F2,$01 Tile ID: #R$A00A(#N$94).
+  $85F3,$01 Tile ID: #R$A002(#N$93).
+N $85F4 Command #N$01: Skip tiles.
+  $85F4,$01 Command (#N$01).
+  $85F5,$01 Skip count: #N(#PEEK(#PC)).
+  $85F6,$01 Tile ID: #R$A00A(#N$94).
+  $85F7,$01 Tile ID: #R$A00A(#N$94).
+  $85F8,$01 Tile ID: #R$A0B2(#N$A9).
+  $85F9,$01 Tile ID: #R$A0BA(#N$AA).
+N $85FA Command #N$01: Skip tiles.
+  $85FA,$01 Command (#N$01).
+  $85FB,$01 Skip count: #N(#PEEK(#PC)).
+  $85FC,$01 Tile ID: #R$A02A(#N$98).
+  $85FD,$01 Tile ID: #R$A25A(#N$DE).
+N $85FE Command #N$01: Skip tiles.
+  $85FE,$01 Command (#N$01).
+  $85FF,$01 Skip count: #N(#PEEK(#PC)).
+  $8600,$01 Tile ID: #R$A152(#N$BD).
+  $8601,$01 Tile ID: #R$A00A(#N$94).
+  $8602,$01 Tile ID: #R$A00A(#N$94).
+  $8603,$01 Tile ID: #R$A0E2(#N$AF).
+  $8604,$01 Tile ID: #R$A0D2(#N$AD).
+  $8605,$01 Tile ID: #R$A032(#N$99).
+  $8606,$01 Tile ID: #R$A362(#N$FF).
+  $8607,$01 Tile ID: #R$A362(#N$FF).
+  $8608,$01 Tile ID: #R$A032(#N$99).
+  $8609,$01 Tile ID: #R$A0E2(#N$AF).
+  $860A,$01 Tile ID: #R$A0D2(#N$AD).
+  $860B,$01 Tile ID: #R$A00A(#N$94).
+  $860C,$01 Tile ID: #R$A00A(#N$94).
+  $860D,$01 Tile ID: #R$9F22(#N$77).
+N $860E Command #N$01: Skip tiles.
+  $860E,$01 Command (#N$01).
+  $860F,$01 Skip count: #N(#PEEK(#PC)).
+  $8610,$01 Tile ID: #R$A00A(#N$94).
+  $8611,$01 Tile ID: #R$A002(#N$93).
+  $8612,$01 Tile ID: #R$A0E2(#N$AF).
+  $8613,$01 Tile ID: #R$A0D2(#N$AD).
+N $8614 Command #N$01: Skip tiles.
+  $8614,$01 Command (#N$01).
+  $8615,$01 Skip count: #N(#PEEK(#PC)).
+  $8616,$01 Tile ID: #R$A02A(#N$98).
+  $8617,$01 Tile ID: #R$A25A(#N$DE).
+  $8618,$01 Tile ID: #R$A152(#N$BD).
+  $8619,$01 Tile ID: #R$A162(#N$BF).
+  $861A,$01 Tile ID: #R$A00A(#N$94).
+  $861B,$01 Tile ID: #R$A002(#N$93).
+  $861C,$01 Tile ID: #R$A00A(#N$94).
+  $861D,$01 Tile ID: #R$A002(#N$93).
+  $861E,$01 Tile ID: #R$A00A(#N$94).
+  $861F,$01 Tile ID: #R$A002(#N$93).
+  $8620,$01 Tile ID: #R$A00A(#N$94).
+  $8621,$01 Tile ID: #R$A002(#N$93).
+  $8622,$01 Tile ID: #R$A00A(#N$94).
+  $8623,$01 Tile ID: #R$A002(#N$93).
+  $8624,$01 Tile ID: #R$A00A(#N$94).
+  $8625,$01 Tile ID: #R$A002(#N$93).
+N $8626 Command #N$01: Skip tiles.
+  $8626,$01 Command (#N$01).
+  $8627,$01 Skip count: #N(#PEEK(#PC)).
+  $8628,$01 Tile ID: #R$A00A(#N$94).
+  $8629,$01 Tile ID: #R$A00A(#N$94).
+  $862A,$01 Tile ID: #R$A002(#N$93).
+  $862B,$01 Tile ID: #R$A00A(#N$94).
+N $862C Command #N$01: Skip tiles.
+  $862C,$01 Command (#N$01).
+  $862D,$01 Skip count: #N(#PEEK(#PC)).
+  $862E,$01 Tile ID: #R$A02A(#N$98).
+  $862F,$01 Tile ID: #R$A172(#N$C1).
+  $8630,$01 Tile ID: #R$A162(#N$BF).
+N $8631 Command #N$01: Skip tiles.
+  $8631,$01 Command (#N$01).
+  $8632,$01 Skip count: #N(#PEEK(#PC)).
+  $8633,$01 Tile ID: #R$A00A(#N$94).
+  $8634,$01 Tile ID: #R$A00A(#N$94).
+  $8635,$01 Tile ID: #R$A002(#N$93).
+  $8636,$01 Tile ID: #R$A00A(#N$94).
+  $8637,$01 Tile ID: #R$A002(#N$93).
+  $8638,$01 Tile ID: #R$A00A(#N$94).
+  $8639,$01 Tile ID: #R$A002(#N$93).
+  $863A,$01 Tile ID: #R$A00A(#N$94).
+  $863B,$01 Tile ID: #R$A002(#N$93).
+  $863C,$01 Tile ID: #R$A00A(#N$94).
+  $863D,$01 Tile ID: #R$A002(#N$93).
+  $863E,$01 Tile ID: #R$A00A(#N$94).
+N $863F Command #N$01: Skip tiles.
+  $863F,$01 Command (#N$01).
+  $8640,$01 Skip count: #N(#PEEK(#PC)).
+  $8641,$01 Tile ID: #R$A00A(#N$94).
+  $8642,$01 Tile ID: #R$A002(#N$93).
+  $8643,$01 Tile ID: #R$A00A(#N$94).
+  $8644,$01 Tile ID: #R$A002(#N$93).
+N $8645 Command #N$01: Skip tiles.
+  $8645,$01 Command (#N$01).
+  $8646,$01 Skip count: #N(#PEEK(#PC)).
+N $8647 Command #N$02: Draw repeated tile.
+  $8647,$01 Command (#N$02).
+  $8648,$01 Repeat count: #N(#PEEK(#PC)).
+  $8649,$01 Tile ID: #R$A00A(#N$94).
+  $864A,$01 Tile ID: #R$A272(#N$E1).
+  $864B,$01 Tile ID: #R$A272(#N$E1).
+N $864C Command #N$02: Draw repeated tile.
+  $864C,$01 Command (#N$02).
+  $864D,$01 Repeat count: #N(#PEEK(#PC)).
+  $864E,$01 Tile ID: #R$A00A(#N$94).
+  $864F,$01 Tile ID: #R$A25A(#N$DE).
+N $8650 Command #N$01: Skip tiles.
+  $8650,$01 Command (#N$01).
+  $8651,$01 Skip count: #N(#PEEK(#PC)).
+N $8652 Command #N$03: Fill attribute buffer.
+  $8652,$01 Command (#N$03).
+  $8653,$01 Base fill colour: #COLOUR(#PEEK(#PC)).
+N $8654 Attribute overlay: skip.
+  $8654,$01 Opcode (#N$12).
+  $8655,$01 Skip count: #N(#PEEK(#PC)).
+  $8656,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8657,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8658 Attribute overlay: skip.
+  $8658,$01 Opcode (#N$12).
+  $8659,$01 Skip count: #N(#PEEK(#PC)).
+  $865A,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $865B,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $865C,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $865D,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $865E,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $865F Attribute overlay: repeat colour.
+  $865F,$01 Opcode (#N$1B).
+  $8660,$01 Repeat count: #N(#PEEK(#PC)).
+  $8661,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8662 Attribute overlay: skip.
+  $8662,$01 Opcode (#N$12).
+  $8663,$01 Skip count: #N(#PEEK(#PC)).
+  $8664,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8665,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8666,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8667,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8668,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8669 Attribute overlay: repeat colour.
+  $8669,$01 Opcode (#N$1B).
+  $866A,$01 Repeat count: #N(#PEEK(#PC)).
+  $866B,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $866C Attribute overlay: skip.
+  $866C,$01 Opcode (#N$12).
+  $866D,$01 Skip count: #N(#PEEK(#PC)).
+N $866E Attribute overlay: repeat colour.
+  $866E,$01 Opcode (#N$1B).
+  $866F,$01 Repeat count: #N(#PEEK(#PC)).
+  $8670,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8671 Attribute overlay: skip.
+  $8671,$01 Opcode (#N$12).
+  $8672,$01 Skip count: #N(#PEEK(#PC)).
+N $8673 Attribute overlay: repeat colour.
+  $8673,$01 Opcode (#N$1B).
+  $8674,$01 Repeat count: #N(#PEEK(#PC)).
+  $8675,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8676 Attribute overlay: skip.
+  $8676,$01 Opcode (#N$12).
+  $8677,$01 Skip count: #N(#PEEK(#PC)).
+N $8678 Attribute overlay: repeat colour.
+  $8678,$01 Opcode (#N$1B).
+  $8679,$01 Repeat count: #N(#PEEK(#PC)).
+  $867A,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $867B Attribute overlay: skip.
+  $867B,$01 Opcode (#N$12).
+  $867C,$01 Skip count: #N(#PEEK(#PC)).
+N $867D Attribute overlay: repeat colour.
+  $867D,$01 Opcode (#N$1B).
+  $867E,$01 Repeat count: #N(#PEEK(#PC)).
+  $867F,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8680 Attribute overlay: skip.
+  $8680,$01 Opcode (#N$12).
+  $8681,$01 Skip count: #N(#PEEK(#PC)).
+  $8682,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8683,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8684,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8685 Attribute overlay: repeat colour.
+  $8685,$01 Opcode (#N$1B).
+  $8686,$01 Repeat count: #N(#PEEK(#PC)).
+  $8687,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8688,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8689,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $868A,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $868B,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $868C,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $868D,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $868E,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $868F,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8690,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8691,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8692 Attribute overlay: skip.
+  $8692,$01 Opcode (#N$12).
+  $8693,$01 Skip count: #N(#PEEK(#PC)).
+  $8694,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8695,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8696,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8697 Attribute overlay: repeat colour.
+  $8697,$01 Opcode (#N$1B).
+  $8698,$01 Repeat count: #N(#PEEK(#PC)).
+  $8699,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $869A,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $869B,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $869C,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $869D,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $869E,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $869F,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86A0,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86A1,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86A2,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86A3,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $86A4 Attribute overlay: skip.
+  $86A4,$01 Opcode (#N$12).
+  $86A5,$01 Skip count: #N(#PEEK(#PC)).
+  $86A6,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86A7,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86A8,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $86A9 Attribute overlay: repeat colour.
+  $86A9,$01 Opcode (#N$1B).
+  $86AA,$01 Repeat count: #N(#PEEK(#PC)).
+  $86AB,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $86AC,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86AD,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86AE,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86AF,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86B0,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86B1,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86B2,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86B3,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86B4,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86B5,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $86B6 Attribute overlay: skip.
+  $86B6,$01 Opcode (#N$12).
+  $86B7,$01 Skip count: #N(#PEEK(#PC)).
+  $86B8,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86B9,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86BA,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86BB,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $86BC Attribute overlay: repeat colour.
+  $86BC,$01 Opcode (#N$1B).
+  $86BD,$01 Repeat count: #N(#PEEK(#PC)).
+  $86BE,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $86BF,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86C0,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86C1,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86C2,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86C3,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86C4,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86C5,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86C6,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86C7,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86C8,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86C9,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $86CA Attribute overlay: skip.
+  $86CA,$01 Opcode (#N$12).
+  $86CB,$01 Skip count: #N(#PEEK(#PC)).
+N $86CC Attribute overlay: repeat colour.
+  $86CC,$01 Opcode (#N$1B).
+  $86CD,$01 Repeat count: #N(#PEEK(#PC)).
+  $86CE,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $86CF Attribute overlay: skip.
+  $86CF,$01 Opcode (#N$12).
+  $86D0,$01 Skip count: #N(#PEEK(#PC)).
+N $86D1 Attribute overlay: repeat colour.
+  $86D1,$01 Opcode (#N$1B).
+  $86D2,$01 Repeat count: #N(#PEEK(#PC)).
+  $86D3,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $86D4 Attribute overlay: repeat colour.
+  $86D4,$01 Opcode (#N$1B).
+  $86D5,$01 Repeat count: #N(#PEEK(#PC)).
+  $86D6,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $86D7,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86D8,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86D9,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $86DA Attribute overlay: repeat colour.
+  $86DA,$01 Opcode (#N$1B).
+  $86DB,$01 Repeat count: #N(#PEEK(#PC)).
+  $86DC,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $86DD,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86DE,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86DF,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86E0,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86E1,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86E2,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86E3,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86E4,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86E5,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86E6,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $86E7 Attribute overlay: repeat colour.
+  $86E7,$01 Opcode (#N$1B).
+  $86E8,$01 Repeat count: #N(#PEEK(#PC)).
+  $86E9,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $86EA,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86EB,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86EC,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86ED,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86EE,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86EF,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86F0,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86F1,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86F2,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86F3,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86F4,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86F5,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86F6,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86F7,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86F8,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86F9,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86FA,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86FB,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86FC,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86FD,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86FE,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $86FF,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8700,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8701 Attribute overlay: repeat colour.
+  $8701,$01 Opcode (#N$1B).
+  $8702,$01 Repeat count: #N(#PEEK(#PC)).
+  $8703,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8704,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8705,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8706,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8707,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8708,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8709,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $870A,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $870B Attribute overlay: repeat colour.
+  $870B,$01 Opcode (#N$1B).
+  $870C,$01 Repeat count: #N(#PEEK(#PC)).
+  $870D,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $870E,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $870F,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8710,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8711,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8712,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8713,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8714,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8715,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8716,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8717,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8718 Attribute overlay: repeat colour.
+  $8718,$01 Opcode (#N$1B).
+  $8719,$01 Repeat count: #N(#PEEK(#PC)).
+  $871A,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $871B,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $871C,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $871D,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $871E,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $871F,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8720,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8721,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8722,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8723,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8724,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8725,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8726,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8727,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8728,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8729,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $872A,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $872B,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $872C,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $872D,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $872E Attribute overlay: repeat colour.
+  $872E,$01 Opcode (#N$1B).
+  $872F,$01 Repeat count: #N(#PEEK(#PC)).
+  $8730,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8731,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8732 Attribute overlay: repeat colour.
+  $8732,$01 Opcode (#N$1B).
+  $8733,$01 Repeat count: #N(#PEEK(#PC)).
+  $8734,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8735,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8736,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8737,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8738 Attribute overlay: repeat colour.
+  $8738,$01 Opcode (#N$1B).
+  $8739,$01 Repeat count: #N(#PEEK(#PC)).
+  $873A,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $873B Attribute overlay: repeat colour.
+  $873B,$01 Opcode (#N$1B).
+  $873C,$01 Repeat count: #N(#PEEK(#PC)).
+  $873D,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $873E,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $873F,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8740 Attribute overlay: repeat colour.
+  $8740,$01 Opcode (#N$1B).
+  $8741,$01 Repeat count: #N(#PEEK(#PC)).
+  $8742,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8743,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8744,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8745,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8746 Attribute overlay: repeat colour.
+  $8746,$01 Opcode (#N$1B).
+  $8747,$01 Repeat count: #N(#PEEK(#PC)).
+  $8748,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8749 Attribute overlay: repeat colour.
+  $8749,$01 Opcode (#N$1B).
+  $874A,$01 Repeat count: #N(#PEEK(#PC)).
+  $874B,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $874C Attribute overlay: repeat colour.
+  $874C,$01 Opcode (#N$1B).
+  $874D,$01 Repeat count: #N(#PEEK(#PC)).
+  $874E,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $874F Attribute overlay: repeat colour.
+  $874F,$01 Opcode (#N$1B).
+  $8750,$01 Repeat count: #N(#PEEK(#PC)).
+  $8751,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8752 Attribute overlay: repeat colour.
+  $8752,$01 Opcode (#N$1B).
+  $8753,$01 Repeat count: #N(#PEEK(#PC)).
+  $8754,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8755,$01 End of attribute overlay.
   $8756,$01 Terminator.
 
 b $8757 Room #N$03
 @ $8757 label=Room03
 D $8757 #ROOM$03
+N $8757 Command #N$01: Skip tiles.
+  $8757,$01 Command (#N$01).
+  $8758,$01 Skip count: #N(#PEEK(#PC)).
+  $8759,$01 Tile ID: #R$A352(#N$FD).
+  $875A,$01 Tile ID: #R$A35A(#N$FE).
+  $875B,$01 Tile ID: #R$A352(#N$FD).
+  $875C,$01 Tile ID: #R$A352(#N$FD).
+  $875D,$01 Tile ID: #R$A35A(#N$FE).
+  $875E,$01 Tile ID: #R$A352(#N$FD).
+  $875F,$01 Tile ID: #R$A352(#N$FD).
+  $8760,$01 Tile ID: #R$A35A(#N$FE).
+N $8761 Command #N$01: Skip tiles.
+  $8761,$01 Command (#N$01).
+  $8762,$01 Skip count: #N(#PEEK(#PC)).
+  $8763,$01 Tile ID: #R$9BC2(#N$0B).
+  $8764,$01 Tile ID: #R$9BCA(#N$0C).
+  $8765,$01 Tile ID: #R$9BE2(#N$0F).
+N $8766 Command #N$01: Skip tiles.
+  $8766,$01 Command (#N$01).
+  $8767,$01 Skip count: #N(#PEEK(#PC)).
+  $8768,$01 Tile ID: #R$A35A(#N$FE).
+  $8769,$01 Tile ID: #R$A352(#N$FD).
+  $876A,$01 Tile ID: #R$A352(#N$FD).
+  $876B,$01 Tile ID: #R$A35A(#N$FE).
+  $876C,$01 Tile ID: #R$A352(#N$FD).
+  $876D,$01 Tile ID: #R$A352(#N$FD).
+  $876E,$01 Tile ID: #R$A35A(#N$FE).
+  $876F,$01 Tile ID: #R$A352(#N$FD).
+N $8770 Command #N$01: Skip tiles.
+  $8770,$01 Command (#N$01).
+  $8771,$01 Skip count: #N(#PEEK(#PC)).
+  $8772,$01 Tile ID: #R$9BB2(#N$09).
+  $8773,$01 Tile ID: #R$9BBA(#N$0A).
+N $8774 Command #N$01: Skip tiles.
+  $8774,$01 Command (#N$01).
+  $8775,$01 Skip count: #N(#PEEK(#PC)).
+  $8776,$01 Tile ID: #R$9BAA(#N$08).
+N $8777 Command #N$01: Skip tiles.
+  $8777,$01 Command (#N$01).
+  $8778,$01 Skip count: #N(#PEEK(#PC)).
+  $8779,$01 Tile ID: #R$9BEA(#N$10).
+N $877A Command #N$01: Skip tiles.
+  $877A,$01 Command (#N$01).
+  $877B,$01 Skip count: #N(#PEEK(#PC)).
+  $877C,$01 Tile ID: #R$A352(#N$FD).
+  $877D,$01 Tile ID: #R$A352(#N$FD).
+  $877E,$01 Tile ID: #R$A35A(#N$FE).
+  $877F,$01 Tile ID: #R$A352(#N$FD).
+  $8780,$01 Tile ID: #R$A352(#N$FD).
+  $8781,$01 Tile ID: #R$A35A(#N$FE).
+  $8782,$01 Tile ID: #R$A352(#N$FD).
+  $8783,$01 Tile ID: #R$A352(#N$FD).
+N $8784 Command #N$01: Skip tiles.
+  $8784,$01 Command (#N$01).
+  $8785,$01 Skip count: #N(#PEEK(#PC)).
+  $8786,$01 Tile ID: #R$9C42(#N$1B).
+N $8787 Command #N$01: Skip tiles.
+  $8787,$01 Command (#N$01).
+  $8788,$01 Skip count: #N(#PEEK(#PC)).
+  $8789,$01 Tile ID: #R$9BDA(#N$0E).
+  $878A,$01 Tile ID: #R$9BD2(#N$0D).
+  $878B,$01 Tile ID: #R$9C4A(#N$1C).
+N $878C Command #N$01: Skip tiles.
+  $878C,$01 Command (#N$01).
+  $878D,$01 Skip count: #N(#PEEK(#PC)).
+  $878E,$01 Tile ID: #R$9BEA(#N$10).
+N $878F Command #N$01: Skip tiles.
+  $878F,$01 Command (#N$01).
+  $8790,$01 Skip count: #N(#PEEK(#PC)).
+  $8791,$01 Tile ID: #R$A352(#N$FD).
+  $8792,$01 Tile ID: #R$A35A(#N$FE).
+  $8793,$01 Tile ID: #R$A352(#N$FD).
+  $8794,$01 Tile ID: #R$A352(#N$FD).
+  $8795,$01 Tile ID: #R$A35A(#N$FE).
+  $8796,$01 Tile ID: #R$A352(#N$FD).
+  $8797,$01 Tile ID: #R$A352(#N$FD).
+  $8798,$01 Tile ID: #R$A35A(#N$FE).
+N $8799 Command #N$01: Skip tiles.
+  $8799,$01 Command (#N$01).
+  $879A,$01 Skip count: #N(#PEEK(#PC)).
+  $879B,$01 Tile ID: #R$9C3A(#N$1A).
+N $879C Command #N$01: Skip tiles.
+  $879C,$01 Command (#N$01).
+  $879D,$01 Skip count: #N(#PEEK(#PC)).
+  $879E,$01 Tile ID: #R$9BF2(#N$11).
+N $879F Command #N$01: Skip tiles.
+  $879F,$01 Command (#N$01).
+  $87A0,$01 Skip count: #N(#PEEK(#PC)).
+N $87A1 Command #N$02: Draw repeated tile.
+  $87A1,$01 Command (#N$02).
+  $87A2,$01 Repeat count: #N(#PEEK(#PC)).
+  $87A3,$01 Tile ID: #R$A27A(#N$E2).
+N $87A4 Command #N$01: Skip tiles.
+  $87A4,$01 Command (#N$01).
+  $87A5,$01 Skip count: #N(#PEEK(#PC)).
+  $87A6,$01 Tile ID: #R$9C2A(#N$18).
+  $87A7,$01 Tile ID: #R$9C22(#N$17).
+  $87A8,$01 Tile ID: #R$9C32(#N$19).
+N $87A9 Command #N$01: Skip tiles.
+  $87A9,$01 Command (#N$01).
+  $87AA,$01 Skip count: #N(#PEEK(#PC)).
+  $87AB,$01 Tile ID: #R$9BFA(#N$12).
+N $87AC Command #N$01: Skip tiles.
+  $87AC,$01 Command (#N$01).
+  $87AD,$01 Skip count: #N(#PEEK(#PC)).
+  $87AE,$01 Tile ID: #R$A00A(#N$94).
+  $87AF,$01 Tile ID: #R$A002(#N$93).
+  $87B0,$01 Tile ID: #R$A00A(#N$94).
+  $87B1,$01 Tile ID: #R$A002(#N$93).
+  $87B2,$01 Tile ID: #R$A00A(#N$94).
+  $87B3,$01 Tile ID: #R$A002(#N$93).
+  $87B4,$01 Tile ID: #R$A00A(#N$94).
+  $87B5,$01 Tile ID: #R$A002(#N$93).
+N $87B6 Command #N$01: Skip tiles.
+  $87B6,$01 Command (#N$01).
+  $87B7,$01 Skip count: #N(#PEEK(#PC)).
+  $87B8,$01 Tile ID: #R$9C02(#N$13).
+  $87B9,$01 Tile ID: #R$9C02(#N$13).
+N $87BA Command #N$01: Skip tiles.
+  $87BA,$01 Command (#N$01).
+  $87BB,$01 Skip count: #N(#PEEK(#PC)).
+  $87BC,$01 Tile ID: #R$9FFA(#N$92).
+  $87BD,$01 Tile ID: #R$A0CA(#N$AC).
+N $87BE Command #N$02: Draw repeated tile.
+  $87BE,$01 Command (#N$02).
+  $87BF,$01 Repeat count: #N(#PEEK(#PC)).
+  $87C0,$01 Tile ID: #R$9FFA(#N$92).
+  $87C1,$01 Tile ID: #R$A0CA(#N$AC).
+  $87C2,$01 Tile ID: #R$A002(#N$93).
+  $87C3,$01 Tile ID: #R$A00A(#N$94).
+N $87C4 Command #N$01: Skip tiles.
+  $87C4,$01 Command (#N$01).
+  $87C5,$01 Skip count: #N(#PEEK(#PC)).
+N $87C6 Command #N$02: Draw repeated tile.
+  $87C6,$01 Command (#N$02).
+  $87C7,$01 Repeat count: #N(#PEEK(#PC)).
+  $87C8,$01 Tile ID: #R$9FFA(#N$92).
+  $87C9,$01 Tile ID: #R$A0CA(#N$AC).
+  $87CA,$01 Tile ID: #R$A002(#N$93).
+  $87CB,$01 Tile ID: #R$A002(#N$93).
+N $87CC Command #N$01: Skip tiles.
+  $87CC,$01 Command (#N$01).
+  $87CD,$01 Skip count: #N(#PEEK(#PC)).
+  $87CE,$01 Tile ID: #R$9BB2(#N$09).
+  $87CF,$01 Tile ID: #R$9BBA(#N$0A).
+N $87D0 Command #N$01: Skip tiles.
+  $87D0,$01 Command (#N$01).
+  $87D1,$01 Skip count: #N(#PEEK(#PC)).
+  $87D2,$01 Tile ID: #R$A0BA(#N$AA).
+  $87D3,$01 Tile ID: #R$A002(#N$93).
+  $87D4,$01 Tile ID: #R$A00A(#N$94).
+N $87D5 Command #N$01: Skip tiles.
+  $87D5,$01 Command (#N$01).
+  $87D6,$01 Skip count: #N(#PEEK(#PC)).
+  $87D7,$01 Tile ID: #R$A032(#N$99).
+  $87D8,$01 Tile ID: #R$A0E2(#N$AF).
+  $87D9,$01 Tile ID: #R$A0D2(#N$AD).
+  $87DA,$01 Tile ID: #R$A33A(#N$FA).
+  $87DB,$01 Tile ID: #R$A032(#N$99).
+  $87DC,$01 Tile ID: #R$A0D2(#N$AD).
+  $87DD,$01 Tile ID: #R$A002(#N$93).
+  $87DE,$01 Tile ID: #R$A002(#N$93).
+N $87DF Command #N$01: Skip tiles.
+  $87DF,$01 Command (#N$01).
+  $87E0,$01 Skip count: #N(#PEEK(#PC)).
+  $87E1,$01 Tile ID: #R$A002(#N$93).
+  $87E2,$01 Tile ID: #R$A00A(#N$94).
+  $87E3,$01 Tile ID: #R$A002(#N$93).
+  $87E4,$01 Tile ID: #R$A00A(#N$94).
+  $87E5,$01 Tile ID: #R$A002(#N$93).
+  $87E6,$01 Tile ID: #R$A00A(#N$94).
+  $87E7,$01 Tile ID: #R$A002(#N$93).
+  $87E8,$01 Tile ID: #R$A00A(#N$94).
+N $87E9 Command #N$01: Skip tiles.
+  $87E9,$01 Command (#N$01).
+  $87EA,$01 Skip count: #N(#PEEK(#PC)).
+  $87EB,$01 Tile ID: #R$A30A(#N$F4).
+N $87EC Command #N$01: Skip tiles.
+  $87EC,$01 Command (#N$01).
+  $87ED,$01 Skip count: #N(#PEEK(#PC)).
+  $87EE,$01 Tile ID: #R$A30A(#N$F4).
+N $87EF Command #N$01: Skip tiles.
+  $87EF,$01 Command (#N$01).
+  $87F0,$01 Skip count: #N(#PEEK(#PC)).
+  $87F1,$01 Tile ID: #R$A30A(#N$F4).
+N $87F2 Command #N$01: Skip tiles.
+  $87F2,$01 Command (#N$01).
+  $87F3,$01 Skip count: #N(#PEEK(#PC)).
+  $87F4,$01 Tile ID: #R$A30A(#N$F4).
+N $87F5 Command #N$01: Skip tiles.
+  $87F5,$01 Command (#N$01).
+  $87F6,$01 Skip count: #N(#PEEK(#PC)).
+  $87F7,$01 Tile ID: #R$A30A(#N$F4).
+N $87F8 Command #N$01: Skip tiles.
+  $87F8,$01 Command (#N$01).
+  $87F9,$01 Skip count: #N(#PEEK(#PC)).
+  $87FA,$01 Tile ID: #R$A102(#N$B3).
+  $87FB,$01 Tile ID: #R$A10A(#N$B4).
+  $87FC,$01 Tile ID: #R$A112(#N$B5).
+N $87FD Command #N$01: Skip tiles.
+  $87FD,$01 Command (#N$01).
+  $87FE,$01 Skip count: #N(#PEEK(#PC)).
+  $87FF,$01 Tile ID: #R$A30A(#N$F4).
+N $8800 Command #N$01: Skip tiles.
+  $8800,$01 Command (#N$01).
+  $8801,$01 Skip count: #N(#PEEK(#PC)).
+  $8802,$01 Tile ID: #R$A00A(#N$94).
+  $8803,$01 Tile ID: #R$A002(#N$93).
+  $8804,$01 Tile ID: #R$A00A(#N$94).
+  $8805,$01 Tile ID: #R$A002(#N$93).
+  $8806,$01 Tile ID: #R$A00A(#N$94).
+  $8807,$01 Tile ID: #R$A002(#N$93).
+  $8808,$01 Tile ID: #R$A00A(#N$94).
+  $8809,$01 Tile ID: #R$A002(#N$93).
+  $880A,$01 Tile ID: #R$A302(#N$F3).
+  $880B,$01 Tile ID: #R$A2FA(#N$F2).
+  $880C,$01 Tile ID: #R$A302(#N$F3).
+  $880D,$01 Tile ID: #R$A302(#N$F3).
+  $880E,$01 Tile ID: #R$A2FA(#N$F2).
+  $880F,$01 Tile ID: #R$A302(#N$F3).
+  $8810,$01 Tile ID: #R$A302(#N$F3).
+  $8811,$01 Tile ID: #R$A2FA(#N$F2).
+  $8812,$01 Tile ID: #R$A302(#N$F3).
+  $8813,$01 Tile ID: #R$A302(#N$F3).
+  $8814,$01 Tile ID: #R$A2FA(#N$F2).
+  $8815,$01 Tile ID: #R$A302(#N$F3).
+  $8816,$01 Tile ID: #R$A302(#N$F3).
+  $8817,$01 Tile ID: #R$A2FA(#N$F2).
+  $8818,$01 Tile ID: #R$A302(#N$F3).
+  $8819,$01 Tile ID: #R$A302(#N$F3).
+  $881A,$01 Tile ID: #R$A11A(#N$B6).
+  $881B,$01 Tile ID: #R$A122(#N$B7).
+  $881C,$01 Tile ID: #R$A12A(#N$B8).
+N $881D Command #N$02: Draw repeated tile.
+  $881D,$01 Command (#N$02).
+  $881E,$01 Repeat count: #N(#PEEK(#PC)).
+  $881F,$01 Tile ID: #R$A302(#N$F3).
+  $8820,$01 Tile ID: #R$A2FA(#N$F2).
+  $8821,$01 Tile ID: #R$A302(#N$F3).
+N $8822 Command #N$02: Draw repeated tile.
+  $8822,$01 Command (#N$02).
+  $8823,$01 Repeat count: #N(#PEEK(#PC)).
+  $8824,$01 Tile ID: #R$9FFA(#N$92).
+  $8825,$01 Tile ID: #R$A0DA(#N$AE).
+  $8826,$01 Tile ID: #R$A0CA(#N$AC).
+  $8827,$01 Tile ID: #R$A002(#N$93).
+  $8828,$01 Tile ID: #R$A00A(#N$94).
+N $8829 Command #N$01: Skip tiles.
+  $8829,$01 Command (#N$01).
+  $882A,$01 Skip count: #N(#PEEK(#PC)).
+  $882B,$01 Tile ID: #R$A32A(#N$F8).
+  $882C,$01 Tile ID: #R$9C62(#N$1F).
+N $882D Command #N$02: Draw repeated tile.
+  $882D,$01 Command (#N$02).
+  $882E,$01 Repeat count: #N(#PEEK(#PC)).
+  $882F,$01 Tile ID: #R$A142(#N$BB).
+N $8830 Command #N$02: Draw repeated tile.
+  $8830,$01 Command (#N$02).
+  $8831,$01 Repeat count: #N(#PEEK(#PC)).
+  $8832,$01 Tile ID: #R$9FFA(#N$92).
+  $8833,$01 Tile ID: #R$A0B2(#N$A9).
+  $8834,$01 Tile ID: #R$A0BA(#N$AA).
+  $8835,$01 Tile ID: #R$A002(#N$93).
+  $8836,$01 Tile ID: #R$A002(#N$93).
+N $8837 Command #N$01: Skip tiles.
+  $8837,$01 Command (#N$01).
+  $8838,$01 Skip count: #N(#PEEK(#PC)).
+  $8839,$01 Tile ID: #R$A032(#N$99).
+  $883A,$01 Tile ID: #R$A032(#N$99).
+  $883B,$01 Tile ID: #R$A16A(#N$C0).
+N $883C Command #N$01: Skip tiles.
+  $883C,$01 Command (#N$01).
+  $883D,$01 Skip count: #N(#PEEK(#PC)).
+  $883E,$01 Tile ID: #R$A0B2(#N$A9).
+  $883F,$01 Tile ID: #R$A0BA(#N$AA).
+  $8840,$01 Tile ID: #R$A002(#N$93).
+  $8841,$01 Tile ID: #R$A00A(#N$94).
+N $8842 Command #N$01: Skip tiles.
+  $8842,$01 Command (#N$01).
+  $8843,$01 Skip count: #N(#PEEK(#PC)).
+  $8844,$01 Tile ID: #R$A262(#N$DF).
+  $8845,$01 Tile ID: #R$A25A(#N$DE).
+N $8846 Command #N$01: Skip tiles.
+  $8846,$01 Command (#N$01).
+  $8847,$01 Skip count: #N(#PEEK(#PC)).
+  $8848,$01 Tile ID: #R$A362(#N$FF).
+  $8849,$01 Tile ID: #R$A032(#N$99).
+  $884A,$01 Tile ID: #R$A362(#N$FF).
+  $884B,$01 Tile ID: #R$A032(#N$99).
+  $884C,$01 Tile ID: #R$A0E2(#N$AF).
+  $884D,$01 Tile ID: #R$A0D2(#N$AD).
+  $884E,$01 Tile ID: #R$A002(#N$93).
+  $884F,$01 Tile ID: #R$A002(#N$93).
+  $8850,$01 Tile ID: #R$A14A(#N$BC).
+N $8851 Command #N$01: Skip tiles.
+  $8851,$01 Command (#N$01).
+  $8852,$01 Skip count: #N(#PEEK(#PC)).
+  $8853,$01 Tile ID: #R$A02A(#N$98).
+  $8854,$01 Tile ID: #R$A26A(#N$E0).
+N $8855 Command #N$01: Skip tiles.
+  $8855,$01 Command (#N$01).
+  $8856,$01 Skip count: #N(#PEEK(#PC)).
+  $8857,$01 Tile ID: #R$A002(#N$93).
+  $8858,$01 Tile ID: #R$A00A(#N$94).
+  $8859,$01 Tile ID: #R$A002(#N$93).
+  $885A,$01 Tile ID: #R$A00A(#N$94).
+  $885B,$01 Tile ID: #R$A002(#N$93).
+  $885C,$01 Tile ID: #R$A00A(#N$94).
+  $885D,$01 Tile ID: #R$A002(#N$93).
+  $885E,$01 Tile ID: #R$A00A(#N$94).
+  $885F,$01 Tile ID: #R$A15A(#N$BE).
+  $8860,$01 Tile ID: #R$A14A(#N$BC).
+N $8861 Command #N$01: Skip tiles.
+  $8861,$01 Command (#N$01).
+  $8862,$01 Skip count: #N(#PEEK(#PC)).
+  $8863,$01 Tile ID: #R$A262(#N$DF).
+  $8864,$01 Tile ID: #R$A25A(#N$DE).
+N $8865 Command #N$01: Skip tiles.
+  $8865,$01 Command (#N$01).
+  $8866,$01 Skip count: #N(#PEEK(#PC)).
+  $8867,$01 Tile ID: #R$A00A(#N$94).
+  $8868,$01 Tile ID: #R$A002(#N$93).
+  $8869,$01 Tile ID: #R$A00A(#N$94).
+  $886A,$01 Tile ID: #R$A002(#N$93).
+  $886B,$01 Tile ID: #R$A00A(#N$94).
+  $886C,$01 Tile ID: #R$A002(#N$93).
+  $886D,$01 Tile ID: #R$A00A(#N$94).
+  $886E,$01 Tile ID: #R$A002(#N$93).
+N $886F Command #N$01: Skip tiles.
+  $886F,$01 Command (#N$01).
+  $8870,$01 Skip count: #N(#PEEK(#PC)).
+  $8871,$01 Tile ID: #R$A15A(#N$BE).
+  $8872,$01 Tile ID: #R$A14A(#N$BC).
+N $8873 Command #N$01: Skip tiles.
+  $8873,$01 Command (#N$01).
+  $8874,$01 Skip count: #N(#PEEK(#PC)).
+  $8875,$01 Tile ID: #R$A02A(#N$98).
+  $8876,$01 Tile ID: #R$A26A(#N$E0).
+N $8877 Command #N$01: Skip tiles.
+  $8877,$01 Command (#N$01).
+  $8878,$01 Skip count: #N(#PEEK(#PC)).
+N $8879 Command #N$02: Draw repeated tile.
+  $8879,$01 Command (#N$02).
+  $887A,$01 Repeat count: #N(#PEEK(#PC)).
+  $887B,$01 Tile ID: #R$A00A(#N$94).
+  $887C,$01 Tile ID: #R$A01A(#N$96).
+  $887D,$01 Tile ID: #R$A14A(#N$BC).
+N $887E Command #N$01: Skip tiles.
+  $887E,$01 Command (#N$01).
+  $887F,$01 Skip count: #N(#PEEK(#PC)).
+  $8880,$01 Tile ID: #R$9C82(#N$23).
+N $8881 Command #N$01: Skip tiles.
+  $8881,$01 Command (#N$01).
+  $8882,$01 Skip count: #N(#PEEK(#PC)).
+N $8883 Command #N$02: Draw repeated tile.
+  $8883,$01 Command (#N$02).
+  $8884,$01 Repeat count: #N(#PEEK(#PC)).
+  $8885,$01 Tile ID: #R$9C82(#N$23).
+N $8886 Command #N$01: Skip tiles.
+  $8886,$01 Command (#N$01).
+  $8887,$01 Skip count: #N(#PEEK(#PC)).
+  $8888,$01 Tile ID: #R$9C82(#N$23).
+  $8889,$01 Tile ID: #R$9C82(#N$23).
+N $888A Command #N$01: Skip tiles.
+  $888A,$01 Command (#N$01).
+  $888B,$01 Skip count: #N(#PEEK(#PC)).
+  $888C,$01 Tile ID: #R$9C82(#N$23).
+  $888D,$01 Tile ID: #R$9C82(#N$23).
+N $888E Command #N$01: Skip tiles.
+  $888E,$01 Command (#N$01).
+  $888F,$01 Skip count: #N(#PEEK(#PC)).
+  $8890,$01 Tile ID: #R$9C8A(#N$24).
+  $8891,$01 Tile ID: #R$9C92(#N$25).
+  $8892,$01 Tile ID: #R$9C9A(#N$26).
+N $8893 Command #N$02: Draw repeated tile.
+  $8893,$01 Command (#N$02).
+  $8894,$01 Repeat count: #N(#PEEK(#PC)).
+  $8895,$01 Tile ID: #R$9C92(#N$25).
+  $8896,$01 Tile ID: #R$9CA2(#N$27).
+  $8897,$01 Tile ID: #R$9C8A(#N$24).
+  $8898,$01 Tile ID: #R$9C92(#N$25).
+  $8899,$01 Tile ID: #R$9C92(#N$25).
+  $889A,$01 Tile ID: #R$9CA2(#N$27).
+N $889B Command #N$01: Skip tiles.
+  $889B,$01 Command (#N$01).
+  $889C,$01 Skip count: #N(#PEEK(#PC)).
+  $889D,$01 Tile ID: #R$9C8A(#N$24).
+  $889E,$01 Tile ID: #R$9C92(#N$25).
+  $889F,$01 Tile ID: #R$9C92(#N$25).
+  $88A0,$01 Tile ID: #R$9CA2(#N$27).
+N $88A1 Command #N$01: Skip tiles.
+  $88A1,$01 Command (#N$01).
+  $88A2,$01 Skip count: #N(#PEEK(#PC)).
+N $88A3 Command #N$03: Fill attribute buffer.
+  $88A3,$01 Command (#N$03).
+  $88A4,$01 Base fill colour: #COLOUR(#PEEK(#PC)).
+N $88A5 Attribute overlay: skip.
+  $88A5,$01 Opcode (#N$12).
+  $88A6,$01 Skip count: #N(#PEEK(#PC)).
+N $88A7 Attribute overlay: repeat colour.
+  $88A7,$01 Opcode (#N$1B).
+  $88A8,$01 Repeat count: #N(#PEEK(#PC)).
+  $88A9,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $88AA Attribute overlay: skip.
+  $88AA,$01 Opcode (#N$12).
+  $88AB,$01 Skip count: #N(#PEEK(#PC)).
+N $88AC Attribute overlay: repeat colour.
+  $88AC,$01 Opcode (#N$1B).
+  $88AD,$01 Repeat count: #N(#PEEK(#PC)).
+  $88AE,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $88AF Attribute overlay: skip.
+  $88AF,$01 Opcode (#N$12).
+  $88B0,$01 Skip count: #N(#PEEK(#PC)).
+  $88B1,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $88B2,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $88B3 Attribute overlay: skip.
+  $88B3,$01 Opcode (#N$12).
+  $88B4,$01 Skip count: #N(#PEEK(#PC)).
+N $88B5 Attribute overlay: repeat colour.
+  $88B5,$01 Opcode (#N$1B).
+  $88B6,$01 Repeat count: #N(#PEEK(#PC)).
+  $88B7,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $88B8 Attribute overlay: skip.
+  $88B8,$01 Opcode (#N$12).
+  $88B9,$01 Skip count: #N(#PEEK(#PC)).
+  $88BA,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $88BB,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $88BC Attribute overlay: skip.
+  $88BC,$01 Opcode (#N$12).
+  $88BD,$01 Skip count: #N(#PEEK(#PC)).
+  $88BE,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $88BF Attribute overlay: skip.
+  $88BF,$01 Opcode (#N$12).
+  $88C0,$01 Skip count: #N(#PEEK(#PC)).
+N $88C1 Attribute overlay: repeat colour.
+  $88C1,$01 Opcode (#N$1B).
+  $88C2,$01 Repeat count: #N(#PEEK(#PC)).
+  $88C3,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $88C4 Attribute overlay: skip.
+  $88C4,$01 Opcode (#N$12).
+  $88C5,$01 Skip count: #N(#PEEK(#PC)).
+N $88C6 Attribute overlay: repeat colour.
+  $88C6,$01 Opcode (#N$1B).
+  $88C7,$01 Repeat count: #N(#PEEK(#PC)).
+  $88C8,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $88C9 Attribute overlay: skip.
+  $88C9,$01 Opcode (#N$12).
+  $88CA,$01 Skip count: #N(#PEEK(#PC)).
+N $88CB Attribute overlay: repeat colour.
+  $88CB,$01 Opcode (#N$1B).
+  $88CC,$01 Repeat count: #N(#PEEK(#PC)).
+  $88CD,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $88CE Attribute overlay: skip.
+  $88CE,$01 Opcode (#N$12).
+  $88CF,$01 Skip count: #N(#PEEK(#PC)).
+  $88D0,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $88D1,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $88D2 Attribute overlay: skip.
+  $88D2,$01 Opcode (#N$12).
+  $88D3,$01 Skip count: #N(#PEEK(#PC)).
+N $88D4 Attribute overlay: repeat colour.
+  $88D4,$01 Opcode (#N$1B).
+  $88D5,$01 Repeat count: #N(#PEEK(#PC)).
+  $88D6,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $88D7 Attribute overlay: skip.
+  $88D7,$01 Opcode (#N$12).
+  $88D8,$01 Skip count: #N(#PEEK(#PC)).
+N $88D9 Attribute overlay: repeat colour.
+  $88D9,$01 Opcode (#N$1B).
+  $88DA,$01 Repeat count: #N(#PEEK(#PC)).
+  $88DB,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $88DC,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $88DD,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $88DE,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $88DF Attribute overlay: skip.
+  $88DF,$01 Opcode (#N$12).
+  $88E0,$01 Skip count: #N(#PEEK(#PC)).
+N $88E1 Attribute overlay: repeat colour.
+  $88E1,$01 Opcode (#N$1B).
+  $88E2,$01 Repeat count: #N(#PEEK(#PC)).
+  $88E3,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $88E4,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $88E5,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $88E6,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $88E7 Attribute overlay: skip.
+  $88E7,$01 Opcode (#N$12).
+  $88E8,$01 Skip count: #N(#PEEK(#PC)).
+N $88E9 Attribute overlay: repeat colour.
+  $88E9,$01 Opcode (#N$1B).
+  $88EA,$01 Repeat count: #N(#PEEK(#PC)).
+  $88EB,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $88EC,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $88ED,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $88EE,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $88EF Attribute overlay: skip.
+  $88EF,$01 Opcode (#N$12).
+  $88F0,$01 Skip count: #N(#PEEK(#PC)).
+  $88F1,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $88F2,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $88F3,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $88F4,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $88F5,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $88F6,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $88F7,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $88F8,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $88F9 Attribute overlay: skip.
+  $88F9,$01 Opcode (#N$12).
+  $88FA,$01 Skip count: #N(#PEEK(#PC)).
+N $88FB Attribute overlay: repeat colour.
+  $88FB,$01 Opcode (#N$1B).
+  $88FC,$01 Repeat count: #N(#PEEK(#PC)).
+  $88FD,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $88FE Attribute overlay: skip.
+  $88FE,$01 Opcode (#N$12).
+  $88FF,$01 Skip count: #N(#PEEK(#PC)).
+N $8900 Attribute overlay: repeat colour.
+  $8900,$01 Opcode (#N$1B).
+  $8901,$01 Repeat count: #N(#PEEK(#PC)).
+  $8902,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8903 Attribute overlay: skip.
+  $8903,$01 Opcode (#N$12).
+  $8904,$01 Skip count: #N(#PEEK(#PC)).
+N $8905 Attribute overlay: repeat colour.
+  $8905,$01 Opcode (#N$1B).
+  $8906,$01 Repeat count: #N(#PEEK(#PC)).
+  $8907,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8908,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8909,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $890A,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $890B Attribute overlay: repeat colour.
+  $890B,$01 Opcode (#N$1B).
+  $890C,$01 Repeat count: #N(#PEEK(#PC)).
+  $890D,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $890E,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $890F,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8910 Attribute overlay: repeat colour.
+  $8910,$01 Opcode (#N$1B).
+  $8911,$01 Repeat count: #N(#PEEK(#PC)).
+  $8912,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8913 Attribute overlay: repeat colour.
+  $8913,$01 Opcode (#N$1B).
+  $8914,$01 Repeat count: #N(#PEEK(#PC)).
+  $8915,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8916 Attribute overlay: repeat colour.
+  $8916,$01 Opcode (#N$1B).
+  $8917,$01 Repeat count: #N(#PEEK(#PC)).
+  $8918,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8919,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $891A,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $891B,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $891C Attribute overlay: repeat colour.
+  $891C,$01 Opcode (#N$1B).
+  $891D,$01 Repeat count: #N(#PEEK(#PC)).
+  $891E,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $891F,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8920,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8921 Attribute overlay: repeat colour.
+  $8921,$01 Opcode (#N$1B).
+  $8922,$01 Repeat count: #N(#PEEK(#PC)).
+  $8923,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8924,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8925,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8926,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8927,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8928,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8929,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $892A,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $892B,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $892C Attribute overlay: repeat colour.
+  $892C,$01 Opcode (#N$1B).
+  $892D,$01 Repeat count: #N(#PEEK(#PC)).
+  $892E,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $892F,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8930,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8931 Attribute overlay: repeat colour.
+  $8931,$01 Opcode (#N$1B).
+  $8932,$01 Repeat count: #N(#PEEK(#PC)).
+  $8933,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8934,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8935,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8936,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8937,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8938,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8939,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $893A,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $893B,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $893C Attribute overlay: repeat colour.
+  $893C,$01 Opcode (#N$1B).
+  $893D,$01 Repeat count: #N(#PEEK(#PC)).
+  $893E,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $893F,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8940,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8941 Attribute overlay: repeat colour.
+  $8941,$01 Opcode (#N$1B).
+  $8942,$01 Repeat count: #N(#PEEK(#PC)).
+  $8943,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8944 Attribute overlay: repeat colour.
+  $8944,$01 Opcode (#N$1B).
+  $8945,$01 Repeat count: #N(#PEEK(#PC)).
+  $8946,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8947,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8948,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8949,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $894A,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $894B,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $894C,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $894D Attribute overlay: repeat colour.
+  $894D,$01 Opcode (#N$1B).
+  $894E,$01 Repeat count: #N(#PEEK(#PC)).
+  $894F,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8950 Attribute overlay: repeat colour.
+  $8950,$01 Opcode (#N$1B).
+  $8951,$01 Repeat count: #N(#PEEK(#PC)).
+  $8952,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8953,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8954,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8955,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8956,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8957,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8958,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8959 Attribute overlay: repeat colour.
+  $8959,$01 Opcode (#N$1B).
+  $895A,$01 Repeat count: #N(#PEEK(#PC)).
+  $895B,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $895C Attribute overlay: repeat colour.
+  $895C,$01 Opcode (#N$1B).
+  $895D,$01 Repeat count: #N(#PEEK(#PC)).
+  $895E,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $895F,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8960,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8961,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8962,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8963,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8964,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8965,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8966,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8967,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8968,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8969,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $896A,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $896B,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $896C,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $896D,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $896E,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $896F,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8970 Attribute overlay: repeat colour.
+  $8970,$01 Opcode (#N$1B).
+  $8971,$01 Repeat count: #N(#PEEK(#PC)).
+  $8972,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8973 Attribute overlay: repeat colour.
+  $8973,$01 Opcode (#N$1B).
+  $8974,$01 Repeat count: #N(#PEEK(#PC)).
+  $8975,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8976,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8977 Attribute overlay: repeat colour.
+  $8977,$01 Opcode (#N$1B).
+  $8978,$01 Repeat count: #N(#PEEK(#PC)).
+  $8979,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $897A,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $897B,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $897C,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $897D,$01 End of attribute overlay.
   $897E,$01 Terminator.
 
 b $897F Room #N$04
 @ $897F label=Room04
 D $897F #ROOM$04
+N $897F Command #N$01: Skip tiles.
+  $897F,$01 Command (#N$01).
+  $8980,$01 Skip count: #N(#PEEK(#PC)).
+  $8981,$01 Tile ID: #R$9BC2(#N$0B).
+  $8982,$01 Tile ID: #R$9BCA(#N$0C).
+  $8983,$01 Tile ID: #R$9BD2(#N$0D).
+  $8984,$01 Tile ID: #R$9BB2(#N$09).
+  $8985,$01 Tile ID: #R$9BBA(#N$0A).
+N $8986 Command #N$01: Skip tiles.
+  $8986,$01 Command (#N$01).
+  $8987,$01 Skip count: #N(#PEEK(#PC)).
+  $8988,$01 Tile ID: #R$9BB2(#N$09).
+  $8989,$01 Tile ID: #R$9BBA(#N$0A).
+  $898A,$01 Tile ID: #R$9BC2(#N$0B).
+  $898B,$01 Tile ID: #R$9BCA(#N$0C).
+  $898C,$01 Tile ID: #R$9BD2(#N$0D).
+N $898D Command #N$01: Skip tiles.
+  $898D,$01 Command (#N$01).
+  $898E,$01 Skip count: #N(#PEEK(#PC)).
+  $898F,$01 Tile ID: #R$9BAA(#N$08).
+N $8990 Command #N$01: Skip tiles.
+  $8990,$01 Command (#N$01).
+  $8991,$01 Skip count: #N(#PEEK(#PC)).
+  $8992,$01 Tile ID: #R$9BDA(#N$0E).
+  $8993,$01 Tile ID: #R$9BCA(#N$0C).
+  $8994,$01 Tile ID: #R$9BCA(#N$0C).
+  $8995,$01 Tile ID: #R$9BE2(#N$0F).
+N $8996 Command #N$01: Skip tiles.
+  $8996,$01 Command (#N$01).
+  $8997,$01 Skip count: #N(#PEEK(#PC)).
+  $8998,$01 Tile ID: #R$9BAA(#N$08).
+N $8999 Command #N$01: Skip tiles.
+  $8999,$01 Command (#N$01).
+  $899A,$01 Skip count: #N(#PEEK(#PC)).
+  $899B,$01 Tile ID: #R$9BDA(#N$0E).
+  $899C,$01 Tile ID: #R$9BD2(#N$0D).
+  $899D,$01 Tile ID: #R$9C4A(#N$1C).
+N $899E Command #N$01: Skip tiles.
+  $899E,$01 Command (#N$01).
+  $899F,$01 Skip count: #N(#PEEK(#PC)).
+  $89A0,$01 Tile ID: #R$9BEA(#N$10).
+N $89A1 Command #N$01: Skip tiles.
+  $89A1,$01 Command (#N$01).
+  $89A2,$01 Skip count: #N(#PEEK(#PC)).
+  $89A3,$01 Tile ID: #R$9C4A(#N$1C).
+N $89A4 Command #N$01: Skip tiles.
+  $89A4,$01 Command (#N$01).
+  $89A5,$01 Skip count: #N(#PEEK(#PC)).
+  $89A6,$01 Tile ID: #R$9BEA(#N$10).
+N $89A7 Command #N$01: Skip tiles.
+  $89A7,$01 Command (#N$01).
+  $89A8,$01 Skip count: #N(#PEEK(#PC)).
+  $89A9,$01 Tile ID: #R$9C42(#N$1B).
+N $89AA Command #N$01: Skip tiles.
+  $89AA,$01 Command (#N$01).
+  $89AB,$01 Skip count: #N(#PEEK(#PC)).
+  $89AC,$01 Tile ID: #R$9C0A(#N$14).
+N $89AD Command #N$01: Skip tiles.
+  $89AD,$01 Command (#N$01).
+  $89AE,$01 Skip count: #N(#PEEK(#PC)).
+  $89AF,$01 Tile ID: #R$9BF2(#N$11).
+N $89B0 Command #N$01: Skip tiles.
+  $89B0,$01 Command (#N$01).
+  $89B1,$01 Skip count: #N(#PEEK(#PC)).
+  $89B2,$01 Tile ID: #R$9C3A(#N$1A).
+N $89B3 Command #N$01: Skip tiles.
+  $89B3,$01 Command (#N$01).
+  $89B4,$01 Skip count: #N(#PEEK(#PC)).
+  $89B5,$01 Tile ID: #R$9C0A(#N$14).
+N $89B6 Command #N$01: Skip tiles.
+  $89B6,$01 Command (#N$01).
+  $89B7,$01 Skip count: #N(#PEEK(#PC)).
+  $89B8,$01 Tile ID: #R$9BEA(#N$10).
+  $89B9,$01 Tile ID: #R$9C02(#N$13).
+  $89BA,$01 Tile ID: #R$9C2A(#N$18).
+  $89BB,$01 Tile ID: #R$9C22(#N$17).
+  $89BC,$01 Tile ID: #R$9C32(#N$19).
+  $89BD,$01 Tile ID: #R$9BFA(#N$12).
+N $89BE Command #N$01: Skip tiles.
+  $89BE,$01 Command (#N$01).
+  $89BF,$01 Skip count: #N(#PEEK(#PC)).
+  $89C0,$01 Tile ID: #R$9C2A(#N$18).
+  $89C1,$01 Tile ID: #R$9C22(#N$17).
+  $89C2,$01 Tile ID: #R$9C1A(#N$16).
+  $89C3,$01 Tile ID: #R$9C12(#N$15).
+  $89C4,$01 Tile ID: #R$9C02(#N$13).
+  $89C5,$01 Tile ID: #R$9C02(#N$13).
+  $89C6,$01 Tile ID: #R$9C2A(#N$18).
+  $89C7,$01 Tile ID: #R$9C22(#N$17).
+  $89C8,$01 Tile ID: #R$9C1A(#N$16).
+  $89C9,$01 Tile ID: #R$9C12(#N$15).
+N $89CA Command #N$01: Skip tiles.
+  $89CA,$01 Command (#N$01).
+  $89CB,$01 Skip count: #N(#PEEK(#PC)).
+  $89CC,$01 Tile ID: #R$A30A(#N$F4).
+N $89CD Command #N$01: Skip tiles.
+  $89CD,$01 Command (#N$01).
+  $89CE,$01 Skip count: #N(#PEEK(#PC)).
+  $89CF,$01 Tile ID: #R$A30A(#N$F4).
+N $89D0 Command #N$01: Skip tiles.
+  $89D0,$01 Command (#N$01).
+  $89D1,$01 Skip count: #N(#PEEK(#PC)).
+  $89D2,$01 Tile ID: #R$A30A(#N$F4).
+N $89D3 Command #N$01: Skip tiles.
+  $89D3,$01 Command (#N$01).
+  $89D4,$01 Skip count: #N(#PEEK(#PC)).
+  $89D5,$01 Tile ID: #R$A30A(#N$F4).
+N $89D6 Command #N$01: Skip tiles.
+  $89D6,$01 Command (#N$01).
+  $89D7,$01 Skip count: #N(#PEEK(#PC)).
+  $89D8,$01 Tile ID: #R$A302(#N$F3).
+  $89D9,$01 Tile ID: #R$A2FA(#N$F2).
+  $89DA,$01 Tile ID: #R$A302(#N$F3).
+  $89DB,$01 Tile ID: #R$A302(#N$F3).
+  $89DC,$01 Tile ID: #R$A2FA(#N$F2).
+  $89DD,$01 Tile ID: #R$A302(#N$F3).
+  $89DE,$01 Tile ID: #R$A302(#N$F3).
+  $89DF,$01 Tile ID: #R$A2FA(#N$F2).
+  $89E0,$01 Tile ID: #R$A302(#N$F3).
+  $89E1,$01 Tile ID: #R$A302(#N$F3).
+  $89E2,$01 Tile ID: #R$A25A(#N$DE).
+N $89E3 Command #N$01: Skip tiles.
+  $89E3,$01 Command (#N$01).
+  $89E4,$01 Skip count: #N(#PEEK(#PC)).
+N $89E5 Command #N$02: Draw repeated tile.
+  $89E5,$01 Command (#N$02).
+  $89E6,$01 Repeat count: #N(#PEEK(#PC)).
+  $89E7,$01 Tile ID: #R$A142(#N$BB).
+  $89E8,$01 Tile ID: #R$9C5A(#N$1E).
+  $89E9,$01 Tile ID: #R$A332(#N$F9).
+N $89EA Command #N$01: Skip tiles.
+  $89EA,$01 Command (#N$01).
+  $89EB,$01 Skip count: #N(#PEEK(#PC)).
+  $89EC,$01 Tile ID: #R$A02A(#N$98).
+  $89ED,$01 Tile ID: #R$A26A(#N$E0).
+N $89EE Command #N$01: Skip tiles.
+  $89EE,$01 Command (#N$01).
+  $89EF,$01 Skip count: #N(#PEEK(#PC)).
+  $89F0,$01 Tile ID: #R$A262(#N$DF).
+  $89F1,$01 Tile ID: #R$A25A(#N$DE).
+N $89F2 Command #N$01: Skip tiles.
+  $89F2,$01 Command (#N$01).
+  $89F3,$01 Skip count: #N(#PEEK(#PC)).
+  $89F4,$01 Tile ID: #R$A02A(#N$98).
+  $89F5,$01 Tile ID: #R$A26A(#N$E0).
+N $89F6 Command #N$01: Skip tiles.
+  $89F6,$01 Command (#N$01).
+  $89F7,$01 Skip count: #N(#PEEK(#PC)).
+  $89F8,$01 Tile ID: #R$9BB2(#N$09).
+  $89F9,$01 Tile ID: #R$9BBA(#N$0A).
+  $89FA,$01 Tile ID: #R$9BB2(#N$09).
+  $89FB,$01 Tile ID: #R$9BBA(#N$0A).
+N $89FC Command #N$01: Skip tiles.
+  $89FC,$01 Command (#N$01).
+  $89FD,$01 Skip count: #N(#PEEK(#PC)).
+  $89FE,$01 Tile ID: #R$A262(#N$DF).
+  $89FF,$01 Tile ID: #R$A25A(#N$DE).
+N $8A00 Command #N$01: Skip tiles.
+  $8A00,$01 Command (#N$01).
+  $8A01,$01 Skip count: #N(#PEEK(#PC)).
+  $8A02,$01 Tile ID: #R$A02A(#N$98).
+  $8A03,$01 Tile ID: #R$A26A(#N$E0).
+N $8A04 Command #N$01: Skip tiles.
+  $8A04,$01 Command (#N$01).
+  $8A05,$01 Skip count: #N(#PEEK(#PC)).
+  $8A06,$01 Tile ID: #R$A0F2(#N$B1).
+  $8A07,$01 Tile ID: #R$9C1A(#N$16).
+N $8A08 Command #N$02: Draw repeated tile.
+  $8A08,$01 Command (#N$02).
+  $8A09,$01 Repeat count: #N(#PEEK(#PC)).
+  $8A0A,$01 Tile ID: #R$9C22(#N$17).
+  $8A0B,$01 Tile ID: #R$9C1A(#N$16).
+  $8A0C,$01 Tile ID: #R$9C22(#N$17).
+  $8A0D,$01 Tile ID: #R$9C62(#N$1F).
+N $8A0E Command #N$01: Skip tiles.
+  $8A0E,$01 Command (#N$01).
+  $8A0F,$01 Skip count: #N(#PEEK(#PC)).
+  $8A10,$01 Tile ID: #R$A02A(#N$98).
+  $8A11,$01 Tile ID: #R$A26A(#N$E0).
+N $8A12 Command #N$01: Skip tiles.
+  $8A12,$01 Command (#N$01).
+  $8A13,$01 Skip count: #N(#PEEK(#PC)).
+  $8A14,$01 Tile ID: #R$A262(#N$DF).
+  $8A15,$01 Tile ID: #R$A25A(#N$DE).
+N $8A16 Command #N$01: Skip tiles.
+  $8A16,$01 Command (#N$01).
+  $8A17,$01 Skip count: #N(#PEEK(#PC)).
+  $8A18,$01 Tile ID: #R$9C5A(#N$1E).
+  $8A19,$01 Tile ID: #R$9BFA(#N$12).
+N $8A1A Command #N$01: Skip tiles.
+  $8A1A,$01 Command (#N$01).
+  $8A1B,$01 Skip count: #N(#PEEK(#PC)).
+  $8A1C,$01 Tile ID: #R$9C2A(#N$18).
+  $8A1D,$01 Tile ID: #R$9C22(#N$17).
+N $8A1E Command #N$01: Skip tiles.
+  $8A1E,$01 Command (#N$01).
+  $8A1F,$01 Skip count: #N(#PEEK(#PC)).
+  $8A20,$01 Tile ID: #R$9BDA(#N$0E).
+  $8A21,$01 Tile ID: #R$9BE2(#N$0F).
+N $8A22 Command #N$01: Skip tiles.
+  $8A22,$01 Command (#N$01).
+  $8A23,$01 Skip count: #N(#PEEK(#PC)).
+  $8A24,$01 Tile ID: #R$A262(#N$DF).
+  $8A25,$01 Tile ID: #R$A25A(#N$DE).
+N $8A26 Command #N$01: Skip tiles.
+  $8A26,$01 Command (#N$01).
+  $8A27,$01 Skip count: #N(#PEEK(#PC)).
+  $8A28,$01 Tile ID: #R$9C82(#N$23).
+N $8A29 Command #N$01: Skip tiles.
+  $8A29,$01 Command (#N$01).
+  $8A2A,$01 Skip count: #N(#PEEK(#PC)).
+  $8A2B,$01 Tile ID: #R$A0F2(#N$B1).
+N $8A2C Command #N$01: Skip tiles.
+  $8A2C,$01 Command (#N$01).
+  $8A2D,$01 Skip count: #N(#PEEK(#PC)).
+  $8A2E,$01 Tile ID: #R$9BFA(#N$12).
+N $8A2F Command #N$01: Skip tiles.
+  $8A2F,$01 Command (#N$01).
+  $8A30,$01 Skip count: #N(#PEEK(#PC)).
+  $8A31,$01 Tile ID: #R$9C92(#N$25).
+  $8A32,$01 Tile ID: #R$A132(#N$B9).
+  $8A33,$01 Tile ID: #R$A13A(#N$BA).
+N $8A34 Command #N$01: Skip tiles.
+  $8A34,$01 Command (#N$01).
+  $8A35,$01 Skip count: #N(#PEEK(#PC)).
+  $8A36,$01 Tile ID: #R$9C2A(#N$18).
+  $8A37,$01 Tile ID: #R$9C22(#N$17).
+  $8A38,$01 Tile ID: #R$A0FA(#N$B2).
+N $8A39 Command #N$01: Skip tiles.
+  $8A39,$01 Command (#N$01).
+  $8A3A,$01 Skip count: #N(#PEEK(#PC)).
+N $8A3B Command #N$02: Draw repeated tile.
+  $8A3B,$01 Command (#N$02).
+  $8A3C,$01 Repeat count: #N(#PEEK(#PC)).
+  $8A3D,$01 Tile ID: #R$9C82(#N$23).
+N $8A3E Command #N$01: Skip tiles.
+  $8A3E,$01 Command (#N$01).
+  $8A3F,$01 Skip count: #N(#PEEK(#PC)).
+  $8A40,$01 Tile ID: #R$9C8A(#N$24).
+  $8A41,$01 Tile ID: #R$9C92(#N$25).
+  $8A42,$01 Tile ID: #R$9CA2(#N$27).
+  $8A43,$01 Tile ID: #R$9C5A(#N$1E).
+  $8A44,$01 Tile ID: #R$9BFA(#N$12).
+N $8A45 Command #N$01: Skip tiles.
+  $8A45,$01 Command (#N$01).
+  $8A46,$01 Skip count: #N(#PEEK(#PC)).
+  $8A47,$01 Tile ID: #R$A132(#N$B9).
+  $8A48,$01 Tile ID: #R$A13A(#N$BA).
+N $8A49 Command #N$01: Skip tiles.
+  $8A49,$01 Command (#N$01).
+  $8A4A,$01 Skip count: #N(#PEEK(#PC)).
+  $8A4B,$01 Tile ID: #R$A132(#N$B9).
+  $8A4C,$01 Tile ID: #R$A13A(#N$BA).
+  $8A4D,$01 Tile ID: #R$9C92(#N$25).
+N $8A4E Command #N$01: Skip tiles.
+  $8A4E,$01 Command (#N$01).
+  $8A4F,$01 Skip count: #N(#PEEK(#PC)).
+  $8A50,$01 Tile ID: #R$9C8A(#N$24).
+N $8A51 Command #N$02: Draw repeated tile.
+  $8A51,$01 Command (#N$02).
+  $8A52,$01 Repeat count: #N(#PEEK(#PC)).
+  $8A53,$01 Tile ID: #R$9C92(#N$25).
+  $8A54,$01 Tile ID: #R$9CA2(#N$27).
+N $8A55 Command #N$01: Skip tiles.
+  $8A55,$01 Command (#N$01).
+  $8A56,$01 Skip count: #N(#PEEK(#PC)).
+N $8A57 Command #N$03: Fill attribute buffer.
+  $8A57,$01 Command (#N$03).
+  $8A58,$01 Base fill colour: #COLOUR(#PEEK(#PC)).
+N $8A59 Attribute overlay: skip.
+  $8A59,$01 Opcode (#N$12).
+  $8A5A,$01 Skip count: #N(#PEEK(#PC)).
+N $8A5B Attribute overlay: repeat colour.
+  $8A5B,$01 Opcode (#N$1B).
+  $8A5C,$01 Repeat count: #N(#PEEK(#PC)).
+  $8A5D,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8A5E Attribute overlay: skip.
+  $8A5E,$01 Opcode (#N$12).
+  $8A5F,$01 Skip count: #N(#PEEK(#PC)).
+N $8A60 Attribute overlay: repeat colour.
+  $8A60,$01 Opcode (#N$1B).
+  $8A61,$01 Repeat count: #N(#PEEK(#PC)).
+  $8A62,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8A63 Attribute overlay: skip.
+  $8A63,$01 Opcode (#N$12).
+  $8A64,$01 Skip count: #N(#PEEK(#PC)).
+N $8A65 Attribute overlay: repeat colour.
+  $8A65,$01 Opcode (#N$1B).
+  $8A66,$01 Repeat count: #N(#PEEK(#PC)).
+  $8A67,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8A68 Attribute overlay: skip.
+  $8A68,$01 Opcode (#N$12).
+  $8A69,$01 Skip count: #N(#PEEK(#PC)).
+N $8A6A Attribute overlay: repeat colour.
+  $8A6A,$01 Opcode (#N$1B).
+  $8A6B,$01 Repeat count: #N(#PEEK(#PC)).
+  $8A6C,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8A6D Attribute overlay: skip.
+  $8A6D,$01 Opcode (#N$12).
+  $8A6E,$01 Skip count: #N(#PEEK(#PC)).
+N $8A6F Attribute overlay: repeat colour.
+  $8A6F,$01 Opcode (#N$1B).
+  $8A70,$01 Repeat count: #N(#PEEK(#PC)).
+  $8A71,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8A72,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8A73 Attribute overlay: repeat colour.
+  $8A73,$01 Opcode (#N$1B).
+  $8A74,$01 Repeat count: #N(#PEEK(#PC)).
+  $8A75,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8A76 Attribute overlay: skip.
+  $8A76,$01 Opcode (#N$12).
+  $8A77,$01 Skip count: #N(#PEEK(#PC)).
+  $8A78,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8A79,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8A7A,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8A7B,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8A7C Attribute overlay: repeat colour.
+  $8A7C,$01 Opcode (#N$1B).
+  $8A7D,$01 Repeat count: #N(#PEEK(#PC)).
+  $8A7E,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8A7F Attribute overlay: skip.
+  $8A7F,$01 Opcode (#N$12).
+  $8A80,$01 Skip count: #N(#PEEK(#PC)).
+  $8A81,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8A82,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8A83 Attribute overlay: skip.
+  $8A83,$01 Opcode (#N$12).
+  $8A84,$01 Skip count: #N(#PEEK(#PC)).
+  $8A85,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8A86,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8A87 Attribute overlay: skip.
+  $8A87,$01 Opcode (#N$12).
+  $8A88,$01 Skip count: #N(#PEEK(#PC)).
+N $8A89 Attribute overlay: repeat colour.
+  $8A89,$01 Opcode (#N$1B).
+  $8A8A,$01 Repeat count: #N(#PEEK(#PC)).
+  $8A8B,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8A8C Attribute overlay: repeat colour.
+  $8A8C,$01 Opcode (#N$1B).
+  $8A8D,$01 Repeat count: #N(#PEEK(#PC)).
+  $8A8E,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8A8F,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8A90,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8A91 Attribute overlay: repeat colour.
+  $8A91,$01 Opcode (#N$1B).
+  $8A92,$01 Repeat count: #N(#PEEK(#PC)).
+  $8A93,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8A94,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8A95,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8A96 Attribute overlay: repeat colour.
+  $8A96,$01 Opcode (#N$1B).
+  $8A97,$01 Repeat count: #N(#PEEK(#PC)).
+  $8A98,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8A99,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8A9A,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8A9B Attribute overlay: repeat colour.
+  $8A9B,$01 Opcode (#N$1B).
+  $8A9C,$01 Repeat count: #N(#PEEK(#PC)).
+  $8A9D,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8A9E,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8A9F,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8AA0 Attribute overlay: repeat colour.
+  $8AA0,$01 Opcode (#N$1B).
+  $8AA1,$01 Repeat count: #N(#PEEK(#PC)).
+  $8AA2,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8AA3,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8AA4,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8AA5 Attribute overlay: repeat colour.
+  $8AA5,$01 Opcode (#N$1B).
+  $8AA6,$01 Repeat count: #N(#PEEK(#PC)).
+  $8AA7,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8AA8,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8AA9,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8AAA Attribute overlay: repeat colour.
+  $8AAA,$01 Opcode (#N$1B).
+  $8AAB,$01 Repeat count: #N(#PEEK(#PC)).
+  $8AAC,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8AAD,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8AAE,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8AAF Attribute overlay: repeat colour.
+  $8AAF,$01 Opcode (#N$1B).
+  $8AB0,$01 Repeat count: #N(#PEEK(#PC)).
+  $8AB1,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8AB2,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8AB3,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8AB4,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8AB5 Attribute overlay: skip.
+  $8AB5,$01 Opcode (#N$12).
+  $8AB6,$01 Skip count: #N(#PEEK(#PC)).
+  $8AB7,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8AB8 Attribute overlay: repeat colour.
+  $8AB8,$01 Opcode (#N$1B).
+  $8AB9,$01 Repeat count: #N(#PEEK(#PC)).
+  $8ABA,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8ABB,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8ABC,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8ABD Attribute overlay: repeat colour.
+  $8ABD,$01 Opcode (#N$1B).
+  $8ABE,$01 Repeat count: #N(#PEEK(#PC)).
+  $8ABF,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8AC0,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8AC1,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8AC2,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8AC3,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8AC4,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8AC5,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8AC6,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8AC7 Attribute overlay: skip.
+  $8AC7,$01 Opcode (#N$12).
+  $8AC8,$01 Skip count: #N(#PEEK(#PC)).
+  $8AC9,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8ACA,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8ACB,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8ACC,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8ACD,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8ACE,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8ACF,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8AD0,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8AD1,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8AD2,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8AD3 Attribute overlay: repeat colour.
+  $8AD3,$01 Opcode (#N$1B).
+  $8AD4,$01 Repeat count: #N(#PEEK(#PC)).
+  $8AD5,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8AD6,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8AD7,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8AD8,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8AD9,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8ADA,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8ADB,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8ADC,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8ADD Attribute overlay: skip.
+  $8ADD,$01 Opcode (#N$12).
+  $8ADE,$01 Skip count: #N(#PEEK(#PC)).
+  $8ADF,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8AE0,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8AE1 Attribute overlay: skip.
+  $8AE1,$01 Opcode (#N$12).
+  $8AE2,$01 Skip count: #N(#PEEK(#PC)).
+  $8AE3,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8AE4,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8AE5,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8AE6,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8AE7,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8AE8,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8AE9,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8AEA,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8AEB Attribute overlay: repeat colour.
+  $8AEB,$01 Opcode (#N$1B).
+  $8AEC,$01 Repeat count: #N(#PEEK(#PC)).
+  $8AED,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8AEE,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8AEF,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8AF0,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8AF1,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8AF2,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8AF3 Attribute overlay: skip.
+  $8AF3,$01 Opcode (#N$12).
+  $8AF4,$01 Skip count: #N(#PEEK(#PC)).
+  $8AF5,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8AF6,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8AF7 Attribute overlay: skip.
+  $8AF7,$01 Opcode (#N$12).
+  $8AF8,$01 Skip count: #N(#PEEK(#PC)).
+  $8AF9,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8AFA,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8AFB Attribute overlay: skip.
+  $8AFB,$01 Opcode (#N$12).
+  $8AFC,$01 Skip count: #N(#PEEK(#PC)).
+  $8AFD,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8AFE,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8AFF Attribute overlay: repeat colour.
+  $8AFF,$01 Opcode (#N$1B).
+  $8B00,$01 Repeat count: #N(#PEEK(#PC)).
+  $8B01,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8B02,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8B03,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8B04,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8B05,$01 End of attribute overlay.
   $8B06,$01 Terminator.
 
 b $8B07 Room #N$05
 @ $8B07 label=Room05
 D $8B07 #ROOM$05
+N $8B07 Command #N$01: Skip tiles.
+  $8B07,$01 Command (#N$01).
+  $8B08,$01 Skip count: #N(#PEEK(#PC)).
+  $8B09,$01 Tile ID: #R$9F12(#N$75).
+  $8B0A,$01 Tile ID: #R$9F1A(#N$76).
+N $8B0B Command #N$01: Skip tiles.
+  $8B0B,$01 Command (#N$01).
+  $8B0C,$01 Skip count: #N(#PEEK(#PC)).
+  $8B0D,$01 Tile ID: #R$9BC2(#N$0B).
+  $8B0E,$01 Tile ID: #R$9BCA(#N$0C).
+  $8B0F,$01 Tile ID: #R$9BD2(#N$0D).
+  $8B10,$01 Tile ID: #R$9BB2(#N$09).
+  $8B11,$01 Tile ID: #R$9BBA(#N$0A).
+N $8B12 Command #N$01: Skip tiles.
+  $8B12,$01 Command (#N$01).
+  $8B13,$01 Skip count: #N(#PEEK(#PC)).
+  $8B14,$01 Tile ID: #R$9F22(#N$77).
+  $8B15,$01 Tile ID: #R$9F2A(#N$78).
+N $8B16 Command #N$01: Skip tiles.
+  $8B16,$01 Command (#N$01).
+  $8B17,$01 Skip count: #N(#PEEK(#PC)).
+  $8B18,$01 Tile ID: #R$9BB2(#N$09).
+  $8B19,$01 Tile ID: #R$9BBA(#N$0A).
+  $8B1A,$01 Tile ID: #R$9BC2(#N$0B).
+  $8B1B,$01 Tile ID: #R$9BCA(#N$0C).
+  $8B1C,$01 Tile ID: #R$9BE2(#N$0F).
+  $8B1D,$01 Tile ID: #R$9C42(#N$1B).
+N $8B1E Command #N$01: Skip tiles.
+  $8B1E,$01 Command (#N$01).
+  $8B1F,$01 Skip count: #N(#PEEK(#PC)).
+  $8B20,$01 Tile ID: #R$9BDA(#N$0E).
+  $8B21,$01 Tile ID: #R$9BE2(#N$0F).
+N $8B22 Command #N$01: Skip tiles.
+  $8B22,$01 Command (#N$01).
+  $8B23,$01 Skip count: #N(#PEEK(#PC)).
+  $8B24,$01 Tile ID: #R$9F32(#N$79).
+  $8B25,$01 Tile ID: #R$9F3A(#N$7A).
+N $8B26 Command #N$01: Skip tiles.
+  $8B26,$01 Command (#N$01).
+  $8B27,$01 Skip count: #N(#PEEK(#PC)).
+  $8B28,$01 Tile ID: #R$9BAA(#N$08).
+N $8B29 Command #N$01: Skip tiles.
+  $8B29,$01 Command (#N$01).
+  $8B2A,$01 Skip count: #N(#PEEK(#PC)).
+  $8B2B,$01 Tile ID: #R$9BEA(#N$10).
+  $8B2C,$01 Tile ID: #R$9C3A(#N$1A).
+N $8B2D Command #N$01: Skip tiles.
+  $8B2D,$01 Command (#N$01).
+  $8B2E,$01 Skip count: #N(#PEEK(#PC)).
+  $8B2F,$01 Tile ID: #R$9C0A(#N$14).
+N $8B30 Command #N$01: Skip tiles.
+  $8B30,$01 Command (#N$01).
+  $8B31,$01 Skip count: #N(#PEEK(#PC)).
+  $8B32,$01 Tile ID: #R$9BF2(#N$11).
+N $8B33 Command #N$01: Skip tiles.
+  $8B33,$01 Command (#N$01).
+  $8B34,$01 Skip count: #N(#PEEK(#PC)).
+  $8B35,$01 Tile ID: #R$9F42(#N$7B).
+  $8B36,$01 Tile ID: #R$9F4A(#N$7C).
+N $8B37 Command #N$01: Skip tiles.
+  $8B37,$01 Command (#N$01).
+  $8B38,$01 Skip count: #N(#PEEK(#PC)).
+  $8B39,$01 Tile ID: #R$9C02(#N$13).
+  $8B3A,$01 Tile ID: #R$9C2A(#N$18).
+  $8B3B,$01 Tile ID: #R$9C22(#N$17).
+  $8B3C,$01 Tile ID: #R$9C1A(#N$16).
+  $8B3D,$01 Tile ID: #R$9C12(#N$15).
+N $8B3E Command #N$01: Skip tiles.
+  $8B3E,$01 Command (#N$01).
+  $8B3F,$01 Skip count: #N(#PEEK(#PC)).
+  $8B40,$01 Tile ID: #R$9C2A(#N$18).
+  $8B41,$01 Tile ID: #R$9C22(#N$17).
+  $8B42,$01 Tile ID: #R$9C1A(#N$16).
+  $8B43,$01 Tile ID: #R$9C12(#N$15).
+  $8B44,$01 Tile ID: #R$9C02(#N$13).
+  $8B45,$01 Tile ID: #R$9C02(#N$13).
+N $8B46 Command #N$01: Skip tiles.
+  $8B46,$01 Command (#N$01).
+  $8B47,$01 Skip count: #N(#PEEK(#PC)).
+  $8B48,$01 Tile ID: #R$9F52(#N$7D).
+  $8B49,$01 Tile ID: #R$9F5A(#N$7E).
+  $8B4A,$01 Tile ID: #R$9F62(#N$7F).
+N $8B4B Command #N$01: Skip tiles.
+  $8B4B,$01 Command (#N$01).
+  $8B4C,$01 Skip count: #N(#PEEK(#PC)).
+  $8B4D,$01 Tile ID: #R$9F6A(#N$80).
+  $8B4E,$01 Tile ID: #R$9F72(#N$81).
+  $8B4F,$01 Tile ID: #R$9F7A(#N$82).
+N $8B50 Command #N$01: Skip tiles.
+  $8B50,$01 Command (#N$01).
+  $8B51,$01 Skip count: #N(#PEEK(#PC)).
+  $8B52,$01 Tile ID: #R$9F82(#N$83).
+  $8B53,$01 Tile ID: #R$9F8A(#N$84).
+N $8B54 Command #N$01: Skip tiles.
+  $8B54,$01 Command (#N$01).
+  $8B55,$01 Skip count: #N(#PEEK(#PC)).
+  $8B56,$01 Tile ID: #R$9F92(#N$85).
+  $8B57,$01 Tile ID: #R$9F9A(#N$86).
+N $8B58 Command #N$01: Skip tiles.
+  $8B58,$01 Command (#N$01).
+  $8B59,$01 Skip count: #N(#PEEK(#PC)).
+  $8B5A,$01 Tile ID: #R$9FBA(#N$8A).
+  $8B5B,$01 Tile ID: #R$9C82(#N$23).
+  $8B5C,$01 Tile ID: #R$9FDA(#N$8E).
+N $8B5D Command #N$01: Skip tiles.
+  $8B5D,$01 Command (#N$01).
+  $8B5E,$01 Skip count: #N(#PEEK(#PC)).
+  $8B5F,$01 Tile ID: #R$9FA2(#N$87).
+  $8B60,$01 Tile ID: #R$9FEA(#N$90).
+  $8B61,$01 Tile ID: #R$9FC2(#N$8B).
+N $8B62 Command #N$01: Skip tiles.
+  $8B62,$01 Command (#N$01).
+  $8B63,$01 Skip count: #N(#PEEK(#PC)).
+  $8B64,$01 Tile ID: #R$9FAA(#N$88).
+  $8B65,$01 Tile ID: #R$9FEA(#N$90).
+  $8B66,$01 Tile ID: #R$9FCA(#N$8C).
+N $8B67 Command #N$01: Skip tiles.
+  $8B67,$01 Command (#N$01).
+  $8B68,$01 Skip count: #N(#PEEK(#PC)).
+  $8B69,$01 Tile ID: #R$9FBA(#N$8A).
+  $8B6A,$01 Tile ID: #R$9FB2(#N$89).
+  $8B6B,$01 Tile ID: #R$9FEA(#N$90).
+  $8B6C,$01 Tile ID: #R$9FD2(#N$8D).
+  $8B6D,$01 Tile ID: #R$9FDA(#N$8E).
+N $8B6E Command #N$01: Skip tiles.
+  $8B6E,$01 Command (#N$01).
+  $8B6F,$01 Skip count: #N(#PEEK(#PC)).
+  $8B70,$01 Tile ID: #R$9C5A(#N$1E).
+  $8B71,$01 Tile ID: #R$9C62(#N$1F).
+N $8B72 Command #N$01: Skip tiles.
+  $8B72,$01 Command (#N$01).
+  $8B73,$01 Skip count: #N(#PEEK(#PC)).
+  $8B74,$01 Tile ID: #R$9FA2(#N$87).
+N $8B75 Command #N$01: Skip tiles.
+  $8B75,$01 Command (#N$01).
+  $8B76,$01 Skip count: #N(#PEEK(#PC)).
+  $8B77,$01 Tile ID: #R$9FEA(#N$90).
+N $8B78 Command #N$01: Skip tiles.
+  $8B78,$01 Command (#N$01).
+  $8B79,$01 Skip count: #N(#PEEK(#PC)).
+  $8B7A,$01 Tile ID: #R$9FC2(#N$8B).
+N $8B7B Command #N$01: Skip tiles.
+  $8B7B,$01 Command (#N$01).
+  $8B7C,$01 Skip count: #N(#PEEK(#PC)).
+  $8B7D,$01 Tile ID: #R$A312(#N$F5).
+  $8B7E,$01 Tile ID: #R$A30A(#N$F4).
+N $8B7F Command #N$01: Skip tiles.
+  $8B7F,$01 Command (#N$01).
+  $8B80,$01 Skip count: #N(#PEEK(#PC)).
+  $8B81,$01 Tile ID: #R$A31A(#N$F6).
+  $8B82,$01 Tile ID: #R$A31A(#N$F6).
+N $8B83 Command #N$01: Skip tiles.
+  $8B83,$01 Command (#N$01).
+  $8B84,$01 Skip count: #N(#PEEK(#PC)).
+  $8B85,$01 Tile ID: #R$9FAA(#N$88).
+N $8B86 Command #N$01: Skip tiles.
+  $8B86,$01 Command (#N$01).
+  $8B87,$01 Skip count: #N(#PEEK(#PC)).
+  $8B88,$01 Tile ID: #R$9FEA(#N$90).
+N $8B89 Command #N$01: Skip tiles.
+  $8B89,$01 Command (#N$01).
+  $8B8A,$01 Skip count: #N(#PEEK(#PC)).
+  $8B8B,$01 Tile ID: #R$9FCA(#N$8C).
+N $8B8C Command #N$01: Skip tiles.
+  $8B8C,$01 Command (#N$01).
+  $8B8D,$01 Skip count: #N(#PEEK(#PC)).
+  $8B8E,$01 Tile ID: #R$A2FA(#N$F2).
+  $8B8F,$01 Tile ID: #R$A2FA(#N$F2).
+  $8B90,$01 Tile ID: #R$A25A(#N$DE).
+N $8B91 Command #N$01: Skip tiles.
+  $8B91,$01 Command (#N$01).
+  $8B92,$01 Skip count: #N(#PEEK(#PC)).
+  $8B93,$01 Tile ID: #R$A31A(#N$F6).
+  $8B94,$01 Tile ID: #R$A31A(#N$F6).
+N $8B95 Command #N$01: Skip tiles.
+  $8B95,$01 Command (#N$01).
+  $8B96,$01 Skip count: #N(#PEEK(#PC)).
+  $8B97,$01 Tile ID: #R$9FBA(#N$8A).
+  $8B98,$01 Tile ID: #R$9FB2(#N$89).
+N $8B99 Command #N$01: Skip tiles.
+  $8B99,$01 Command (#N$01).
+  $8B9A,$01 Skip count: #N(#PEEK(#PC)).
+  $8B9B,$01 Tile ID: #R$9FF2(#N$91).
+N $8B9C Command #N$01: Skip tiles.
+  $8B9C,$01 Command (#N$01).
+  $8B9D,$01 Skip count: #N(#PEEK(#PC)).
+  $8B9E,$01 Tile ID: #R$9FD2(#N$8D).
+N $8B9F Command #N$02: Draw repeated tile.
+  $8B9F,$01 Command (#N$02).
+  $8BA0,$01 Repeat count: #N(#PEEK(#PC)).
+  $8BA1,$01 Tile ID: #R$A27A(#N$E2).
+  $8BA2,$01 Tile ID: #R$A0C2(#N$AB).
+N $8BA3 Command #N$01: Skip tiles.
+  $8BA3,$01 Command (#N$01).
+  $8BA4,$01 Skip count: #N(#PEEK(#PC)).
+  $8BA5,$01 Tile ID: #R$9FA2(#N$87).
+N $8BA6 Command #N$01: Skip tiles.
+  $8BA6,$01 Command (#N$01).
+  $8BA7,$01 Skip count: #N(#PEEK(#PC)).
+  $8BA8,$01 Tile ID: #R$9FFA(#N$92).
+N $8BA9 Command #N$01: Skip tiles.
+  $8BA9,$01 Command (#N$01).
+  $8BAA,$01 Skip count: #N(#PEEK(#PC)).
+  $8BAB,$01 Tile ID: #R$A0DA(#N$AE).
+N $8BAC Command #N$01: Skip tiles.
+  $8BAC,$01 Command (#N$01).
+  $8BAD,$01 Skip count: #N(#PEEK(#PC)).
+  $8BAE,$01 Tile ID: #R$A02A(#N$98).
+  $8BAF,$01 Tile ID: #R$A0C2(#N$AB).
+N $8BB0 Command #N$01: Skip tiles.
+  $8BB0,$01 Command (#N$01).
+  $8BB1,$01 Skip count: #N(#PEEK(#PC)).
+  $8BB2,$01 Tile ID: #R$9FAA(#N$88).
+N $8BB3 Command #N$01: Skip tiles.
+  $8BB3,$01 Command (#N$01).
+  $8BB4,$01 Skip count: #N(#PEEK(#PC)).
+  $8BB5,$01 Tile ID: #R$A0DA(#N$AE).
+N $8BB6 Command #N$01: Skip tiles.
+  $8BB6,$01 Command (#N$01).
+  $8BB7,$01 Skip count: #N(#PEEK(#PC)).
+  $8BB8,$01 Tile ID: #R$A2BA(#N$EA).
+  $8BB9,$01 Tile ID: #R$A2CA(#N$EC).
+N $8BBA Command #N$01: Skip tiles.
+  $8BBA,$01 Command (#N$01).
+  $8BBB,$01 Skip count: #N(#PEEK(#PC)).
+  $8BBC,$01 Tile ID: #R$A02A(#N$98).
+  $8BBD,$01 Tile ID: #R$A02A(#N$98).
+  $8BBE,$01 Tile ID: #R$A0C2(#N$AB).
+N $8BBF Command #N$01: Skip tiles.
+  $8BBF,$01 Command (#N$01).
+  $8BC0,$01 Skip count: #N(#PEEK(#PC)).
+  $8BC1,$01 Tile ID: #R$A0DA(#N$AE).
+N $8BC2 Command #N$01: Skip tiles.
+  $8BC2,$01 Command (#N$01).
+  $8BC3,$01 Skip count: #N(#PEEK(#PC)).
+  $8BC4,$01 Tile ID: #R$A2C2(#N$EB).
+  $8BC5,$01 Tile ID: #R$A2D2(#N$ED).
+N $8BC6 Command #N$01: Skip tiles.
+  $8BC6,$01 Command (#N$01).
+  $8BC7,$01 Skip count: #N(#PEEK(#PC)).
+N $8BC8 Command #N$02: Draw repeated tile.
+  $8BC8,$01 Command (#N$02).
+  $8BC9,$01 Repeat count: #N(#PEEK(#PC)).
+  $8BCA,$01 Tile ID: #R$A02A(#N$98).
+  $8BCB,$01 Tile ID: #R$A0C2(#N$AB).
+N $8BCC Command #N$01: Skip tiles.
+  $8BCC,$01 Command (#N$01).
+  $8BCD,$01 Skip count: #N(#PEEK(#PC)).
+  $8BCE,$01 Tile ID: #R$A0DA(#N$AE).
+N $8BCF Command #N$01: Skip tiles.
+  $8BCF,$01 Command (#N$01).
+  $8BD0,$01 Skip count: #N(#PEEK(#PC)).
+N $8BD1 Command #N$02: Draw repeated tile.
+  $8BD1,$01 Command (#N$02).
+  $8BD2,$01 Repeat count: #N(#PEEK(#PC)).
+  $8BD3,$01 Tile ID: #R$A02A(#N$98).
+  $8BD4,$01 Tile ID: #R$A0EA(#N$B0).
+N $8BD5 Command #N$02: Draw repeated tile.
+  $8BD5,$01 Command (#N$02).
+  $8BD6,$01 Repeat count: #N(#PEEK(#PC)).
+  $8BD7,$01 Tile ID: #R$A022(#N$97).
+N $8BD8 Command #N$01: Skip tiles.
+  $8BD8,$01 Command (#N$01).
+  $8BD9,$01 Skip count: #N(#PEEK(#PC)).
+N $8BDA Command #N$03: Fill attribute buffer.
+  $8BDA,$01 Command (#N$03).
+  $8BDB,$01 Base fill colour: #COLOUR(#PEEK(#PC)).
+N $8BDC Attribute overlay: skip.
+  $8BDC,$01 Opcode (#N$12).
+  $8BDD,$01 Skip count: #N(#PEEK(#PC)).
+  $8BDE,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8BDF,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8BE0 Attribute overlay: skip.
+  $8BE0,$01 Opcode (#N$12).
+  $8BE1,$01 Skip count: #N(#PEEK(#PC)).
+  $8BE2,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8BE3,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8BE4 Attribute overlay: skip.
+  $8BE4,$01 Opcode (#N$12).
+  $8BE5,$01 Skip count: #N(#PEEK(#PC)).
+N $8BE6 Attribute overlay: repeat colour.
+  $8BE6,$01 Opcode (#N$1B).
+  $8BE7,$01 Repeat count: #N(#PEEK(#PC)).
+  $8BE8,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8BE9 Attribute overlay: skip.
+  $8BE9,$01 Opcode (#N$12).
+  $8BEA,$01 Skip count: #N(#PEEK(#PC)).
+  $8BEB,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8BEC,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8BED Attribute overlay: skip.
+  $8BED,$01 Opcode (#N$12).
+  $8BEE,$01 Skip count: #N(#PEEK(#PC)).
+N $8BEF Attribute overlay: repeat colour.
+  $8BEF,$01 Opcode (#N$1B).
+  $8BF0,$01 Repeat count: #N(#PEEK(#PC)).
+  $8BF1,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8BF2,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8BF3,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8BF4,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8BF5,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8BF6,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8BF7,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8BF8,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8BF9,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8BFA Attribute overlay: skip.
+  $8BFA,$01 Opcode (#N$12).
+  $8BFB,$01 Skip count: #N(#PEEK(#PC)).
+  $8BFC,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8BFD,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8BFE Attribute overlay: skip.
+  $8BFE,$01 Opcode (#N$12).
+  $8BFF,$01 Skip count: #N(#PEEK(#PC)).
+  $8C00,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8C01,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8C02,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8C03 Attribute overlay: skip.
+  $8C03,$01 Opcode (#N$12).
+  $8C04,$01 Skip count: #N(#PEEK(#PC)).
+  $8C05,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8C06,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8C07,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8C08 Attribute overlay: skip.
+  $8C08,$01 Opcode (#N$12).
+  $8C09,$01 Skip count: #N(#PEEK(#PC)).
+  $8C0A,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8C0B,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8C0C Attribute overlay: skip.
+  $8C0C,$01 Opcode (#N$12).
+  $8C0D,$01 Skip count: #N(#PEEK(#PC)).
+  $8C0E,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8C0F,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8C10 Attribute overlay: skip.
+  $8C10,$01 Opcode (#N$12).
+  $8C11,$01 Skip count: #N(#PEEK(#PC)).
+  $8C12,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8C13,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8C14 Attribute overlay: skip.
+  $8C14,$01 Opcode (#N$12).
+  $8C15,$01 Skip count: #N(#PEEK(#PC)).
+N $8C16 Attribute overlay: repeat colour.
+  $8C16,$01 Opcode (#N$1B).
+  $8C17,$01 Repeat count: #N(#PEEK(#PC)).
+  $8C18,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8C19,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8C1A,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8C1B Attribute overlay: repeat colour.
+  $8C1B,$01 Opcode (#N$1B).
+  $8C1C,$01 Repeat count: #N(#PEEK(#PC)).
+  $8C1D,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8C1E Attribute overlay: repeat colour.
+  $8C1E,$01 Opcode (#N$1B).
+  $8C1F,$01 Repeat count: #N(#PEEK(#PC)).
+  $8C20,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8C21 Attribute overlay: repeat colour.
+  $8C21,$01 Opcode (#N$1B).
+  $8C22,$01 Repeat count: #N(#PEEK(#PC)).
+  $8C23,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8C24,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8C25 Attribute overlay: repeat colour.
+  $8C25,$01 Opcode (#N$1B).
+  $8C26,$01 Repeat count: #N(#PEEK(#PC)).
+  $8C27,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8C28 Attribute overlay: repeat colour.
+  $8C28,$01 Opcode (#N$1B).
+  $8C29,$01 Repeat count: #N(#PEEK(#PC)).
+  $8C2A,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8C2B,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8C2C,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8C2D,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8C2E,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8C2F,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8C30,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8C31,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8C32,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8C33,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8C34,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8C35,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8C36 Attribute overlay: repeat colour.
+  $8C36,$01 Opcode (#N$1B).
+  $8C37,$01 Repeat count: #N(#PEEK(#PC)).
+  $8C38,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8C39,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8C3A,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8C3B,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8C3C,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8C3D,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8C3E,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8C3F,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8C40,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8C41,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8C42,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8C43,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8C44,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8C45 Attribute overlay: repeat colour.
+  $8C45,$01 Opcode (#N$1B).
+  $8C46,$01 Repeat count: #N(#PEEK(#PC)).
+  $8C47,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8C48 Attribute overlay: repeat colour.
+  $8C48,$01 Opcode (#N$1B).
+  $8C49,$01 Repeat count: #N(#PEEK(#PC)).
+  $8C4A,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8C4B Attribute overlay: repeat colour.
+  $8C4B,$01 Opcode (#N$1B).
+  $8C4C,$01 Repeat count: #N(#PEEK(#PC)).
+  $8C4D,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8C4E,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8C4F,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8C50,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8C51,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8C52,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8C53 Attribute overlay: repeat colour.
+  $8C53,$01 Opcode (#N$1B).
+  $8C54,$01 Repeat count: #N(#PEEK(#PC)).
+  $8C55,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8C56,$01 End of attribute overlay.
   $8C57,$01 Terminator.
 
 b $8C58 Room #N$06
 @ $8C58 label=Room06
 D $8C58 #ROOM$06
+N $8C58 Command #N$01: Skip tiles.
+  $8C58,$01 Command (#N$01).
+  $8C59,$01 Skip count: #N(#PEEK(#PC)).
+  $8C5A,$01 Tile ID: #R$9CBA(#N$2A).
+N $8C5B Command #N$01: Skip tiles.
+  $8C5B,$01 Command (#N$01).
+  $8C5C,$01 Skip count: #N(#PEEK(#PC)).
+  $8C5D,$01 Tile ID: #R$9CC2(#N$2B).
+N $8C5E Command #N$01: Skip tiles.
+  $8C5E,$01 Command (#N$01).
+  $8C5F,$01 Skip count: #N(#PEEK(#PC)).
+  $8C60,$01 Tile ID: #R$9CCA(#N$2C).
+N $8C61 Command #N$01: Skip tiles.
+  $8C61,$01 Command (#N$01).
+  $8C62,$01 Skip count: #N(#PEEK(#PC)).
+  $8C63,$01 Tile ID: #R$9CD2(#N$2D).
+  $8C64,$01 Tile ID: #R$9CDA(#N$2E).
+  $8C65,$01 Tile ID: #R$9CE2(#N$2F).
+  $8C66,$01 Tile ID: #R$9CEA(#N$30).
+  $8C67,$01 Tile ID: #R$9CF2(#N$31).
+N $8C68 Command #N$01: Skip tiles.
+  $8C68,$01 Command (#N$01).
+  $8C69,$01 Skip count: #N(#PEEK(#PC)).
+  $8C6A,$01 Tile ID: #R$9CFA(#N$32).
+  $8C6B,$01 Tile ID: #R$9D02(#N$33).
+N $8C6C Command #N$01: Skip tiles.
+  $8C6C,$01 Command (#N$01).
+  $8C6D,$01 Skip count: #N(#PEEK(#PC)).
+  $8C6E,$01 Tile ID: #R$9BB2(#N$09).
+  $8C6F,$01 Tile ID: #R$9BBA(#N$0A).
+  $8C70,$01 Tile ID: #R$9BC2(#N$0B).
+  $8C71,$01 Tile ID: #R$9BCA(#N$0C).
+  $8C72,$01 Tile ID: #R$9BD2(#N$0D).
+N $8C73 Command #N$01: Skip tiles.
+  $8C73,$01 Command (#N$01).
+  $8C74,$01 Skip count: #N(#PEEK(#PC)).
+  $8C75,$01 Tile ID: #R$9D0A(#N$34).
+  $8C76,$01 Tile ID: #R$9D12(#N$35).
+  $8C77,$01 Tile ID: #R$9D1A(#N$36).
+  $8C78,$01 Tile ID: #R$9D22(#N$37).
+  $8C79,$01 Tile ID: #R$9CBA(#N$2A).
+  $8C7A,$01 Tile ID: #R$9D2A(#N$38).
+  $8C7B,$01 Tile ID: #R$9D32(#N$39).
+N $8C7C Command #N$01: Skip tiles.
+  $8C7C,$01 Command (#N$01).
+  $8C7D,$01 Skip count: #N(#PEEK(#PC)).
+  $8C7E,$01 Tile ID: #R$9D3A(#N$3A).
+  $8C7F,$01 Tile ID: #R$9D42(#N$3B).
+  $8C80,$01 Tile ID: #R$9D4A(#N$3C).
+N $8C81 Command #N$01: Skip tiles.
+  $8C81,$01 Command (#N$01).
+  $8C82,$01 Skip count: #N(#PEEK(#PC)).
+  $8C83,$01 Tile ID: #R$9BAA(#N$08).
+N $8C84 Command #N$01: Skip tiles.
+  $8C84,$01 Command (#N$01).
+  $8C85,$01 Skip count: #N(#PEEK(#PC)).
+  $8C86,$01 Tile ID: #R$9BDA(#N$0E).
+  $8C87,$01 Tile ID: #R$9BE2(#N$0F).
+N $8C88 Command #N$01: Skip tiles.
+  $8C88,$01 Command (#N$01).
+  $8C89,$01 Skip count: #N(#PEEK(#PC)).
+  $8C8A,$01 Tile ID: #R$9D52(#N$3D).
+  $8C8B,$01 Tile ID: #R$9D5A(#N$3E).
+N $8C8C Command #N$01: Skip tiles.
+  $8C8C,$01 Command (#N$01).
+  $8C8D,$01 Skip count: #N(#PEEK(#PC)).
+  $8C8E,$01 Tile ID: #R$9D62(#N$3F).
+N $8C8F Command #N$01: Skip tiles.
+  $8C8F,$01 Command (#N$01).
+  $8C90,$01 Skip count: #N(#PEEK(#PC)).
+  $8C91,$01 Tile ID: #R$9D6A(#N$40).
+N $8C92 Command #N$01: Skip tiles.
+  $8C92,$01 Command (#N$01).
+  $8C93,$01 Skip count: #N(#PEEK(#PC)).
+  $8C94,$01 Tile ID: #R$9D72(#N$41).
+  $8C95,$01 Tile ID: #R$9D7A(#N$42).
+  $8C96,$01 Tile ID: #R$9D82(#N$43).
+N $8C97 Command #N$01: Skip tiles.
+  $8C97,$01 Command (#N$01).
+  $8C98,$01 Skip count: #N(#PEEK(#PC)).
+  $8C99,$01 Tile ID: #R$9C4A(#N$1C).
+N $8C9A Command #N$01: Skip tiles.
+  $8C9A,$01 Command (#N$01).
+  $8C9B,$01 Skip count: #N(#PEEK(#PC)).
+  $8C9C,$01 Tile ID: #R$9BEA(#N$10).
+N $8C9D Command #N$01: Skip tiles.
+  $8C9D,$01 Command (#N$01).
+  $8C9E,$01 Skip count: #N(#PEEK(#PC)).
+  $8C9F,$01 Tile ID: #R$9D8A(#N$44).
+  $8CA0,$01 Tile ID: #R$9D92(#N$45).
+  $8CA1,$01 Tile ID: #R$9D9A(#N$46).
+  $8CA2,$01 Tile ID: #R$9DA2(#N$47).
+  $8CA3,$01 Tile ID: #R$9DAA(#N$48).
+  $8CA4,$01 Tile ID: #R$9DB2(#N$49).
+  $8CA5,$01 Tile ID: #R$9DBA(#N$4A).
+  $8CA6,$01 Tile ID: #R$9DC2(#N$4B).
+  $8CA7,$01 Tile ID: #R$9DCA(#N$4C).
+  $8CA8,$01 Tile ID: #R$9DD2(#N$4D).
+N $8CA9 Command #N$01: Skip tiles.
+  $8CA9,$01 Command (#N$01).
+  $8CAA,$01 Skip count: #N(#PEEK(#PC)).
+  $8CAB,$01 Tile ID: #R$9C42(#N$1B).
+N $8CAC Command #N$01: Skip tiles.
+  $8CAC,$01 Command (#N$01).
+  $8CAD,$01 Skip count: #N(#PEEK(#PC)).
+  $8CAE,$01 Tile ID: #R$9BF2(#N$11).
+N $8CAF Command #N$01: Skip tiles.
+  $8CAF,$01 Command (#N$01).
+  $8CB0,$01 Skip count: #N(#PEEK(#PC)).
+  $8CB1,$01 Tile ID: #R$9DDA(#N$4E).
+  $8CB2,$01 Tile ID: #R$9DE2(#N$4F).
+  $8CB3,$01 Tile ID: #R$9DEA(#N$50).
+  $8CB4,$01 Tile ID: #R$9DF2(#N$51).
+  $8CB5,$01 Tile ID: #R$9DFA(#N$52).
+  $8CB6,$01 Tile ID: #R$9E02(#N$53).
+  $8CB7,$01 Tile ID: #R$9E0A(#N$54).
+  $8CB8,$01 Tile ID: #R$9E12(#N$55).
+  $8CB9,$01 Tile ID: #R$9E1A(#N$56).
+N $8CBA Command #N$01: Skip tiles.
+  $8CBA,$01 Command (#N$01).
+  $8CBB,$01 Skip count: #N(#PEEK(#PC)).
+  $8CBC,$01 Tile ID: #R$9C6A(#N$20).
+  $8CBD,$01 Tile ID: #R$9C72(#N$21).
+  $8CBE,$01 Tile ID: #R$9C7A(#N$22).
+  $8CBF,$01 Tile ID: #R$9E92(#N$65).
+N $8CC0 Command #N$01: Skip tiles.
+  $8CC0,$01 Command (#N$01).
+  $8CC1,$01 Skip count: #N(#PEEK(#PC)).
+  $8CC2,$01 Tile ID: #R$9C3A(#N$1A).
+N $8CC3 Command #N$01: Skip tiles.
+  $8CC3,$01 Command (#N$01).
+  $8CC4,$01 Skip count: #N(#PEEK(#PC)).
+  $8CC5,$01 Tile ID: #R$9C0A(#N$14).
+N $8CC6 Command #N$01: Skip tiles.
+  $8CC6,$01 Command (#N$01).
+  $8CC7,$01 Skip count: #N(#PEEK(#PC)).
+  $8CC8,$01 Tile ID: #R$9BFA(#N$12).
+N $8CC9 Command #N$01: Skip tiles.
+  $8CC9,$01 Command (#N$01).
+  $8CCA,$01 Skip count: #N(#PEEK(#PC)).
+  $8CCB,$01 Tile ID: #R$9E22(#N$57).
+  $8CCC,$01 Tile ID: #R$9E2A(#N$58).
+  $8CCD,$01 Tile ID: #R$9E32(#N$59).
+  $8CCE,$01 Tile ID: #R$9E3A(#N$5A).
+  $8CCF,$01 Tile ID: #R$9E42(#N$5B).
+  $8CD0,$01 Tile ID: #R$9E4A(#N$5C).
+  $8CD1,$01 Tile ID: #R$9E52(#N$5D).
+  $8CD2,$01 Tile ID: #R$9E5A(#N$5E).
+  $8CD3,$01 Tile ID: #R$9E62(#N$5F).
+  $8CD4,$01 Tile ID: #R$9E6A(#N$60).
+  $8CD5,$01 Tile ID: #R$9E72(#N$61).
+  $8CD6,$01 Tile ID: #R$9E7A(#N$62).
+  $8CD7,$01 Tile ID: #R$9E82(#N$63).
+  $8CD8,$01 Tile ID: #R$9E8A(#N$64).
+N $8CD9 Command #N$01: Skip tiles.
+  $8CD9,$01 Command (#N$01).
+  $8CDA,$01 Skip count: #N(#PEEK(#PC)).
+  $8CDB,$01 Tile ID: #R$9C2A(#N$18).
+  $8CDC,$01 Tile ID: #R$9C22(#N$17).
+  $8CDD,$01 Tile ID: #R$9C1A(#N$16).
+  $8CDE,$01 Tile ID: #R$9C12(#N$15).
+  $8CDF,$01 Tile ID: #R$9C02(#N$13).
+N $8CE0 Command #N$01: Skip tiles.
+  $8CE0,$01 Command (#N$01).
+  $8CE1,$01 Skip count: #N(#PEEK(#PC)).
+  $8CE2,$01 Tile ID: #R$9E9A(#N$66).
+  $8CE3,$01 Tile ID: #R$9EA2(#N$67).
+  $8CE4,$01 Tile ID: #R$9EAA(#N$68).
+  $8CE5,$01 Tile ID: #R$9EB2(#N$69).
+  $8CE6,$01 Tile ID: #R$9EBA(#N$6A).
+  $8CE7,$01 Tile ID: #R$9EC2(#N$6B).
+  $8CE8,$01 Tile ID: #R$9ECA(#N$6C).
+  $8CE9,$01 Tile ID: #R$9ED2(#N$6D).
+N $8CEA Command #N$01: Skip tiles.
+  $8CEA,$01 Command (#N$01).
+  $8CEB,$01 Skip count: #N(#PEEK(#PC)).
+  $8CEC,$01 Tile ID: #R$9EDA(#N$6E).
+  $8CED,$01 Tile ID: #R$9EE2(#N$6F).
+  $8CEE,$01 Tile ID: #R$9EEA(#N$70).
+N $8CEF Command #N$01: Skip tiles.
+  $8CEF,$01 Command (#N$01).
+  $8CF0,$01 Skip count: #N(#PEEK(#PC)).
+  $8CF1,$01 Tile ID: #R$9EF2(#N$71).
+N $8CF2 Command #N$01: Skip tiles.
+  $8CF2,$01 Command (#N$01).
+  $8CF3,$01 Skip count: #N(#PEEK(#PC)).
+  $8CF4,$01 Tile ID: #R$9EFA(#N$72).
+N $8CF5 Command #N$01: Skip tiles.
+  $8CF5,$01 Command (#N$01).
+  $8CF6,$01 Skip count: #N(#PEEK(#PC)).
+  $8CF7,$01 Tile ID: #R$9F02(#N$73).
+  $8CF8,$01 Tile ID: #R$9F0A(#N$74).
+N $8CF9 Command #N$01: Skip tiles.
+  $8CF9,$01 Command (#N$01).
+  $8CFA,$01 Skip count: #N(#PEEK(#PC)).
+  $8CFB,$01 Tile ID: #R$A30A(#N$F4).
+N $8CFC Command #N$01: Skip tiles.
+  $8CFC,$01 Command (#N$01).
+  $8CFD,$01 Skip count: #N(#PEEK(#PC)).
+  $8CFE,$01 Tile ID: #R$A30A(#N$F4).
+N $8CFF Command #N$01: Skip tiles.
+  $8CFF,$01 Command (#N$01).
+  $8D00,$01 Skip count: #N(#PEEK(#PC)).
+  $8D01,$01 Tile ID: #R$A30A(#N$F4).
+N $8D02 Command #N$01: Skip tiles.
+  $8D02,$01 Command (#N$01).
+  $8D03,$01 Skip count: #N(#PEEK(#PC)).
+  $8D04,$01 Tile ID: #R$A30A(#N$F4).
+N $8D05 Command #N$01: Skip tiles.
+  $8D05,$01 Command (#N$01).
+  $8D06,$01 Skip count: #N(#PEEK(#PC)).
+  $8D07,$01 Tile ID: #R$A30A(#N$F4).
+N $8D08 Command #N$01: Skip tiles.
+  $8D08,$01 Command (#N$01).
+  $8D09,$01 Skip count: #N(#PEEK(#PC)).
+  $8D0A,$01 Tile ID: #R$A30A(#N$F4).
+N $8D0B Command #N$01: Skip tiles.
+  $8D0B,$01 Command (#N$01).
+  $8D0C,$01 Skip count: #N(#PEEK(#PC)).
+  $8D0D,$01 Tile ID: #R$A2FA(#N$F2).
+  $8D0E,$01 Tile ID: #R$A302(#N$F3).
+  $8D0F,$01 Tile ID: #R$A302(#N$F3).
+  $8D10,$01 Tile ID: #R$A2FA(#N$F2).
+  $8D11,$01 Tile ID: #R$A302(#N$F3).
+  $8D12,$01 Tile ID: #R$A302(#N$F3).
+  $8D13,$01 Tile ID: #R$A2FA(#N$F2).
+  $8D14,$01 Tile ID: #R$A302(#N$F3).
+  $8D15,$01 Tile ID: #R$A302(#N$F3).
+  $8D16,$01 Tile ID: #R$A2FA(#N$F2).
+  $8D17,$01 Tile ID: #R$A302(#N$F3).
+  $8D18,$01 Tile ID: #R$A302(#N$F3).
+  $8D19,$01 Tile ID: #R$A2FA(#N$F2).
+  $8D1A,$01 Tile ID: #R$A302(#N$F3).
+  $8D1B,$01 Tile ID: #R$A302(#N$F3).
+  $8D1C,$01 Tile ID: #R$A2FA(#N$F2).
+  $8D1D,$01 Tile ID: #R$A302(#N$F3).
+N $8D1E Command #N$01: Skip tiles.
+  $8D1E,$01 Command (#N$01).
+  $8D1F,$01 Skip count: #N(#PEEK(#PC)).
+N $8D20 Command #N$02: Draw repeated tile.
+  $8D20,$01 Command (#N$02).
+  $8D21,$01 Repeat count: #N(#PEEK(#PC)).
+  $8D22,$01 Tile ID: #R$A032(#N$99).
+N $8D23 Command #N$01: Skip tiles.
+  $8D23,$01 Command (#N$01).
+  $8D24,$01 Skip count: #N(#PEEK(#PC)).
+  $8D25,$01 Tile ID: #R$A292(#N$E5).
+  $8D26,$01 Tile ID: #R$A29A(#N$E6).
+  $8D27,$01 Tile ID: #R$A2A2(#N$E7).
+  $8D28,$01 Tile ID: #R$A2AA(#N$E8).
+  $8D29,$01 Tile ID: #R$A2B2(#N$E9).
+N $8D2A Command #N$01: Skip tiles.
+  $8D2A,$01 Command (#N$01).
+  $8D2B,$01 Skip count: #N(#PEEK(#PC)).
+  $8D2C,$01 Tile ID: #R$9C5A(#N$1E).
+  $8D2D,$01 Tile ID: #R$9C32(#N$19).
+  $8D2E,$01 Tile ID: #R$9C0A(#N$14).
+  $8D2F,$01 Tile ID: #R$9C62(#N$1F).
+N $8D30 Command #N$01: Skip tiles.
+  $8D30,$01 Command (#N$01).
+  $8D31,$01 Skip count: #N(#PEEK(#PC)).
+  $8D32,$01 Tile ID: #R$9C82(#N$23).
+N $8D33 Command #N$01: Skip tiles.
+  $8D33,$01 Command (#N$01).
+  $8D34,$01 Skip count: #N(#PEEK(#PC)).
+  $8D35,$01 Tile ID: #R$9C82(#N$23).
+N $8D36 Command #N$01: Skip tiles.
+  $8D36,$01 Command (#N$01).
+  $8D37,$01 Skip count: #N(#PEEK(#PC)).
+  $8D38,$01 Tile ID: #R$9C82(#N$23).
+N $8D39 Command #N$01: Skip tiles.
+  $8D39,$01 Command (#N$01).
+  $8D3A,$01 Skip count: #N(#PEEK(#PC)).
+  $8D3B,$01 Tile ID: #R$9C82(#N$23).
+N $8D3C Command #N$01: Skip tiles.
+  $8D3C,$01 Command (#N$01).
+  $8D3D,$01 Skip count: #N(#PEEK(#PC)).
+  $8D3E,$01 Tile ID: #R$9C82(#N$23).
+N $8D3F Command #N$01: Skip tiles.
+  $8D3F,$01 Command (#N$01).
+  $8D40,$01 Skip count: #N(#PEEK(#PC)).
+  $8D41,$01 Tile ID: #R$9C82(#N$23).
+  $8D42,$01 Tile ID: #R$9C82(#N$23).
+N $8D43 Command #N$01: Skip tiles.
+  $8D43,$01 Command (#N$01).
+  $8D44,$01 Skip count: #N(#PEEK(#PC)).
+  $8D45,$01 Tile ID: #R$9C8A(#N$24).
+  $8D46,$01 Tile ID: #R$9C92(#N$25).
+  $8D47,$01 Tile ID: #R$9C9A(#N$26).
+  $8D48,$01 Tile ID: #R$9C92(#N$25).
+  $8D49,$01 Tile ID: #R$9C9A(#N$26).
+  $8D4A,$01 Tile ID: #R$9C92(#N$25).
+  $8D4B,$01 Tile ID: #R$9CA2(#N$27).
+N $8D4C Command #N$01: Skip tiles.
+  $8D4C,$01 Command (#N$01).
+  $8D4D,$01 Skip count: #N(#PEEK(#PC)).
+  $8D4E,$01 Tile ID: #R$9C8A(#N$24).
+  $8D4F,$01 Tile ID: #R$9C92(#N$25).
+  $8D50,$01 Tile ID: #R$9C9A(#N$26).
+  $8D51,$01 Tile ID: #R$9C92(#N$25).
+  $8D52,$01 Tile ID: #R$9C9A(#N$26).
+  $8D53,$01 Tile ID: #R$9C92(#N$25).
+  $8D54,$01 Tile ID: #R$9C92(#N$25).
+  $8D55,$01 Tile ID: #R$9CA2(#N$27).
+N $8D56 Command #N$03: Fill attribute buffer.
+  $8D56,$01 Command (#N$03).
+  $8D57,$01 Base fill colour: #COLOUR(#PEEK(#PC)).
+  $8D58,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8D59 Attribute overlay: repeat colour.
+  $8D59,$01 Opcode (#N$1B).
+  $8D5A,$01 Repeat count: #N(#PEEK(#PC)).
+  $8D5B,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8D5C Attribute overlay: skip.
+  $8D5C,$01 Opcode (#N$12).
+  $8D5D,$01 Skip count: #N(#PEEK(#PC)).
+N $8D5E Attribute overlay: repeat colour.
+  $8D5E,$01 Opcode (#N$1B).
+  $8D5F,$01 Repeat count: #N(#PEEK(#PC)).
+  $8D60,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8D61 Attribute overlay: skip.
+  $8D61,$01 Opcode (#N$12).
+  $8D62,$01 Skip count: #N(#PEEK(#PC)).
+N $8D63 Attribute overlay: repeat colour.
+  $8D63,$01 Opcode (#N$1B).
+  $8D64,$01 Repeat count: #N(#PEEK(#PC)).
+  $8D65,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8D66 Attribute overlay: skip.
+  $8D66,$01 Opcode (#N$12).
+  $8D67,$01 Skip count: #N(#PEEK(#PC)).
+N $8D68 Attribute overlay: repeat colour.
+  $8D68,$01 Opcode (#N$1B).
+  $8D69,$01 Repeat count: #N(#PEEK(#PC)).
+  $8D6A,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8D6B Attribute overlay: skip.
+  $8D6B,$01 Opcode (#N$12).
+  $8D6C,$01 Skip count: #N(#PEEK(#PC)).
+N $8D6D Attribute overlay: repeat colour.
+  $8D6D,$01 Opcode (#N$1B).
+  $8D6E,$01 Repeat count: #N(#PEEK(#PC)).
+  $8D6F,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8D70 Attribute overlay: skip.
+  $8D70,$01 Opcode (#N$12).
+  $8D71,$01 Skip count: #N(#PEEK(#PC)).
+N $8D72 Attribute overlay: repeat colour.
+  $8D72,$01 Opcode (#N$1B).
+  $8D73,$01 Repeat count: #N(#PEEK(#PC)).
+  $8D74,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8D75 Attribute overlay: skip.
+  $8D75,$01 Opcode (#N$12).
+  $8D76,$01 Skip count: #N(#PEEK(#PC)).
+N $8D77 Attribute overlay: repeat colour.
+  $8D77,$01 Opcode (#N$1B).
+  $8D78,$01 Repeat count: #N(#PEEK(#PC)).
+  $8D79,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8D7A Attribute overlay: skip.
+  $8D7A,$01 Opcode (#N$12).
+  $8D7B,$01 Skip count: #N(#PEEK(#PC)).
+N $8D7C Attribute overlay: repeat colour.
+  $8D7C,$01 Opcode (#N$1B).
+  $8D7D,$01 Repeat count: #N(#PEEK(#PC)).
+  $8D7E,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8D7F Attribute overlay: skip.
+  $8D7F,$01 Opcode (#N$12).
+  $8D80,$01 Skip count: #N(#PEEK(#PC)).
+N $8D81 Attribute overlay: repeat colour.
+  $8D81,$01 Opcode (#N$1B).
+  $8D82,$01 Repeat count: #N(#PEEK(#PC)).
+  $8D83,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8D84,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8D85,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8D86,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8D87,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8D88 Attribute overlay: skip.
+  $8D88,$01 Opcode (#N$12).
+  $8D89,$01 Skip count: #N(#PEEK(#PC)).
+  $8D8A,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8D8B,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8D8C,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8D8D,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8D8E,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8D8F Attribute overlay: skip.
+  $8D8F,$01 Opcode (#N$12).
+  $8D90,$01 Skip count: #N(#PEEK(#PC)).
+N $8D91 Attribute overlay: repeat colour.
+  $8D91,$01 Opcode (#N$1B).
+  $8D92,$01 Repeat count: #N(#PEEK(#PC)).
+  $8D93,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8D94 Attribute overlay: skip.
+  $8D94,$01 Opcode (#N$12).
+  $8D95,$01 Skip count: #N(#PEEK(#PC)).
+N $8D96 Attribute overlay: repeat colour.
+  $8D96,$01 Opcode (#N$1B).
+  $8D97,$01 Repeat count: #N(#PEEK(#PC)).
+  $8D98,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8D99,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8D9A,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8D9B,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8D9C,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8D9D Attribute overlay: skip.
+  $8D9D,$01 Opcode (#N$12).
+  $8D9E,$01 Skip count: #N(#PEEK(#PC)).
+  $8D9F,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8DA0,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8DA1,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8DA2,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8DA3,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8DA4,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8DA5,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8DA6 Attribute overlay: skip.
+  $8DA6,$01 Opcode (#N$12).
+  $8DA7,$01 Skip count: #N(#PEEK(#PC)).
+  $8DA8,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8DA9,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8DAA Attribute overlay: skip.
+  $8DAA,$01 Opcode (#N$12).
+  $8DAB,$01 Skip count: #N(#PEEK(#PC)).
+  $8DAC,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8DAD,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8DAE Attribute overlay: skip.
+  $8DAE,$01 Opcode (#N$12).
+  $8DAF,$01 Skip count: #N(#PEEK(#PC)).
+  $8DB0,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8DB1,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8DB2 Attribute overlay: skip.
+  $8DB2,$01 Opcode (#N$12).
+  $8DB3,$01 Skip count: #N(#PEEK(#PC)).
+  $8DB4,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8DB5,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8DB6 Attribute overlay: skip.
+  $8DB6,$01 Opcode (#N$12).
+  $8DB7,$01 Skip count: #N(#PEEK(#PC)).
+  $8DB8,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8DB9,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8DBA Attribute overlay: skip.
+  $8DBA,$01 Opcode (#N$12).
+  $8DBB,$01 Skip count: #N(#PEEK(#PC)).
+  $8DBC,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8DBD,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8DBE,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8DBF,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8DC0,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8DC1 Attribute overlay: repeat colour.
+  $8DC1,$01 Opcode (#N$1B).
+  $8DC2,$01 Repeat count: #N(#PEEK(#PC)).
+  $8DC3,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8DC4,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8DC5,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8DC6 Attribute overlay: repeat colour.
+  $8DC6,$01 Opcode (#N$1B).
+  $8DC7,$01 Repeat count: #N(#PEEK(#PC)).
+  $8DC8,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8DC9,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8DCA,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8DCB Attribute overlay: repeat colour.
+  $8DCB,$01 Opcode (#N$1B).
+  $8DCC,$01 Repeat count: #N(#PEEK(#PC)).
+  $8DCD,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8DCE,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8DCF,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8DD0,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8DD1 Attribute overlay: repeat colour.
+  $8DD1,$01 Opcode (#N$1B).
+  $8DD2,$01 Repeat count: #N(#PEEK(#PC)).
+  $8DD3,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8DD4,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8DD5,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8DD6 Attribute overlay: repeat colour.
+  $8DD6,$01 Opcode (#N$1B).
+  $8DD7,$01 Repeat count: #N(#PEEK(#PC)).
+  $8DD8,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8DD9,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8DDA Attribute overlay: repeat colour.
+  $8DDA,$01 Opcode (#N$1B).
+  $8DDB,$01 Repeat count: #N(#PEEK(#PC)).
+  $8DDC,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8DDD,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8DDE,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8DDF Attribute overlay: repeat colour.
+  $8DDF,$01 Opcode (#N$1B).
+  $8DE0,$01 Repeat count: #N(#PEEK(#PC)).
+  $8DE1,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8DE2,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8DE3 Attribute overlay: repeat colour.
+  $8DE3,$01 Opcode (#N$1B).
+  $8DE4,$01 Repeat count: #N(#PEEK(#PC)).
+  $8DE5,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8DE6 Attribute overlay: repeat colour.
+  $8DE6,$01 Opcode (#N$1B).
+  $8DE7,$01 Repeat count: #N(#PEEK(#PC)).
+  $8DE8,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8DE9 Attribute overlay: repeat colour.
+  $8DE9,$01 Opcode (#N$1B).
+  $8DEA,$01 Repeat count: #N(#PEEK(#PC)).
+  $8DEB,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8DEC,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8DED Attribute overlay: repeat colour.
+  $8DED,$01 Opcode (#N$1B).
+  $8DEE,$01 Repeat count: #N(#PEEK(#PC)).
+  $8DEF,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8DF0,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8DF1,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8DF2,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8DF3,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8DF4,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8DF5 Attribute overlay: repeat colour.
+  $8DF5,$01 Opcode (#N$1B).
+  $8DF6,$01 Repeat count: #N(#PEEK(#PC)).
+  $8DF7,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8DF8,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8DF9,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8DFA,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8DFB,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8DFC,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8DFD,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8DFE,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8DFF,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8E00,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8E01,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8E02 Attribute overlay: repeat colour.
+  $8E02,$01 Opcode (#N$1B).
+  $8E03,$01 Repeat count: #N(#PEEK(#PC)).
+  $8E04,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8E05 Attribute overlay: repeat colour.
+  $8E05,$01 Opcode (#N$1B).
+  $8E06,$01 Repeat count: #N(#PEEK(#PC)).
+  $8E07,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8E08 Attribute overlay: repeat colour.
+  $8E08,$01 Opcode (#N$1B).
+  $8E09,$01 Repeat count: #N(#PEEK(#PC)).
+  $8E0A,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8E0B Attribute overlay: repeat colour.
+  $8E0B,$01 Opcode (#N$1B).
+  $8E0C,$01 Repeat count: #N(#PEEK(#PC)).
+  $8E0D,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8E0E,$01 End of attribute overlay.
   $8E0F,$01 Terminator.
 
 b $8E10 Room #N$07
 @ $8E10 label=Room07
 D $8E10 #ROOM$07
+N $8E10 Command #N$01: Skip tiles.
+  $8E10,$01 Command (#N$01).
+  $8E11,$01 Skip count: #N(#PEEK(#PC)).
+  $8E12,$01 Tile ID: #R$9BC2(#N$0B).
+N $8E13 Command #N$01: Skip tiles.
+  $8E13,$01 Command (#N$01).
+  $8E14,$01 Skip count: #N(#PEEK(#PC)).
+  $8E15,$01 Tile ID: #R$9BB2(#N$09).
+  $8E16,$01 Tile ID: #R$9BBA(#N$0A).
+  $8E17,$01 Tile ID: #R$9BC2(#N$0B).
+  $8E18,$01 Tile ID: #R$9BCA(#N$0C).
+  $8E19,$01 Tile ID: #R$9BE2(#N$0F).
+N $8E1A Command #N$01: Skip tiles.
+  $8E1A,$01 Command (#N$01).
+  $8E1B,$01 Skip count: #N(#PEEK(#PC)).
+  $8E1C,$01 Tile ID: #R$9BB2(#N$09).
+  $8E1D,$01 Tile ID: #R$9BBA(#N$0A).
+  $8E1E,$01 Tile ID: #R$9BC2(#N$0B).
+  $8E1F,$01 Tile ID: #R$9BCA(#N$0C).
+  $8E20,$01 Tile ID: #R$9BD2(#N$0D).
+N $8E21 Command #N$01: Skip tiles.
+  $8E21,$01 Command (#N$01).
+  $8E22,$01 Skip count: #N(#PEEK(#PC)).
+  $8E23,$01 Tile ID: #R$9BAA(#N$08).
+N $8E24 Command #N$01: Skip tiles.
+  $8E24,$01 Command (#N$01).
+  $8E25,$01 Skip count: #N(#PEEK(#PC)).
+  $8E26,$01 Tile ID: #R$9BAA(#N$08).
+N $8E27 Command #N$01: Skip tiles.
+  $8E27,$01 Command (#N$01).
+  $8E28,$01 Skip count: #N(#PEEK(#PC)).
+  $8E29,$01 Tile ID: #R$9BEA(#N$10).
+N $8E2A Command #N$01: Skip tiles.
+  $8E2A,$01 Command (#N$01).
+  $8E2B,$01 Skip count: #N(#PEEK(#PC)).
+  $8E2C,$01 Tile ID: #R$9BAA(#N$08).
+N $8E2D Command #N$01: Skip tiles.
+  $8E2D,$01 Command (#N$01).
+  $8E2E,$01 Skip count: #N(#PEEK(#PC)).
+  $8E2F,$01 Tile ID: #R$9BDA(#N$0E).
+  $8E30,$01 Tile ID: #R$9BD2(#N$0D).
+  $8E31,$01 Tile ID: #R$9C4A(#N$1C).
+N $8E32 Command #N$01: Skip tiles.
+  $8E32,$01 Command (#N$01).
+  $8E33,$01 Skip count: #N(#PEEK(#PC)).
+  $8E34,$01 Tile ID: #R$9C02(#N$13).
+  $8E35,$01 Tile ID: #R$9C2A(#N$18).
+  $8E36,$01 Tile ID: #R$9C22(#N$17).
+  $8E37,$01 Tile ID: #R$9C1A(#N$16).
+  $8E38,$01 Tile ID: #R$9C12(#N$15).
+N $8E39 Command #N$01: Skip tiles.
+  $8E39,$01 Command (#N$01).
+  $8E3A,$01 Skip count: #N(#PEEK(#PC)).
+  $8E3B,$01 Tile ID: #R$9C4A(#N$1C).
+N $8E3C Command #N$01: Skip tiles.
+  $8E3C,$01 Command (#N$01).
+  $8E3D,$01 Skip count: #N(#PEEK(#PC)).
+  $8E3E,$01 Tile ID: #R$9C42(#N$1B).
+N $8E3F Command #N$01: Skip tiles.
+  $8E3F,$01 Command (#N$01).
+  $8E40,$01 Skip count: #N(#PEEK(#PC)).
+  $8E41,$01 Tile ID: #R$9C3A(#N$1A).
+N $8E42 Command #N$01: Skip tiles.
+  $8E42,$01 Command (#N$01).
+  $8E43,$01 Skip count: #N(#PEEK(#PC)).
+  $8E44,$01 Tile ID: #R$9C0A(#N$14).
+N $8E45 Command #N$01: Skip tiles.
+  $8E45,$01 Command (#N$01).
+  $8E46,$01 Skip count: #N(#PEEK(#PC)).
+  $8E47,$01 Tile ID: #R$9C2A(#N$18).
+  $8E48,$01 Tile ID: #R$9C22(#N$17).
+  $8E49,$01 Tile ID: #R$9C1A(#N$16).
+  $8E4A,$01 Tile ID: #R$9C12(#N$15).
+  $8E4B,$01 Tile ID: #R$9C02(#N$13).
+  $8E4C,$01 Tile ID: #R$9C02(#N$13).
+  $8E4D,$01 Tile ID: #R$9C2A(#N$18).
+  $8E4E,$01 Tile ID: #R$9C22(#N$17).
+N $8E4F Command #N$01: Skip tiles.
+  $8E4F,$01 Command (#N$01).
+  $8E50,$01 Skip count: #N(#PEEK(#PC)).
+N $8E51 Command #N$02: Draw repeated tile.
+  $8E51,$01 Command (#N$02).
+  $8E52,$01 Repeat count: #N(#PEEK(#PC)).
+  $8E53,$01 Tile ID: #R$A27A(#N$E2).
+N $8E54 Command #N$01: Skip tiles.
+  $8E54,$01 Command (#N$01).
+  $8E55,$01 Skip count: #N(#PEEK(#PC)).
+  $8E56,$01 Tile ID: #R$A30A(#N$F4).
+N $8E57 Command #N$01: Skip tiles.
+  $8E57,$01 Command (#N$01).
+  $8E58,$01 Skip count: #N(#PEEK(#PC)).
+  $8E59,$01 Tile ID: #R$A30A(#N$F4).
+N $8E5A Command #N$01: Skip tiles.
+  $8E5A,$01 Command (#N$01).
+  $8E5B,$01 Skip count: #N(#PEEK(#PC)).
+  $8E5C,$01 Tile ID: #R$A30A(#N$F4).
+N $8E5D Command #N$01: Skip tiles.
+  $8E5D,$01 Command (#N$01).
+  $8E5E,$01 Skip count: #N(#PEEK(#PC)).
+N $8E5F Command #N$02: Draw repeated tile.
+  $8E5F,$01 Command (#N$02).
+  $8E60,$01 Repeat count: #N(#PEEK(#PC)).
+  $8E61,$01 Tile ID: #R$A27A(#N$E2).
+N $8E62 Command #N$01: Skip tiles.
+  $8E62,$01 Command (#N$01).
+  $8E63,$01 Skip count: #N(#PEEK(#PC)).
+  $8E64,$01 Tile ID: #R$A30A(#N$F4).
+N $8E65 Command #N$01: Skip tiles.
+  $8E65,$01 Command (#N$01).
+  $8E66,$01 Skip count: #N(#PEEK(#PC)).
+  $8E67,$01 Tile ID: #R$A30A(#N$F4).
+N $8E68 Command #N$01: Skip tiles.
+  $8E68,$01 Command (#N$01).
+  $8E69,$01 Skip count: #N(#PEEK(#PC)).
+  $8E6A,$01 Tile ID: #R$A102(#N$B3).
+  $8E6B,$01 Tile ID: #R$A10A(#N$B4).
+  $8E6C,$01 Tile ID: #R$A112(#N$B5).
+N $8E6D Command #N$01: Skip tiles.
+  $8E6D,$01 Command (#N$01).
+  $8E6E,$01 Skip count: #N(#PEEK(#PC)).
+  $8E6F,$01 Tile ID: #R$A30A(#N$F4).
+  $8E70,$01 Tile ID: #R$A302(#N$F3).
+  $8E71,$01 Tile ID: #R$A2FA(#N$F2).
+  $8E72,$01 Tile ID: #R$A302(#N$F3).
+  $8E73,$01 Tile ID: #R$A302(#N$F3).
+  $8E74,$01 Tile ID: #R$A2FA(#N$F2).
+  $8E75,$01 Tile ID: #R$A302(#N$F3).
+  $8E76,$01 Tile ID: #R$A302(#N$F3).
+  $8E77,$01 Tile ID: #R$A2FA(#N$F2).
+  $8E78,$01 Tile ID: #R$A302(#N$F3).
+  $8E79,$01 Tile ID: #R$A302(#N$F3).
+N $8E7A Command #N$02: Draw repeated tile.
+  $8E7A,$01 Command (#N$02).
+  $8E7B,$01 Repeat count: #N(#PEEK(#PC)).
+  $8E7C,$01 Tile ID: #R$A28A(#N$E4).
+  $8E7D,$01 Tile ID: #R$A302(#N$F3).
+  $8E7E,$01 Tile ID: #R$A2FA(#N$F2).
+  $8E7F,$01 Tile ID: #R$A302(#N$F3).
+  $8E80,$01 Tile ID: #R$A302(#N$F3).
+  $8E81,$01 Tile ID: #R$A2FA(#N$F2).
+  $8E82,$01 Tile ID: #R$A302(#N$F3).
+  $8E83,$01 Tile ID: #R$A302(#N$F3).
+  $8E84,$01 Tile ID: #R$A11A(#N$B6).
+  $8E85,$01 Tile ID: #R$A122(#N$B7).
+  $8E86,$01 Tile ID: #R$A12A(#N$B8).
+N $8E87 Command #N$02: Draw repeated tile.
+  $8E87,$01 Command (#N$02).
+  $8E88,$01 Repeat count: #N(#PEEK(#PC)).
+  $8E89,$01 Tile ID: #R$A302(#N$F3).
+  $8E8A,$01 Tile ID: #R$A2FA(#N$F2).
+N $8E8B Command #N$01: Skip tiles.
+  $8E8B,$01 Command (#N$01).
+  $8E8C,$01 Skip count: #N(#PEEK(#PC)).
+  $8E8D,$01 Tile ID: #R$A00A(#N$94).
+N $8E8E Command #N$01: Skip tiles.
+  $8E8E,$01 Command (#N$01).
+  $8E8F,$01 Skip count: #N(#PEEK(#PC)).
+  $8E90,$01 Tile ID: #R$A00A(#N$94).
+N $8E91 Command #N$01: Skip tiles.
+  $8E91,$01 Command (#N$01).
+  $8E92,$01 Skip count: #N(#PEEK(#PC)).
+  $8E93,$01 Tile ID: #R$A00A(#N$94).
+N $8E94 Command #N$01: Skip tiles.
+  $8E94,$01 Command (#N$01).
+  $8E95,$01 Skip count: #N(#PEEK(#PC)).
+  $8E96,$01 Tile ID: #R$A00A(#N$94).
+N $8E97 Command #N$01: Skip tiles.
+  $8E97,$01 Command (#N$01).
+  $8E98,$01 Skip count: #N(#PEEK(#PC)).
+  $8E99,$01 Tile ID: #R$A022(#N$97).
+N $8E9A Command #N$01: Skip tiles.
+  $8E9A,$01 Command (#N$01).
+  $8E9B,$01 Skip count: #N(#PEEK(#PC)).
+  $8E9C,$01 Tile ID: #R$9FEA(#N$90).
+N $8E9D Command #N$01: Skip tiles.
+  $8E9D,$01 Command (#N$01).
+  $8E9E,$01 Skip count: #N(#PEEK(#PC)).
+  $8E9F,$01 Tile ID: #R$A02A(#N$98).
+  $8EA0,$01 Tile ID: #R$A032(#N$99).
+N $8EA1 Command #N$01: Skip tiles.
+  $8EA1,$01 Command (#N$01).
+  $8EA2,$01 Skip count: #N(#PEEK(#PC)).
+  $8EA3,$01 Tile ID: #R$A28A(#N$E4).
+  $8EA4,$01 Tile ID: #R$A28A(#N$E4).
+  $8EA5,$01 Tile ID: #R$A282(#N$E3).
+  $8EA6,$01 Tile ID: #R$A28A(#N$E4).
+  $8EA7,$01 Tile ID: #R$A282(#N$E3).
+  $8EA8,$01 Tile ID: #R$A28A(#N$E4).
+  $8EA9,$01 Tile ID: #R$A282(#N$E3).
+  $8EAA,$01 Tile ID: #R$A28A(#N$E4).
+N $8EAB Command #N$01: Skip tiles.
+  $8EAB,$01 Command (#N$01).
+  $8EAC,$01 Skip count: #N(#PEEK(#PC)).
+  $8EAD,$01 Tile ID: #R$A00A(#N$94).
+  $8EAE,$01 Tile ID: #R$A002(#N$93).
+  $8EAF,$01 Tile ID: #R$A00A(#N$94).
+  $8EB0,$01 Tile ID: #R$A002(#N$93).
+  $8EB1,$01 Tile ID: #R$A00A(#N$94).
+  $8EB2,$01 Tile ID: #R$A002(#N$93).
+  $8EB3,$01 Tile ID: #R$A00A(#N$94).
+  $8EB4,$01 Tile ID: #R$A002(#N$93).
+N $8EB5 Command #N$01: Skip tiles.
+  $8EB5,$01 Command (#N$01).
+  $8EB6,$01 Skip count: #N(#PEEK(#PC)).
+  $8EB7,$01 Tile ID: #R$A25A(#N$DE).
+N $8EB8 Command #N$01: Skip tiles.
+  $8EB8,$01 Command (#N$01).
+  $8EB9,$01 Skip count: #N(#PEEK(#PC)).
+  $8EBA,$01 Tile ID: #R$A25A(#N$DE).
+N $8EBB Command #N$01: Skip tiles.
+  $8EBB,$01 Command (#N$01).
+  $8EBC,$01 Skip count: #N(#PEEK(#PC)).
+  $8EBD,$01 Tile ID: #R$A25A(#N$DE).
+N $8EBE Command #N$01: Skip tiles.
+  $8EBE,$01 Command (#N$01).
+  $8EBF,$01 Skip count: #N(#PEEK(#PC)).
+  $8EC0,$01 Tile ID: #R$9C82(#N$23).
+  $8EC1,$01 Tile ID: #R$9C82(#N$23).
+N $8EC2 Command #N$01: Skip tiles.
+  $8EC2,$01 Command (#N$01).
+  $8EC3,$01 Skip count: #N(#PEEK(#PC)).
+  $8EC4,$01 Tile ID: #R$9C82(#N$23).
+  $8EC5,$01 Tile ID: #R$9C82(#N$23).
+N $8EC6 Command #N$01: Skip tiles.
+  $8EC6,$01 Command (#N$01).
+  $8EC7,$01 Skip count: #N(#PEEK(#PC)).
+N $8EC8 Command #N$02: Draw repeated tile.
+  $8EC8,$01 Command (#N$02).
+  $8EC9,$01 Repeat count: #N(#PEEK(#PC)).
+  $8ECA,$01 Tile ID: #R$9C82(#N$23).
+N $8ECB Command #N$01: Skip tiles.
+  $8ECB,$01 Command (#N$01).
+  $8ECC,$01 Skip count: #N(#PEEK(#PC)).
+  $8ECD,$01 Tile ID: #R$9C82(#N$23).
+N $8ECE Command #N$01: Skip tiles.
+  $8ECE,$01 Command (#N$01).
+  $8ECF,$01 Skip count: #N(#PEEK(#PC)).
+  $8ED0,$01 Tile ID: #R$9C8A(#N$24).
+  $8ED1,$01 Tile ID: #R$9C92(#N$25).
+  $8ED2,$01 Tile ID: #R$9C92(#N$25).
+  $8ED3,$01 Tile ID: #R$9C9A(#N$26).
+  $8ED4,$01 Tile ID: #R$9C92(#N$25).
+  $8ED5,$01 Tile ID: #R$9C92(#N$25).
+  $8ED6,$01 Tile ID: #R$9CA2(#N$27).
+N $8ED7 Command #N$01: Skip tiles.
+  $8ED7,$01 Command (#N$01).
+  $8ED8,$01 Skip count: #N(#PEEK(#PC)).
+  $8ED9,$01 Tile ID: #R$9C8A(#N$24).
+N $8EDA Command #N$02: Draw repeated tile.
+  $8EDA,$01 Command (#N$02).
+  $8EDB,$01 Repeat count: #N(#PEEK(#PC)).
+  $8EDC,$01 Tile ID: #R$9C92(#N$25).
+  $8EDD,$01 Tile ID: #R$9C9A(#N$26).
+  $8EDE,$01 Tile ID: #R$9C92(#N$25).
+  $8EDF,$01 Tile ID: #R$9CA2(#N$27).
+N $8EE0 Command #N$01: Skip tiles.
+  $8EE0,$01 Command (#N$01).
+  $8EE1,$01 Skip count: #N(#PEEK(#PC)).
+N $8EE2 Command #N$03: Fill attribute buffer.
+  $8EE2,$01 Command (#N$03).
+  $8EE3,$01 Base fill colour: #COLOUR(#PEEK(#PC)).
+N $8EE4 Attribute overlay: skip.
+  $8EE4,$01 Opcode (#N$12).
+  $8EE5,$01 Skip count: #N(#PEEK(#PC)).
+  $8EE6,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8EE7 Attribute overlay: skip.
+  $8EE7,$01 Opcode (#N$12).
+  $8EE8,$01 Skip count: #N(#PEEK(#PC)).
+N $8EE9 Attribute overlay: repeat colour.
+  $8EE9,$01 Opcode (#N$1B).
+  $8EEA,$01 Repeat count: #N(#PEEK(#PC)).
+  $8EEB,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8EEC Attribute overlay: skip.
+  $8EEC,$01 Opcode (#N$12).
+  $8EED,$01 Skip count: #N(#PEEK(#PC)).
+N $8EEE Attribute overlay: repeat colour.
+  $8EEE,$01 Opcode (#N$1B).
+  $8EEF,$01 Repeat count: #N(#PEEK(#PC)).
+  $8EF0,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8EF1 Attribute overlay: skip.
+  $8EF1,$01 Opcode (#N$12).
+  $8EF2,$01 Skip count: #N(#PEEK(#PC)).
+N $8EF3 Attribute overlay: repeat colour.
+  $8EF3,$01 Opcode (#N$1B).
+  $8EF4,$01 Repeat count: #N(#PEEK(#PC)).
+  $8EF5,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8EF6 Attribute overlay: skip.
+  $8EF6,$01 Opcode (#N$12).
+  $8EF7,$01 Skip count: #N(#PEEK(#PC)).
+N $8EF8 Attribute overlay: repeat colour.
+  $8EF8,$01 Opcode (#N$1B).
+  $8EF9,$01 Repeat count: #N(#PEEK(#PC)).
+  $8EFA,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8EFB Attribute overlay: skip.
+  $8EFB,$01 Opcode (#N$12).
+  $8EFC,$01 Skip count: #N(#PEEK(#PC)).
+  $8EFD,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8EFE,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8EFF,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8F00,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8F01 Attribute overlay: repeat colour.
+  $8F01,$01 Opcode (#N$1B).
+  $8F02,$01 Repeat count: #N(#PEEK(#PC)).
+  $8F03,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8F04 Attribute overlay: skip.
+  $8F04,$01 Opcode (#N$12).
+  $8F05,$01 Skip count: #N(#PEEK(#PC)).
+N $8F06 Attribute overlay: repeat colour.
+  $8F06,$01 Opcode (#N$1B).
+  $8F07,$01 Repeat count: #N(#PEEK(#PC)).
+  $8F08,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8F09 Attribute overlay: skip.
+  $8F09,$01 Opcode (#N$12).
+  $8F0A,$01 Skip count: #N(#PEEK(#PC)).
+N $8F0B Attribute overlay: repeat colour.
+  $8F0B,$01 Opcode (#N$1B).
+  $8F0C,$01 Repeat count: #N(#PEEK(#PC)).
+  $8F0D,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8F0E Attribute overlay: skip.
+  $8F0E,$01 Opcode (#N$12).
+  $8F0F,$01 Skip count: #N(#PEEK(#PC)).
+N $8F10 Attribute overlay: repeat colour.
+  $8F10,$01 Opcode (#N$1B).
+  $8F11,$01 Repeat count: #N(#PEEK(#PC)).
+  $8F12,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8F13 Attribute overlay: skip.
+  $8F13,$01 Opcode (#N$12).
+  $8F14,$01 Skip count: #N(#PEEK(#PC)).
+N $8F15 Attribute overlay: repeat colour.
+  $8F15,$01 Opcode (#N$1B).
+  $8F16,$01 Repeat count: #N(#PEEK(#PC)).
+  $8F17,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8F18,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8F19 Attribute overlay: repeat colour.
+  $8F19,$01 Opcode (#N$1B).
+  $8F1A,$01 Repeat count: #N(#PEEK(#PC)).
+  $8F1B,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8F1C,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8F1D Attribute overlay: repeat colour.
+  $8F1D,$01 Opcode (#N$1B).
+  $8F1E,$01 Repeat count: #N(#PEEK(#PC)).
+  $8F1F,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8F20,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8F21,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8F22,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8F23,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8F24,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8F25,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8F26,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8F27,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8F28 Attribute overlay: repeat colour.
+  $8F28,$01 Opcode (#N$1B).
+  $8F29,$01 Repeat count: #N(#PEEK(#PC)).
+  $8F2A,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8F2B,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8F2C Attribute overlay: repeat colour.
+  $8F2C,$01 Opcode (#N$1B).
+  $8F2D,$01 Repeat count: #N(#PEEK(#PC)).
+  $8F2E,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8F2F,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8F30 Attribute overlay: repeat colour.
+  $8F30,$01 Opcode (#N$1B).
+  $8F31,$01 Repeat count: #N(#PEEK(#PC)).
+  $8F32,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8F33 Attribute overlay: repeat colour.
+  $8F33,$01 Opcode (#N$1B).
+  $8F34,$01 Repeat count: #N(#PEEK(#PC)).
+  $8F35,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8F36 Attribute overlay: repeat colour.
+  $8F36,$01 Opcode (#N$1B).
+  $8F37,$01 Repeat count: #N(#PEEK(#PC)).
+  $8F38,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8F39 Attribute overlay: repeat colour.
+  $8F39,$01 Opcode (#N$1B).
+  $8F3A,$01 Repeat count: #N(#PEEK(#PC)).
+  $8F3B,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8F3C Attribute overlay: repeat colour.
+  $8F3C,$01 Opcode (#N$1B).
+  $8F3D,$01 Repeat count: #N(#PEEK(#PC)).
+  $8F3E,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8F3F Attribute overlay: repeat colour.
+  $8F3F,$01 Opcode (#N$1B).
+  $8F40,$01 Repeat count: #N(#PEEK(#PC)).
+  $8F41,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8F42 Attribute overlay: repeat colour.
+  $8F42,$01 Opcode (#N$1B).
+  $8F43,$01 Repeat count: #N(#PEEK(#PC)).
+  $8F44,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8F45,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8F46,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8F47,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8F48,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8F49,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8F4A Attribute overlay: repeat colour.
+  $8F4A,$01 Opcode (#N$1B).
+  $8F4B,$01 Repeat count: #N(#PEEK(#PC)).
+  $8F4C,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8F4D,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8F4E,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8F4F,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8F50,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8F51,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $8F52 Attribute overlay: repeat colour.
+  $8F52,$01 Opcode (#N$1B).
+  $8F53,$01 Repeat count: #N(#PEEK(#PC)).
+  $8F54,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8F55 Attribute overlay: repeat colour.
+  $8F55,$01 Opcode (#N$1B).
+  $8F56,$01 Repeat count: #N(#PEEK(#PC)).
+  $8F57,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8F58 Attribute overlay: repeat colour.
+  $8F58,$01 Opcode (#N$1B).
+  $8F59,$01 Repeat count: #N(#PEEK(#PC)).
+  $8F5A,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $8F5B Attribute overlay: repeat colour.
+  $8F5B,$01 Opcode (#N$1B).
+  $8F5C,$01 Repeat count: #N(#PEEK(#PC)).
+  $8F5D,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $8F5E,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8F5F,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8F60,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $8F61,$01 End of attribute overlay.
   $8F62,$01 Terminator.
 
 b $8F63 Room #N$08
 @ $8F63 label=Room08
 D $8F63 #ROOM$08
+N $8F63 Command #N$01: Skip tiles.
+  $8F63,$01 Command (#N$01).
+  $8F64,$01 Skip count: #N(#PEEK(#PC)).
+  $8F65,$01 Tile ID: #R$9BCA(#N$0C).
+  $8F66,$01 Tile ID: #R$9BD2(#N$0D).
+  $8F67,$01 Tile ID: #R$9BB2(#N$09).
+  $8F68,$01 Tile ID: #R$9BBA(#N$0A).
+N $8F69 Command #N$01: Skip tiles.
+  $8F69,$01 Command (#N$01).
+  $8F6A,$01 Skip count: #N(#PEEK(#PC)).
+  $8F6B,$01 Tile ID: #R$9BDA(#N$0E).
+  $8F6C,$01 Tile ID: #R$9BCA(#N$0C).
+  $8F6D,$01 Tile ID: #R$9BCA(#N$0C).
+  $8F6E,$01 Tile ID: #R$9BE2(#N$0F).
+N $8F6F Command #N$01: Skip tiles.
+  $8F6F,$01 Command (#N$01).
+  $8F70,$01 Skip count: #N(#PEEK(#PC)).
+  $8F71,$01 Tile ID: #R$9BB2(#N$09).
+  $8F72,$01 Tile ID: #R$9BBA(#N$0A).
+  $8F73,$01 Tile ID: #R$9BC2(#N$0B).
+  $8F74,$01 Tile ID: #R$9BCA(#N$0C).
+  $8F75,$01 Tile ID: #R$9BD2(#N$0D).
+N $8F76 Command #N$01: Skip tiles.
+  $8F76,$01 Command (#N$01).
+  $8F77,$01 Skip count: #N(#PEEK(#PC)).
+  $8F78,$01 Tile ID: #R$9BEA(#N$10).
+N $8F79 Command #N$01: Skip tiles.
+  $8F79,$01 Command (#N$01).
+  $8F7A,$01 Skip count: #N(#PEEK(#PC)).
+  $8F7B,$01 Tile ID: #R$9BAA(#N$08).
+N $8F7C Command #N$01: Skip tiles.
+  $8F7C,$01 Command (#N$01).
+  $8F7D,$01 Skip count: #N(#PEEK(#PC)).
+  $8F7E,$01 Tile ID: #R$9BDA(#N$0E).
+  $8F7F,$01 Tile ID: #R$9BE2(#N$0F).
+N $8F80 Command #N$01: Skip tiles.
+  $8F80,$01 Command (#N$01).
+  $8F81,$01 Skip count: #N(#PEEK(#PC)).
+  $8F82,$01 Tile ID: #R$9BEA(#N$10).
+N $8F83 Command #N$01: Skip tiles.
+  $8F83,$01 Command (#N$01).
+  $8F84,$01 Skip count: #N(#PEEK(#PC)).
+  $8F85,$01 Tile ID: #R$9C4A(#N$1C).
+N $8F86 Command #N$01: Skip tiles.
+  $8F86,$01 Command (#N$01).
+  $8F87,$01 Skip count: #N(#PEEK(#PC)).
+  $8F88,$01 Tile ID: #R$9BEA(#N$10).
+N $8F89 Command #N$01: Skip tiles.
+  $8F89,$01 Command (#N$01).
+  $8F8A,$01 Skip count: #N(#PEEK(#PC)).
+  $8F8B,$01 Tile ID: #R$9C0A(#N$14).
+N $8F8C Command #N$01: Skip tiles.
+  $8F8C,$01 Command (#N$01).
+  $8F8D,$01 Skip count: #N(#PEEK(#PC)).
+  $8F8E,$01 Tile ID: #R$9BF2(#N$11).
+N $8F8F Command #N$01: Skip tiles.
+  $8F8F,$01 Command (#N$01).
+  $8F90,$01 Skip count: #N(#PEEK(#PC)).
+  $8F91,$01 Tile ID: #R$9C42(#N$1B).
+N $8F92 Command #N$01: Skip tiles.
+  $8F92,$01 Command (#N$01).
+  $8F93,$01 Skip count: #N(#PEEK(#PC)).
+  $8F94,$01 Tile ID: #R$A012(#N$95).
+N $8F95 Command #N$02: Draw repeated tile.
+  $8F95,$01 Command (#N$02).
+  $8F96,$01 Repeat count: #N(#PEEK(#PC)).
+  $8F97,$01 Tile ID: #R$A28A(#N$E4).
+N $8F98 Command #N$01: Skip tiles.
+  $8F98,$01 Command (#N$01).
+  $8F99,$01 Skip count: #N(#PEEK(#PC)).
+  $8F9A,$01 Tile ID: #R$9BEA(#N$10).
+  $8F9B,$01 Tile ID: #R$9C02(#N$13).
+  $8F9C,$01 Tile ID: #R$9C2A(#N$18).
+  $8F9D,$01 Tile ID: #R$9C22(#N$17).
+  $8F9E,$01 Tile ID: #R$9C32(#N$19).
+  $8F9F,$01 Tile ID: #R$9BFA(#N$12).
+N $8FA0 Command #N$01: Skip tiles.
+  $8FA0,$01 Command (#N$01).
+  $8FA1,$01 Skip count: #N(#PEEK(#PC)).
+  $8FA2,$01 Tile ID: #R$9C3A(#N$1A).
+  $8FA3,$01 Tile ID: #R$A012(#N$95).
+N $8FA4 Command #N$02: Draw repeated tile.
+  $8FA4,$01 Command (#N$02).
+  $8FA5,$01 Repeat count: #N(#PEEK(#PC)).
+  $8FA6,$01 Tile ID: #R$A00A(#N$94).
+  $8FA7,$01 Tile ID: #R$9C1A(#N$16).
+  $8FA8,$01 Tile ID: #R$9C12(#N$15).
+N $8FA9 Command #N$01: Skip tiles.
+  $8FA9,$01 Command (#N$01).
+  $8FAA,$01 Skip count: #N(#PEEK(#PC)).
+  $8FAB,$01 Tile ID: #R$A00A(#N$94).
+  $8FAC,$01 Tile ID: #R$A00A(#N$94).
+  $8FAD,$01 Tile ID: #R$A002(#N$93).
+  $8FAE,$01 Tile ID: #R$A00A(#N$94).
+  $8FAF,$01 Tile ID: #R$A002(#N$93).
+  $8FB0,$01 Tile ID: #R$A00A(#N$94).
+  $8FB1,$01 Tile ID: #R$A002(#N$93).
+  $8FB2,$01 Tile ID: #R$A00A(#N$94).
+  $8FB3,$01 Tile ID: #R$A002(#N$93).
+  $8FB4,$01 Tile ID: #R$A00A(#N$94).
+  $8FB5,$01 Tile ID: #R$A002(#N$93).
+  $8FB6,$01 Tile ID: #R$A00A(#N$94).
+  $8FB7,$01 Tile ID: #R$A002(#N$93).
+  $8FB8,$01 Tile ID: #R$A00A(#N$94).
+  $8FB9,$01 Tile ID: #R$A002(#N$93).
+  $8FBA,$01 Tile ID: #R$A00A(#N$94).
+  $8FBB,$01 Tile ID: #R$A002(#N$93).
+N $8FBC Command #N$01: Skip tiles.
+  $8FBC,$01 Command (#N$01).
+  $8FBD,$01 Skip count: #N(#PEEK(#PC)).
+  $8FBE,$01 Tile ID: #R$A00A(#N$94).
+  $8FBF,$01 Tile ID: #R$A002(#N$93).
+  $8FC0,$01 Tile ID: #R$A00A(#N$94).
+N $8FC1 Command #N$01: Skip tiles.
+  $8FC1,$01 Command (#N$01).
+  $8FC2,$01 Skip count: #N(#PEEK(#PC)).
+  $8FC3,$01 Tile ID: #R$A03A(#N$9A).
+N $8FC4 Command #N$01: Skip tiles.
+  $8FC4,$01 Command (#N$01).
+  $8FC5,$01 Skip count: #N(#PEEK(#PC)).
+  $8FC6,$01 Tile ID: #R$A05A(#N$9E).
+  $8FC7,$01 Tile ID: #R$A06A(#N$A0).
+N $8FC8 Command #N$01: Skip tiles.
+  $8FC8,$01 Command (#N$01).
+  $8FC9,$01 Skip count: #N(#PEEK(#PC)).
+  $8FCA,$01 Tile ID: #R$A03A(#N$9A).
+N $8FCB Command #N$01: Skip tiles.
+  $8FCB,$01 Command (#N$01).
+  $8FCC,$01 Skip count: #N(#PEEK(#PC)).
+  $8FCD,$01 Tile ID: #R$A05A(#N$9E).
+  $8FCE,$01 Tile ID: #R$A06A(#N$A0).
+N $8FCF Command #N$01: Skip tiles.
+  $8FCF,$01 Command (#N$01).
+  $8FD0,$01 Skip count: #N(#PEEK(#PC)).
+  $8FD1,$01 Tile ID: #R$A00A(#N$94).
+  $8FD2,$01 Tile ID: #R$A00A(#N$94).
+  $8FD3,$01 Tile ID: #R$A002(#N$93).
+N $8FD4 Command #N$01: Skip tiles.
+  $8FD4,$01 Command (#N$01).
+  $8FD5,$01 Skip count: #N(#PEEK(#PC)).
+  $8FD6,$01 Tile ID: #R$A042(#N$9B).
+  $8FD7,$01 Tile ID: #R$A04A(#N$9C).
+  $8FD8,$01 Tile ID: #R$A052(#N$9D).
+  $8FD9,$01 Tile ID: #R$A062(#N$9F).
+  $8FDA,$01 Tile ID: #R$A072(#N$A1).
+  $8FDB,$01 Tile ID: #R$A07A(#N$A2).
+  $8FDC,$01 Tile ID: #R$A042(#N$9B).
+  $8FDD,$01 Tile ID: #R$A082(#N$A3).
+  $8FDE,$01 Tile ID: #R$A08A(#N$A4).
+  $8FDF,$01 Tile ID: #R$A092(#N$A5).
+  $8FE0,$01 Tile ID: #R$A09A(#N$A6).
+  $8FE1,$01 Tile ID: #R$A0A2(#N$A7).
+  $8FE2,$01 Tile ID: #R$A0AA(#N$A8).
+N $8FE3 Command #N$01: Skip tiles.
+  $8FE3,$01 Command (#N$01).
+  $8FE4,$01 Skip count: #N(#PEEK(#PC)).
+  $8FE5,$01 Tile ID: #R$A00A(#N$94).
+  $8FE6,$01 Tile ID: #R$A002(#N$93).
+  $8FE7,$01 Tile ID: #R$A00A(#N$94).
+  $8FE8,$01 Tile ID: #R$A002(#N$93).
+  $8FE9,$01 Tile ID: #R$A00A(#N$94).
+  $8FEA,$01 Tile ID: #R$A002(#N$93).
+  $8FEB,$01 Tile ID: #R$A00A(#N$94).
+  $8FEC,$01 Tile ID: #R$A002(#N$93).
+  $8FED,$01 Tile ID: #R$A00A(#N$94).
+  $8FEE,$01 Tile ID: #R$A002(#N$93).
+  $8FEF,$01 Tile ID: #R$A00A(#N$94).
+  $8FF0,$01 Tile ID: #R$A002(#N$93).
+  $8FF1,$01 Tile ID: #R$A00A(#N$94).
+  $8FF2,$01 Tile ID: #R$A002(#N$93).
+  $8FF3,$01 Tile ID: #R$A00A(#N$94).
+  $8FF4,$01 Tile ID: #R$A002(#N$93).
+  $8FF5,$01 Tile ID: #R$A00A(#N$94).
+N $8FF6 Command #N$01: Skip tiles.
+  $8FF6,$01 Command (#N$01).
+  $8FF7,$01 Skip count: #N(#PEEK(#PC)).
+  $8FF8,$01 Tile ID: #R$A30A(#N$F4).
+N $8FF9 Command #N$01: Skip tiles.
+  $8FF9,$01 Command (#N$01).
+  $8FFA,$01 Skip count: #N(#PEEK(#PC)).
+  $8FFB,$01 Tile ID: #R$A00A(#N$94).
+  $8FFC,$01 Tile ID: #R$A00A(#N$94).
+  $8FFD,$01 Tile ID: #R$A002(#N$93).
+  $8FFE,$01 Tile ID: #R$A00A(#N$94).
+  $8FFF,$01 Tile ID: #R$A002(#N$93).
+  $9000,$01 Tile ID: #R$A00A(#N$94).
+N $9001 Command #N$02: Draw repeated tile.
+  $9001,$01 Command (#N$02).
+  $9002,$01 Repeat count: #N(#PEEK(#PC)).
+  $9003,$01 Tile ID: #R$9CB2(#N$29).
+  $9004,$01 Tile ID: #R$A302(#N$F3).
+  $9005,$01 Tile ID: #R$A302(#N$F3).
+  $9006,$01 Tile ID: #R$A25A(#N$DE).
+N $9007 Command #N$01: Skip tiles.
+  $9007,$01 Command (#N$01).
+  $9008,$01 Skip count: #N(#PEEK(#PC)).
+  $9009,$01 Tile ID: #R$A00A(#N$94).
+N $900A Command #N$01: Skip tiles.
+  $900A,$01 Command (#N$01).
+  $900B,$01 Skip count: #N(#PEEK(#PC)).
+  $900C,$01 Tile ID: #R$A00A(#N$94).
+  $900D,$01 Tile ID: #R$A0B2(#N$A9).
+N $900E Command #N$01: Skip tiles.
+  $900E,$01 Command (#N$01).
+  $900F,$01 Skip count: #N(#PEEK(#PC)).
+  $9010,$01 Tile ID: #R$A032(#N$99).
+  $9011,$01 Tile ID: #R$A032(#N$99).
+N $9012 Command #N$01: Skip tiles.
+  $9012,$01 Command (#N$01).
+  $9013,$01 Skip count: #N(#PEEK(#PC)).
+  $9014,$01 Tile ID: #R$A032(#N$99).
+  $9015,$01 Tile ID: #R$A032(#N$99).
+N $9016 Command #N$01: Skip tiles.
+  $9016,$01 Command (#N$01).
+  $9017,$01 Skip count: #N(#PEEK(#PC)).
+  $9018,$01 Tile ID: #R$A032(#N$99).
+  $9019,$01 Tile ID: #R$A032(#N$99).
+N $901A Command #N$01: Skip tiles.
+  $901A,$01 Command (#N$01).
+  $901B,$01 Skip count: #N(#PEEK(#PC)).
+  $901C,$01 Tile ID: #R$A00A(#N$94).
+N $901D Command #N$01: Skip tiles.
+  $901D,$01 Command (#N$01).
+  $901E,$01 Skip count: #N(#PEEK(#PC)).
+  $901F,$01 Tile ID: #R$A0DA(#N$AE).
+  $9020,$01 Tile ID: #R$A0CA(#N$AC).
+N $9021 Command #N$01: Skip tiles.
+  $9021,$01 Command (#N$01).
+  $9022,$01 Skip count: #N(#PEEK(#PC)).
+  $9023,$01 Tile ID: #R$A00A(#N$94).
+  $9024,$01 Tile ID: #R$A0B2(#N$A9).
+N $9025 Command #N$01: Skip tiles.
+  $9025,$01 Command (#N$01).
+  $9026,$01 Skip count: #N(#PEEK(#PC)).
+  $9027,$01 Tile ID: #R$A2BA(#N$EA).
+  $9028,$01 Tile ID: #R$A2CA(#N$EC).
+N $9029 Command #N$01: Skip tiles.
+  $9029,$01 Command (#N$01).
+  $902A,$01 Skip count: #N(#PEEK(#PC)).
+  $902B,$01 Tile ID: #R$A2DA(#N$EE).
+  $902C,$01 Tile ID: #R$A2EA(#N$F0).
+N $902D Command #N$01: Skip tiles.
+  $902D,$01 Command (#N$01).
+  $902E,$01 Skip count: #N(#PEEK(#PC)).
+  $902F,$01 Tile ID: #R$A2BA(#N$EA).
+  $9030,$01 Tile ID: #R$A2CA(#N$EC).
+N $9031 Command #N$01: Skip tiles.
+  $9031,$01 Command (#N$01).
+  $9032,$01 Skip count: #N(#PEEK(#PC)).
+  $9033,$01 Tile ID: #R$A00A(#N$94).
+N $9034 Command #N$01: Skip tiles.
+  $9034,$01 Command (#N$01).
+  $9035,$01 Skip count: #N(#PEEK(#PC)).
+  $9036,$01 Tile ID: #R$A0B2(#N$A9).
+  $9037,$01 Tile ID: #R$A0BA(#N$AA).
+N $9038 Command #N$01: Skip tiles.
+  $9038,$01 Command (#N$01).
+  $9039,$01 Skip count: #N(#PEEK(#PC)).
+  $903A,$01 Tile ID: #R$A00A(#N$94).
+  $903B,$01 Tile ID: #R$A0B2(#N$A9).
+N $903C Command #N$01: Skip tiles.
+  $903C,$01 Command (#N$01).
+  $903D,$01 Skip count: #N(#PEEK(#PC)).
+  $903E,$01 Tile ID: #R$A2C2(#N$EB).
+  $903F,$01 Tile ID: #R$A2D2(#N$ED).
+N $9040 Command #N$01: Skip tiles.
+  $9040,$01 Command (#N$01).
+  $9041,$01 Skip count: #N(#PEEK(#PC)).
+  $9042,$01 Tile ID: #R$A2E2(#N$EF).
+  $9043,$01 Tile ID: #R$A2F2(#N$F1).
+N $9044 Command #N$01: Skip tiles.
+  $9044,$01 Command (#N$01).
+  $9045,$01 Skip count: #N(#PEEK(#PC)).
+  $9046,$01 Tile ID: #R$A2C2(#N$EB).
+  $9047,$01 Tile ID: #R$A2D2(#N$ED).
+N $9048 Command #N$01: Skip tiles.
+  $9048,$01 Command (#N$01).
+  $9049,$01 Skip count: #N(#PEEK(#PC)).
+  $904A,$01 Tile ID: #R$A262(#N$DF).
+  $904B,$01 Tile ID: #R$A25A(#N$DE).
+N $904C Command #N$01: Skip tiles.
+  $904C,$01 Command (#N$01).
+  $904D,$01 Skip count: #N(#PEEK(#PC)).
+  $904E,$01 Tile ID: #R$A00A(#N$94).
+N $904F Command #N$01: Skip tiles.
+  $904F,$01 Command (#N$01).
+  $9050,$01 Skip count: #N(#PEEK(#PC)).
+  $9051,$01 Tile ID: #R$A0E2(#N$AF).
+  $9052,$01 Tile ID: #R$A0D2(#N$AD).
+N $9053 Command #N$01: Skip tiles.
+  $9053,$01 Command (#N$01).
+  $9054,$01 Skip count: #N(#PEEK(#PC)).
+  $9055,$01 Tile ID: #R$A00A(#N$94).
+  $9056,$01 Tile ID: #R$A0B2(#N$A9).
+N $9057 Command #N$01: Skip tiles.
+  $9057,$01 Command (#N$01).
+  $9058,$01 Skip count: #N(#PEEK(#PC)).
+  $9059,$01 Tile ID: #R$9CB2(#N$29).
+  $905A,$01 Tile ID: #R$9CB2(#N$29).
+N $905B Command #N$01: Skip tiles.
+  $905B,$01 Command (#N$01).
+  $905C,$01 Skip count: #N(#PEEK(#PC)).
+  $905D,$01 Tile ID: #R$9CB2(#N$29).
+  $905E,$01 Tile ID: #R$9CB2(#N$29).
+N $905F Command #N$01: Skip tiles.
+  $905F,$01 Command (#N$01).
+  $9060,$01 Skip count: #N(#PEEK(#PC)).
+  $9061,$01 Tile ID: #R$9CB2(#N$29).
+  $9062,$01 Tile ID: #R$9CB2(#N$29).
+N $9063 Command #N$01: Skip tiles.
+  $9063,$01 Command (#N$01).
+  $9064,$01 Skip count: #N(#PEEK(#PC)).
+  $9065,$01 Tile ID: #R$A02A(#N$98).
+  $9066,$01 Tile ID: #R$A26A(#N$E0).
+N $9067 Command #N$01: Skip tiles.
+  $9067,$01 Command (#N$01).
+  $9068,$01 Skip count: #N(#PEEK(#PC)).
+  $9069,$01 Tile ID: #R$A00A(#N$94).
+  $906A,$01 Tile ID: #R$9F22(#N$77).
+N $906B Command #N$01: Skip tiles.
+  $906B,$01 Command (#N$01).
+  $906C,$01 Skip count: #N(#PEEK(#PC)).
+  $906D,$01 Tile ID: #R$A00A(#N$94).
+  $906E,$01 Tile ID: #R$A0E2(#N$AF).
+N $906F Command #N$02: Draw repeated tile.
+  $906F,$01 Command (#N$02).
+  $9070,$01 Repeat count: #N(#PEEK(#PC)).
+  $9071,$01 Tile ID: #R$A032(#N$99).
+N $9072 Command #N$01: Skip tiles.
+  $9072,$01 Command (#N$01).
+  $9073,$01 Skip count: #N(#PEEK(#PC)).
+  $9074,$01 Tile ID: #R$A262(#N$DF).
+  $9075,$01 Tile ID: #R$A25A(#N$DE).
+N $9076 Command #N$01: Skip tiles.
+  $9076,$01 Command (#N$01).
+  $9077,$01 Skip count: #N(#PEEK(#PC)).
+  $9078,$01 Tile ID: #R$A152(#N$BD).
+  $9079,$01 Tile ID: #R$A00A(#N$94).
+N $907A Command #N$01: Skip tiles.
+  $907A,$01 Command (#N$01).
+  $907B,$01 Skip count: #N(#PEEK(#PC)).
+  $907C,$01 Tile ID: #R$A00A(#N$94).
+  $907D,$01 Tile ID: #R$A002(#N$93).
+  $907E,$01 Tile ID: #R$A00A(#N$94).
+  $907F,$01 Tile ID: #R$A002(#N$93).
+  $9080,$01 Tile ID: #R$A00A(#N$94).
+  $9081,$01 Tile ID: #R$A002(#N$93).
+  $9082,$01 Tile ID: #R$A00A(#N$94).
+  $9083,$01 Tile ID: #R$A002(#N$93).
+  $9084,$01 Tile ID: #R$A00A(#N$94).
+  $9085,$01 Tile ID: #R$A002(#N$93).
+  $9086,$01 Tile ID: #R$A00A(#N$94).
+  $9087,$01 Tile ID: #R$A002(#N$93).
+N $9088 Command #N$01: Skip tiles.
+  $9088,$01 Command (#N$01).
+  $9089,$01 Skip count: #N(#PEEK(#PC)).
+  $908A,$01 Tile ID: #R$A02A(#N$98).
+  $908B,$01 Tile ID: #R$A26A(#N$E0).
+N $908C Command #N$01: Skip tiles.
+  $908C,$01 Command (#N$01).
+  $908D,$01 Skip count: #N(#PEEK(#PC)).
+  $908E,$01 Tile ID: #R$A152(#N$BD).
+  $908F,$01 Tile ID: #R$A162(#N$BF).
+N $9090 Command #N$01: Skip tiles.
+  $9090,$01 Command (#N$01).
+  $9091,$01 Skip count: #N(#PEEK(#PC)).
+  $9092,$01 Tile ID: #R$A152(#N$BD).
+  $9093,$01 Tile ID: #R$A012(#N$95).
+N $9094 Command #N$02: Draw repeated tile.
+  $9094,$01 Command (#N$02).
+  $9095,$01 Repeat count: #N(#PEEK(#PC)).
+  $9096,$01 Tile ID: #R$A00A(#N$94).
+N $9097 Command #N$01: Skip tiles.
+  $9097,$01 Command (#N$01).
+  $9098,$01 Skip count: #N(#PEEK(#PC)).
+N $9099 Command #N$03: Fill attribute buffer.
+  $9099,$01 Command (#N$03).
+  $909A,$01 Base fill colour: #COLOUR(#PEEK(#PC)).
+N $909B Attribute overlay: skip.
+  $909B,$01 Opcode (#N$12).
+  $909C,$01 Skip count: #N(#PEEK(#PC)).
+N $909D Attribute overlay: repeat colour.
+  $909D,$01 Opcode (#N$1B).
+  $909E,$01 Repeat count: #N(#PEEK(#PC)).
+  $909F,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $90A0 Attribute overlay: skip.
+  $90A0,$01 Opcode (#N$12).
+  $90A1,$01 Skip count: #N(#PEEK(#PC)).
+N $90A2 Attribute overlay: repeat colour.
+  $90A2,$01 Opcode (#N$1B).
+  $90A3,$01 Repeat count: #N(#PEEK(#PC)).
+  $90A4,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $90A5 Attribute overlay: skip.
+  $90A5,$01 Opcode (#N$12).
+  $90A6,$01 Skip count: #N(#PEEK(#PC)).
+N $90A7 Attribute overlay: repeat colour.
+  $90A7,$01 Opcode (#N$1B).
+  $90A8,$01 Repeat count: #N(#PEEK(#PC)).
+  $90A9,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $90AA Attribute overlay: skip.
+  $90AA,$01 Opcode (#N$12).
+  $90AB,$01 Skip count: #N(#PEEK(#PC)).
+N $90AC Attribute overlay: repeat colour.
+  $90AC,$01 Opcode (#N$1B).
+  $90AD,$01 Repeat count: #N(#PEEK(#PC)).
+  $90AE,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $90AF Attribute overlay: skip.
+  $90AF,$01 Opcode (#N$12).
+  $90B0,$01 Skip count: #N(#PEEK(#PC)).
+N $90B1 Attribute overlay: repeat colour.
+  $90B1,$01 Opcode (#N$1B).
+  $90B2,$01 Repeat count: #N(#PEEK(#PC)).
+  $90B3,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $90B4 Attribute overlay: skip.
+  $90B4,$01 Opcode (#N$12).
+  $90B5,$01 Skip count: #N(#PEEK(#PC)).
+  $90B6,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $90B7,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $90B8 Attribute overlay: repeat colour.
+  $90B8,$01 Opcode (#N$1B).
+  $90B9,$01 Repeat count: #N(#PEEK(#PC)).
+  $90BA,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $90BB Attribute overlay: skip.
+  $90BB,$01 Opcode (#N$12).
+  $90BC,$01 Skip count: #N(#PEEK(#PC)).
+  $90BD,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $90BE Attribute overlay: repeat colour.
+  $90BE,$01 Opcode (#N$1B).
+  $90BF,$01 Repeat count: #N(#PEEK(#PC)).
+  $90C0,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $90C1,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $90C2 Attribute overlay: skip.
+  $90C2,$01 Opcode (#N$12).
+  $90C3,$01 Skip count: #N(#PEEK(#PC)).
+N $90C4 Attribute overlay: repeat colour.
+  $90C4,$01 Opcode (#N$1B).
+  $90C5,$01 Repeat count: #N(#PEEK(#PC)).
+  $90C6,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $90C7 Attribute overlay: skip.
+  $90C7,$01 Opcode (#N$12).
+  $90C8,$01 Skip count: #N(#PEEK(#PC)).
+N $90C9 Attribute overlay: repeat colour.
+  $90C9,$01 Opcode (#N$1B).
+  $90CA,$01 Repeat count: #N(#PEEK(#PC)).
+  $90CB,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $90CC Attribute overlay: skip.
+  $90CC,$01 Opcode (#N$12).
+  $90CD,$01 Skip count: #N(#PEEK(#PC)).
+  $90CE,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $90CF,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $90D0,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $90D1 Attribute overlay: repeat colour.
+  $90D1,$01 Opcode (#N$1B).
+  $90D2,$01 Repeat count: #N(#PEEK(#PC)).
+  $90D3,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $90D4 Attribute overlay: skip.
+  $90D4,$01 Opcode (#N$12).
+  $90D5,$01 Skip count: #N(#PEEK(#PC)).
+  $90D6,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $90D7,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $90D8,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $90D9 Attribute overlay: repeat colour.
+  $90D9,$01 Opcode (#N$1B).
+  $90DA,$01 Repeat count: #N(#PEEK(#PC)).
+  $90DB,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $90DC Attribute overlay: skip.
+  $90DC,$01 Opcode (#N$12).
+  $90DD,$01 Skip count: #N(#PEEK(#PC)).
+N $90DE Attribute overlay: repeat colour.
+  $90DE,$01 Opcode (#N$1B).
+  $90DF,$01 Repeat count: #N(#PEEK(#PC)).
+  $90E0,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $90E1 Attribute overlay: skip.
+  $90E1,$01 Opcode (#N$12).
+  $90E2,$01 Skip count: #N(#PEEK(#PC)).
+N $90E3 Attribute overlay: repeat colour.
+  $90E3,$01 Opcode (#N$1B).
+  $90E4,$01 Repeat count: #N(#PEEK(#PC)).
+  $90E5,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $90E6 Attribute overlay: repeat colour.
+  $90E6,$01 Opcode (#N$1B).
+  $90E7,$01 Repeat count: #N(#PEEK(#PC)).
+  $90E8,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $90E9 Attribute overlay: skip.
+  $90E9,$01 Opcode (#N$12).
+  $90EA,$01 Skip count: #N(#PEEK(#PC)).
+  $90EB,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $90EC Attribute overlay: repeat colour.
+  $90EC,$01 Opcode (#N$1B).
+  $90ED,$01 Repeat count: #N(#PEEK(#PC)).
+  $90EE,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $90EF,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $90F0 Attribute overlay: repeat colour.
+  $90F0,$01 Opcode (#N$1B).
+  $90F1,$01 Repeat count: #N(#PEEK(#PC)).
+  $90F2,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $90F3 Attribute overlay: repeat colour.
+  $90F3,$01 Opcode (#N$1B).
+  $90F4,$01 Repeat count: #N(#PEEK(#PC)).
+  $90F5,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $90F6,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $90F7,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $90F8 Attribute overlay: repeat colour.
+  $90F8,$01 Opcode (#N$1B).
+  $90F9,$01 Repeat count: #N(#PEEK(#PC)).
+  $90FA,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $90FB,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $90FC,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $90FD,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $90FE,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $90FF,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9100,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9101,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9102,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9103,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9104,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9105,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9106,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9107,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9108,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9109,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $910A,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $910B,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $910C Attribute overlay: repeat colour.
+  $910C,$01 Opcode (#N$1B).
+  $910D,$01 Repeat count: #N(#PEEK(#PC)).
+  $910E,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $910F,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9110,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9111 Attribute overlay: repeat colour.
+  $9111,$01 Opcode (#N$1B).
+  $9112,$01 Repeat count: #N(#PEEK(#PC)).
+  $9113,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $9114,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9115,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9116,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9117,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9118,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9119,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $911A,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $911B,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $911C,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $911D,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $911E,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $911F,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9120,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9121,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9122,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9123,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9124,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9125 Attribute overlay: repeat colour.
+  $9125,$01 Opcode (#N$1B).
+  $9126,$01 Repeat count: #N(#PEEK(#PC)).
+  $9127,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $9128,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9129,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $912A Attribute overlay: repeat colour.
+  $912A,$01 Opcode (#N$1B).
+  $912B,$01 Repeat count: #N(#PEEK(#PC)).
+  $912C,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $912D,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $912E,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $912F,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9130,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9131,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9132,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9133,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9134,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9135,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9136,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9137,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9138,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9139,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $913A,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $913B,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $913C,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $913D,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $913E Attribute overlay: repeat colour.
+  $913E,$01 Opcode (#N$1B).
+  $913F,$01 Repeat count: #N(#PEEK(#PC)).
+  $9140,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $9141,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9142,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9143 Attribute overlay: repeat colour.
+  $9143,$01 Opcode (#N$1B).
+  $9144,$01 Repeat count: #N(#PEEK(#PC)).
+  $9145,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $9146,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9147 Attribute overlay: repeat colour.
+  $9147,$01 Opcode (#N$1B).
+  $9148,$01 Repeat count: #N(#PEEK(#PC)).
+  $9149,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $914A,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $914B Attribute overlay: repeat colour.
+  $914B,$01 Opcode (#N$1B).
+  $914C,$01 Repeat count: #N(#PEEK(#PC)).
+  $914D,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $914E Attribute overlay: repeat colour.
+  $914E,$01 Opcode (#N$1B).
+  $914F,$01 Repeat count: #N(#PEEK(#PC)).
+  $9150,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $9151,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9152,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9153 Attribute overlay: repeat colour.
+  $9153,$01 Opcode (#N$1B).
+  $9154,$01 Repeat count: #N(#PEEK(#PC)).
+  $9155,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $9156,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9157 Attribute overlay: repeat colour.
+  $9157,$01 Opcode (#N$1B).
+  $9158,$01 Repeat count: #N(#PEEK(#PC)).
+  $9159,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $915A Attribute overlay: repeat colour.
+  $915A,$01 Opcode (#N$1B).
+  $915B,$01 Repeat count: #N(#PEEK(#PC)).
+  $915C,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $915D Attribute overlay: repeat colour.
+  $915D,$01 Opcode (#N$1B).
+  $915E,$01 Repeat count: #N(#PEEK(#PC)).
+  $915F,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $9160,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9161,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9162 Attribute overlay: repeat colour.
+  $9162,$01 Opcode (#N$1B).
+  $9163,$01 Repeat count: #N(#PEEK(#PC)).
+  $9164,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $9165,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9166,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9167 Attribute overlay: repeat colour.
+  $9167,$01 Opcode (#N$1B).
+  $9168,$01 Repeat count: #N(#PEEK(#PC)).
+  $9169,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $916A Attribute overlay: repeat colour.
+  $916A,$01 Opcode (#N$1B).
+  $916B,$01 Repeat count: #N(#PEEK(#PC)).
+  $916C,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $916D Attribute overlay: repeat colour.
+  $916D,$01 Opcode (#N$1B).
+  $916E,$01 Repeat count: #N(#PEEK(#PC)).
+  $916F,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $9170 Attribute overlay: repeat colour.
+  $9170,$01 Opcode (#N$1B).
+  $9171,$01 Repeat count: #N(#PEEK(#PC)).
+  $9172,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $9173 Attribute overlay: repeat colour.
+  $9173,$01 Opcode (#N$1B).
+  $9174,$01 Repeat count: #N(#PEEK(#PC)).
+  $9175,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $9176,$01 End of attribute overlay.
   $9177,$01 Terminator.
 
 b $9178 Room #N$09
 @ $9178 label=Room09
 D $9178 #ROOM$09
+N $9178 Command #N$01: Skip tiles.
+  $9178,$01 Command (#N$01).
+  $9179,$01 Skip count: #N(#PEEK(#PC)).
+  $917A,$01 Tile ID: #R$9BC2(#N$0B).
+  $917B,$01 Tile ID: #R$9BCA(#N$0C).
+  $917C,$01 Tile ID: #R$9BD2(#N$0D).
+  $917D,$01 Tile ID: #R$9BB2(#N$09).
+  $917E,$01 Tile ID: #R$9BBA(#N$0A).
+N $917F Command #N$01: Skip tiles.
+  $917F,$01 Command (#N$01).
+  $9180,$01 Skip count: #N(#PEEK(#PC)).
+  $9181,$01 Tile ID: #R$9C42(#N$1B).
+N $9182 Command #N$01: Skip tiles.
+  $9182,$01 Command (#N$01).
+  $9183,$01 Skip count: #N(#PEEK(#PC)).
+  $9184,$01 Tile ID: #R$9BEA(#N$10).
+N $9185 Command #N$01: Skip tiles.
+  $9185,$01 Command (#N$01).
+  $9186,$01 Skip count: #N(#PEEK(#PC)).
+  $9187,$01 Tile ID: #R$9BB2(#N$09).
+  $9188,$01 Tile ID: #R$9BBA(#N$0A).
+  $9189,$01 Tile ID: #R$9BC2(#N$0B).
+  $918A,$01 Tile ID: #R$9BCA(#N$0C).
+  $918B,$01 Tile ID: #R$9BE2(#N$0F).
+N $918C Command #N$01: Skip tiles.
+  $918C,$01 Command (#N$01).
+  $918D,$01 Skip count: #N(#PEEK(#PC)).
+  $918E,$01 Tile ID: #R$9BB2(#N$09).
+  $918F,$01 Tile ID: #R$9BC2(#N$0B).
+  $9190,$01 Tile ID: #R$9BCA(#N$0C).
+  $9191,$01 Tile ID: #R$9BD2(#N$0D).
+  $9192,$01 Tile ID: #R$9BB2(#N$09).
+  $9193,$01 Tile ID: #R$9BBA(#N$0A).
+N $9194 Command #N$01: Skip tiles.
+  $9194,$01 Command (#N$01).
+  $9195,$01 Skip count: #N(#PEEK(#PC)).
+  $9196,$01 Tile ID: #R$9C3A(#N$1A).
+N $9197 Command #N$01: Skip tiles.
+  $9197,$01 Command (#N$01).
+  $9198,$01 Skip count: #N(#PEEK(#PC)).
+  $9199,$01 Tile ID: #R$9BF2(#N$11).
+N $919A Command #N$01: Skip tiles.
+  $919A,$01 Command (#N$01).
+  $919B,$01 Skip count: #N(#PEEK(#PC)).
+  $919C,$01 Tile ID: #R$9BAA(#N$08).
+N $919D Command #N$01: Skip tiles.
+  $919D,$01 Command (#N$01).
+  $919E,$01 Skip count: #N(#PEEK(#PC)).
+  $919F,$01 Tile ID: #R$9BEA(#N$10).
+N $91A0 Command #N$01: Skip tiles.
+  $91A0,$01 Command (#N$01).
+  $91A1,$01 Skip count: #N(#PEEK(#PC)).
+  $91A2,$01 Tile ID: #R$9C42(#N$1B).
+N $91A3 Command #N$01: Skip tiles.
+  $91A3,$01 Command (#N$01).
+  $91A4,$01 Skip count: #N(#PEEK(#PC)).
+  $91A5,$01 Tile ID: #R$9BDA(#N$0E).
+  $91A6,$01 Tile ID: #R$9BE2(#N$0F).
+N $91A7 Command #N$01: Skip tiles.
+  $91A7,$01 Command (#N$01).
+  $91A8,$01 Skip count: #N(#PEEK(#PC)).
+  $91A9,$01 Tile ID: #R$9C02(#N$13).
+  $91AA,$01 Tile ID: #R$9C02(#N$13).
+  $91AB,$01 Tile ID: #R$9C2A(#N$18).
+  $91AC,$01 Tile ID: #R$9C22(#N$17).
+  $91AD,$01 Tile ID: #R$9BFA(#N$12).
+N $91AE Command #N$01: Skip tiles.
+  $91AE,$01 Command (#N$01).
+  $91AF,$01 Skip count: #N(#PEEK(#PC)).
+  $91B0,$01 Tile ID: #R$9C02(#N$13).
+  $91B1,$01 Tile ID: #R$9C2A(#N$18).
+  $91B2,$01 Tile ID: #R$9C22(#N$17).
+  $91B3,$01 Tile ID: #R$9C1A(#N$16).
+  $91B4,$01 Tile ID: #R$9C12(#N$15).
+N $91B5 Command #N$01: Skip tiles.
+  $91B5,$01 Command (#N$01).
+  $91B6,$01 Skip count: #N(#PEEK(#PC)).
+  $91B7,$01 Tile ID: #R$A28A(#N$E4).
+  $91B8,$01 Tile ID: #R$A01A(#N$96).
+N $91B9 Command #N$01: Skip tiles.
+  $91B9,$01 Command (#N$01).
+  $91BA,$01 Skip count: #N(#PEEK(#PC)).
+  $91BB,$01 Tile ID: #R$9BEA(#N$10).
+N $91BC Command #N$01: Skip tiles.
+  $91BC,$01 Command (#N$01).
+  $91BD,$01 Skip count: #N(#PEEK(#PC)).
+  $91BE,$01 Tile ID: #R$A00A(#N$94).
+  $91BF,$01 Tile ID: #R$A00A(#N$94).
+  $91C0,$01 Tile ID: #R$A01A(#N$96).
+N $91C1 Command #N$01: Skip tiles.
+  $91C1,$01 Command (#N$01).
+  $91C2,$01 Skip count: #N(#PEEK(#PC)).
+  $91C3,$01 Tile ID: #R$9C0A(#N$14).
+N $91C4 Command #N$01: Skip tiles.
+  $91C4,$01 Command (#N$01).
+  $91C5,$01 Skip count: #N(#PEEK(#PC)).
+  $91C6,$01 Tile ID: #R$9BF2(#N$11).
+N $91C7 Command #N$01: Skip tiles.
+  $91C7,$01 Command (#N$01).
+  $91C8,$01 Skip count: #N(#PEEK(#PC)).
+  $91C9,$01 Tile ID: #R$A00A(#N$94).
+  $91CA,$01 Tile ID: #R$A002(#N$93).
+  $91CB,$01 Tile ID: #R$A00A(#N$94).
+  $91CC,$01 Tile ID: #R$9C2A(#N$18).
+  $91CD,$01 Tile ID: #R$9C22(#N$17).
+  $91CE,$01 Tile ID: #R$9C1A(#N$16).
+  $91CF,$01 Tile ID: #R$9C12(#N$15).
+  $91D0,$01 Tile ID: #R$9C02(#N$13).
+N $91D1 Command #N$01: Skip tiles.
+  $91D1,$01 Command (#N$01).
+  $91D2,$01 Skip count: #N(#PEEK(#PC)).
+  $91D3,$01 Tile ID: #R$A002(#N$93).
+  $91D4,$01 Tile ID: #R$A002(#N$93).
+N $91D5 Command #N$01: Skip tiles.
+  $91D5,$01 Command (#N$01).
+  $91D6,$01 Skip count: #N(#PEEK(#PC)).
+  $91D7,$01 Tile ID: #R$A002(#N$93).
+  $91D8,$01 Tile ID: #R$A00A(#N$94).
+N $91D9 Command #N$01: Skip tiles.
+  $91D9,$01 Command (#N$01).
+  $91DA,$01 Skip count: #N(#PEEK(#PC)).
+  $91DB,$01 Tile ID: #R$A002(#N$93).
+  $91DC,$01 Tile ID: #R$A00A(#N$94).
+  $91DD,$01 Tile ID: #R$A002(#N$93).
+N $91DE Command #N$01: Skip tiles.
+  $91DE,$01 Command (#N$01).
+  $91DF,$01 Skip count: #N(#PEEK(#PC)).
+  $91E0,$01 Tile ID: #R$9CB2(#N$29).
+  $91E1,$01 Tile ID: #R$A002(#N$93).
+  $91E2,$01 Tile ID: #R$A00A(#N$94).
+N $91E3 Command #N$01: Skip tiles.
+  $91E3,$01 Command (#N$01).
+  $91E4,$01 Skip count: #N(#PEEK(#PC)).
+  $91E5,$01 Tile ID: #R$A31A(#N$F6).
+  $91E6,$01 Tile ID: #R$A31A(#N$F6).
+N $91E7 Command #N$01: Skip tiles.
+  $91E7,$01 Command (#N$01).
+  $91E8,$01 Skip count: #N(#PEEK(#PC)).
+N $91E9 Command #N$02: Draw repeated tile.
+  $91E9,$01 Command (#N$02).
+  $91EA,$01 Repeat count: #N(#PEEK(#PC)).
+  $91EB,$01 Tile ID: #R$A31A(#N$F6).
+N $91EC Command #N$01: Skip tiles.
+  $91EC,$01 Command (#N$01).
+  $91ED,$01 Skip count: #N(#PEEK(#PC)).
+N $91EE Command #N$02: Draw repeated tile.
+  $91EE,$01 Command (#N$02).
+  $91EF,$01 Repeat count: #N(#PEEK(#PC)).
+  $91F0,$01 Tile ID: #R$A322(#N$F7).
+  $91F1,$01 Tile ID: #R$A0BA(#N$AA).
+  $91F2,$01 Tile ID: #R$A002(#N$93).
+  $91F3,$01 Tile ID: #R$A002(#N$93).
+N $91F4 Command #N$01: Skip tiles.
+  $91F4,$01 Command (#N$01).
+  $91F5,$01 Skip count: #N(#PEEK(#PC)).
+  $91F6,$01 Tile ID: #R$A31A(#N$F6).
+  $91F7,$01 Tile ID: #R$A31A(#N$F6).
+N $91F8 Command #N$01: Skip tiles.
+  $91F8,$01 Command (#N$01).
+  $91F9,$01 Skip count: #N(#PEEK(#PC)).
+  $91FA,$01 Tile ID: #R$A31A(#N$F6).
+N $91FB Command #N$01: Skip tiles.
+  $91FB,$01 Command (#N$01).
+  $91FC,$01 Skip count: #N(#PEEK(#PC)).
+  $91FD,$01 Tile ID: #R$A322(#N$F7).
+N $91FE Command #N$01: Skip tiles.
+  $91FE,$01 Command (#N$01).
+  $91FF,$01 Skip count: #N(#PEEK(#PC)).
+N $9200 Command #N$02: Draw repeated tile.
+  $9200,$01 Command (#N$02).
+  $9201,$01 Repeat count: #N(#PEEK(#PC)).
+  $9202,$01 Tile ID: #R$A322(#N$F7).
+  $9203,$01 Tile ID: #R$A0BA(#N$AA).
+  $9204,$01 Tile ID: #R$A002(#N$93).
+  $9205,$01 Tile ID: #R$A00A(#N$94).
+N $9206 Command #N$01: Skip tiles.
+  $9206,$01 Command (#N$01).
+  $9207,$01 Skip count: #N(#PEEK(#PC)).
+  $9208,$01 Tile ID: #R$A262(#N$DF).
+  $9209,$01 Tile ID: #R$A25A(#N$DE).
+N $920A Command #N$01: Skip tiles.
+  $920A,$01 Command (#N$01).
+  $920B,$01 Skip count: #N(#PEEK(#PC)).
+  $920C,$01 Tile ID: #R$A322(#N$F7).
+N $920D Command #N$01: Skip tiles.
+  $920D,$01 Command (#N$01).
+  $920E,$01 Skip count: #N(#PEEK(#PC)).
+  $920F,$01 Tile ID: #R$A312(#N$F5).
+N $9210 Command #N$01: Skip tiles.
+  $9210,$01 Command (#N$01).
+  $9211,$01 Skip count: #N(#PEEK(#PC)).
+  $9212,$01 Tile ID: #R$A322(#N$F7).
+  $9213,$01 Tile ID: #R$A0BA(#N$AA).
+  $9214,$01 Tile ID: #R$A002(#N$93).
+  $9215,$01 Tile ID: #R$A002(#N$93).
+N $9216 Command #N$01: Skip tiles.
+  $9216,$01 Command (#N$01).
+  $9217,$01 Skip count: #N(#PEEK(#PC)).
+  $9218,$01 Tile ID: #R$A02A(#N$98).
+  $9219,$01 Tile ID: #R$A26A(#N$E0).
+N $921A Command #N$01: Skip tiles.
+  $921A,$01 Command (#N$01).
+  $921B,$01 Skip count: #N(#PEEK(#PC)).
+  $921C,$01 Tile ID: #R$A17A(#N$C2).
+  $921D,$01 Tile ID: #R$A18A(#N$C4).
+N $921E Command #N$01: Skip tiles.
+  $921E,$01 Command (#N$01).
+  $921F,$01 Skip count: #N(#PEEK(#PC)).
+  $9220,$01 Tile ID: #R$A0BA(#N$AA).
+  $9221,$01 Tile ID: #R$A002(#N$93).
+  $9222,$01 Tile ID: #R$A00A(#N$94).
+N $9223 Command #N$01: Skip tiles.
+  $9223,$01 Command (#N$01).
+  $9224,$01 Skip count: #N(#PEEK(#PC)).
+  $9225,$01 Tile ID: #R$A262(#N$DF).
+  $9226,$01 Tile ID: #R$A25A(#N$DE).
+N $9227 Command #N$01: Skip tiles.
+  $9227,$01 Command (#N$01).
+  $9228,$01 Skip count: #N(#PEEK(#PC)).
+  $9229,$01 Tile ID: #R$A262(#N$DF).
+  $922A,$01 Tile ID: #R$A25A(#N$DE).
+N $922B Command #N$01: Skip tiles.
+  $922B,$01 Command (#N$01).
+  $922C,$01 Skip count: #N(#PEEK(#PC)).
+  $922D,$01 Tile ID: #R$A182(#N$C3).
+  $922E,$01 Tile ID: #R$A192(#N$C5).
+N $922F Command #N$01: Skip tiles.
+  $922F,$01 Command (#N$01).
+  $9230,$01 Skip count: #N(#PEEK(#PC)).
+  $9231,$01 Tile ID: #R$A0D2(#N$AD).
+  $9232,$01 Tile ID: #R$A002(#N$93).
+  $9233,$01 Tile ID: #R$A002(#N$93).
+N $9234 Command #N$01: Skip tiles.
+  $9234,$01 Command (#N$01).
+  $9235,$01 Skip count: #N(#PEEK(#PC)).
+  $9236,$01 Tile ID: #R$A02A(#N$98).
+  $9237,$01 Tile ID: #R$A26A(#N$E0).
+N $9238 Command #N$01: Skip tiles.
+  $9238,$01 Command (#N$01).
+  $9239,$01 Skip count: #N(#PEEK(#PC)).
+  $923A,$01 Tile ID: #R$A02A(#N$98).
+  $923B,$01 Tile ID: #R$A26A(#N$E0).
+N $923C Command #N$01: Skip tiles.
+  $923C,$01 Command (#N$01).
+  $923D,$01 Skip count: #N(#PEEK(#PC)).
+  $923E,$01 Tile ID: #R$A02A(#N$98).
+  $923F,$01 Tile ID: #R$A25A(#N$DE).
+N $9240 Command #N$01: Skip tiles.
+  $9240,$01 Command (#N$01).
+  $9241,$01 Skip count: #N(#PEEK(#PC)).
+  $9242,$01 Tile ID: #R$A00A(#N$94).
+  $9243,$01 Tile ID: #R$A002(#N$93).
+  $9244,$01 Tile ID: #R$A00A(#N$94).
+N $9245 Command #N$01: Skip tiles.
+  $9245,$01 Command (#N$01).
+  $9246,$01 Skip count: #N(#PEEK(#PC)).
+  $9247,$01 Tile ID: #R$A262(#N$DF).
+  $9248,$01 Tile ID: #R$A25A(#N$DE).
+N $9249 Command #N$01: Skip tiles.
+  $9249,$01 Command (#N$01).
+  $924A,$01 Skip count: #N(#PEEK(#PC)).
+  $924B,$01 Tile ID: #R$A262(#N$DF).
+  $924C,$01 Tile ID: #R$A25A(#N$DE).
+N $924D Command #N$01: Skip tiles.
+  $924D,$01 Command (#N$01).
+  $924E,$01 Skip count: #N(#PEEK(#PC)).
+  $924F,$01 Tile ID: #R$A02A(#N$98).
+  $9250,$01 Tile ID: #R$A25A(#N$DE).
+N $9251 Command #N$01: Skip tiles.
+  $9251,$01 Command (#N$01).
+  $9252,$01 Skip count: #N(#PEEK(#PC)).
+  $9253,$01 Tile ID: #R$A14A(#N$BC).
+  $9254,$01 Tile ID: #R$A02A(#N$98).
+  $9255,$01 Tile ID: #R$A26A(#N$E0).
+N $9256 Command #N$01: Skip tiles.
+  $9256,$01 Command (#N$01).
+  $9257,$01 Skip count: #N(#PEEK(#PC)).
+  $9258,$01 Tile ID: #R$A02A(#N$98).
+  $9259,$01 Tile ID: #R$A26A(#N$E0).
+N $925A Command #N$01: Skip tiles.
+  $925A,$01 Command (#N$01).
+  $925B,$01 Skip count: #N(#PEEK(#PC)).
+  $925C,$01 Tile ID: #R$A02A(#N$98).
+  $925D,$01 Tile ID: #R$A25A(#N$DE).
+N $925E Command #N$01: Skip tiles.
+  $925E,$01 Command (#N$01).
+  $925F,$01 Skip count: #N(#PEEK(#PC)).
+N $9260 Command #N$02: Draw repeated tile.
+  $9260,$01 Command (#N$02).
+  $9261,$01 Repeat count: #N(#PEEK(#PC)).
+  $9262,$01 Tile ID: #R$A00A(#N$94).
+N $9263 Command #N$01: Skip tiles.
+  $9263,$01 Command (#N$01).
+  $9264,$01 Skip count: #N(#PEEK(#PC)).
+  $9265,$01 Tile ID: #R$A00A(#N$94).
+N $9266 Command #N$01: Skip tiles.
+  $9266,$01 Command (#N$01).
+  $9267,$01 Skip count: #N(#PEEK(#PC)).
+N $9268 Command #N$02: Draw repeated tile.
+  $9268,$01 Command (#N$02).
+  $9269,$01 Repeat count: #N(#PEEK(#PC)).
+  $926A,$01 Tile ID: #R$9C82(#N$23).
+N $926B Command #N$01: Skip tiles.
+  $926B,$01 Command (#N$01).
+  $926C,$01 Skip count: #N(#PEEK(#PC)).
+  $926D,$01 Tile ID: #R$A002(#N$93).
+  $926E,$01 Tile ID: #R$A00A(#N$94).
+  $926F,$01 Tile ID: #R$A00A(#N$94).
+  $9270,$01 Tile ID: #R$A272(#N$E1).
+  $9271,$01 Tile ID: #R$A272(#N$E1).
+N $9272 Command #N$02: Draw repeated tile.
+  $9272,$01 Command (#N$02).
+  $9273,$01 Repeat count: #N(#PEEK(#PC)).
+  $9274,$01 Tile ID: #R$A00A(#N$94).
+  $9275,$01 Tile ID: #R$A272(#N$E1).
+  $9276,$01 Tile ID: #R$A272(#N$E1).
+N $9277 Command #N$02: Draw repeated tile.
+  $9277,$01 Command (#N$02).
+  $9278,$01 Repeat count: #N(#PEEK(#PC)).
+  $9279,$01 Tile ID: #R$A00A(#N$94).
+  $927A,$01 Tile ID: #R$A272(#N$E1).
+  $927B,$01 Tile ID: #R$A272(#N$E1).
+N $927C Command #N$02: Draw repeated tile.
+  $927C,$01 Command (#N$02).
+  $927D,$01 Repeat count: #N(#PEEK(#PC)).
+  $927E,$01 Tile ID: #R$A00A(#N$94).
+  $927F,$01 Tile ID: #R$A272(#N$E1).
+  $9280,$01 Tile ID: #R$A272(#N$E1).
+N $9281 Command #N$03: Fill attribute buffer.
+  $9281,$01 Command (#N$03).
+  $9282,$01 Base fill colour: #COLOUR(#PEEK(#PC)).
+N $9283 Attribute overlay: skip.
+  $9283,$01 Opcode (#N$12).
+  $9284,$01 Skip count: #N(#PEEK(#PC)).
+N $9285 Attribute overlay: repeat colour.
+  $9285,$01 Opcode (#N$1B).
+  $9286,$01 Repeat count: #N(#PEEK(#PC)).
+  $9287,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $9288 Attribute overlay: skip.
+  $9288,$01 Opcode (#N$12).
+  $9289,$01 Skip count: #N(#PEEK(#PC)).
+N $928A Attribute overlay: repeat colour.
+  $928A,$01 Opcode (#N$1B).
+  $928B,$01 Repeat count: #N(#PEEK(#PC)).
+  $928C,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $928D Attribute overlay: skip.
+  $928D,$01 Opcode (#N$12).
+  $928E,$01 Skip count: #N(#PEEK(#PC)).
+N $928F Attribute overlay: repeat colour.
+  $928F,$01 Opcode (#N$1B).
+  $9290,$01 Repeat count: #N(#PEEK(#PC)).
+  $9291,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $9292 Attribute overlay: skip.
+  $9292,$01 Opcode (#N$12).
+  $9293,$01 Skip count: #N(#PEEK(#PC)).
+N $9294 Attribute overlay: repeat colour.
+  $9294,$01 Opcode (#N$1B).
+  $9295,$01 Repeat count: #N(#PEEK(#PC)).
+  $9296,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $9297 Attribute overlay: skip.
+  $9297,$01 Opcode (#N$12).
+  $9298,$01 Skip count: #N(#PEEK(#PC)).
+  $9299,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $929A,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $929B Attribute overlay: repeat colour.
+  $929B,$01 Opcode (#N$1B).
+  $929C,$01 Repeat count: #N(#PEEK(#PC)).
+  $929D,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $929E Attribute overlay: skip.
+  $929E,$01 Opcode (#N$12).
+  $929F,$01 Skip count: #N(#PEEK(#PC)).
+  $92A0,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $92A1,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $92A2,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $92A3,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $92A4,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $92A5,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $92A6,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $92A7,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $92A8 Attribute overlay: skip.
+  $92A8,$01 Opcode (#N$12).
+  $92A9,$01 Skip count: #N(#PEEK(#PC)).
+  $92AA,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $92AB,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $92AC,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $92AD Attribute overlay: skip.
+  $92AD,$01 Opcode (#N$12).
+  $92AE,$01 Skip count: #N(#PEEK(#PC)).
+  $92AF,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $92B0,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $92B1,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $92B2 Attribute overlay: skip.
+  $92B2,$01 Opcode (#N$12).
+  $92B3,$01 Skip count: #N(#PEEK(#PC)).
+  $92B4,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $92B5,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $92B6,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $92B7 Attribute overlay: skip.
+  $92B7,$01 Opcode (#N$12).
+  $92B8,$01 Skip count: #N(#PEEK(#PC)).
+  $92B9,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $92BA,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $92BB,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $92BC,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $92BD,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $92BE Attribute overlay: skip.
+  $92BE,$01 Opcode (#N$12).
+  $92BF,$01 Skip count: #N(#PEEK(#PC)).
+  $92C0,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $92C1,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $92C2,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $92C3,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $92C4,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $92C5,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $92C6,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $92C7,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $92C8,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $92C9,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $92CA Attribute overlay: skip.
+  $92CA,$01 Opcode (#N$12).
+  $92CB,$01 Skip count: #N(#PEEK(#PC)).
+  $92CC,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $92CD,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $92CE,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $92CF Attribute overlay: repeat colour.
+  $92CF,$01 Opcode (#N$1B).
+  $92D0,$01 Repeat count: #N(#PEEK(#PC)).
+  $92D1,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $92D2,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $92D3,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $92D4,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $92D5,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $92D6,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $92D7,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $92D8,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $92D9,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $92DA,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $92DB Attribute overlay: skip.
+  $92DB,$01 Opcode (#N$12).
+  $92DC,$01 Skip count: #N(#PEEK(#PC)).
+N $92DD Attribute overlay: repeat colour.
+  $92DD,$01 Opcode (#N$1B).
+  $92DE,$01 Repeat count: #N(#PEEK(#PC)).
+  $92DF,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $92E0,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $92E1 Attribute overlay: repeat colour.
+  $92E1,$01 Opcode (#N$1B).
+  $92E2,$01 Repeat count: #N(#PEEK(#PC)).
+  $92E3,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $92E4,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $92E5,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $92E6,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $92E7,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $92E8,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $92E9,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $92EA,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $92EB,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $92EC,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $92ED,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $92EE Attribute overlay: repeat colour.
+  $92EE,$01 Opcode (#N$1B).
+  $92EF,$01 Repeat count: #N(#PEEK(#PC)).
+  $92F0,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $92F1 Attribute overlay: repeat colour.
+  $92F1,$01 Opcode (#N$1B).
+  $92F2,$01 Repeat count: #N(#PEEK(#PC)).
+  $92F3,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $92F4,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $92F5,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $92F6,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $92F7,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $92F8,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $92F9,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $92FA,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $92FB,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $92FC,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $92FD,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $92FE,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $92FF,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9300,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9301 Attribute overlay: repeat colour.
+  $9301,$01 Opcode (#N$1B).
+  $9302,$01 Repeat count: #N(#PEEK(#PC)).
+  $9303,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $9304,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9305,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9306,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9307,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9308,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9309,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $930A,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $930B,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $930C,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $930D,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $930E,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $930F,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9310,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9311 Attribute overlay: repeat colour.
+  $9311,$01 Opcode (#N$1B).
+  $9312,$01 Repeat count: #N(#PEEK(#PC)).
+  $9313,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $9314,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9315,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9316,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9317,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9318,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9319,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $931A,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $931B,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $931C,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $931D,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $931E Attribute overlay: repeat colour.
+  $931E,$01 Opcode (#N$1B).
+  $931F,$01 Repeat count: #N(#PEEK(#PC)).
+  $9320,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $9321,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9322,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9323,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9324,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9325,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9326,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9327,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9328,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9329,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $932A,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $932B Attribute overlay: repeat colour.
+  $932B,$01 Opcode (#N$1B).
+  $932C,$01 Repeat count: #N(#PEEK(#PC)).
+  $932D,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $932E,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $932F,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9330,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9331,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9332,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9333,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9334,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9335,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9336,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9337,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9338 Attribute overlay: repeat colour.
+  $9338,$01 Opcode (#N$1B).
+  $9339,$01 Repeat count: #N(#PEEK(#PC)).
+  $933A,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $933B Attribute overlay: repeat colour.
+  $933B,$01 Opcode (#N$1B).
+  $933C,$01 Repeat count: #N(#PEEK(#PC)).
+  $933D,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $933E Attribute overlay: repeat colour.
+  $933E,$01 Opcode (#N$1B).
+  $933F,$01 Repeat count: #N(#PEEK(#PC)).
+  $9340,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $9341 Attribute overlay: repeat colour.
+  $9341,$01 Opcode (#N$1B).
+  $9342,$01 Repeat count: #N(#PEEK(#PC)).
+  $9343,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $9344,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9345,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9346,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9347,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9348,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9349,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $934A,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $934B,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $934C,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $934D,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $934E,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $934F,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9350 Attribute overlay: repeat colour.
+  $9350,$01 Opcode (#N$1B).
+  $9351,$01 Repeat count: #N(#PEEK(#PC)).
+  $9352,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $9353,$01 End of attribute overlay.
   $9354,$01 Terminator.
 
 b $9355 Room #N$0A
 @ $9355 label=Room10
 D $9355 #ROOM$0A
+N $9355 Command #N$01: Skip tiles.
+  $9355,$01 Command (#N$01).
+  $9356,$01 Skip count: #N(#PEEK(#PC)).
+  $9357,$01 Tile ID: #R$9BC2(#N$0B).
+  $9358,$01 Tile ID: #R$9BCA(#N$0C).
+  $9359,$01 Tile ID: #R$9BD2(#N$0D).
+  $935A,$01 Tile ID: #R$9BC2(#N$0B).
+  $935B,$01 Tile ID: #R$9BCA(#N$0C).
+  $935C,$01 Tile ID: #R$9BD2(#N$0D).
+N $935D Command #N$01: Skip tiles.
+  $935D,$01 Command (#N$01).
+  $935E,$01 Skip count: #N(#PEEK(#PC)).
+  $935F,$01 Tile ID: #R$9BAA(#N$08).
+N $9360 Command #N$01: Skip tiles.
+  $9360,$01 Command (#N$01).
+  $9361,$01 Skip count: #N(#PEEK(#PC)).
+  $9362,$01 Tile ID: #R$9BDA(#N$0E).
+  $9363,$01 Tile ID: #R$9BE2(#N$0F).
+N $9364 Command #N$01: Skip tiles.
+  $9364,$01 Command (#N$01).
+  $9365,$01 Skip count: #N(#PEEK(#PC)).
+  $9366,$01 Tile ID: #R$9C2A(#N$18).
+  $9367,$01 Tile ID: #R$9C22(#N$17).
+  $9368,$01 Tile ID: #R$9C32(#N$19).
+N $9369 Command #N$01: Skip tiles.
+  $9369,$01 Command (#N$01).
+  $936A,$01 Skip count: #N(#PEEK(#PC)).
+  $936B,$01 Tile ID: #R$9BEA(#N$10).
+N $936C Command #N$01: Skip tiles.
+  $936C,$01 Command (#N$01).
+  $936D,$01 Skip count: #N(#PEEK(#PC)).
+  $936E,$01 Tile ID: #R$9C02(#N$13).
+  $936F,$01 Tile ID: #R$9C2A(#N$18).
+  $9370,$01 Tile ID: #R$9C22(#N$17).
+  $9371,$01 Tile ID: #R$9C1A(#N$16).
+  $9372,$01 Tile ID: #R$9C12(#N$15).
+N $9373 Command #N$01: Skip tiles.
+  $9373,$01 Command (#N$01).
+  $9374,$01 Skip count: #N(#PEEK(#PC)).
+  $9375,$01 Tile ID: #R$A25A(#N$DE).
+N $9376 Command #N$01: Skip tiles.
+  $9376,$01 Command (#N$01).
+  $9377,$01 Skip count: #N(#PEEK(#PC)).
+  $9378,$01 Tile ID: #R$A25A(#N$DE).
+N $9379 Command #N$01: Skip tiles.
+  $9379,$01 Command (#N$01).
+  $937A,$01 Skip count: #N(#PEEK(#PC)).
+  $937B,$01 Tile ID: #R$A25A(#N$DE).
+N $937C Command #N$01: Skip tiles.
+  $937C,$01 Command (#N$01).
+  $937D,$01 Skip count: #N(#PEEK(#PC)).
+  $937E,$01 Tile ID: #R$A25A(#N$DE).
+N $937F Command #N$01: Skip tiles.
+  $937F,$01 Command (#N$01).
+  $9380,$01 Skip count: #N(#PEEK(#PC)).
+  $9381,$01 Tile ID: #R$A25A(#N$DE).
+N $9382 Command #N$01: Skip tiles.
+  $9382,$01 Command (#N$01).
+  $9383,$01 Skip count: #N(#PEEK(#PC)).
+  $9384,$01 Tile ID: #R$A31A(#N$F6).
+  $9385,$01 Tile ID: #R$A31A(#N$F6).
+N $9386 Command #N$01: Skip tiles.
+  $9386,$01 Command (#N$01).
+  $9387,$01 Skip count: #N(#PEEK(#PC)).
+N $9388 Command #N$02: Draw repeated tile.
+  $9388,$01 Command (#N$02).
+  $9389,$01 Repeat count: #N(#PEEK(#PC)).
+  $938A,$01 Tile ID: #R$A322(#N$F7).
+N $938B Command #N$01: Skip tiles.
+  $938B,$01 Command (#N$01).
+  $938C,$01 Skip count: #N(#PEEK(#PC)).
+  $938D,$01 Tile ID: #R$A25A(#N$DE).
+N $938E Command #N$01: Skip tiles.
+  $938E,$01 Command (#N$01).
+  $938F,$01 Skip count: #N(#PEEK(#PC)).
+  $9390,$01 Tile ID: #R$A02A(#N$98).
+N $9391 Command #N$01: Skip tiles.
+  $9391,$01 Command (#N$01).
+  $9392,$01 Skip count: #N(#PEEK(#PC)).
+  $9393,$01 Tile ID: #R$A31A(#N$F6).
+N $9394 Command #N$02: Draw repeated tile.
+  $9394,$01 Command (#N$02).
+  $9395,$01 Repeat count: #N(#PEEK(#PC)).
+  $9396,$01 Tile ID: #R$A322(#N$F7).
+  $9397,$01 Tile ID: #R$A312(#N$F5).
+  $9398,$01 Tile ID: #R$A322(#N$F7).
+  $9399,$01 Tile ID: #R$A322(#N$F7).
+N $939A Command #N$01: Skip tiles.
+  $939A,$01 Command (#N$01).
+  $939B,$01 Skip count: #N(#PEEK(#PC)).
+  $939C,$01 Tile ID: #R$A312(#N$F5).
+N $939D Command #N$01: Skip tiles.
+  $939D,$01 Command (#N$01).
+  $939E,$01 Skip count: #N(#PEEK(#PC)).
+  $939F,$01 Tile ID: #R$A312(#N$F5).
+N $93A0 Command #N$01: Skip tiles.
+  $93A0,$01 Command (#N$01).
+  $93A1,$01 Skip count: #N(#PEEK(#PC)).
+  $93A2,$01 Tile ID: #R$A25A(#N$DE).
+  $93A3,$01 Tile ID: #R$A0F2(#N$B1).
+  $93A4,$01 Tile ID: #R$A0FA(#N$B2).
+  $93A5,$01 Tile ID: #R$A02A(#N$98).
+N $93A6 Command #N$01: Skip tiles.
+  $93A6,$01 Command (#N$01).
+  $93A7,$01 Skip count: #N(#PEEK(#PC)).
+  $93A8,$01 Tile ID: #R$A312(#N$F5).
+N $93A9 Command #N$01: Skip tiles.
+  $93A9,$01 Command (#N$01).
+  $93AA,$01 Skip count: #N(#PEEK(#PC)).
+  $93AB,$01 Tile ID: #R$A312(#N$F5).
+N $93AC Command #N$01: Skip tiles.
+  $93AC,$01 Command (#N$01).
+  $93AD,$01 Skip count: #N(#PEEK(#PC)).
+  $93AE,$01 Tile ID: #R$A25A(#N$DE).
+N $93AF Command #N$01: Skip tiles.
+  $93AF,$01 Command (#N$01).
+  $93B0,$01 Skip count: #N(#PEEK(#PC)).
+  $93B1,$01 Tile ID: #R$A02A(#N$98).
+N $93B2 Command #N$01: Skip tiles.
+  $93B2,$01 Command (#N$01).
+  $93B3,$01 Skip count: #N(#PEEK(#PC)).
+  $93B4,$01 Tile ID: #R$A25A(#N$DE).
+N $93B5 Command #N$01: Skip tiles.
+  $93B5,$01 Command (#N$01).
+  $93B6,$01 Skip count: #N(#PEEK(#PC)).
+  $93B7,$01 Tile ID: #R$A02A(#N$98).
+N $93B8 Command #N$01: Skip tiles.
+  $93B8,$01 Command (#N$01).
+  $93B9,$01 Skip count: #N(#PEEK(#PC)).
+N $93BA Command #N$02: Draw repeated tile.
+  $93BA,$01 Command (#N$02).
+  $93BB,$01 Repeat count: #N(#PEEK(#PC)).
+  $93BC,$01 Tile ID: #R$A00A(#N$94).
+  $93BD,$01 Tile ID: #R$A272(#N$E1).
+  $93BE,$01 Tile ID: #R$A272(#N$E1).
+N $93BF Command #N$02: Draw repeated tile.
+  $93BF,$01 Command (#N$02).
+  $93C0,$01 Repeat count: #N(#PEEK(#PC)).
+  $93C1,$01 Tile ID: #R$A00A(#N$94).
+  $93C2,$01 Tile ID: #R$A272(#N$E1).
+  $93C3,$01 Tile ID: #R$A272(#N$E1).
+N $93C4 Command #N$02: Draw repeated tile.
+  $93C4,$01 Command (#N$02).
+  $93C5,$01 Repeat count: #N(#PEEK(#PC)).
+  $93C6,$01 Tile ID: #R$A00A(#N$94).
+  $93C7,$01 Tile ID: #R$A272(#N$E1).
+  $93C8,$01 Tile ID: #R$A272(#N$E1).
+N $93C9 Command #N$02: Draw repeated tile.
+  $93C9,$01 Command (#N$02).
+  $93CA,$01 Repeat count: #N(#PEEK(#PC)).
+  $93CB,$01 Tile ID: #R$A00A(#N$94).
+  $93CC,$01 Tile ID: #R$A272(#N$E1).
+  $93CD,$01 Tile ID: #R$A272(#N$E1).
+N $93CE Command #N$02: Draw repeated tile.
+  $93CE,$01 Command (#N$02).
+  $93CF,$01 Repeat count: #N(#PEEK(#PC)).
+  $93D0,$01 Tile ID: #R$A00A(#N$94).
+  $93D1,$01 Tile ID: #R$A272(#N$E1).
+  $93D2,$01 Tile ID: #R$A272(#N$E1).
+N $93D3 Command #N$02: Draw repeated tile.
+  $93D3,$01 Command (#N$02).
+  $93D4,$01 Repeat count: #N(#PEEK(#PC)).
+  $93D5,$01 Tile ID: #R$A00A(#N$94).
+  $93D6,$01 Tile ID: #R$A272(#N$E1).
+  $93D7,$01 Tile ID: #R$A272(#N$E1).
+  $93D8,$01 Tile ID: #R$A00A(#N$94).
+  $93D9,$01 Tile ID: #R$A00A(#N$94).
+N $93DA Command #N$03: Fill attribute buffer.
+  $93DA,$01 Command (#N$03).
+  $93DB,$01 Base fill colour: #COLOUR(#PEEK(#PC)).
+N $93DC Attribute overlay: skip.
+  $93DC,$01 Opcode (#N$12).
+  $93DD,$01 Skip count: #N(#PEEK(#PC)).
+N $93DE Attribute overlay: repeat colour.
+  $93DE,$01 Opcode (#N$1B).
+  $93DF,$01 Repeat count: #N(#PEEK(#PC)).
+  $93E0,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $93E1 Attribute overlay: skip.
+  $93E1,$01 Opcode (#N$12).
+  $93E2,$01 Skip count: #N(#PEEK(#PC)).
+N $93E3 Attribute overlay: repeat colour.
+  $93E3,$01 Opcode (#N$1B).
+  $93E4,$01 Repeat count: #N(#PEEK(#PC)).
+  $93E5,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $93E6 Attribute overlay: skip.
+  $93E6,$01 Opcode (#N$12).
+  $93E7,$01 Skip count: #N(#PEEK(#PC)).
+  $93E8,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $93E9 Attribute overlay: skip.
+  $93E9,$01 Opcode (#N$12).
+  $93EA,$01 Skip count: #N(#PEEK(#PC)).
+  $93EB,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $93EC Attribute overlay: skip.
+  $93EC,$01 Opcode (#N$12).
+  $93ED,$01 Skip count: #N(#PEEK(#PC)).
+  $93EE,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $93EF,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $93F0,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $93F1,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $93F2,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $93F3 Attribute overlay: skip.
+  $93F3,$01 Opcode (#N$12).
+  $93F4,$01 Skip count: #N(#PEEK(#PC)).
+  $93F5,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $93F6,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $93F7,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $93F8,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $93F9,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $93FA Attribute overlay: skip.
+  $93FA,$01 Opcode (#N$12).
+  $93FB,$01 Skip count: #N(#PEEK(#PC)).
+  $93FC,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $93FD Attribute overlay: skip.
+  $93FD,$01 Opcode (#N$12).
+  $93FE,$01 Skip count: #N(#PEEK(#PC)).
+N $93FF Attribute overlay: repeat colour.
+  $93FF,$01 Opcode (#N$1B).
+  $9400,$01 Repeat count: #N(#PEEK(#PC)).
+  $9401,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $9402,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9403,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9404,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9405,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9406 Attribute overlay: repeat colour.
+  $9406,$01 Opcode (#N$1B).
+  $9407,$01 Repeat count: #N(#PEEK(#PC)).
+  $9408,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $9409 Attribute overlay: skip.
+  $9409,$01 Opcode (#N$12).
+  $940A,$01 Skip count: #N(#PEEK(#PC)).
+  $940B,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $940C,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $940D,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $940E,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $940F,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9410,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9411 Attribute overlay: skip.
+  $9411,$01 Opcode (#N$12).
+  $9412,$01 Skip count: #N(#PEEK(#PC)).
+N $9413 Attribute overlay: repeat colour.
+  $9413,$01 Opcode (#N$1B).
+  $9414,$01 Repeat count: #N(#PEEK(#PC)).
+  $9415,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $9416 Attribute overlay: skip.
+  $9416,$01 Opcode (#N$12).
+  $9417,$01 Skip count: #N(#PEEK(#PC)).
+  $9418,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9419 Attribute overlay: repeat colour.
+  $9419,$01 Opcode (#N$1B).
+  $941A,$01 Repeat count: #N(#PEEK(#PC)).
+  $941B,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $941C Attribute overlay: skip.
+  $941C,$01 Opcode (#N$12).
+  $941D,$01 Skip count: #N(#PEEK(#PC)).
+N $941E Attribute overlay: repeat colour.
+  $941E,$01 Opcode (#N$1B).
+  $941F,$01 Repeat count: #N(#PEEK(#PC)).
+  $9420,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $9421 Attribute overlay: skip.
+  $9421,$01 Opcode (#N$12).
+  $9422,$01 Skip count: #N(#PEEK(#PC)).
+N $9423 Attribute overlay: repeat colour.
+  $9423,$01 Opcode (#N$1B).
+  $9424,$01 Repeat count: #N(#PEEK(#PC)).
+  $9425,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $9426,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9427,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9428,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9429,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $942A,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $942B,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $942C,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $942D,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $942E,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $942F,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9430,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9431,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9432,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9433,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9434 Attribute overlay: repeat colour.
+  $9434,$01 Opcode (#N$1B).
+  $9435,$01 Repeat count: #N(#PEEK(#PC)).
+  $9436,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $9437 Attribute overlay: repeat colour.
+  $9437,$01 Opcode (#N$1B).
+  $9438,$01 Repeat count: #N(#PEEK(#PC)).
+  $9439,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $943A,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $943B,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $943C Attribute overlay: repeat colour.
+  $943C,$01 Opcode (#N$1B).
+  $943D,$01 Repeat count: #N(#PEEK(#PC)).
+  $943E,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $943F Attribute overlay: repeat colour.
+  $943F,$01 Opcode (#N$1B).
+  $9440,$01 Repeat count: #N(#PEEK(#PC)).
+  $9441,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $9442,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9443,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9444 Attribute overlay: repeat colour.
+  $9444,$01 Opcode (#N$1B).
+  $9445,$01 Repeat count: #N(#PEEK(#PC)).
+  $9446,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $9447 Attribute overlay: repeat colour.
+  $9447,$01 Opcode (#N$1B).
+  $9448,$01 Repeat count: #N(#PEEK(#PC)).
+  $9449,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $944A Attribute overlay: repeat colour.
+  $944A,$01 Opcode (#N$1B).
+  $944B,$01 Repeat count: #N(#PEEK(#PC)).
+  $944C,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $944D,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $944E,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $944F Attribute overlay: repeat colour.
+  $944F,$01 Opcode (#N$1B).
+  $9450,$01 Repeat count: #N(#PEEK(#PC)).
+  $9451,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $9452,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9453,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9454,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9455 Attribute overlay: repeat colour.
+  $9455,$01 Opcode (#N$1B).
+  $9456,$01 Repeat count: #N(#PEEK(#PC)).
+  $9457,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $9458,$01 End of attribute overlay.
   $9459,$01 Terminator.
 
 b $945A Room #N$0B
 @ $945A label=Room11
 D $945A #ROOM$0B
+N $945A Command #N$01: Skip tiles.
+  $945A,$01 Command (#N$01).
+  $945B,$01 Skip count: #N(#PEEK(#PC)).
+  $945C,$01 Tile ID: #R$9BB2(#N$09).
+  $945D,$01 Tile ID: #R$9BBA(#N$0A).
+N $945E Command #N$01: Skip tiles.
+  $945E,$01 Command (#N$01).
+  $945F,$01 Skip count: #N(#PEEK(#PC)).
+  $9460,$01 Tile ID: #R$9BC2(#N$0B).
+  $9461,$01 Tile ID: #R$9BCA(#N$0C).
+  $9462,$01 Tile ID: #R$9BD2(#N$0D).
+  $9463,$01 Tile ID: #R$9BB2(#N$09).
+  $9464,$01 Tile ID: #R$9BBA(#N$0A).
+N $9465 Command #N$01: Skip tiles.
+  $9465,$01 Command (#N$01).
+  $9466,$01 Skip count: #N(#PEEK(#PC)).
+  $9467,$01 Tile ID: #R$9BAA(#N$08).
+N $9468 Command #N$01: Skip tiles.
+  $9468,$01 Command (#N$01).
+  $9469,$01 Skip count: #N(#PEEK(#PC)).
+  $946A,$01 Tile ID: #R$9BDA(#N$0E).
+  $946B,$01 Tile ID: #R$9BD2(#N$0D).
+  $946C,$01 Tile ID: #R$9BC2(#N$0B).
+  $946D,$01 Tile ID: #R$9BCA(#N$0C).
+  $946E,$01 Tile ID: #R$9BE2(#N$0F).
+  $946F,$01 Tile ID: #R$9C42(#N$1B).
+N $9470 Command #N$01: Skip tiles.
+  $9470,$01 Command (#N$01).
+  $9471,$01 Skip count: #N(#PEEK(#PC)).
+  $9472,$01 Tile ID: #R$9BDA(#N$0E).
+  $9473,$01 Tile ID: #R$9BE2(#N$0F).
+N $9474 Command #N$01: Skip tiles.
+  $9474,$01 Command (#N$01).
+  $9475,$01 Skip count: #N(#PEEK(#PC)).
+  $9476,$01 Tile ID: #R$9C42(#N$1B).
+N $9477 Command #N$01: Skip tiles.
+  $9477,$01 Command (#N$01).
+  $9478,$01 Skip count: #N(#PEEK(#PC)).
+  $9479,$01 Tile ID: #R$9BEA(#N$10).
+  $947A,$01 Tile ID: #R$9C3A(#N$1A).
+N $947B Command #N$01: Skip tiles.
+  $947B,$01 Command (#N$01).
+  $947C,$01 Skip count: #N(#PEEK(#PC)).
+  $947D,$01 Tile ID: #R$9C0A(#N$14).
+N $947E Command #N$01: Skip tiles.
+  $947E,$01 Command (#N$01).
+  $947F,$01 Skip count: #N(#PEEK(#PC)).
+  $9480,$01 Tile ID: #R$9BF2(#N$11).
+N $9481 Command #N$01: Skip tiles.
+  $9481,$01 Command (#N$01).
+  $9482,$01 Skip count: #N(#PEEK(#PC)).
+  $9483,$01 Tile ID: #R$9C3A(#N$1A).
+N $9484 Command #N$01: Skip tiles.
+  $9484,$01 Command (#N$01).
+  $9485,$01 Skip count: #N(#PEEK(#PC)).
+  $9486,$01 Tile ID: #R$9BF2(#N$11).
+N $9487 Command #N$01: Skip tiles.
+  $9487,$01 Command (#N$01).
+  $9488,$01 Skip count: #N(#PEEK(#PC)).
+  $9489,$01 Tile ID: #R$9C2A(#N$18).
+  $948A,$01 Tile ID: #R$9C22(#N$17).
+  $948B,$01 Tile ID: #R$9C1A(#N$16).
+  $948C,$01 Tile ID: #R$9C12(#N$15).
+  $948D,$01 Tile ID: #R$9C02(#N$13).
+  $948E,$01 Tile ID: #R$9C02(#N$13).
+N $948F Command #N$01: Skip tiles.
+  $948F,$01 Command (#N$01).
+  $9490,$01 Skip count: #N(#PEEK(#PC)).
+  $9491,$01 Tile ID: #R$9C02(#N$13).
+  $9492,$01 Tile ID: #R$9C2A(#N$18).
+  $9493,$01 Tile ID: #R$9C22(#N$17).
+  $9494,$01 Tile ID: #R$9C32(#N$19).
+  $9495,$01 Tile ID: #R$9C32(#N$19).
+  $9496,$01 Tile ID: #R$9BFA(#N$12).
+N $9497 Command #N$01: Skip tiles.
+  $9497,$01 Command (#N$01).
+  $9498,$01 Skip count: #N(#PEEK(#PC)).
+  $9499,$01 Tile ID: #R$A312(#N$F5).
+N $949A Command #N$01: Skip tiles.
+  $949A,$01 Command (#N$01).
+  $949B,$01 Skip count: #N(#PEEK(#PC)).
+N $949C Command #N$02: Draw repeated tile.
+  $949C,$01 Command (#N$02).
+  $949D,$01 Repeat count: #N(#PEEK(#PC)).
+  $949E,$01 Tile ID: #R$A322(#N$F7).
+N $949F Command #N$01: Skip tiles.
+  $949F,$01 Command (#N$01).
+  $94A0,$01 Skip count: #N(#PEEK(#PC)).
+  $94A1,$01 Tile ID: #R$A31A(#N$F6).
+  $94A2,$01 Tile ID: #R$A31A(#N$F6).
+N $94A3 Command #N$01: Skip tiles.
+  $94A3,$01 Command (#N$01).
+  $94A4,$01 Skip count: #N(#PEEK(#PC)).
+  $94A5,$01 Tile ID: #R$A322(#N$F7).
+  $94A6,$01 Tile ID: #R$A31A(#N$F6).
+  $94A7,$01 Tile ID: #R$A322(#N$F7).
+N $94A8 Command #N$01: Skip tiles.
+  $94A8,$01 Command (#N$01).
+  $94A9,$01 Skip count: #N(#PEEK(#PC)).
+  $94AA,$01 Tile ID: #R$9C5A(#N$1E).
+  $94AB,$01 Tile ID: #R$9C62(#N$1F).
+N $94AC Command #N$01: Skip tiles.
+  $94AC,$01 Command (#N$01).
+  $94AD,$01 Skip count: #N(#PEEK(#PC)).
+N $94AE Command #N$02: Draw repeated tile.
+  $94AE,$01 Command (#N$02).
+  $94AF,$01 Repeat count: #N(#PEEK(#PC)).
+  $94B0,$01 Tile ID: #R$A322(#N$F7).
+N $94B1 Command #N$01: Skip tiles.
+  $94B1,$01 Command (#N$01).
+  $94B2,$01 Skip count: #N(#PEEK(#PC)).
+  $94B3,$01 Tile ID: #R$A31A(#N$F6).
+N $94B4 Command #N$01: Skip tiles.
+  $94B4,$01 Command (#N$01).
+  $94B5,$01 Skip count: #N(#PEEK(#PC)).
+  $94B6,$01 Tile ID: #R$A312(#N$F5).
+N $94B7 Command #N$01: Skip tiles.
+  $94B7,$01 Command (#N$01).
+  $94B8,$01 Skip count: #N(#PEEK(#PC)).
+  $94B9,$01 Tile ID: #R$A31A(#N$F6).
+  $94BA,$01 Tile ID: #R$A322(#N$F7).
+  $94BB,$01 Tile ID: #R$A31A(#N$F6).
+  $94BC,$01 Tile ID: #R$A322(#N$F7).
+N $94BD Command #N$01: Skip tiles.
+  $94BD,$01 Command (#N$01).
+  $94BE,$01 Skip count: #N(#PEEK(#PC)).
+  $94BF,$01 Tile ID: #R$A322(#N$F7).
+  $94C0,$01 Tile ID: #R$A322(#N$F7).
+  $94C1,$01 Tile ID: #R$A2FA(#N$F2).
+  $94C2,$01 Tile ID: #R$A302(#N$F3).
+  $94C3,$01 Tile ID: #R$A2FA(#N$F2).
+  $94C4,$01 Tile ID: #R$A302(#N$F3).
+  $94C5,$01 Tile ID: #R$A2FA(#N$F2).
+  $94C6,$01 Tile ID: #R$A302(#N$F3).
+  $94C7,$01 Tile ID: #R$A2FA(#N$F2).
+  $94C8,$01 Tile ID: #R$A302(#N$F3).
+  $94C9,$01 Tile ID: #R$A2FA(#N$F2).
+  $94CA,$01 Tile ID: #R$A302(#N$F3).
+N $94CB Command #N$01: Skip tiles.
+  $94CB,$01 Command (#N$01).
+  $94CC,$01 Skip count: #N(#PEEK(#PC)).
+N $94CD Command #N$02: Draw repeated tile.
+  $94CD,$01 Command (#N$02).
+  $94CE,$01 Repeat count: #N(#PEEK(#PC)).
+  $94CF,$01 Tile ID: #R$A31A(#N$F6).
+  $94D0,$01 Tile ID: #R$A312(#N$F5).
+N $94D1 Command #N$01: Skip tiles.
+  $94D1,$01 Command (#N$01).
+  $94D2,$01 Skip count: #N(#PEEK(#PC)).
+  $94D3,$01 Tile ID: #R$A322(#N$F7).
+  $94D4,$01 Tile ID: #R$A322(#N$F7).
+N $94D5 Command #N$01: Skip tiles.
+  $94D5,$01 Command (#N$01).
+  $94D6,$01 Skip count: #N(#PEEK(#PC)).
+  $94D7,$01 Tile ID: #R$A322(#N$F7).
+  $94D8,$01 Tile ID: #R$A322(#N$F7).
+N $94D9 Command #N$01: Skip tiles.
+  $94D9,$01 Command (#N$01).
+  $94DA,$01 Skip count: #N(#PEEK(#PC)).
+  $94DB,$01 Tile ID: #R$9FBA(#N$8A).
+  $94DC,$01 Tile ID: #R$9FDA(#N$8E).
+N $94DD Command #N$01: Skip tiles.
+  $94DD,$01 Command (#N$01).
+  $94DE,$01 Skip count: #N(#PEEK(#PC)).
+  $94DF,$01 Tile ID: #R$A0BA(#N$AA).
+  $94E0,$01 Tile ID: #R$9FFA(#N$92).
+  $94E1,$01 Tile ID: #R$9FFA(#N$92).
+  $94E2,$01 Tile ID: #R$A0CA(#N$AC).
+  $94E3,$01 Tile ID: #R$9FFA(#N$92).
+  $94E4,$01 Tile ID: #R$9FFA(#N$92).
+  $94E5,$01 Tile ID: #R$A0CA(#N$AC).
+  $94E6,$01 Tile ID: #R$9FFA(#N$92).
+  $94E7,$01 Tile ID: #R$9FFA(#N$92).
+  $94E8,$01 Tile ID: #R$A0CA(#N$AC).
+  $94E9,$01 Tile ID: #R$9FFA(#N$92).
+  $94EA,$01 Tile ID: #R$9FFA(#N$92).
+  $94EB,$01 Tile ID: #R$A0CA(#N$AC).
+  $94EC,$01 Tile ID: #R$9FFA(#N$92).
+  $94ED,$01 Tile ID: #R$9FFA(#N$92).
+  $94EE,$01 Tile ID: #R$A0CA(#N$AC).
+  $94EF,$01 Tile ID: #R$9FFA(#N$92).
+  $94F0,$01 Tile ID: #R$9FFA(#N$92).
+  $94F1,$01 Tile ID: #R$A0CA(#N$AC).
+  $94F2,$01 Tile ID: #R$9FFA(#N$92).
+  $94F3,$01 Tile ID: #R$9FFA(#N$92).
+  $94F4,$01 Tile ID: #R$A0CA(#N$AC).
+  $94F5,$01 Tile ID: #R$9FFA(#N$92).
+  $94F6,$01 Tile ID: #R$9FFA(#N$92).
+  $94F7,$01 Tile ID: #R$A0CA(#N$AC).
+  $94F8,$01 Tile ID: #R$9FFA(#N$92).
+  $94F9,$01 Tile ID: #R$9FFA(#N$92).
+N $94FA Command #N$01: Skip tiles.
+  $94FA,$01 Command (#N$01).
+  $94FB,$01 Skip count: #N(#PEEK(#PC)).
+  $94FC,$01 Tile ID: #R$A0BA(#N$AA).
+  $94FD,$01 Tile ID: #R$9FFA(#N$92).
+  $94FE,$01 Tile ID: #R$9FFA(#N$92).
+  $94FF,$01 Tile ID: #R$A0CA(#N$AC).
+  $9500,$01 Tile ID: #R$9FFA(#N$92).
+  $9501,$01 Tile ID: #R$9FFA(#N$92).
+  $9502,$01 Tile ID: #R$A0CA(#N$AC).
+  $9503,$01 Tile ID: #R$9FFA(#N$92).
+  $9504,$01 Tile ID: #R$9FFA(#N$92).
+  $9505,$01 Tile ID: #R$A0CA(#N$AC).
+  $9506,$01 Tile ID: #R$9FFA(#N$92).
+  $9507,$01 Tile ID: #R$9FFA(#N$92).
+  $9508,$01 Tile ID: #R$A0CA(#N$AC).
+  $9509,$01 Tile ID: #R$9FFA(#N$92).
+  $950A,$01 Tile ID: #R$9FFA(#N$92).
+  $950B,$01 Tile ID: #R$A0CA(#N$AC).
+  $950C,$01 Tile ID: #R$9FFA(#N$92).
+  $950D,$01 Tile ID: #R$9FFA(#N$92).
+  $950E,$01 Tile ID: #R$A0CA(#N$AC).
+  $950F,$01 Tile ID: #R$9FFA(#N$92).
+  $9510,$01 Tile ID: #R$9FFA(#N$92).
+  $9511,$01 Tile ID: #R$A0CA(#N$AC).
+  $9512,$01 Tile ID: #R$9FFA(#N$92).
+  $9513,$01 Tile ID: #R$9FFA(#N$92).
+  $9514,$01 Tile ID: #R$A0CA(#N$AC).
+  $9515,$01 Tile ID: #R$9FFA(#N$92).
+  $9516,$01 Tile ID: #R$9FFA(#N$92).
+N $9517 Command #N$01: Skip tiles.
+  $9517,$01 Command (#N$01).
+  $9518,$01 Skip count: #N(#PEEK(#PC)).
+  $9519,$01 Tile ID: #R$A00A(#N$94).
+  $951A,$01 Tile ID: #R$A272(#N$E1).
+  $951B,$01 Tile ID: #R$A272(#N$E1).
+N $951C Command #N$02: Draw repeated tile.
+  $951C,$01 Command (#N$02).
+  $951D,$01 Repeat count: #N(#PEEK(#PC)).
+  $951E,$01 Tile ID: #R$A00A(#N$94).
+  $951F,$01 Tile ID: #R$A272(#N$E1).
+  $9520,$01 Tile ID: #R$A272(#N$E1).
+N $9521 Command #N$02: Draw repeated tile.
+  $9521,$01 Command (#N$02).
+  $9522,$01 Repeat count: #N(#PEEK(#PC)).
+  $9523,$01 Tile ID: #R$A00A(#N$94).
+  $9524,$01 Tile ID: #R$A272(#N$E1).
+  $9525,$01 Tile ID: #R$A272(#N$E1).
+N $9526 Command #N$02: Draw repeated tile.
+  $9526,$01 Command (#N$02).
+  $9527,$01 Repeat count: #N(#PEEK(#PC)).
+  $9528,$01 Tile ID: #R$A00A(#N$94).
+  $9529,$01 Tile ID: #R$A272(#N$E1).
+  $952A,$01 Tile ID: #R$A272(#N$E1).
+N $952B Command #N$02: Draw repeated tile.
+  $952B,$01 Command (#N$02).
+  $952C,$01 Repeat count: #N(#PEEK(#PC)).
+  $952D,$01 Tile ID: #R$A00A(#N$94).
+  $952E,$01 Tile ID: #R$A272(#N$E1).
+  $952F,$01 Tile ID: #R$A272(#N$E1).
+N $9530 Command #N$02: Draw repeated tile.
+  $9530,$01 Command (#N$02).
+  $9531,$01 Repeat count: #N(#PEEK(#PC)).
+  $9532,$01 Tile ID: #R$A00A(#N$94).
+  $9533,$01 Tile ID: #R$A272(#N$E1).
+  $9534,$01 Tile ID: #R$A272(#N$E1).
+N $9535 Command #N$02: Draw repeated tile.
+  $9535,$01 Command (#N$02).
+  $9536,$01 Repeat count: #N(#PEEK(#PC)).
+  $9537,$01 Tile ID: #R$A00A(#N$94).
+  $9538,$01 Tile ID: #R$A272(#N$E1).
+N $9539 Command #N$03: Fill attribute buffer.
+  $9539,$01 Command (#N$03).
+  $953A,$01 Base fill colour: #COLOUR(#PEEK(#PC)).
+N $953B Attribute overlay: skip.
+  $953B,$01 Opcode (#N$12).
+  $953C,$01 Skip count: #N(#PEEK(#PC)).
+  $953D,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $953E,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $953F Attribute overlay: skip.
+  $953F,$01 Opcode (#N$12).
+  $9540,$01 Skip count: #N(#PEEK(#PC)).
+N $9541 Attribute overlay: repeat colour.
+  $9541,$01 Opcode (#N$1B).
+  $9542,$01 Repeat count: #N(#PEEK(#PC)).
+  $9543,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $9544 Attribute overlay: skip.
+  $9544,$01 Opcode (#N$12).
+  $9545,$01 Skip count: #N(#PEEK(#PC)).
+N $9546 Attribute overlay: repeat colour.
+  $9546,$01 Opcode (#N$1B).
+  $9547,$01 Repeat count: #N(#PEEK(#PC)).
+  $9548,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $9549,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $954A,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $954B,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $954C,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $954D,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $954E,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $954F,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9550,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9551 Attribute overlay: skip.
+  $9551,$01 Opcode (#N$12).
+  $9552,$01 Skip count: #N(#PEEK(#PC)).
+N $9553 Attribute overlay: repeat colour.
+  $9553,$01 Opcode (#N$1B).
+  $9554,$01 Repeat count: #N(#PEEK(#PC)).
+  $9555,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $9556 Attribute overlay: skip.
+  $9556,$01 Opcode (#N$12).
+  $9557,$01 Skip count: #N(#PEEK(#PC)).
+  $9558,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9559 Attribute overlay: skip.
+  $9559,$01 Opcode (#N$12).
+  $955A,$01 Skip count: #N(#PEEK(#PC)).
+  $955B,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $955C Attribute overlay: skip.
+  $955C,$01 Opcode (#N$12).
+  $955D,$01 Skip count: #N(#PEEK(#PC)).
+  $955E,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $955F,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9560,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9561,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9562 Attribute overlay: repeat colour.
+  $9562,$01 Opcode (#N$1B).
+  $9563,$01 Repeat count: #N(#PEEK(#PC)).
+  $9564,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $9565,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9566,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9567,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9568,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9569 Attribute overlay: skip.
+  $9569,$01 Opcode (#N$12).
+  $956A,$01 Skip count: #N(#PEEK(#PC)).
+  $956B,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $956C,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $956D,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $956E Attribute overlay: repeat colour.
+  $956E,$01 Opcode (#N$1B).
+  $956F,$01 Repeat count: #N(#PEEK(#PC)).
+  $9570,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $9571,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9572,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9573,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9574 Attribute overlay: skip.
+  $9574,$01 Opcode (#N$12).
+  $9575,$01 Skip count: #N(#PEEK(#PC)).
+N $9576 Attribute overlay: repeat colour.
+  $9576,$01 Opcode (#N$1B).
+  $9577,$01 Repeat count: #N(#PEEK(#PC)).
+  $9578,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $9579,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $957A,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $957B Attribute overlay: repeat colour.
+  $957B,$01 Opcode (#N$1B).
+  $957C,$01 Repeat count: #N(#PEEK(#PC)).
+  $957D,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $957E Attribute overlay: repeat colour.
+  $957E,$01 Opcode (#N$1B).
+  $957F,$01 Repeat count: #N(#PEEK(#PC)).
+  $9580,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $9581,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9582,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9583,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9584 Attribute overlay: repeat colour.
+  $9584,$01 Opcode (#N$1B).
+  $9585,$01 Repeat count: #N(#PEEK(#PC)).
+  $9586,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $9587,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9588 Attribute overlay: repeat colour.
+  $9588,$01 Opcode (#N$1B).
+  $9589,$01 Repeat count: #N(#PEEK(#PC)).
+  $958A,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $958B,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $958C,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $958D,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $958E Attribute overlay: repeat colour.
+  $958E,$01 Opcode (#N$1B).
+  $958F,$01 Repeat count: #N(#PEEK(#PC)).
+  $9590,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $9591 Attribute overlay: repeat colour.
+  $9591,$01 Opcode (#N$1B).
+  $9592,$01 Repeat count: #N(#PEEK(#PC)).
+  $9593,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $9594 Attribute overlay: repeat colour.
+  $9594,$01 Opcode (#N$1B).
+  $9595,$01 Repeat count: #N(#PEEK(#PC)).
+  $9596,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $9597 Attribute overlay: repeat colour.
+  $9597,$01 Opcode (#N$1B).
+  $9598,$01 Repeat count: #N(#PEEK(#PC)).
+  $9599,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $959A Attribute overlay: repeat colour.
+  $959A,$01 Opcode (#N$1B).
+  $959B,$01 Repeat count: #N(#PEEK(#PC)).
+  $959C,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $959D Attribute overlay: repeat colour.
+  $959D,$01 Opcode (#N$1B).
+  $959E,$01 Repeat count: #N(#PEEK(#PC)).
+  $959F,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $95A0 Attribute overlay: repeat colour.
+  $95A0,$01 Opcode (#N$1B).
+  $95A1,$01 Repeat count: #N(#PEEK(#PC)).
+  $95A2,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $95A3,$01 End of attribute overlay.
   $95A4,$01 Terminator.
 
 b $95A5 Room #N$0C: Title Screen.
 @ $95A5 label=Room12_TitleScreen
 D $95A5 #ROOM$0C
+N $95A5 Command #N$01: Skip tiles.
+  $95A5,$01 Command (#N$01).
+  $95A6,$01 Skip count: #N(#PEEK(#PC)).
+  $95A7,$01 Tile ID: #R$A212(#N$D5).
+N $95A8 Command #N$01: Skip tiles.
+  $95A8,$01 Command (#N$01).
+  $95A9,$01 Skip count: #N(#PEEK(#PC)).
+  $95AA,$01 Tile ID: #R$A21A(#N$D6).
+  $95AB,$01 Tile ID: #R$A222(#N$D7).
+  $95AC,$01 Tile ID: #R$A22A(#N$D8).
+  $95AD,$01 Tile ID: #R$A232(#N$D9).
+N $95AE Command #N$01: Skip tiles.
+  $95AE,$01 Command (#N$01).
+  $95AF,$01 Skip count: #N(#PEEK(#PC)).
+  $95B0,$01 Tile ID: #R$A23A(#N$DA).
+N $95B1 Command #N$01: Skip tiles.
+  $95B1,$01 Command (#N$01).
+  $95B2,$01 Skip count: #N(#PEEK(#PC)).
+  $95B3,$01 Tile ID: #R$A0F2(#N$B1).
+  $95B4,$01 Tile ID: #R$9C82(#N$23).
+  $95B5,$01 Tile ID: #R$9C82(#N$23).
+  $95B6,$01 Tile ID: #R$A0FA(#N$B2).
+N $95B7 Command #N$01: Skip tiles.
+  $95B7,$01 Command (#N$01).
+  $95B8,$01 Skip count: #N(#PEEK(#PC)).
+  $95B9,$01 Tile ID: #R$A242(#N$DB).
+  $95BA,$01 Tile ID: #R$A24A(#N$DC).
+  $95BB,$01 Tile ID: #R$A252(#N$DD).
+N $95BC Command #N$01: Skip tiles.
+  $95BC,$01 Command (#N$01).
+  $95BD,$01 Skip count: #N(#PEEK(#PC)).
+  $95BE,$01 Tile ID: #R$9C82(#N$23).
+N $95BF Command #N$01: Skip tiles.
+  $95BF,$01 Command (#N$01).
+  $95C0,$01 Skip count: #N(#PEEK(#PC)).
+  $95C1,$01 Tile ID: #R$9C82(#N$23).
+N $95C2 Command #N$01: Skip tiles.
+  $95C2,$01 Command (#N$01).
+  $95C3,$01 Skip count: #N(#PEEK(#PC)).
+  $95C4,$01 Tile ID: #R$9C82(#N$23).
+N $95C5 Command #N$01: Skip tiles.
+  $95C5,$01 Command (#N$01).
+  $95C6,$01 Skip count: #N(#PEEK(#PC)).
+  $95C7,$01 Tile ID: #R$9C82(#N$23).
+N $95C8 Command #N$01: Skip tiles.
+  $95C8,$01 Command (#N$01).
+  $95C9,$01 Skip count: #N(#PEEK(#PC)).
+N $95CA Command #N$02: Draw repeated tile.
+  $95CA,$01 Command (#N$02).
+  $95CB,$01 Repeat count: #N(#PEEK(#PC)).
+  $95CC,$01 Tile ID: #R$9C82(#N$23).
+  $95CD,$01 Tile ID: #R$A20A(#N$D4).
+N $95CE Command #N$01: Skip tiles.
+  $95CE,$01 Command (#N$01).
+  $95CF,$01 Skip count: #N(#PEEK(#PC)).
+  $95D0,$01 Tile ID: #R$9C82(#N$23).
+N $95D1 Command #N$01: Skip tiles.
+  $95D1,$01 Command (#N$01).
+  $95D2,$01 Skip count: #N(#PEEK(#PC)).
+  $95D3,$01 Tile ID: #R$A0F2(#N$B1).
+  $95D4,$01 Tile ID: #R$9C82(#N$23).
+  $95D5,$01 Tile ID: #R$A0FA(#N$B2).
+N $95D6 Command #N$01: Skip tiles.
+  $95D6,$01 Command (#N$01).
+  $95D7,$01 Skip count: #N(#PEEK(#PC)).
+N $95D8 Command #N$02: Draw repeated tile.
+  $95D8,$01 Command (#N$02).
+  $95D9,$01 Repeat count: #N(#PEEK(#PC)).
+  $95DA,$01 Tile ID: #R$9C82(#N$23).
+N $95DB Command #N$01: Skip tiles.
+  $95DB,$01 Command (#N$01).
+  $95DC,$01 Skip count: #N(#PEEK(#PC)).
+N $95DD Command #N$02: Draw repeated tile.
+  $95DD,$01 Command (#N$02).
+  $95DE,$01 Repeat count: #N(#PEEK(#PC)).
+  $95DF,$01 Tile ID: #R$9C82(#N$23).
+N $95E0 Command #N$01: Skip tiles.
+  $95E0,$01 Command (#N$01).
+  $95E1,$01 Skip count: #N(#PEEK(#PC)).
+  $95E2,$01 Tile ID: #R$9C82(#N$23).
+  $95E3,$01 Tile ID: #R$A1FA(#N$D2).
+  $95E4,$01 Tile ID: #R$9C82(#N$23).
+N $95E5 Command #N$01: Skip tiles.
+  $95E5,$01 Command (#N$01).
+  $95E6,$01 Skip count: #N(#PEEK(#PC)).
+  $95E7,$01 Tile ID: #R$9C82(#N$23).
+N $95E8 Command #N$01: Skip tiles.
+  $95E8,$01 Command (#N$01).
+  $95E9,$01 Skip count: #N(#PEEK(#PC)).
+  $95EA,$01 Tile ID: #R$9C82(#N$23).
+N $95EB Command #N$01: Skip tiles.
+  $95EB,$01 Command (#N$01).
+  $95EC,$01 Skip count: #N(#PEEK(#PC)).
+  $95ED,$01 Tile ID: #R$9C82(#N$23).
+N $95EE Command #N$01: Skip tiles.
+  $95EE,$01 Command (#N$01).
+  $95EF,$01 Skip count: #N(#PEEK(#PC)).
+  $95F0,$01 Tile ID: #R$9C82(#N$23).
+N $95F1 Command #N$01: Skip tiles.
+  $95F1,$01 Command (#N$01).
+  $95F2,$01 Skip count: #N(#PEEK(#PC)).
+  $95F3,$01 Tile ID: #R$9C82(#N$23).
+N $95F4 Command #N$01: Skip tiles.
+  $95F4,$01 Command (#N$01).
+  $95F5,$01 Skip count: #N(#PEEK(#PC)).
+  $95F6,$01 Tile ID: #R$A1EA(#N$D0).
+  $95F7,$01 Tile ID: #R$9C82(#N$23).
+  $95F8,$01 Tile ID: #R$A1F2(#N$D1).
+N $95F9 Command #N$01: Skip tiles.
+  $95F9,$01 Command (#N$01).
+  $95FA,$01 Skip count: #N(#PEEK(#PC)).
+  $95FB,$01 Tile ID: #R$9C82(#N$23).
+N $95FC Command #N$01: Skip tiles.
+  $95FC,$01 Command (#N$01).
+  $95FD,$01 Skip count: #N(#PEEK(#PC)).
+  $95FE,$01 Tile ID: #R$A202(#N$D3).
+  $95FF,$01 Tile ID: #R$9C82(#N$23).
+  $9600,$01 Tile ID: #R$A20A(#N$D4).
+N $9601 Command #N$01: Skip tiles.
+  $9601,$01 Command (#N$01).
+  $9602,$01 Skip count: #N(#PEEK(#PC)).
+  $9603,$01 Tile ID: #R$9C82(#N$23).
+N $9604 Command #N$01: Skip tiles.
+  $9604,$01 Command (#N$01).
+  $9605,$01 Skip count: #N(#PEEK(#PC)).
+  $9606,$01 Tile ID: #R$9C82(#N$23).
+N $9607 Command #N$01: Skip tiles.
+  $9607,$01 Command (#N$01).
+  $9608,$01 Skip count: #N(#PEEK(#PC)).
+  $9609,$01 Tile ID: #R$9C82(#N$23).
+N $960A Command #N$01: Skip tiles.
+  $960A,$01 Command (#N$01).
+  $960B,$01 Skip count: #N(#PEEK(#PC)).
+  $960C,$01 Tile ID: #R$A0F2(#N$B1).
+  $960D,$01 Tile ID: #R$9C82(#N$23).
+  $960E,$01 Tile ID: #R$9C82(#N$23).
+  $960F,$01 Tile ID: #R$A0FA(#N$B2).
+N $9610 Command #N$01: Skip tiles.
+  $9610,$01 Command (#N$01).
+  $9611,$01 Skip count: #N(#PEEK(#PC)).
+  $9612,$01 Tile ID: #R$9C82(#N$23).
+N $9613 Command #N$01: Skip tiles.
+  $9613,$01 Command (#N$01).
+  $9614,$01 Skip count: #N(#PEEK(#PC)).
+  $9615,$01 Tile ID: #R$9C82(#N$23).
+N $9616 Command #N$01: Skip tiles.
+  $9616,$01 Command (#N$01).
+  $9617,$01 Skip count: #N(#PEEK(#PC)).
+  $9618,$01 Tile ID: #R$9C82(#N$23).
+N $9619 Command #N$01: Skip tiles.
+  $9619,$01 Command (#N$01).
+  $961A,$01 Skip count: #N(#PEEK(#PC)).
+  $961B,$01 Tile ID: #R$9C82(#N$23).
+N $961C Command #N$01: Skip tiles.
+  $961C,$01 Command (#N$01).
+  $961D,$01 Skip count: #N(#PEEK(#PC)).
+N $961E Command #N$02: Draw repeated tile.
+  $961E,$01 Command (#N$02).
+  $961F,$01 Repeat count: #N(#PEEK(#PC)).
+  $9620,$01 Tile ID: #R$9C82(#N$23).
+  $9621,$01 Tile ID: #R$A20A(#N$D4).
+N $9622 Command #N$01: Skip tiles.
+  $9622,$01 Command (#N$01).
+  $9623,$01 Skip count: #N(#PEEK(#PC)).
+  $9624,$01 Tile ID: #R$9C82(#N$23).
+N $9625 Command #N$01: Skip tiles.
+  $9625,$01 Command (#N$01).
+  $9626,$01 Skip count: #N(#PEEK(#PC)).
+  $9627,$01 Tile ID: #R$9C82(#N$23).
+N $9628 Command #N$01: Skip tiles.
+  $9628,$01 Command (#N$01).
+  $9629,$01 Skip count: #N(#PEEK(#PC)).
+  $962A,$01 Tile ID: #R$A0F2(#N$B1).
+  $962B,$01 Tile ID: #R$9C82(#N$23).
+  $962C,$01 Tile ID: #R$A0FA(#N$B2).
+N $962D Command #N$01: Skip tiles.
+  $962D,$01 Command (#N$01).
+  $962E,$01 Skip count: #N(#PEEK(#PC)).
+N $962F Command #N$02: Draw repeated tile.
+  $962F,$01 Command (#N$02).
+  $9630,$01 Repeat count: #N(#PEEK(#PC)).
+  $9631,$01 Tile ID: #R$9C82(#N$23).
+N $9632 Command #N$01: Skip tiles.
+  $9632,$01 Command (#N$01).
+  $9633,$01 Skip count: #N(#PEEK(#PC)).
+  $9634,$01 Tile ID: #R$A0F2(#N$B1).
+  $9635,$01 Tile ID: #R$9C82(#N$23).
+  $9636,$01 Tile ID: #R$A0FA(#N$B2).
+N $9637 Command #N$01: Skip tiles.
+  $9637,$01 Command (#N$01).
+  $9638,$01 Skip count: #N(#PEEK(#PC)).
+  $9639,$01 Tile ID: #R$9C82(#N$23).
+  $963A,$01 Tile ID: #R$9C82(#N$23).
+  $963B,$01 Tile ID: #R$A0FA(#N$B2).
+N $963C Command #N$01: Skip tiles.
+  $963C,$01 Command (#N$01).
+  $963D,$01 Skip count: #N(#PEEK(#PC)).
+  $963E,$01 Tile ID: #R$9C82(#N$23).
+N $963F Command #N$01: Skip tiles.
+  $963F,$01 Command (#N$01).
+  $9640,$01 Skip count: #N(#PEEK(#PC)).
+  $9641,$01 Tile ID: #R$9C82(#N$23).
+N $9642 Command #N$01: Skip tiles.
+  $9642,$01 Command (#N$01).
+  $9643,$01 Skip count: #N(#PEEK(#PC)).
+  $9644,$01 Tile ID: #R$9C82(#N$23).
+N $9645 Command #N$01: Skip tiles.
+  $9645,$01 Command (#N$01).
+  $9646,$01 Skip count: #N(#PEEK(#PC)).
+  $9647,$01 Tile ID: #R$A1DA(#N$CE).
+N $9648 Command #N$01: Skip tiles.
+  $9648,$01 Command (#N$01).
+  $9649,$01 Skip count: #N(#PEEK(#PC)).
+  $964A,$01 Tile ID: #R$9C82(#N$23).
+  $964B,$01 Tile ID: #R$A1E2(#N$CF).
+N $964C Command #N$01: Skip tiles.
+  $964C,$01 Command (#N$01).
+  $964D,$01 Skip count: #N(#PEEK(#PC)).
+  $964E,$01 Tile ID: #R$9C82(#N$23).
+N $964F Command #N$01: Skip tiles.
+  $964F,$01 Command (#N$01).
+  $9650,$01 Skip count: #N(#PEEK(#PC)).
+  $9651,$01 Tile ID: #R$9C82(#N$23).
+N $9652 Command #N$01: Skip tiles.
+  $9652,$01 Command (#N$01).
+  $9653,$01 Skip count: #N(#PEEK(#PC)).
+  $9654,$01 Tile ID: #R$9C82(#N$23).
+N $9655 Command #N$01: Skip tiles.
+  $9655,$01 Command (#N$01).
+  $9656,$01 Skip count: #N(#PEEK(#PC)).
+  $9657,$01 Tile ID: #R$9C82(#N$23).
+N $9658 Command #N$01: Skip tiles.
+  $9658,$01 Command (#N$01).
+  $9659,$01 Skip count: #N(#PEEK(#PC)).
+  $965A,$01 Tile ID: #R$9C82(#N$23).
+N $965B Command #N$01: Skip tiles.
+  $965B,$01 Command (#N$01).
+  $965C,$01 Skip count: #N(#PEEK(#PC)).
+  $965D,$01 Tile ID: #R$9C82(#N$23).
+N $965E Command #N$01: Skip tiles.
+  $965E,$01 Command (#N$01).
+  $965F,$01 Skip count: #N(#PEEK(#PC)).
+  $9660,$01 Tile ID: #R$A202(#N$D3).
+  $9661,$01 Tile ID: #R$9C82(#N$23).
+  $9662,$01 Tile ID: #R$9C82(#N$23).
+N $9663 Command #N$01: Skip tiles.
+  $9663,$01 Command (#N$01).
+  $9664,$01 Skip count: #N(#PEEK(#PC)).
+N $9665 Command #N$02: Draw repeated tile.
+  $9665,$01 Command (#N$02).
+  $9666,$01 Repeat count: #N(#PEEK(#PC)).
+  $9667,$01 Tile ID: #R$9C82(#N$23).
+N $9668 Command #N$01: Skip tiles.
+  $9668,$01 Command (#N$01).
+  $9669,$01 Skip count: #N(#PEEK(#PC)).
+  $966A,$01 Tile ID: #R$A202(#N$D3).
+  $966B,$01 Tile ID: #R$9C82(#N$23).
+  $966C,$01 Tile ID: #R$A20A(#N$D4).
+N $966D Command #N$01: Skip tiles.
+  $966D,$01 Command (#N$01).
+  $966E,$01 Skip count: #N(#PEEK(#PC)).
+  $966F,$01 Tile ID: #R$9C82(#N$23).
+N $9670 Command #N$01: Skip tiles.
+  $9670,$01 Command (#N$01).
+  $9671,$01 Skip count: #N(#PEEK(#PC)).
+  $9672,$01 Tile ID: #R$9C82(#N$23).
+N $9673 Command #N$01: Skip tiles.
+  $9673,$01 Command (#N$01).
+  $9674,$01 Skip count: #N(#PEEK(#PC)).
+N $9675 Command #N$03: Fill attribute buffer.
+  $9675,$01 Command (#N$03).
+  $9676,$01 Base fill colour: #COLOUR(#PEEK(#PC)).
+N $9677 Attribute overlay: repeat colour.
+  $9677,$01 Opcode (#N$1B).
+  $9678,$01 Repeat count: #N(#PEEK(#PC)).
+  $9679,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $967A,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $967B Attribute overlay: repeat colour.
+  $967B,$01 Opcode (#N$1B).
+  $967C,$01 Repeat count: #N(#PEEK(#PC)).
+  $967D,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $967E Attribute overlay: repeat colour.
+  $967E,$01 Opcode (#N$1B).
+  $967F,$01 Repeat count: #N(#PEEK(#PC)).
+  $9680,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $9681 Attribute overlay: repeat colour.
+  $9681,$01 Opcode (#N$1B).
+  $9682,$01 Repeat count: #N(#PEEK(#PC)).
+  $9683,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $9684,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9685,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9686,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9687 Attribute overlay: repeat colour.
+  $9687,$01 Opcode (#N$1B).
+  $9688,$01 Repeat count: #N(#PEEK(#PC)).
+  $9689,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $968A Attribute overlay: repeat colour.
+  $968A,$01 Opcode (#N$1B).
+  $968B,$01 Repeat count: #N(#PEEK(#PC)).
+  $968C,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $968D,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $968E,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $968F,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9690,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9691,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9692,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9693,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9694,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9695,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9696 Attribute overlay: repeat colour.
+  $9696,$01 Opcode (#N$1B).
+  $9697,$01 Repeat count: #N(#PEEK(#PC)).
+  $9698,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $9699,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $969A,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $969B,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $969C,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $969D Attribute overlay: repeat colour.
+  $969D,$01 Opcode (#N$1B).
+  $969E,$01 Repeat count: #N(#PEEK(#PC)).
+  $969F,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $96A0 Attribute overlay: repeat colour.
+  $96A0,$01 Opcode (#N$1B).
+  $96A1,$01 Repeat count: #N(#PEEK(#PC)).
+  $96A2,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $96A3 Attribute overlay: repeat colour.
+  $96A3,$01 Opcode (#N$1B).
+  $96A4,$01 Repeat count: #N(#PEEK(#PC)).
+  $96A5,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $96A6,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96A7,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96A8,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96A9,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96AA,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96AB,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96AC,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96AD,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96AE,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96AF,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96B0,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96B1,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96B2,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96B3,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96B4,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96B5,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96B6,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96B7,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96B8,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $96B9 Attribute overlay: repeat colour.
+  $96B9,$01 Opcode (#N$1B).
+  $96BA,$01 Repeat count: #N(#PEEK(#PC)).
+  $96BB,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $96BC,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96BD,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96BE,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96BF,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96C0,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96C1,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96C2,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96C3,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96C4,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96C5,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96C6,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96C7,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96C8,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96C9,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96CA,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96CB,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96CC,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96CD,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96CE,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $96CF Attribute overlay: repeat colour.
+  $96CF,$01 Opcode (#N$1B).
+  $96D0,$01 Repeat count: #N(#PEEK(#PC)).
+  $96D1,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $96D2,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96D3,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96D4,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96D5,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96D6,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96D7,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96D8,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96D9,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96DA,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96DB,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96DC,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96DD,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96DE,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96DF,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96E0,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96E1,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96E2,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96E3,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $96E4 Attribute overlay: repeat colour.
+  $96E4,$01 Opcode (#N$1B).
+  $96E5,$01 Repeat count: #N(#PEEK(#PC)).
+  $96E6,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $96E7 Attribute overlay: repeat colour.
+  $96E7,$01 Opcode (#N$1B).
+  $96E8,$01 Repeat count: #N(#PEEK(#PC)).
+  $96E9,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $96EA Attribute overlay: repeat colour.
+  $96EA,$01 Opcode (#N$1B).
+  $96EB,$01 Repeat count: #N(#PEEK(#PC)).
+  $96EC,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $96ED,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96EE,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96EF,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96F0,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $96F1 Attribute overlay: repeat colour.
+  $96F1,$01 Opcode (#N$1B).
+  $96F2,$01 Repeat count: #N(#PEEK(#PC)).
+  $96F3,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $96F4,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96F5,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96F6,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $96F7,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $96F8 Attribute overlay: repeat colour.
+  $96F8,$01 Opcode (#N$1B).
+  $96F9,$01 Repeat count: #N(#PEEK(#PC)).
+  $96FA,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $96FB Attribute overlay: repeat colour.
+  $96FB,$01 Opcode (#N$1B).
+  $96FC,$01 Repeat count: #N(#PEEK(#PC)).
+  $96FD,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $96FE Attribute overlay: repeat colour.
+  $96FE,$01 Opcode (#N$1B).
+  $96FF,$01 Repeat count: #N(#PEEK(#PC)).
+  $9700,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $9701,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9702,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9703,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9704,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9705,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9706,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9707,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9708,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9709,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $970A,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $970B,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $970C,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $970D,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $970E,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $970F,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9710,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9711,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9712,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9713,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9714,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9715,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9716 Attribute overlay: repeat colour.
+  $9716,$01 Opcode (#N$1B).
+  $9717,$01 Repeat count: #N(#PEEK(#PC)).
+  $9718,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $9719,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $971A,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $971B,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $971C,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $971D,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $971E,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $971F,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9720,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9721,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9722,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9723 Attribute overlay: repeat colour.
+  $9723,$01 Opcode (#N$1B).
+  $9724,$01 Repeat count: #N(#PEEK(#PC)).
+  $9725,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $9726,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9727,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9728,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9729,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $972A Attribute overlay: repeat colour.
+  $972A,$01 Opcode (#N$1B).
+  $972B,$01 Repeat count: #N(#PEEK(#PC)).
+  $972C,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $972D,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $972E,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $972F,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9730,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9731,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9732,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9733,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9734,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9735,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9736,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9737,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9738,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9739,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $973A,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $973B,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $973C,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $973D,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $973E,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $973F,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9740,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9741,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9742 Attribute overlay: repeat colour.
+  $9742,$01 Opcode (#N$1B).
+  $9743,$01 Repeat count: #N(#PEEK(#PC)).
+  $9744,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $9745,$01 End of attribute overlay.
   $9746,$01 Terminator.
 
 b $9747 Room #N$0D: Level 2
 @ $9747 label=Room13_Level2
 D $9747 #ROOM$0D
+N $9747 Command #N$01: Skip tiles.
+  $9747,$01 Command (#N$01).
+  $9748,$01 Skip count: #N(#PEEK(#PC)).
+N $9749 Command #N$01: Skip tiles.
+  $9749,$01 Command (#N$01).
+  $974A,$01 Skip count: #N(#PEEK(#PC)).
+N $974B Command #N$01: Skip tiles.
+  $974B,$01 Command (#N$01).
+  $974C,$01 Skip count: #N(#PEEK(#PC)).
+N $974D Command #N$03: Fill attribute buffer.
+  $974D,$01 Command (#N$03).
+  $974E,$01 Base fill colour: #COLOUR(#PEEK(#PC)).
+N $974F Attribute overlay: skip.
+  $974F,$01 Opcode (#N$12).
+  $9750,$01 Skip count: #N(#PEEK(#PC)).
+  $9751,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9752 Attribute overlay: skip.
+  $9752,$01 Opcode (#N$12).
+  $9753,$01 Skip count: #N(#PEEK(#PC)).
+  $9754,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9755 Attribute overlay: skip.
+  $9755,$01 Opcode (#N$12).
+  $9756,$01 Skip count: #N(#PEEK(#PC)).
+  $9757,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9758,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9759 Attribute overlay: skip.
+  $9759,$01 Opcode (#N$12).
+  $975A,$01 Skip count: #N(#PEEK(#PC)).
+  $975B,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $975C Attribute overlay: skip.
+  $975C,$01 Opcode (#N$12).
+  $975D,$01 Skip count: #N(#PEEK(#PC)).
+  $975E,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $975F,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9760,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9761,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9762 Attribute overlay: skip.
+  $9762,$01 Opcode (#N$12).
+  $9763,$01 Skip count: #N(#PEEK(#PC)).
+  $9764,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9765 Attribute overlay: skip.
+  $9765,$01 Opcode (#N$12).
+  $9766,$01 Skip count: #N(#PEEK(#PC)).
+  $9767,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9768 Attribute overlay: skip.
+  $9768,$01 Opcode (#N$12).
+  $9769,$01 Skip count: #N(#PEEK(#PC)).
+  $976A,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $976B Attribute overlay: skip.
+  $976B,$01 Opcode (#N$12).
+  $976C,$01 Skip count: #N(#PEEK(#PC)).
+  $976D,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $976E,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $976F,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9770,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9771,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9772 Attribute overlay: skip.
+  $9772,$01 Opcode (#N$12).
+  $9773,$01 Skip count: #N(#PEEK(#PC)).
+  $9774,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9775,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9776,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9777,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9778,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9779,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $977A,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $977B Attribute overlay: skip.
+  $977B,$01 Opcode (#N$12).
+  $977C,$01 Skip count: #N(#PEEK(#PC)).
+  $977D,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $977E Attribute overlay: skip.
+  $977E,$01 Opcode (#N$12).
+  $977F,$01 Skip count: #N(#PEEK(#PC)).
+  $9780,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9781 Attribute overlay: skip.
+  $9781,$01 Opcode (#N$12).
+  $9782,$01 Skip count: #N(#PEEK(#PC)).
+  $9783,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9784 Attribute overlay: skip.
+  $9784,$01 Opcode (#N$12).
+  $9785,$01 Skip count: #N(#PEEK(#PC)).
+  $9786,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9787 Attribute overlay: skip.
+  $9787,$01 Opcode (#N$12).
+  $9788,$01 Skip count: #N(#PEEK(#PC)).
+  $9789,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $978A,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $978B,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $978C Attribute overlay: skip.
+  $978C,$01 Opcode (#N$12).
+  $978D,$01 Skip count: #N(#PEEK(#PC)).
+  $978E,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $978F Attribute overlay: skip.
+  $978F,$01 Opcode (#N$12).
+  $9790,$01 Skip count: #N(#PEEK(#PC)).
+  $9791,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9792 Attribute overlay: skip.
+  $9792,$01 Opcode (#N$12).
+  $9793,$01 Skip count: #N(#PEEK(#PC)).
+  $9794,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9795 Attribute overlay: skip.
+  $9795,$01 Opcode (#N$12).
+  $9796,$01 Skip count: #N(#PEEK(#PC)).
+  $9797,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9798,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9799 Attribute overlay: skip.
+  $9799,$01 Opcode (#N$12).
+  $979A,$01 Skip count: #N(#PEEK(#PC)).
+  $979B,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $979C,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $979D,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $979E,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $979F,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $97A0,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $97A1,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $97A2,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $97A3,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $97A4,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $97A5 Attribute overlay: skip.
+  $97A5,$01 Opcode (#N$12).
+  $97A6,$01 Skip count: #N(#PEEK(#PC)).
+  $97A7,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $97A8 Attribute overlay: skip.
+  $97A8,$01 Opcode (#N$12).
+  $97A9,$01 Skip count: #N(#PEEK(#PC)).
+  $97AA,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $97AB Attribute overlay: skip.
+  $97AB,$01 Opcode (#N$12).
+  $97AC,$01 Skip count: #N(#PEEK(#PC)).
+  $97AD,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $97AE Attribute overlay: skip.
+  $97AE,$01 Opcode (#N$12).
+  $97AF,$01 Skip count: #N(#PEEK(#PC)).
+  $97B0,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $97B1,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $97B2,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $97B3,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $97B4,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $97B5,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $97B6 Attribute overlay: skip.
+  $97B6,$01 Opcode (#N$12).
+  $97B7,$01 Skip count: #N(#PEEK(#PC)).
+  $97B8,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $97B9 Attribute overlay: skip.
+  $97B9,$01 Opcode (#N$12).
+  $97BA,$01 Skip count: #N(#PEEK(#PC)).
+  $97BB,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $97BC Attribute overlay: skip.
+  $97BC,$01 Opcode (#N$12).
+  $97BD,$01 Skip count: #N(#PEEK(#PC)).
+N $97BE Attribute overlay: repeat colour.
+  $97BE,$01 Opcode (#N$1B).
+  $97BF,$01 Repeat count: #N(#PEEK(#PC)).
+  $97C0,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $97C1,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $97C2,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $97C3,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $97C4,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $97C5 Attribute overlay: skip.
+  $97C5,$01 Opcode (#N$12).
+  $97C6,$01 Skip count: #N(#PEEK(#PC)).
+  $97C7,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $97C8 Attribute overlay: skip.
+  $97C8,$01 Opcode (#N$12).
+  $97C9,$01 Skip count: #N(#PEEK(#PC)).
+  $97CA,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $97CB,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $97CC,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $97CD,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $97CE,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $97CF,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $97D0,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $97D1,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $97D2,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $97D3 Attribute overlay: repeat colour.
+  $97D3,$01 Opcode (#N$1B).
+  $97D4,$01 Repeat count: #N(#PEEK(#PC)).
+  $97D5,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $97D6 Attribute overlay: skip.
+  $97D6,$01 Opcode (#N$12).
+  $97D7,$01 Skip count: #N(#PEEK(#PC)).
+  $97D8,$01 End of attribute overlay.
   $97D9,$01 Terminator.
 
 b $97DA Room #N$0E: Level 3
 @ $97DA label=Room14_Level3
 D $97DA #ROOM$0E
+N $97DA Command #N$01: Skip tiles.
+  $97DA,$01 Command (#N$01).
+  $97DB,$01 Skip count: #N(#PEEK(#PC)).
+N $97DC Command #N$01: Skip tiles.
+  $97DC,$01 Command (#N$01).
+  $97DD,$01 Skip count: #N(#PEEK(#PC)).
+N $97DE Command #N$01: Skip tiles.
+  $97DE,$01 Command (#N$01).
+  $97DF,$01 Skip count: #N(#PEEK(#PC)).
+N $97E0 Command #N$03: Fill attribute buffer.
+  $97E0,$01 Command (#N$03).
+  $97E1,$01 Base fill colour: #COLOUR(#PEEK(#PC)).
+N $97E2 Attribute overlay: skip.
+  $97E2,$01 Opcode (#N$12).
+  $97E3,$01 Skip count: #N(#PEEK(#PC)).
+  $97E4,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $97E5 Attribute overlay: skip.
+  $97E5,$01 Opcode (#N$12).
+  $97E6,$01 Skip count: #N(#PEEK(#PC)).
+  $97E7,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $97E8 Attribute overlay: skip.
+  $97E8,$01 Opcode (#N$12).
+  $97E9,$01 Skip count: #N(#PEEK(#PC)).
+  $97EA,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $97EB,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $97EC Attribute overlay: skip.
+  $97EC,$01 Opcode (#N$12).
+  $97ED,$01 Skip count: #N(#PEEK(#PC)).
+  $97EE,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $97EF Attribute overlay: skip.
+  $97EF,$01 Opcode (#N$12).
+  $97F0,$01 Skip count: #N(#PEEK(#PC)).
+  $97F1,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $97F2,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $97F3,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $97F4,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $97F5 Attribute overlay: skip.
+  $97F5,$01 Opcode (#N$12).
+  $97F6,$01 Skip count: #N(#PEEK(#PC)).
+  $97F7,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $97F8 Attribute overlay: skip.
+  $97F8,$01 Opcode (#N$12).
+  $97F9,$01 Skip count: #N(#PEEK(#PC)).
+  $97FA,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $97FB Attribute overlay: skip.
+  $97FB,$01 Opcode (#N$12).
+  $97FC,$01 Skip count: #N(#PEEK(#PC)).
+  $97FD,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $97FE Attribute overlay: skip.
+  $97FE,$01 Opcode (#N$12).
+  $97FF,$01 Skip count: #N(#PEEK(#PC)).
+  $9800,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9801,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9802,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9803,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9804,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9805 Attribute overlay: skip.
+  $9805,$01 Opcode (#N$12).
+  $9806,$01 Skip count: #N(#PEEK(#PC)).
+  $9807,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9808,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9809,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $980A,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $980B,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $980C,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $980D,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $980E Attribute overlay: skip.
+  $980E,$01 Opcode (#N$12).
+  $980F,$01 Skip count: #N(#PEEK(#PC)).
+  $9810,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9811 Attribute overlay: skip.
+  $9811,$01 Opcode (#N$12).
+  $9812,$01 Skip count: #N(#PEEK(#PC)).
+  $9813,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9814 Attribute overlay: skip.
+  $9814,$01 Opcode (#N$12).
+  $9815,$01 Skip count: #N(#PEEK(#PC)).
+  $9816,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9817 Attribute overlay: skip.
+  $9817,$01 Opcode (#N$12).
+  $9818,$01 Skip count: #N(#PEEK(#PC)).
+  $9819,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $981A Attribute overlay: skip.
+  $981A,$01 Opcode (#N$12).
+  $981B,$01 Skip count: #N(#PEEK(#PC)).
+  $981C,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $981D,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $981E,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $981F Attribute overlay: skip.
+  $981F,$01 Opcode (#N$12).
+  $9820,$01 Skip count: #N(#PEEK(#PC)).
+  $9821,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9822 Attribute overlay: skip.
+  $9822,$01 Opcode (#N$12).
+  $9823,$01 Skip count: #N(#PEEK(#PC)).
+  $9824,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9825 Attribute overlay: skip.
+  $9825,$01 Opcode (#N$12).
+  $9826,$01 Skip count: #N(#PEEK(#PC)).
+  $9827,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9828 Attribute overlay: skip.
+  $9828,$01 Opcode (#N$12).
+  $9829,$01 Skip count: #N(#PEEK(#PC)).
+  $982A,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $982B,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $982C Attribute overlay: skip.
+  $982C,$01 Opcode (#N$12).
+  $982D,$01 Skip count: #N(#PEEK(#PC)).
+  $982E,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $982F,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9830,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9831,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9832,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9833,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9834,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9835,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9836,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9837,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9838 Attribute overlay: skip.
+  $9838,$01 Opcode (#N$12).
+  $9839,$01 Skip count: #N(#PEEK(#PC)).
+  $983A,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $983B Attribute overlay: skip.
+  $983B,$01 Opcode (#N$12).
+  $983C,$01 Skip count: #N(#PEEK(#PC)).
+  $983D,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $983E Attribute overlay: skip.
+  $983E,$01 Opcode (#N$12).
+  $983F,$01 Skip count: #N(#PEEK(#PC)).
+  $9840,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9841 Attribute overlay: skip.
+  $9841,$01 Opcode (#N$12).
+  $9842,$01 Skip count: #N(#PEEK(#PC)).
+  $9843,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9844,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9845,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9846,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9847,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9848,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9849 Attribute overlay: skip.
+  $9849,$01 Opcode (#N$12).
+  $984A,$01 Skip count: #N(#PEEK(#PC)).
+  $984B,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $984C Attribute overlay: skip.
+  $984C,$01 Opcode (#N$12).
+  $984D,$01 Skip count: #N(#PEEK(#PC)).
+  $984E,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $984F,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9850,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9851,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9852 Attribute overlay: skip.
+  $9852,$01 Opcode (#N$12).
+  $9853,$01 Skip count: #N(#PEEK(#PC)).
+N $9854 Attribute overlay: repeat colour.
+  $9854,$01 Opcode (#N$1B).
+  $9855,$01 Repeat count: #N(#PEEK(#PC)).
+  $9856,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $9857,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9858,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9859,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $985A,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $985B Attribute overlay: skip.
+  $985B,$01 Opcode (#N$12).
+  $985C,$01 Skip count: #N(#PEEK(#PC)).
+  $985D,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $985E Attribute overlay: skip.
+  $985E,$01 Opcode (#N$12).
+  $985F,$01 Skip count: #N(#PEEK(#PC)).
+  $9860,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9861,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9862,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9863,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9864,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9865,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9866,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9867 Attribute overlay: skip.
+  $9867,$01 Opcode (#N$12).
+  $9868,$01 Skip count: #N(#PEEK(#PC)).
+  $9869,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $986A,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $986B Attribute overlay: skip.
+  $986B,$01 Opcode (#N$12).
+  $986C,$01 Skip count: #N(#PEEK(#PC)).
+  $986D,$01 End of attribute overlay.
   $986E,$01 Terminator.
 
 b $986F Room #N$0F: Level 4
 @ $986F label=Room15_Level4
 D $986F #ROOM$0F
+N $986F Command #N$01: Skip tiles.
+  $986F,$01 Command (#N$01).
+  $9870,$01 Skip count: #N(#PEEK(#PC)).
+N $9871 Command #N$01: Skip tiles.
+  $9871,$01 Command (#N$01).
+  $9872,$01 Skip count: #N(#PEEK(#PC)).
+N $9873 Command #N$01: Skip tiles.
+  $9873,$01 Command (#N$01).
+  $9874,$01 Skip count: #N(#PEEK(#PC)).
+N $9875 Command #N$03: Fill attribute buffer.
+  $9875,$01 Command (#N$03).
+  $9876,$01 Base fill colour: #COLOUR(#PEEK(#PC)).
+N $9877 Attribute overlay: skip.
+  $9877,$01 Opcode (#N$12).
+  $9878,$01 Skip count: #N(#PEEK(#PC)).
+  $9879,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $987A Attribute overlay: skip.
+  $987A,$01 Opcode (#N$12).
+  $987B,$01 Skip count: #N(#PEEK(#PC)).
+  $987C,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $987D Attribute overlay: skip.
+  $987D,$01 Opcode (#N$12).
+  $987E,$01 Skip count: #N(#PEEK(#PC)).
+  $987F,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9880 Attribute overlay: skip.
+  $9880,$01 Opcode (#N$12).
+  $9881,$01 Skip count: #N(#PEEK(#PC)).
+  $9882,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9883 Attribute overlay: skip.
+  $9883,$01 Opcode (#N$12).
+  $9884,$01 Skip count: #N(#PEEK(#PC)).
+  $9885,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9886 Attribute overlay: skip.
+  $9886,$01 Opcode (#N$12).
+  $9887,$01 Skip count: #N(#PEEK(#PC)).
+  $9888,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9889 Attribute overlay: skip.
+  $9889,$01 Opcode (#N$12).
+  $988A,$01 Skip count: #N(#PEEK(#PC)).
+  $988B,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $988C Attribute overlay: skip.
+  $988C,$01 Opcode (#N$12).
+  $988D,$01 Skip count: #N(#PEEK(#PC)).
+  $988E,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $988F Attribute overlay: skip.
+  $988F,$01 Opcode (#N$12).
+  $9890,$01 Skip count: #N(#PEEK(#PC)).
+  $9891,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9892,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9893,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9894,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9895,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9896 Attribute overlay: skip.
+  $9896,$01 Opcode (#N$12).
+  $9897,$01 Skip count: #N(#PEEK(#PC)).
+  $9898,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9899,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $989A,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $989B,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $989C,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $989D,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $989E,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $989F Attribute overlay: skip.
+  $989F,$01 Opcode (#N$12).
+  $98A0,$01 Skip count: #N(#PEEK(#PC)).
+  $98A1,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $98A2 Attribute overlay: skip.
+  $98A2,$01 Opcode (#N$12).
+  $98A3,$01 Skip count: #N(#PEEK(#PC)).
+  $98A4,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $98A5 Attribute overlay: skip.
+  $98A5,$01 Opcode (#N$12).
+  $98A6,$01 Skip count: #N(#PEEK(#PC)).
+  $98A7,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $98A8 Attribute overlay: skip.
+  $98A8,$01 Opcode (#N$12).
+  $98A9,$01 Skip count: #N(#PEEK(#PC)).
+  $98AA,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $98AB Attribute overlay: skip.
+  $98AB,$01 Opcode (#N$12).
+  $98AC,$01 Skip count: #N(#PEEK(#PC)).
+  $98AD,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $98AE,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $98AF,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $98B0 Attribute overlay: skip.
+  $98B0,$01 Opcode (#N$12).
+  $98B1,$01 Skip count: #N(#PEEK(#PC)).
+  $98B2,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $98B3 Attribute overlay: skip.
+  $98B3,$01 Opcode (#N$12).
+  $98B4,$01 Skip count: #N(#PEEK(#PC)).
+  $98B5,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $98B6,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $98B7,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $98B8 Attribute overlay: skip.
+  $98B8,$01 Opcode (#N$12).
+  $98B9,$01 Skip count: #N(#PEEK(#PC)).
+  $98BA,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $98BB Attribute overlay: skip.
+  $98BB,$01 Opcode (#N$12).
+  $98BC,$01 Skip count: #N(#PEEK(#PC)).
+  $98BD,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $98BE,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $98BF Attribute overlay: skip.
+  $98BF,$01 Opcode (#N$12).
+  $98C0,$01 Skip count: #N(#PEEK(#PC)).
+  $98C1,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $98C2,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $98C3,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $98C4,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $98C5,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $98C6,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $98C7,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $98C8,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $98C9,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $98CA,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $98CB Attribute overlay: skip.
+  $98CB,$01 Opcode (#N$12).
+  $98CC,$01 Skip count: #N(#PEEK(#PC)).
+  $98CD,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $98CE,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $98CF,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $98D0 Attribute overlay: skip.
+  $98D0,$01 Opcode (#N$12).
+  $98D1,$01 Skip count: #N(#PEEK(#PC)).
+  $98D2,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $98D3 Attribute overlay: skip.
+  $98D3,$01 Opcode (#N$12).
+  $98D4,$01 Skip count: #N(#PEEK(#PC)).
+  $98D5,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $98D6 Attribute overlay: skip.
+  $98D6,$01 Opcode (#N$12).
+  $98D7,$01 Skip count: #N(#PEEK(#PC)).
+  $98D8,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $98D9,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $98DA,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $98DB,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $98DC,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $98DD,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $98DE,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $98DF,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $98E0,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $98E1,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $98E2 Attribute overlay: repeat colour.
+  $98E2,$01 Opcode (#N$1B).
+  $98E3,$01 Repeat count: #N(#PEEK(#PC)).
+  $98E4,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $98E5 Attribute overlay: repeat colour.
+  $98E5,$01 Opcode (#N$1B).
+  $98E6,$01 Repeat count: #N(#PEEK(#PC)).
+  $98E7,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $98E8 Attribute overlay: skip.
+  $98E8,$01 Opcode (#N$12).
+  $98E9,$01 Skip count: #N(#PEEK(#PC)).
+N $98EA Attribute overlay: repeat colour.
+  $98EA,$01 Opcode (#N$1B).
+  $98EB,$01 Repeat count: #N(#PEEK(#PC)).
+  $98EC,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $98ED,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $98EE,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $98EF,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $98F0,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $98F1 Attribute overlay: skip.
+  $98F1,$01 Opcode (#N$12).
+  $98F2,$01 Skip count: #N(#PEEK(#PC)).
+  $98F3,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $98F4 Attribute overlay: skip.
+  $98F4,$01 Opcode (#N$12).
+  $98F5,$01 Skip count: #N(#PEEK(#PC)).
+  $98F6,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $98F7,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $98F8,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $98F9,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $98FA,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $98FB,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $98FC,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $98FD Attribute overlay: skip.
+  $98FD,$01 Opcode (#N$12).
+  $98FE,$01 Skip count: #N(#PEEK(#PC)).
+  $98FF,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9900 Attribute overlay: skip.
+  $9900,$01 Opcode (#N$12).
+  $9901,$01 Skip count: #N(#PEEK(#PC)).
+  $9902,$01 End of attribute overlay.
   $9903,$01 Terminator.
 
 b $9904 Room #N$10: Level 5
 @ $9904 label=Room16_Level5
 D $9904 #ROOM$10
+N $9904 Command #N$01: Skip tiles.
+  $9904,$01 Command (#N$01).
+  $9905,$01 Skip count: #N(#PEEK(#PC)).
+N $9906 Command #N$01: Skip tiles.
+  $9906,$01 Command (#N$01).
+  $9907,$01 Skip count: #N(#PEEK(#PC)).
+N $9908 Command #N$01: Skip tiles.
+  $9908,$01 Command (#N$01).
+  $9909,$01 Skip count: #N(#PEEK(#PC)).
+N $990A Command #N$03: Fill attribute buffer.
+  $990A,$01 Command (#N$03).
+  $990B,$01 Base fill colour: #COLOUR(#PEEK(#PC)).
+N $990C Attribute overlay: skip.
+  $990C,$01 Opcode (#N$12).
+  $990D,$01 Skip count: #N(#PEEK(#PC)).
+  $990E,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $990F Attribute overlay: skip.
+  $990F,$01 Opcode (#N$12).
+  $9910,$01 Skip count: #N(#PEEK(#PC)).
+  $9911,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9912 Attribute overlay: skip.
+  $9912,$01 Opcode (#N$12).
+  $9913,$01 Skip count: #N(#PEEK(#PC)).
+N $9914 Attribute overlay: repeat colour.
+  $9914,$01 Opcode (#N$1B).
+  $9915,$01 Repeat count: #N(#PEEK(#PC)).
+  $9916,$01 Colour: #COLOUR(#PEEK(#PC)).
+N $9917 Attribute overlay: skip.
+  $9917,$01 Opcode (#N$12).
+  $9918,$01 Skip count: #N(#PEEK(#PC)).
+  $9919,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $991A Attribute overlay: skip.
+  $991A,$01 Opcode (#N$12).
+  $991B,$01 Skip count: #N(#PEEK(#PC)).
+  $991C,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $991D Attribute overlay: skip.
+  $991D,$01 Opcode (#N$12).
+  $991E,$01 Skip count: #N(#PEEK(#PC)).
+  $991F,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9920 Attribute overlay: skip.
+  $9920,$01 Opcode (#N$12).
+  $9921,$01 Skip count: #N(#PEEK(#PC)).
+  $9922,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9923 Attribute overlay: skip.
+  $9923,$01 Opcode (#N$12).
+  $9924,$01 Skip count: #N(#PEEK(#PC)).
+  $9925,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9926 Attribute overlay: skip.
+  $9926,$01 Opcode (#N$12).
+  $9927,$01 Skip count: #N(#PEEK(#PC)).
+  $9928,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9929,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $992A,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $992B,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $992C,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $992D Attribute overlay: skip.
+  $992D,$01 Opcode (#N$12).
+  $992E,$01 Skip count: #N(#PEEK(#PC)).
+  $992F,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9930,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9931,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9932,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9933,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9934,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9935,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9936 Attribute overlay: skip.
+  $9936,$01 Opcode (#N$12).
+  $9937,$01 Skip count: #N(#PEEK(#PC)).
+  $9938,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9939,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $993A Attribute overlay: skip.
+  $993A,$01 Opcode (#N$12).
+  $993B,$01 Skip count: #N(#PEEK(#PC)).
+  $993C,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $993D Attribute overlay: skip.
+  $993D,$01 Opcode (#N$12).
+  $993E,$01 Skip count: #N(#PEEK(#PC)).
+  $993F,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9940 Attribute overlay: skip.
+  $9940,$01 Opcode (#N$12).
+  $9941,$01 Skip count: #N(#PEEK(#PC)).
+  $9942,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9943 Attribute overlay: skip.
+  $9943,$01 Opcode (#N$12).
+  $9944,$01 Skip count: #N(#PEEK(#PC)).
+  $9945,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9946,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9947,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9948 Attribute overlay: skip.
+  $9948,$01 Opcode (#N$12).
+  $9949,$01 Skip count: #N(#PEEK(#PC)).
+  $994A,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $994B Attribute overlay: skip.
+  $994B,$01 Opcode (#N$12).
+  $994C,$01 Skip count: #N(#PEEK(#PC)).
+  $994D,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $994E Attribute overlay: skip.
+  $994E,$01 Opcode (#N$12).
+  $994F,$01 Skip count: #N(#PEEK(#PC)).
+  $9950,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9951 Attribute overlay: skip.
+  $9951,$01 Opcode (#N$12).
+  $9952,$01 Skip count: #N(#PEEK(#PC)).
+  $9953,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9954,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9955 Attribute overlay: skip.
+  $9955,$01 Opcode (#N$12).
+  $9956,$01 Skip count: #N(#PEEK(#PC)).
+  $9957,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9958,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9959,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $995A,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $995B,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $995C,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $995D,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $995E,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $995F,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9960,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9961 Attribute overlay: skip.
+  $9961,$01 Opcode (#N$12).
+  $9962,$01 Skip count: #N(#PEEK(#PC)).
+  $9963,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9964 Attribute overlay: skip.
+  $9964,$01 Opcode (#N$12).
+  $9965,$01 Skip count: #N(#PEEK(#PC)).
+  $9966,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9967 Attribute overlay: skip.
+  $9967,$01 Opcode (#N$12).
+  $9968,$01 Skip count: #N(#PEEK(#PC)).
+  $9969,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $996A Attribute overlay: skip.
+  $996A,$01 Opcode (#N$12).
+  $996B,$01 Skip count: #N(#PEEK(#PC)).
+  $996C,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $996D,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $996E,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $996F,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9970,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9971,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9972 Attribute overlay: skip.
+  $9972,$01 Opcode (#N$12).
+  $9973,$01 Skip count: #N(#PEEK(#PC)).
+  $9974,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9975 Attribute overlay: skip.
+  $9975,$01 Opcode (#N$12).
+  $9976,$01 Skip count: #N(#PEEK(#PC)).
+  $9977,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9978,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9979,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $997A,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $997B Attribute overlay: skip.
+  $997B,$01 Opcode (#N$12).
+  $997C,$01 Skip count: #N(#PEEK(#PC)).
+N $997D Attribute overlay: repeat colour.
+  $997D,$01 Opcode (#N$1B).
+  $997E,$01 Repeat count: #N(#PEEK(#PC)).
+  $997F,$01 Colour: #COLOUR(#PEEK(#PC)).
+  $9980,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9981,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9982,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9983,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9984 Attribute overlay: skip.
+  $9984,$01 Opcode (#N$12).
+  $9985,$01 Skip count: #N(#PEEK(#PC)).
+  $9986,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9987 Attribute overlay: skip.
+  $9987,$01 Opcode (#N$12).
+  $9988,$01 Skip count: #N(#PEEK(#PC)).
+  $9989,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $998A,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $998B,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $998C,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $998D,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $998E,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $998F,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9990 Attribute overlay: skip.
+  $9990,$01 Opcode (#N$12).
+  $9991,$01 Skip count: #N(#PEEK(#PC)).
+  $9992,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+  $9993,$01 Attribute cell: #COLOUR(#PEEK(#PC)).
+N $9994 Attribute overlay: skip.
+  $9994,$01 Opcode (#N$12).
+  $9995,$01 Skip count: #N(#PEEK(#PC)).
+  $9996,$01 End of attribute overlay.
   $9997,$01 Terminator.
 
 b $9998
 
 b $9BAA Graphics: Default Tile Set
 @ $9BAA label=TileSet_Default
-  $9BAA,$08 #UDG(#PC)
+  $9BAA,$08 #UDGTABLE { Sprite ID: #N($08+(#PC-$9BAA)/$08) | #UDG(#PC) } TABLE#
 L $9BAA,$08,$F8
 
 b $A36A Graphics: Alternate Tile Set?
@@ -5122,9 +11923,11 @@ N $BBBB Merge the sprite column pixels with the background. Derives the sprite
 . then ORs sprite data onto the background for #N$08 pixel rows.
 @ $BBBB label=Merge_Sprite_Column
   $BBBB,$01 Stash the overlay buffer pointer on the stack.
-  $BBBC,$06 Derive the attribute row from the overlay buffer address: mask the
+M $BBBC,$06 Derive the attribute row from the overlay buffer address: mask the
 . low two bits of the high byte, rotate left three times and set bits 6-7 to
 . form the base screen buffer address high byte.
+  $BBBD,$02,b$01 Keep only bits 0-1.
+  $BBC2,$02,b$01 Set bits 6-7.
   $BBC4,$05 Set #REGh, #REGb (sprite source) and #REGd (screen destination) to
 . this base. Set bit 5 of #REGb for the sprite buffer and reset bit 7 of
 . #REGd for the screen buffer.
@@ -5404,9 +12207,11 @@ N $BD29 Branch based on whether an extra column is needed.
 N $BD2D Not X-aligned: write attributes across 2 columns.
 @ $BD2D label=WriteAttributeBlock2Wide_2Columns
 N $BD2D Write attribute to the first row (2 cells).
-  $BD2D,$04 Write the ink bits to *#REGhl.
+M $BD2D,$04 Write the ink bits to *#REGhl.
+  $BD2E,$02,b$01 Keep only bits 3-7.
   $BD32,$01 Move to the next column.
-  $BD33,$04 Write the ink bits to *#REGhl.
+M $BD33,$04 Write the ink bits to *#REGhl.
+  $BD34,$02,b$01 Keep only bits 3-7.
 N $BD38 Return if Y-aligned, otherwise write a second row.
   $BD38,$01 Move back one column.
   $BD39,$02 Test bit 1 of #REGd.
@@ -5415,15 +12220,18 @@ N $BD3C Move down one attribute row.
   $BD3C,$03 #REGbc=#N$0020.
   $BD3F,$01 #REGhl+=#REGbc.
 N $BD40 Write attribute to the second row (2 cells).
-  $BD40,$04 Write the ink bits to *#REGhl.
+M $BD40,$04 Write the ink bits to *#REGhl.
+  $BD41,$02,b$01 Keep only bits 3-7.
   $BD45,$01 Move to the next column.
-  $BD46,$04 Write the ink bits to *#REGhl.
+M $BD46,$04 Write the ink bits to *#REGhl.
+  $BD47,$02,b$01 Keep only bits 3-7.
   $BD4B,$01 Return.
 
 N $BD4C X-aligned: write attributes across 1 column only.
 @ $BD4C label=WriteAttributeBlock2Wide_1Column
 N $BD4C Write attribute to the first row (1 cell).
-  $BD4C,$04 Write the ink bits to *#REGhl.
+M $BD4C,$04 Write the ink bits to *#REGhl.
+  $BD4D,$02,b$01 Keep only bits 3-7.
 N $BD51 Return if Y-aligned, otherwise write a second row.
   $BD51,$02 Test bit 1 of #REGd.
   $BD53,$01 Return if Y-aligned.
@@ -5431,7 +12239,8 @@ N $BD54 Move down one attribute row.
   $BD54,$03 #REGbc=#N$0020.
   $BD57,$01 #REGhl+=#REGbc.
 N $BD58 Write attribute to the second row (1 cell).
-  $BD58,$04 Write the ink bits to *#REGhl.
+M $BD58,$04 Write the ink bits to *#REGhl.
+  $BD59,$02,b$01 Keep only bits 3-7.
   $BD5D,$01 Return.
 
 c $BD5E Draw 3-Wide Sprite Column

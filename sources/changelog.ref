@@ -3,6 +3,11 @@
 [Page:Changelog]
 SectionType=BulletPoints
 
+[Changelog:20260305]
+-
+
+- Added script to parse the room data.
+
 [Changelog:20260213]
 -
 
