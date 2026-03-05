@@ -200,7 +200,7 @@ Load the worm collection target for the new level.
 <span id="26913"></span>
 <div class="comments">
 <div class="paragraph">
-Reset all collected and disabled worm markers in the room attribute data back to 0.
+Reset all collected and disabled worm markers in the room object data back to 0.
 </div>
 </div>
 </td>
@@ -209,7 +209,7 @@ Reset all collected and disabled worm markers in the room attribute data back to
 <td class="asm-label"></td>
 <td class="address-1"><span id="26913"></span>26913</td>
 <td class="instruction">LD HL,56990</td>
-<td class="comment-1" rowspan="1">Point <span class="register">HL</span> at <a href="56990.html">RoomAttribute_Data</a>.</td>
+<td class="comment-1" rowspan="1">Point <span class="register">HL</span> at <a href="56990.html">Room_Object_Data</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -221,7 +221,7 @@ Reset all collected and disabled worm markers in the room attribute data back to
 <td class="asm-label">ResetWorm_Markers_Loop</td>
 <td class="address-2"><span id="26919"></span>26919</td>
 <td class="instruction">LD A,(HL)</td>
-<td class="comment-1" rowspan="4">If *<span class="register">HL</span> equals 31 (disabled marker), write 0 to *<span class="register">HL</span>.</td>
+<td class="comment-1" rowspan="4">If *<span class="register">HL</span> equals 31 (delivered marker), write 0 to *<span class="register">HL</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -231,7 +231,7 @@ Reset all collected and disabled worm markers in the room attribute data back to
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="26922"></span>26922</td>
-<td class="instruction">JR NZ,<a href="26871.html#26926">ResetWorm_TestCollected</a></td>
+<td class="instruction">JR NZ,<a href="26871.html#26926">ResetWorm_Test_Collected</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -239,7 +239,7 @@ Reset all collected and disabled worm markers in the room attribute data back to
 <td class="instruction">LD (HL),0</td>
 </tr>
 <tr>
-<td class="asm-label">ResetWorm_TestCollected</td>
+<td class="asm-label">ResetWorm_Test_Collected</td>
 <td class="address-2"><span id="26926"></span>26926</td>
 <td class="instruction">CP 30</td>
 <td class="comment-1" rowspan="3">If *<span class="register">HL</span> equals 30 (collected marker), write 0 to *<span class="register">HL</span>.</td>

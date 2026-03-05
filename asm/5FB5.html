@@ -33,19 +33,19 @@ Next: <a href="5FB7.html">5FB7</a>
 </td>
 </tr>
 </table>
-<div class="description">5FB5: Room Attribute Pointer</div>
+<div class="description">5FB5: Room Object Data Pointer</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
 <div class="details">
 <div class="paragraph">
-Pointer to the current room's colour attribute data, calculated from the room number and the base at <a href="DE9E.html">RoomAttribute_Data</a>.
+Pointer to the current room's object data, calculated from the room number and the base at <a href="DE9E.html">Room_Object_Data</a>. Used to track the state of collectible worms and other interactive elements in the current room.
 </div>
 </div>
 </td>
 </tr>
 <tr>
-<td class="asm-label">RoomAttributePointer</td>
+<td class="asm-label">Room_Object_Data_Pointer</td>
 <td class="address-1"><span id="5fb5"></span>5FB5</td>
 <td class="instruction">DEFW $0000</td>
 <td class="comment-0" rowspan="1"></td>

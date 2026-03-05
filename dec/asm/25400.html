@@ -45,6 +45,15 @@ Used by the routine at <a href="24553.html">MainGameLoop</a>.
 Update Percy's animation frame based on the current movement state and direction. The animation counter at *<a href="24496.html">PercyAnimationCounter</a> cycles through frames, with bit 7 indicating the second half of the cycle.
 </div>
 </div>
+<table class="input">
+<tr class="asm-input-header">
+<th colspan="2">Input</th>
+</tr>
+<tr>
+<td class="register">IX</td>
+<td class="register-desc">Pointer to Percy's state data</td>
+</tr>
+</table>
 </td>
 </tr>
 <tr>
@@ -236,7 +245,7 @@ Select Percy's sprite frame based on direction and animation state. Frames are a
 <td class="asm-label">UpdatePercyAnimation_SetFrame</td>
 <td class="address-2"><span id="25442"></span>25442</td>
 <td class="instruction">LD A,(IX+0)</td>
-<td class="comment-1" rowspan="2">Jump to <a href="25400.html#25463">UpdatePercyAnimation_ChooseFrame</a> if Percy's current X position (*<span class="register">IX</span>+0) is the same as his previous X position (*<span class="register">IX</span>+64).</td>
+<td class="comment-1" rowspan="3">Jump to <a href="25400.html#25463">UpdatePercyAnimation_ChooseFrame</a> if Percy's current X position (*<span class="register">IX</span>+0) is the same as his previous X position (*<span class="register">IX</span>+64).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -247,7 +256,6 @@ Select Percy's sprite frame based on direction and animation state. Frames are a
 <td class="asm-label"></td>
 <td class="address-1"><span id="25448"></span>25448</td>
 <td class="instruction">JR Z,<a href="25400.html#25463">UpdatePercyAnimation_ChooseFrame</a></td>
-<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">

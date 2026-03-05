@@ -253,7 +253,7 @@ Play the "lose a life" sound effect.
 <span id="25878"></span>
 <div class="comments">
 <div class="paragraph">
-Reset any collected worm markers in the room attribute data back to 0.
+Reset any collected worm markers in the room object data back to 0.
 </div>
 </div>
 </td>
@@ -262,7 +262,7 @@ Reset any collected worm markers in the room attribute data back to 0.
 <td class="asm-label"></td>
 <td class="address-1"><span id="25878"></span>25878</td>
 <td class="instruction">LD HL,56990</td>
-<td class="comment-1" rowspan="1">Point <span class="register">HL</span> at <a href="56990.html">RoomAttribute_Data</a>.</td>
+<td class="comment-1" rowspan="1">Point <span class="register">HL</span> at <a href="56990.html">Room_Object_Data</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -274,7 +274,7 @@ Reset any collected worm markers in the room attribute data back to 0.
 <td class="asm-label">Reset_Worm_Markers</td>
 <td class="address-2"><span id="25884"></span>25884</td>
 <td class="instruction">LD A,(HL)</td>
-<td class="comment-1" rowspan="3">Jump to <a href="25831.html#25891">Reset_Worm_Markers_Next</a> if *<span class="register">HL</span> is not equal to 30 (not a collected marker).</td>
+<td class="comment-1" rowspan="3">Jump to <a href="25831.html#25891">Reset_Worm_Markers_Next</a> if *<span class="register">HL</span> is not equal to 30 (not a collected worm marker).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>

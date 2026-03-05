@@ -215,7 +215,7 @@ Set to FF when Percy is carrying a worm, and cleared to 00 when he's not.
 <div class="map-entry-title-11"><a class="map-entry-title" href="../asm/5FAB.html">Energy Bar Delay Counter</a></div>
 <div class="map-entry-desc">
 <div class="paragraph">
-A delay so Percys energy bar doesn't deplete too quickly while he's flying.
+A delay so Percy's energy bar doesn't deplete too quickly while he's flying.
 </div>
 </div>
 </td>
@@ -332,10 +332,10 @@ A rotating bit pattern used to animate the nest chicks. Each bit controls the an
 <td class="map-g"><span id="5fb5"></span><a href="../asm/5FB5.html">5FB5</a></td>
 <td class="map-length">2</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/5FB5.html">Room Attribute Pointer</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/5FB5.html">Room Object Data Pointer</a></div>
 <div class="map-entry-desc">
 <div class="paragraph">
-Pointer to the current room's colour attribute data, calculated from the room number and the base at <a href="../asm/DE9E.html">RoomAttribute_Data</a>.
+Pointer to the current room's object data, calculated from the room number and the base at <a href="../asm/DE9E.html">Room_Object_Data</a>. Used to track the state of collectible worms and other interactive elements in the current room.
 </div>
 </div>
 </td>
@@ -359,7 +359,7 @@ Current pitch value used for sound effects (item collection, falling). Adjusted 
 <div class="map-entry-title-11"><a class="map-entry-title" href="../asm/5FB9.html">Room Drawing Position</a></div>
 <div class="map-entry-desc">
 <div class="paragraph">
-The two-byte drawing position used by <a href="../asm/5F35.html">DrawRoomTile</a> to track where the next tile should be placed.
+The two-byte drawing position used by <a href="../asm/5F35.html">Draw_Room_Tile</a> to track where the next tile should be placed.
 </div>
 <div class="paragraph">
 The low byte is the column and the high byte is the row.
@@ -404,10 +404,10 @@ Set to FF when entering a new room. Checked by hazard handlers to reset their po
 <td class="map-g"><span id="5fbe"></span><a href="../asm/5FBE.html">5FBE</a></td>
 <td class="map-length">3</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/5FBE.html">Lives Backup?</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/5FBE.html">Lives Backup</a></div>
 <div class="map-entry-desc">
 <div class="paragraph">
-Copy of <a href="../asm/5FB3.html">LivesDisplayCharacter</a> for compare/display; synced at <a href="../asm/653D.html#654c">654C</a>/<a href="../asm/69A7.html#69ec">69EC</a>.
+Copy of <a href="../asm/5FB3.html">LivesDisplayCharacter</a>. Set when lives are initialised, cleared at end of each frame. When non-zero the main game handlers run; when zero the full sprite draw runs.
 </div>
 </div>
 </td>
@@ -698,8 +698,11 @@ Crash animation timer. When non-zero, the car cycles through crash frames. Count
 <td class="map-g"><span id="7507"></span><a href="../asm/7507.html">7507</a></td>
 <td class="map-length">1</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/7507.html">Game status buffer entry at 7507</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/7507.html">Red Bird Movement Boundary</a></div>
 <div class="map-entry-desc">
+<div class="paragraph">
+Single byte used as movement boundary data; read at <a href="../asm/7439.html#746f">746F</a>.
+</div>
 </div>
 </td>
 </tr>
@@ -776,8 +779,11 @@ Walking speed for the paratrooper, indexed by room number minus one. Only rooms 
 <td class="map-g"><span id="79d1"></span><a href="../asm/79D1.html">79D1</a></td>
 <td class="map-length">1</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/79D1.html">Game status buffer entry at 79D1</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/79D1.html">Spider Direction Flag</a></div>
 <div class="map-entry-desc">
+<div class="paragraph">
+Direction flag for the spider. 00 = ascending, FF = descending.
+</div>
 </div>
 </td>
 </tr>
@@ -932,10 +938,10 @@ Per-room state data for the walking paratrooper, with four bytes per room. Index
 <td class="map-g"><span id="dac4"></span><a href="../asm/DAC4.html">DAC4</a></td>
 <td class="map-length">4</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DAC4.html">Sprite 1 Data States</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DAC4.html">3-Wide Sprite 1 Data States</a></div>
 <div class="map-entry-desc">
 <div class="paragraph">
-Used by the Red Bird.
+Used by <a href="../asm/69F7.html">the Red Bird</a>.
 </div>
 </div>
 </td>
@@ -944,10 +950,10 @@ Used by the Red Bird.
 <td class="map-g"><span id="dac8"></span><a href="../asm/DAC8.html">DAC8</a></td>
 <td class="map-length">4</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DAC8.html">Sprite 2 Data States</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DAC8.html">3-Wide Sprite 2 Data States</a></div>
 <div class="map-entry-desc">
 <div class="paragraph">
-Used by Frog 1.
+Used by <a href="../asm/7082.html">Frog 1</a>, <a href="../asm/6E5D.html">Car Type 1</a>.
 </div>
 </div>
 </td>
@@ -956,10 +962,10 @@ Used by Frog 1.
 <td class="map-g"><span id="dacc"></span><a href="../asm/DACC.html">DACC</a></td>
 <td class="map-length">4</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DACC.html">Sprite 3 Data States</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DACC.html">3-Wide Sprite 3 Data States</a></div>
 <div class="map-entry-desc">
 <div class="paragraph">
-Used by Frog 2.
+Used by <a href="../asm/7082.html">Frog 2</a>.
 </div>
 </div>
 </td>
@@ -968,10 +974,10 @@ Used by Frog 2.
 <td class="map-g"><span id="dad0"></span><a href="../asm/DAD0.html">DAD0</a></td>
 <td class="map-length">4</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DAD0.html">Sprite 4 Data States</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DAD0.html">3-Wide Sprite 4 Data States</a></div>
 <div class="map-entry-desc">
 <div class="paragraph">
-Used by Car 2.
+Used by <a href="../asm/7028.html">Car Type 3</a>, <a href="../asm/7512.html">Cat</a>.
 </div>
 </div>
 </td>
@@ -980,10 +986,10 @@ Used by Car 2.
 <td class="map-g"><span id="dad4"></span><a href="../asm/DAD4.html">DAD4</a></td>
 <td class="map-length">4</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DAD4.html">Sprite 5 Data States</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DAD4.html">3-Wide Sprite 5 Data States</a></div>
 <div class="map-entry-desc">
 <div class="paragraph">
-Used by Car 3.
+Used by <a href="../asm/6F8D.html">Car Type 2</a>, <a href="../asm/758B.html">Dog</a>, <a href="../asm/7680.html">Plane</a>.
 </div>
 </div>
 </td>
@@ -992,10 +998,10 @@ Used by Car 3.
 <td class="map-g"><span id="dad8"></span><a href="../asm/DAD8.html">DAD8</a></td>
 <td class="map-length">4</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DAD8.html">Sprite 6 Data States</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DAD8.html">3-Wide Sprite 6 Data States</a></div>
 <div class="map-entry-desc">
 <div class="paragraph">
-Used by ???
+Used by <a href="../asm/7439.html">the Red Bird</a>, <a href="../asm/79D2.html">Parachute</a>.
 </div>
 </div>
 </td>
@@ -1004,10 +1010,10 @@ Used by ???
 <td class="map-g"><span id="dadc"></span><a href="../asm/DADC.html">DADC</a></td>
 <td class="map-length">4</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DADC.html">Sprite 7 Data States</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DADC.html">3-Wide Sprite 7 Data States</a></div>
 <div class="map-entry-desc">
 <div class="paragraph">
-Used by ???
+Used by <a href="../asm/7512.html">Cat</a>, <a href="../asm/759A.html">UFO</a>, <a href="../asm/7680.html">Plane</a>.
 </div>
 </div>
 </td>
@@ -1016,16 +1022,7 @@ Used by ???
 <td class="map-g"><span id="dae0"></span><a href="../asm/DAE0.html">DAE0</a></td>
 <td class="map-length">4</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DAE0.html">Egg States?</a></div>
-<div class="map-entry-desc">
-</div>
-</td>
-</tr>
-<tr>
-<td class="map-g"><span id="dae4"></span><a href="../asm/DAE4.html">DAE4</a></td>
-<td class="map-length">4</td>
-<td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DAE4.html">Game status buffer entry at DAE4</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DAE0.html">Egg Sprite Data</a></div>
 <div class="map-entry-desc">
 </div>
 </td>
@@ -1086,22 +1083,181 @@ Used by ???
 </tr>
 <tr>
 <td class="map-g"><span id="db00"></span><a href="../asm/DB00.html">DB00</a></td>
-<td class="map-length">12</td>
+<td class="map-length">4</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DB00.html">Percy Previous X Position</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DB00.html">Backup: Percy</a></div>
 <div class="map-entry-desc">
 <div class="paragraph">
-Stores Percy's X position from the previous frame, used to detect horizontal movement for the wing flap animation.
+Backup of <a href="../asm/DAC0.html">Percy_X_Position</a>. First byte is Percy's X from previous frame (used for wing flap animation); written each frame by <a href="../asm/BB1C.html#bb91">BB91</a>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="db04"></span><a href="../asm/DB04.html">DB04</a></td>
+<td class="map-length">4</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DB04.html">Backup: 3-Wide Sprite 1</a></div>
+<div class="map-entry-desc">
+<div class="paragraph">
+Backup of <a href="../asm/DAC4.html">Sprite01_3Wide_X_Position</a>; written each frame by <a href="../asm/BB1C.html#bb91">BB91</a>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="db08"></span><a href="../asm/DB08.html">DB08</a></td>
+<td class="map-length">4</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DB08.html">Backup: 3-Wide Sprite 2</a></div>
+<div class="map-entry-desc">
+<div class="paragraph">
+Backup of <a href="../asm/DAC8.html">Sprite02_3Wide_X_Position</a>; written each frame by <a href="../asm/BB1C.html#bb91">BB91</a>.
 </div>
 </div>
 </td>
 </tr>
 <tr>
 <td class="map-g"><span id="db0c"></span><a href="../asm/DB0C.html">DB0C</a></td>
-<td class="map-length">914</td>
+<td class="map-length">4</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DB0C.html">Game status buffer entry at DB0C</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DB0C.html">Backup: 3-Wide Sprite 3</a></div>
 <div class="map-entry-desc">
+<div class="paragraph">
+Backup of <a href="../asm/DACC.html">Sprite03_3Wide_X_Position</a>; written each frame by <a href="../asm/BB1C.html#bb91">BB91</a>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="db10"></span><a href="../asm/DB10.html">DB10</a></td>
+<td class="map-length">4</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DB10.html">Backup: 3-Wide Sprite 4</a></div>
+<div class="map-entry-desc">
+<div class="paragraph">
+Backup of <a href="../asm/DAD0.html">Sprite04_3Wide_X_Position</a>; written each frame by <a href="../asm/BB1C.html#bb91">BB91</a>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="db14"></span><a href="../asm/DB14.html">DB14</a></td>
+<td class="map-length">4</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DB14.html">Backup: 3-Wide Sprite 5</a></div>
+<div class="map-entry-desc">
+<div class="paragraph">
+Backup of <a href="../asm/DAD4.html">Sprite05_3Wide_X_Position</a>; written each frame by <a href="../asm/BB1C.html#bb91">BB91</a>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="db18"></span><a href="../asm/DB18.html">DB18</a></td>
+<td class="map-length">4</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DB18.html">Backup: 3-Wide Sprite 6</a></div>
+<div class="map-entry-desc">
+<div class="paragraph">
+Backup of <a href="../asm/DAD8.html">Sprite06_3Wide_X_Position</a>; written each frame by <a href="../asm/BB1C.html#bb91">BB91</a>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="db1c"></span><a href="../asm/DB1C.html">DB1C</a></td>
+<td class="map-length">4</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DB1C.html">Backup: 3-Wide Sprite 7</a></div>
+<div class="map-entry-desc">
+<div class="paragraph">
+Backup of <a href="../asm/DADC.html">Sprite07_3Wide_X_Position</a>; written each frame by <a href="../asm/BB1C.html#bb91">BB91</a>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="db20"></span><a href="../asm/DB20.html">DB20</a></td>
+<td class="map-length">4</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DB20.html">Backup: Egg</a></div>
+<div class="map-entry-desc">
+<div class="paragraph">
+Backup of <a href="../asm/DAE0.html">Egg_X_Position</a>; written each frame by <a href="../asm/BB1C.html#bb91">BB91</a>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="db28"></span><a href="../asm/DB28.html">DB28</a></td>
+<td class="map-length">4</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DB28.html">Backup: 2-Wide Sprite 1</a></div>
+<div class="map-entry-desc">
+<div class="paragraph">
+Backup of <a href="../asm/DAE8.html">Sprite01_2Wide_X_Position</a>; written each frame by <a href="../asm/BB1C.html#bb91">BB91</a>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="db2c"></span><a href="../asm/DB2C.html">DB2C</a></td>
+<td class="map-length">4</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DB2C.html">Backup: 2-Wide Sprite 2</a></div>
+<div class="map-entry-desc">
+<div class="paragraph">
+Backup of <a href="../asm/DAEC.html">Sprite02_2Wide_X_Position</a>; written each frame by <a href="../asm/BB1C.html#bb91">BB91</a>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="db30"></span><a href="../asm/DB30.html">DB30</a></td>
+<td class="map-length">4</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DB30.html">Backup: 2-Wide Sprite 3</a></div>
+<div class="map-entry-desc">
+<div class="paragraph">
+Backup of <a href="../asm/DAF0.html">Sprite03_2Wide_X_Position</a>; written each frame by <a href="../asm/BB1C.html#bb91">BB91</a>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="db34"></span><a href="../asm/DB34.html">DB34</a></td>
+<td class="map-length">4</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DB34.html">Backup: 2-Wide Sprite 4</a></div>
+<div class="map-entry-desc">
+<div class="paragraph">
+Backup of <a href="../asm/DAF4.html">Sprite04_2Wide_X_Position</a>; written each frame by <a href="../asm/BB1C.html#bb91">BB91</a>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="db38"></span><a href="../asm/DB38.html">DB38</a></td>
+<td class="map-length">4</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DB38.html">Backup: 2-Wide Sprite 5</a></div>
+<div class="map-entry-desc">
+<div class="paragraph">
+Backup of <a href="../asm/DAF8.html">Sprite05_2Wide_X_Position</a>; written each frame by <a href="../asm/BB1C.html#bb91">BB91</a>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="db3c"></span><a href="../asm/DB3C.html">DB3C</a></td>
+<td class="map-length">4</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DB3C.html">Backup: 2-Wide Sprite 6</a></div>
+<div class="map-entry-desc">
+<div class="paragraph">
+Backup of <a href="../asm/DAFC.html">Sprite06_2Wide_X_Position</a>; written each frame by <a href="../asm/BB1C.html#bb91">BB91</a>.
+</div>
 </div>
 </td>
 </tr>
@@ -1109,8 +1265,28 @@ Stores Percy's X position from the previous frame, used to detect horizontal mov
 <td class="map-g"><span id="de9e"></span><a href="../asm/DE9E.html">DE9E</a></td>
 <td class="map-length">354</td>
 <td class="map-g-desc">
-<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DE9E.html">Room Attribute Data</a></div>
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DE9E.html">Room Object Data</a></div>
 <div class="map-entry-desc">
+<div class="paragraph">
+Buffer holding the state of interactive objects (worms, nest slots) for all rooms. Each byte can be: <table class="default">
+<tr>
+<th colspan="1" rowspan="1">Value</th>
+<th colspan="1" rowspan="1">Meaning</th>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">00</td>
+<td class="centre" colspan="1" rowspan="1">Empty / available</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">1E</td>
+<td class="centre" colspan="1" rowspan="1">Worm collected by Percy</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">1F</td>
+<td class="centre" colspan="1" rowspan="1">Worm delivered to nest</td>
+</tr>
+</table> The buffer is 0160 bytes long, pointed to per-room by <a href="../asm/5FB5.html">Room_Object_Data_Pointer</a>.
+</div>
 </div>
 </td>
 </tr>

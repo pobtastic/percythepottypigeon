@@ -29,7 +29,7 @@ Prev: <a href="31024.html">31024</a>
 </td>
 <td class="up">Up: <a href="../maps/all.html#31050">Map</a></td>
 <td class="next">
-Next: <a href="31185.html">31185</a>
+Next: <a href="31168.html">31168</a>
 </td>
 </tr>
 </table>
@@ -41,6 +41,9 @@ Next: <a href="31185.html">31185</a>
 <div class="paragraph">
 Used by the routine at <a href="29454.html">Handler_Room06</a>.
 </div>
+<div class="paragraph">
+Controls the spider hazard. The spider descends and ascends on a silk thread, bouncing between a minimum height of 67 and a maximum height of 96. The thread is drawn as a vertical line of pixels from the top of the screen down to the spider's current position. The spider randomly alternates between two animation frames and checks for collision with Percy.
+</div>
 </div>
 <table class="input">
 <tr class="asm-input-header">
@@ -48,16 +51,26 @@ Used by the routine at <a href="29454.html">Handler_Room06</a>.
 </tr>
 <tr>
 <td class="register">IX</td>
-<td class="register-desc">Pointer to the spider object state</td>
+<td class="register-desc">Pointer to the spider sprite data</td>
 </tr>
 </table>
+</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="31050"></span>
+<div class="comments">
+<div class="paragraph">
+Check for respawn and set the thread colour attributes.
+</div>
+</div>
 </td>
 </tr>
 <tr>
 <td class="asm-label">Handler_Spider</td>
 <td class="address-2"><span id="31050"></span>31050</td>
 <td class="instruction">LD A,(24507)</td>
-<td class="comment-1" rowspan="3">Call <a href="31050.html#31168">Handler_Spider_6</a> if *<a href="24507.html">RespawnFlag</a> is non-zero.</td>
+<td class="comment-1" rowspan="3">Call <a href="31168.html">Initialise_Spider</a> to initialise the spider if *<a href="24507.html">RespawnFlag</a> (respawn flag) is non-zero.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -67,25 +80,25 @@ Used by the routine at <a href="29454.html">Handler_Room06</a>.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="31054"></span>31054</td>
-<td class="instruction">CALL NZ,<a href="31050.html#31168">Handler_Spider_6</a></td>
+<td class="instruction">CALL NZ,<a href="31168.html">Initialise_Spider</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="31057"></span>31057</td>
 <td class="instruction">LD HL,55562</td>
-<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="49152.html#55296">55562</a>.</td>
+<td class="comment-1" rowspan="1">Point <span class="register">HL</span> at <a href="49152.html#55296">RoomAttributeBuffer</a> (attribute buffer row).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="31060"></span>31060</td>
 <td class="instruction">LD BC,32</td>
-<td class="comment-1" rowspan="1"><span class="register">BC</span>=32 (one attribute row width).</td>
+<td class="comment-1" rowspan="1">Set <span class="register">BC</span> to 32 (one attribute row width).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="31063"></span>31063</td>
 <td class="instruction">LD A,104</td>
-<td class="comment-1" rowspan="2">Write 104 to the first row.</td>
+<td class="comment-1" rowspan="6">Write INK:BLACK, PAPER:CYAN (BRIGHT) (104) to three consecutive attribute rows for the thread area.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -96,7 +109,6 @@ Used by the routine at <a href="29454.html">Handler_Room06</a>.
 <td class="asm-label"></td>
 <td class="address-1"><span id="31066"></span>31066</td>
 <td class="instruction">ADD HL,BC</td>
-<td class="comment-1" rowspan="2">Write <span class="register">A</span> to the second row.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -107,7 +119,6 @@ Used by the routine at <a href="29454.html">Handler_Room06</a>.
 <td class="asm-label"></td>
 <td class="address-1"><span id="31068"></span>31068</td>
 <td class="instruction">ADD HL,BC</td>
-<td class="comment-1" rowspan="2">Write <span class="register">A</span> to the third row.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -115,34 +126,43 @@ Used by the routine at <a href="29454.html">Handler_Room06</a>.
 <td class="instruction">LD (HL),A</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="31070"></span>
+<div class="comments">
+<div class="paragraph">
+Draw the spider's silk thread from the top of the screen down to the spider's current position.
+</div>
+</div>
+</td>
+</tr>
+<tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="31070"></span>31070</td>
 <td class="instruction">LD HL,18442</td>
-<td class="comment-1" rowspan="1"><span class="register">HL</span>=18442 (screen buffer address).</td>
+<td class="comment-1" rowspan="1">Point <span class="register">HL</span> at 18442 (screen buffer address for top of thread).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="31073"></span>31073</td>
 <td class="instruction">LD D,H</td>
-<td class="comment-1" rowspan="1"><span class="register">D</span>=<span class="register">H</span> (save the screen third base).</td>
+<td class="comment-1" rowspan="1">Save the screen third base in <span class="register">D</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="31074"></span>31074</td>
 <td class="instruction">LD C,63</td>
-<td class="comment-1" rowspan="1"><span class="register">C</span>=63 (base Y position of the thread).</td>
+<td class="comment-1" rowspan="1">Set <span class="register">C</span> to 63 (base Y position of the thread).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="31076"></span>31076</td>
 <td class="instruction">LD B,(IX+1)</td>
-<td class="comment-1" rowspan="1"><span class="register">B</span>=*<span class="register">IX</span>+1 (current height).</td>
+<td class="comment-1" rowspan="3">Calculate the number of pixel rows to draw by subtracting the spider's current height from the base Y position.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="31079"></span>31079</td>
 <td class="instruction">LD A,B</td>
-<td class="comment-1" rowspan="2">Subtract the base position to get the number of rows to draw.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -153,301 +173,309 @@ Used by the routine at <a href="29454.html">Handler_Room06</a>.
 <td class="asm-label"></td>
 <td class="address-1"><span id="31081"></span>31081</td>
 <td class="instruction">LD B,A</td>
-<td class="comment-1" rowspan="1"><span class="register">B</span>=<span class="register">A</span>.</td>
+<td class="comment-1" rowspan="1">Set the row counter in <span class="register">B</span>.</td>
 </tr>
 <tr>
-<td class="asm-label">Handler_Spider_0</td>
+<td class="asm-label">Draw_Thread_Loop</td>
 <td class="address-2"><span id="31082"></span>31082</td>
 <td class="instruction">SET 7,(HL)</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Set bit 7 of *<span class="register">HL</span> to draw one pixel of the thread.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="31084"></span>31084</td>
 <td class="instruction">PUSH HL</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Stash the screen buffer pointer on the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="31085"></span>31085</td>
 <td class="instruction">SET 7,H</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Set bits 7 and 5 of <span class="register">H</span> to convert to the attribute buffer address.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="31087"></span>31087</td>
 <td class="instruction">SET 5,H</td>
-<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="31089"></span>31089</td>
 <td class="instruction">SET 7,(HL)</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Set bit 7 of *<span class="register">HL</span> to mark the thread attribute.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="31091"></span>31091</td>
 <td class="instruction">POP HL</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Restore the screen buffer pointer from the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="31092"></span>31092</td>
 <td class="instruction">INC H</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Advance down one pixel row.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="31093"></span>31093</td>
 <td class="instruction">LD A,H</td>
-<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="31094"></span>31094</td>
-<td class="instruction">AND 7</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="instruction">AND %00000111</td>
+<td class="comment-1" rowspan="2">Jump to <a href="31050.html#31103">Draw_Thread_Next</a> if the pixel row hasn't crossed a character cell boundary.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="31096"></span>31096</td>
-<td class="instruction">JR NZ,<a href="31050.html#31103">Handler_Spider_1</a></td>
-<td class="comment-1" rowspan="1"></td>
+<td class="instruction">JR NZ,<a href="31050.html#31103">Draw_Thread_Next</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="31098"></span>31098</td>
 <td class="instruction">LD A,L</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Add 32 to <span class="register">L</span> to move to the next character row.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="31099"></span>31099</td>
 <td class="instruction">ADD A,32</td>
-<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="31101"></span>31101</td>
 <td class="instruction">LD L,A</td>
-<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="31102"></span>31102</td>
 <td class="instruction">LD H,D</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Restore <span class="register">H</span> from <span class="register">D</span> to reset the screen third base for the new character row.</td>
 </tr>
 <tr>
-<td class="asm-label">Handler_Spider_1</td>
+<td class="asm-label">Draw_Thread_Next</td>
 <td class="address-2"><span id="31103"></span>31103</td>
-<td class="instruction">DJNZ <a href="31050.html#31082">Handler_Spider_0</a></td>
-<td class="comment-1" rowspan="1"></td>
+<td class="instruction">DJNZ <a href="31050.html#31082">Draw_Thread_Loop</a></td>
+<td class="comment-1" rowspan="1">Decrease the row counter and loop back to <a href="31050.html#31082">Draw_Thread_Loop</a> until the thread is fully drawn.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="31105"></span>
+<div class="comments">
+<div class="paragraph">
+Update the spider's vertical position based on its current direction.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="31105"></span>31105</td>
 <td class="instruction">LD A,(31185)</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="3">Jump to <a href="31050.html#31124">Spider_Descending</a> if *<a href="31185.html">Spider_Direction_Flag</a> (direction flag) is non-zero (spider is descending).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="31108"></span>31108</td>
 <td class="instruction">OR A</td>
-<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="31109"></span>31109</td>
-<td class="instruction">JR NZ,<a href="31050.html#31124">Handler_Spider_2</a></td>
-<td class="comment-1" rowspan="1"></td>
+<td class="instruction">JR NZ,<a href="31050.html#31124">Spider_Descending</a></td>
 </tr>
 <tr>
-<td class="asm-label"></td>
+<td class="routine-comment" colspan="5">
+<span id="31111"></span>
+<div class="comments">
+<div class="paragraph">
+Spider is ascending: increase height until reaching the maximum.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Spider_Ascending</td>
 <td class="address-1"><span id="31111"></span>31111</td>
 <td class="instruction">LD A,(IX+1)</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Fetch the spider's current height from *<span class="register">IX</span>+1.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="31114"></span>31114</td>
 <td class="instruction">INC A</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Increment the height.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="31115"></span>31115</td>
 <td class="instruction">CP 96</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Jump to <a href="31050.html#31137">Spider_Switch_To_Descending</a> if it has reached 96 (the maximum height, switch to descending).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="31117"></span>31117</td>
-<td class="instruction">JR NC,<a href="31050.html#31137">Handler_Spider_3</a></td>
-<td class="comment-1" rowspan="1"></td>
+<td class="instruction">JR NC,<a href="31050.html#31137">Spider_Switch_To_Descending</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="31119"></span>31119</td>
 <td class="instruction">LD (IX+1),A</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write the new height to *<span class="register">IX</span>+1.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="31122"></span>31122</td>
-<td class="instruction">JR <a href="31050.html#31148">Handler_Spider_5</a></td>
-<td class="comment-1" rowspan="1"></td>
+<td class="instruction">JR <a href="31050.html#31148">Set_Spider_Frame</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="31050.html#31148">Set_Spider_Frame</a>.</td>
 </tr>
 <tr>
-<td class="asm-label">Handler_Spider_2</td>
+<td class="routine-comment" colspan="5">
+<span id="31124"></span>
+<div class="comments">
+<div class="paragraph">
+Spider is descending: decrease height until reaching the minimum.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Spider_Descending</td>
 <td class="address-2"><span id="31124"></span>31124</td>
 <td class="instruction">LD A,(IX+1)</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Fetch the spider's current height from *<span class="register">IX</span>+1.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="31127"></span>31127</td>
 <td class="instruction">DEC A</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Decrement the height.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="31128"></span>31128</td>
 <td class="instruction">CP 67</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Jump to <a href="31050.html#31144">Spider_Switch_To_Ascending</a> if it has dropped below 67 (minimum height, switch to ascending).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="31130"></span>31130</td>
-<td class="instruction">JR C,<a href="31050.html#31144">Handler_Spider_4</a></td>
-<td class="comment-1" rowspan="1"></td>
+<td class="instruction">JR C,<a href="31050.html#31144">Spider_Switch_To_Ascending</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="31132"></span>31132</td>
 <td class="instruction">LD (IX+1),A</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write the new height to *<span class="register">IX</span>+1.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="31135"></span>31135</td>
-<td class="instruction">JR <a href="31050.html#31148">Handler_Spider_5</a></td>
-<td class="comment-1" rowspan="1"></td>
+<td class="instruction">JR <a href="31050.html#31148">Set_Spider_Frame</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="31050.html#31148">Set_Spider_Frame</a>.</td>
 </tr>
 <tr>
-<td class="asm-label">Handler_Spider_3</td>
+<td class="asm-label">Spider_Switch_To_Descending</td>
 <td class="address-2"><span id="31137"></span>31137</td>
 <td class="instruction">LD A,255</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Write 255 to *<a href="31185.html">Spider_Direction_Flag</a> (set direction to descending).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="31139"></span>31139</td>
 <td class="instruction">LD (31185),A</td>
-<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="31142"></span>31142</td>
-<td class="instruction">JR <a href="31050.html#31148">Handler_Spider_5</a></td>
-<td class="comment-1" rowspan="1"></td>
+<td class="instruction">JR <a href="31050.html#31148">Set_Spider_Frame</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="31050.html#31148">Set_Spider_Frame</a>.</td>
 </tr>
 <tr>
-<td class="asm-label">Handler_Spider_4</td>
+<td class="asm-label">Spider_Switch_To_Ascending</td>
 <td class="address-2"><span id="31144"></span>31144</td>
 <td class="instruction">XOR A</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Write 0 to *<a href="31185.html">Spider_Direction_Flag</a> (set direction to ascending).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="31145"></span>31145</td>
 <td class="instruction">LD (31185),A</td>
-<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
-<td class="asm-label">Handler_Spider_5</td>
+<td class="routine-comment" colspan="5">
+<span id="31148"></span>
+<div class="comments">
+<div class="paragraph">
+Pick a random spider animation frame and check for collision with Percy.
+</div>
+<div class="paragraph">
+<table class="default">
+<tr>
+<th colspan="1" rowspan="1">Sprite ID</th>
+<th colspan="1" rowspan="1">Sprite</th>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">95</td>
+<td class="centre" colspan="1" rowspan="1"><img alt="udg46843-56x4" src="../../images/udgs/udg46843-56x4.png" /></td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">96</td>
+<td class="centre" colspan="1" rowspan="1"><img alt="udg46875-56x4" src="../../images/udgs/udg46875-56x4.png" /></td>
+</tr>
+</table>
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Set_Spider_Frame</td>
 <td class="address-2"><span id="31148"></span>31148</td>
 <td class="instruction">LD A,R</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="2">Use the Memory Refresh Register masked with 1 to randomly select frame 95 or 96.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="31150"></span>31150</td>
-<td class="instruction">AND 1</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="instruction">AND %00000001</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="31152"></span>31152</td>
 <td class="instruction">ADD A,95</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Add 95 to get the final frame ID.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="31154"></span>31154</td>
 <td class="instruction">LD (IX+3),A</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Write the frame to *<span class="register">IX</span>+3.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="31157"></span>31157</td>
 <td class="instruction">LD IY,56000</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Point <span class="register">IY</span> at <a href="56000.html">Percy_X_Position</a> (Percy sprite data).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="31161"></span>31161</td>
 <td class="instruction">CALL <a href="27731.html">CheckSpriteCollision</a></td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Call <a href="27731.html">CheckSpriteCollision</a> to check for collision with Percy.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="31164"></span>31164</td>
 <td class="instruction">RET C</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Return if there was no collision (carry set).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="31165"></span>31165</td>
 <td class="instruction">JP <a href="29910.html#29923">Hazard_Hit_Percy</a></td>
-<td class="comment-1" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label">Handler_Spider_6</td>
-<td class="address-2"><span id="31168"></span>31168</td>
-<td class="instruction">LD (IX+1),70</td>
-<td class="comment-1" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="31172"></span>31172</td>
-<td class="instruction">LD (IX+0),72</td>
-<td class="comment-1" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="31176"></span>31176</td>
-<td class="instruction">LD (IX+2),0</td>
-<td class="comment-1" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="31180"></span>31180</td>
-<td class="instruction">XOR A</td>
-<td class="comment-1" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="31181"></span>31181</td>
-<td class="instruction">LD (31185),A</td>
-<td class="comment-1" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="31184"></span>31184</td>
-<td class="instruction">RET</td>
-<td class="comment-1" rowspan="1">Return.</td>
+<td class="comment-1" rowspan="1">Jump to <a href="29910.html#29923">Hazard_Hit_Percy</a>.</td>
 </tr>
 </table>
 <table class="asm-navigation">
@@ -457,7 +485,7 @@ Prev: <a href="31024.html">31024</a>
 </td>
 <td class="up">Up: <a href="../maps/all.html#31050">Map</a></td>
 <td class="next">
-Next: <a href="31185.html">31185</a>
+Next: <a href="31168.html">31168</a>
 </td>
 </tr>
 </table>

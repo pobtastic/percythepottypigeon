@@ -45,6 +45,15 @@ Used by the routines at <a href="723F.html">Handler_Room01</a>, <a href="7265.ht
 Controls the red bird hazard movement and animation. Generates random direction changes and movement delays, moves the bird according to its current direction, and updates the animation frame. Used by all room handlers.
 </div>
 </div>
+<table class="input">
+<tr class="asm-input-header">
+<th colspan="2">Input</th>
+</tr>
+<tr>
+<td class="register">IX</td>
+<td class="register-desc">Pointer to red bird sprite data</td>
+</tr>
+</table>
 </td>
 </tr>
 <tr>
@@ -236,7 +245,7 @@ Move the red bird in its current direction.
 <td class="asm-label"></td>
 <td class="address-1"><span id="746f"></span>746F</td>
 <td class="instruction">LD HL,$7507</td>
-<td class="comment-1" rowspan="1">Point <span class="register">HL</span> at <a href="7507.html">7507</a> (movement boundary data).</td>
+<td class="comment-1" rowspan="1">Point <span class="register">HL</span> at <a href="7507.html">RedBird_MovementBoundary</a> (movement boundary data).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>

@@ -45,6 +45,15 @@ Used by the routines at <a href="7439.html">Handle_Red_Bird</a>, <a href="74A7.h
 Generates a pseudo-random number using a linear decay formula. Reads the current seed from <a href="7AC7.html">RandomSeed</a>, computes (seed + 01) * FE then derives the new seed from the difference of the low and high bytes of the result. Returns the new value in <span class="register">A</span>.
 </div>
 </div>
+<table class="output">
+<tr class="asm-output-header">
+<th colspan="2">Output</th>
+</tr>
+<tr>
+<td class="register">A</td>
+<td class="register-desc">Pseudo-random value</td>
+</tr>
+</table>
 </td>
 </tr>
 <tr>

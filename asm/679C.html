@@ -45,7 +45,7 @@ Used by the routines at <a href="5FE9.html">MainGameLoop</a>, <a href="66E1.html
 Drops the worm Percy is carrying.
 </div>
 <div class="paragraph">
-The worm will reappear when the room is next redrawn.
+Scans the room data for the collected worm marker (1E) and clears it back to 00 so the worm will reappear when the room is next redrawn.
 </div>
 </div>
 </td>
@@ -54,25 +54,24 @@ The worm will reappear when the room is next redrawn.
 <td class="asm-label">DropWorm</td>
 <td class="address-2"><span id="679c"></span>679C</td>
 <td class="instruction">LD BC,$0160</td>
-<td class="comment-1" rowspan="1"><span class="register">BC</span>=0160 (number of attribute cells to search).</td>
+<td class="comment-1" rowspan="1">Set the search counter to 0160 in <span class="register">BC</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="679f"></span>679F</td>
 <td class="instruction">LD HL,$DE9E</td>
-<td class="comment-1" rowspan="1"><span class="register">HL</span>=<a href="DE9E.html">RoomAttribute_Data</a>.</td>
+<td class="comment-1" rowspan="1">Point <span class="register">HL</span> at <a href="DE9E.html">Room_Object_Data</a>.</td>
 </tr>
 <tr>
 <td class="asm-label">DropWorm_SearchLoop</td>
 <td class="address-2"><span id="67a2"></span>67A2</td>
 <td class="instruction">LD A,$1E</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=1E (worm attribute value).</td>
+<td class="comment-1" rowspan="3">Jump to <a href="679C.html#67ae">DropWorm_Found</a> if *<span class="register">HL</span> equals 1E (found the collected worm marker).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="67a4"></span>67A4</td>
 <td class="instruction">CP (HL)</td>
-<td class="comment-1" rowspan="2">Jump to <a href="679C.html#67ae">DropWorm_Found</a> if *<span class="register">HL</span> matches.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -83,19 +82,18 @@ The worm will reappear when the room is next redrawn.
 <td class="asm-label"></td>
 <td class="address-1"><span id="67a7"></span>67A7</td>
 <td class="instruction">INC HL</td>
-<td class="comment-1" rowspan="1">Advance to the next attribute cell.</td>
+<td class="comment-1" rowspan="1">Advance to the next byte.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="67a8"></span>67A8</td>
 <td class="instruction">DEC BC</td>
-<td class="comment-1" rowspan="1">Decrease the search counter.</td>
+<td class="comment-1" rowspan="4">Decrement <span class="register">BC</span> and loop back to <a href="679C.html#67a2">DropWorm_SearchLoop</a> until all 0160 bytes are searched.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="67a9"></span>67A9</td>
 <td class="instruction">LD A,C</td>
-<td class="comment-1" rowspan="3">Jump to <a href="679C.html#67a2">DropWorm_SearchLoop</a> if there are more cells to search.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -111,13 +109,13 @@ The worm will reappear when the room is next redrawn.
 <td class="asm-label"></td>
 <td class="address-1"><span id="67ad"></span>67AD</td>
 <td class="instruction">RET</td>
-<td class="comment-1" rowspan="1">Return (no worm found).</td>
+<td class="comment-1" rowspan="1">Return (no collected worm marker found).</td>
 </tr>
 <tr>
 <td class="asm-label">DropWorm_Found</td>
 <td class="address-2"><span id="67ae"></span>67AE</td>
 <td class="instruction">LD (HL),$00</td>
-<td class="comment-1" rowspan="1">Write 00 to *<span class="register">HL</span> to remove the worm.</td>
+<td class="comment-1" rowspan="1">Write 00 to *<span class="register">HL</span> to clear the collected marker.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>

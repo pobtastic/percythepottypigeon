@@ -25,7 +25,7 @@ gtag('config', 'G-75RERFCHBG');
 <table class="asm-navigation">
 <tr>
 <td class="prev">
-Prev: <a href="56076.html">56076</a>
+Prev: <a href="56128.html">56128</a>
 </td>
 <td class="up">Up: <a href="../maps/all.html#56990">Map</a></td>
 <td class="next">
@@ -33,16 +33,36 @@ Next: <a href="57344.html">57344</a>
 </td>
 </tr>
 </table>
-<div class="description">56990: Room Attribute Data</div>
+<div class="description">56990: Room Object Data</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
 <div class="details">
+<div class="paragraph">
+Buffer holding the state of interactive objects (worms, nest slots) for all rooms. Each byte can be: <table class="default">
+<tr>
+<th colspan="1" rowspan="1">Value</th>
+<th colspan="1" rowspan="1">Meaning</th>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">0</td>
+<td class="centre" colspan="1" rowspan="1">Empty / available</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">30</td>
+<td class="centre" colspan="1" rowspan="1">Worm collected by Percy</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">31</td>
+<td class="centre" colspan="1" rowspan="1">Worm delivered to nest</td>
+</tr>
+</table> The buffer is 352 bytes long, pointed to per-room by <a href="24501.html">Room_Object_Data_Pointer</a>.
+</div>
 </div>
 </td>
 </tr>
 <tr>
-<td class="asm-label">RoomAttribute_Data</td>
+<td class="asm-label">Room_Object_Data</td>
 <td class="address-1"><span id="56990"></span>56990</td>
 <td class="instruction">DEFB 0,0,9,130,0,0,3,101,0,0,4,172,0,0,1,46,0,0,9,15,0,0,9,117,0,0,9,27,0,0,1,156</td>
 <td class="comment-0" rowspan="1"></td>
@@ -117,7 +137,7 @@ Next: <a href="57344.html">57344</a>
 <table class="asm-navigation">
 <tr>
 <td class="prev">
-Prev: <a href="56076.html">56076</a>
+Prev: <a href="56128.html">56128</a>
 </td>
 <td class="up">Up: <a href="../maps/all.html#56990">Map</a></td>
 <td class="next">

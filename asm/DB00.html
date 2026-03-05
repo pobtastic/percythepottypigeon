@@ -29,37 +29,25 @@ Prev: <a href="DAFC.html">DAFC</a>
 </td>
 <td class="up">Up: <a href="../maps/all.html#db00">Map</a></td>
 <td class="next">
-Next: <a href="DB0C.html">DB0C</a>
+Next: <a href="DB04.html">DB04</a>
 </td>
 </tr>
 </table>
-<div class="description">DB00: Percy Previous X Position</div>
+<div class="description">DB00: Backup: Percy</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
 <div class="details">
 <div class="paragraph">
-Stores Percy's X position from the previous frame, used to detect horizontal movement for the wing flap animation.
+Backup of <a href="DAC0.html">Percy_X_Position</a>. First byte is Percy's X from previous frame (used for wing flap animation); written each frame by <a href="BB1C.html#bb91">BB91</a>.
 </div>
 </div>
 </td>
 </tr>
 <tr>
-<td class="asm-label">PercyPreviousXPosition</td>
+<td class="asm-label">Backup_Percy</td>
 <td class="address-1"><span id="db00"></span>DB00</td>
-<td class="instruction">DEFB $00</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="db01"></span>DB01</td>
-<td class="instruction">DEFB $00,$00,$00,$00,$00,$00,$00,$00</td>
-<td class="comment-0" rowspan="1"></td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="db09"></span>DB09</td>
-<td class="instruction">DEFB $00,$00,$00</td>
+<td class="instruction">DEFB $00,$00,$00,$00</td>
 <td class="comment-0" rowspan="1"></td>
 </tr>
 </table>
@@ -70,7 +58,7 @@ Prev: <a href="DAFC.html">DAFC</a>
 </td>
 <td class="up">Up: <a href="../maps/all.html#db00">Map</a></td>
 <td class="next">
-Next: <a href="DB0C.html">DB0C</a>
+Next: <a href="DB04.html">DB04</a>
 </td>
 </tr>
 </table>

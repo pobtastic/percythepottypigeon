@@ -45,6 +45,15 @@ Used by the routine at <a href="662B.html">Handler_Worms</a>.
 After scanning all entries, check if Percy is carrying a worm and handle the worm-in-beak sprite positioning.
 </div>
 </div>
+<table class="input">
+<tr class="asm-input-header">
+<th colspan="2">Input</th>
+</tr>
+<tr>
+<td class="register">IX</td>
+<td class="register-desc">Pointer to Percy's state data (and worm sprite at +20)</td>
+</tr>
+</table>
 </td>
 </tr>
 <tr>
@@ -152,7 +161,7 @@ After scanning all entries, check if Percy is carrying a worm and handle the wor
 <td class="asm-label">Position_Worm_In_Beak_0</td>
 <td class="address-2"><span id="670a"></span>670A</td>
 <td class="instruction">LD A,$FB</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=FB.</td>
 </tr>
 <tr>
 <td class="asm-label">Position_Worm_In_Beak_1</td>
@@ -358,7 +367,7 @@ Check if Percy is at the nest to deliver the worm to the baby chicks (only on le
 <span id="6758"></span>
 <div class="comments">
 <div class="paragraph">
-Scan the room attribute data for a collected worm marker to convert into a nest delivery.
+Scan the room object data for a collected worm marker to convert into a nest delivery.
 </div>
 </div>
 </td>
@@ -373,7 +382,7 @@ Scan the room attribute data for a collected worm marker to convert into a nest 
 <td class="asm-label"></td>
 <td class="address-1"><span id="675b"></span>675B</td>
 <td class="instruction">LD HL,$DE9E</td>
-<td class="comment-1" rowspan="1">Point <span class="register">HL</span> at <a href="DE9E.html">RoomAttribute_Data</a>.</td>
+<td class="comment-1" rowspan="1">Point <span class="register">HL</span> at <a href="DE9E.html">Room_Object_Data</a>.</td>
 </tr>
 <tr>
 <td class="asm-label">Search_Nest_Slot_Loop</td>
@@ -454,7 +463,7 @@ Scan the room attribute data for a collected worm marker to convert into a nest 
 <td class="asm-label"></td>
 <td class="address-1"><span id="6773"></span>6773</td>
 <td class="instruction">LD A,$C8</td>
-<td class="comment-1" rowspan="2">Call <a href="69F7.html#6a86">6A86</a> with <span class="register">A</span>=C8 to add C8 to the score.</td>
+<td class="comment-1" rowspan="2">Call <a href="67B2.html">AddToScore</a> to add C8 to the score.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
