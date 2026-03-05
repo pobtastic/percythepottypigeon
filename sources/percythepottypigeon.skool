@@ -6889,17 +6889,16 @@ u$7B44 DEFB $00,$00,$00,$00,$00,$00,$00,$00
  $839C DEFB $E0,$10,$40,$00,$94,$88,$94,$A4
  $83A4 DEFB $00,$03,$09,$4A,$10
 
-; Room #N$00
-;
-; #ROOM$00
-@label=Room00
-b$83A9 DEFB $01
-
 ; Room #N$01
 ;
 ; #ROOM$01
+;
+; .
+;
+; Command #N$01: Skip tiles.
 @label=Room01
-b$83AA DEFB $71      ; Tile ID: #R$9EF2(#N$71).
+b$83A9 DEFB $01      ; Command (#N$01).
+ $83AA DEFB $71      ; Skip count: #N(#PEEK(#PC)).
  $83AB DEFB $0B      ; Tile ID: #R$9BC2(#N$0B).
  $83AC DEFB $0C      ; Tile ID: #R$9BCA(#N$0C).
  $83AD DEFB $0D      ; Tile ID: #R$9BD2(#N$0D).
@@ -12534,7 +12533,7 @@ b$945A DEFB $01      ; Command (#N$01).
  $95A3 DEFB $24      ; End of attribute overlay.
  $95A4 DEFB $00      ; Terminator.
 
-; Room #N$0C: Title Screen.
+; Room #N$0C: Title Screen
 ;
 ; #ROOM$0C
 ;

@@ -4783,15 +4783,12 @@ L $7B2E,$02,$0B
 
 u $7B44
 
-b $83A9 Room #N$00
-@ $83A9 label=Room00
-D $83A9 #ROOM$00
-  $83A9,$01
-
-b $83AA Room #N$01
-@ $83AA label=Room01
-D $83AA #ROOM$01
-  $83AA,$01 Tile ID: #R$9EF2(#N$71).
+b $83A9 Room #N$01
+@ $83A9 label=Room01
+D $83A9 #ROOM$01
+N $83A9 Command #N$01: Skip tiles.
+  $83A9,$01 Command (#N$01).
+  $83AA,$01 Skip count: #N(#PEEK(#PC)).
   $83AB,$01 Tile ID: #R$9BC2(#N$0B).
   $83AC,$01 Tile ID: #R$9BCA(#N$0C).
   $83AD,$01 Tile ID: #R$9BD2(#N$0D).
@@ -10386,7 +10383,7 @@ N $95A0 Attribute overlay: repeat colour.
   $95A3,$01 End of attribute overlay.
   $95A4,$01 Terminator.
 
-b $95A5 Room #N$0C: Title Screen.
+b $95A5 Room #N$0C: Title Screen
 @ $95A5 label=Room12_TitleScreen
 D $95A5 #ROOM$0C
 N $95A5 Command #N$01: Skip tiles.

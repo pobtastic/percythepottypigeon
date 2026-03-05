@@ -23,14 +23,14 @@ PERCY_HOME = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BUILD_DIR = '{}/sources'.format(PERCY_HOME)
 PERCY_Z80 = '{}/PercythePottyPigeon.z80'.format(PERCY_HOME)
 
-ROOM_DATA_START = 0x83AA
-ROOM_0_ADDR = 0x83A9
-MAX_ROOMS = 16
+# Room 1 (and room 0 in game logic) both use data starting at $83A9; FindRoomData
+# returns immediately for room 1, so the first block is at $83A9. No separate room 0 block.
+ROOM_DATA_START = 0x83A9
+MAX_ROOMS = 16  # Rooms 1..16 (room 0 uses same data as room 1, not a separate block)
 DEFAULT_TILE_SET_BASE = 0x9BAA
 BYTES_PER_TILE = 8
 
 ROOM_TITLES = {
-    0: 'Room #N$00',
     1: 'Room #N$01',
     2: 'Room #N$02',
     3: 'Room #N$03',
@@ -145,13 +145,6 @@ class Percy:
 
     def get_room_data(self):
         lines = []
-
-        # Room 0: single byte at $83A9
-        lines.append('b ${:04X} {}'.format(ROOM_0_ADDR, ROOM_TITLES[0]))
-        lines.append('@ ${:04X} label={}'.format(ROOM_0_ADDR, _label(0)))
-        lines.append('D ${:04X} #ROOM$00'.format(ROOM_0_ADDR))
-        lines.append('  ${:04X},$01'.format(ROOM_0_ADDR))
-        lines.append('')
 
         block_start = ROOM_DATA_START
         for room_id in range(1, MAX_ROOMS + 1):
