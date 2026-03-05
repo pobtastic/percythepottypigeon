@@ -115,7 +115,7 @@ N $5E52 The main room data parsing loop. Reads a command byte from the room
   $5E61,$04 Jump to #R$5EDB if the room data byte is #N$03.
   $5E65,$04 Jump to #R$5E72 if the room data byte is #N$04.
   $5E69,$04 Jump to #R$5EC8 if the room data byte is #N$08 or higher.
-N $5E6D If none of the above matched, trigger an error (with an arbitary error
+N $5E6D If none of the above matched, trigger an error (with an arbitrary error
 . code).
 @ $5E6D label=PopulateRoomBuffer_Error
   $5E6D,$01 #HTML(Run the ERROR_1 routine:
@@ -289,88 +289,88 @@ N $5F21 Attribute overlay command #N$1B: repeat a colour value a number of
   $5F33,$02 Jump to #R$5EF6.
 
 c $5F35 Draw Room Tile
-@ $5F35 label=DrawRoomTile
-D $5F35 Draws a single tile to the room buffer at the current drawing
-. position stored in *#R$5FB9. The position is advanced after each call. If
-. #REGd bit 0 is set, the position is advanced but no tile is drawn (used for
-. blank/ skip tiles in command #N$01).
+@ $5F35 label=Draw_Room_Tile
+D $5F35 Draws a single tile to the room buffer at the current drawing position
+. stored in *#R$5FB9. The position is advanced after each call. If bit 0 of
+. #REGd is set, the position is advanced but no tile is drawn (used for skip
+. tiles in command #N$01).
 R $5F35 A Tile character to draw
 R $5F35 D Bit 0: #N$01=advance position only, #N$00=draw and advance
 N $5F35 Load and advance the current column/row drawing position.
-  $5F35,$04 #REGbc=*#R$5FB9.
+  $5F35,$04 Load the current drawing position from *#R$5FB9 into #REGbc.
   $5F39,$01 Increment the column in #REGc.
   $5F3A,$01 Stash the tile character in shadow #REGaf.
-N $5F3B If the column has reached #N$20 (past the right edge), wrap to the next
-. row.
-  $5F3B,$04 Jump to #R$5F41 if bit 5 of #REGc is set.
+N $5F3B If the column has reached #N$20 (past the right edge), wrap to the
+. start of the next row.
+  $5F3B,$04 Jump to #R$5F41 if bit 5 of #REGc is set (column has wrapped).
   $5F3F,$02 Jump to #R$5F44.
-@ $5F41 label=DrawRoomTile_NextRow
+@ $5F41 label=Draw_Room_Tile_Next_Row
   $5F41,$01 Increment the row in #REGb.
   $5F42,$02 Reset the column to #N$00.
-@ $5F44 label=DrawRoomTile_StorePosition
-  $5F44,$04 Write #REGbc to *#R$5FB9.
+@ $5F44 label=Draw_Room_Tile_Store_Position
+  $5F44,$04 Write the updated drawing position back to *#R$5FB9.
   $5F48,$03 Return if this is a position-advance-only call (bit 0 of #REGd is
 . set).
 N $5F4B Calculate the room buffer address from the column (#REGc) and row
-. (#REGb) drawing position. This converts the character cell co-ordinates into
-. a pixel address within the room buffer at #R$C000.
-  $5F4B,$01 #REGl=#REGc.
-  $5F4C,$01 #REGa=#REGb.
+. (#REGb). Converts the character cell coordinates into a pixel address within
+. the room buffer at #R$C000.
+  $5F4B,$01 Copy the column to #REGl.
+M $5F4C,$03 Mask #REGb to get the row within the current screen third.
   $5F4D,$02,b$01 Keep only bits 0-2.
-  $5F4F,$03 Rotate right three positions to move bits 0-2 into bits 5-7.
+  $5F4F,$03 Rotate right three positions to move into bits 5-7.
   $5F52,$01 Merge in the column bits from #REGl.
-  $5F53,$01 #REGl=#REGa.
-  $5F54,$01 #REGa=#REGb.
+  $5F53,$01 Store the combined low byte in #REGl.
+M $5F54,$03 Mask #REGb to get the screen third index.
   $5F55,$02,b$01 Keep only bits 3-4.
   $5F57,$02,b$01 Set bits 6-7 for the room buffer base at #R$C000.
-  $5F59,$01 #REGh=#REGa.
+  $5F59,$01 Store the high byte in #REGh.
 N $5F5A Look up the tile graphic data from the active tile set and copy all
 . #N$08 pixel rows to the room buffer.
   $5F5A,$01 Stash the room buffer address on the stack.
-  $5F5B,$04 #REGde=*#R$5FC1 (active tile set base address).
+  $5F5B,$04 Load the active tile set base address from *#R$5FC1 into #REGde.
   $5F5F,$01 Retrieve the tile character from shadow #REGaf.
-  $5F60,$02 #REGa-=#N$08.
+  $5F60,$02 Subtract #N$08 to convert from the tile character to a zero-based
+. tile index.
   $5F62,$03 Transfer the tile index to #REGhl.
-  $5F65,$03 Multiply by #N$08 (bytes per tile).
-  $5F68,$01 Add the tile set base address.
-  $5F69,$01 Exchange so #REGde=tile graphic data.
+  $5F65,$03 Multiply by #N$08 (bytes per tile graphic).
+  $5F68,$01 Add the tile set base address to get the graphic data pointer.
+  $5F69,$01 Exchange so #REGde points to the tile graphic data.
   $5F6A,$01 Restore the room buffer address from the stack.
-  $5F6B,$02 Set a line counter in #REGb of #N$08.
-@ $5F6D label=DrawRoomTile_CopyLoop
-  $5F6D,$02 Copy the tile graphic data byte to the room buffer.
+  $5F6B,$02 Set the pixel row counter to #N$08 in #REGb.
+@ $5F6D label=Draw_Room_Tile_Copy_Loop
+  $5F6D,$02 Copy one byte of tile graphic data to the room buffer.
   $5F6F,$01 Advance the tile graphic data pointer.
   $5F70,$01 Move down one pixel row in the room buffer.
-  $5F71,$02 Decrease the line counter by one and loop back to #R$5F6D until all
-. #N$08 rows are drawn.
+  $5F71,$02 Decrease the row counter and loop back to #R$5F6D until all #N$08
+. rows are drawn.
   $5F73,$01 Return.
-N $5F74 Attribute overlay command #N$24: end of attribute data. Finalises the
-. room setup by resetting game flags and calculating the base address for this
-. room's colour attribute lookup table.
-@ $5F74 label=FillAttributes_End
-  $5F74,$06 Jump to #R$5F83 if *#R$5FA9 is zero.
-  $5F7A,$04 Write #N$00 to *#R$5FA9.
-  $5F7E,$01 No operation.
-  $5F7F,$01 No operation.
-  $5F80,$03 Write #N$00 to *#R$DAE3.
-N $5F83 Calculate the base address for this room's colour attributes. Each room
-. has #N$20 bytes of attribute data stored sequentially from #R$DE9E, so
-. multiply the zero-indexed room number by #N$20 and add the base.
-@ $5F83 label=FillAttributes_SetAttributeBase
-  $5F83,$03 #REGa=*#R$5FC5.
-  $5F86,$01 Decrease by one to make zero-indexed.
-  $5F87,$03 #REGde=#R$DE9E.
+N $5F74 End of room attribute data. Finalises the room setup by resetting game
+. flags and calculating the room's object data base address.
+@ $5F74 label=Room_Attributes_End
+  $5F74,$06 Jump to #R$5F83 if *#R$5FA9 (egg drop flag) is zero.
+  $5F7A,$04 Write #N$00 to *#R$5FA9 (cancel any active egg drop).
+  $5F7E,$02 Two NOPs (unused?)
+  $5F80,$03 Write #N$00 to *#R$DAE3 (clear the egg sprite frame).
+N $5F83 Calculate the base address for this room's object data. Each room has
+. #N$20 bytes of object data stored sequentially from #R$DE9E, so multiply the
+. zero-indexed room number by #N$20 and add the base.
+@ $5F83 label=Calculate_Room_Object_Base
+  $5F83,$03 Fetch the current room number from *#R$5FC5.
+  $5F86,$01 Decrement to make it zero-indexed.
+  $5F87,$03 Point #REGde at #R$DE9E (room object data base).
   $5F8A,$03 Transfer the room index to #REGhl.
-  $5F8D,$05 Multiply by #N$20.
+  $5F8D,$05 Multiply by #N$20 to calculate the offset for this room.
   $5F92,$01 Add the base address.
-  $5F93,$03 Write the result to *#R$5FB5.
+  $5F93,$03 Write the result to *#R$5FB5 (room object data pointer for this
+. room).
 N $5F96 Wait for the next interrupt frame, then transfer the completed room
 . buffer to the display.
   $5F96,$01 Enable interrupts.
-  $5F97,$01 Halt operation (suspend CPU until the next interrupt).
+  $5F97,$01 Halt (wait for the next interrupt).
   $5F98,$01 Disable interrupts.
-N $5F99 Set up printing the room to the screen buffer.
-  $5F99,$02 Set a counter in #REGb for #N$16 rows to print.
-  $5F9B,$03 Point #REGhl at #R$C000.
+N $5F99 Draw the room buffer to the screen.
+  $5F99,$02 Set the row counter to #N$16 in #REGb.
+  $5F9B,$03 Point #REGhl at #R$C000 (room buffer).
   $5F9E,$03 Jump to #R$6438.
 
 g $5FA1 Screen Initialised Flag
@@ -444,7 +444,7 @@ B $5FAA,$01
 
 g $5FAB Energy Bar Delay Counter
 @ $5FAB label=EnergyBarDelayCounter
-D $5FAB A delay so Percys energy bar doesn't deplete too quickly while he's
+D $5FAB A delay so Percy's energy bar doesn't deplete too quickly while he's
 . flying.
 B $5FAB,$01
 
@@ -504,10 +504,11 @@ D $5FB4 A rotating bit pattern used to animate the nest chicks. Each bit
 . they animate independently.
 B $5FB4,$01
 
-g $5FB5 Room Attribute Pointer
-@ $5FB5 label=RoomAttributePointer
-D $5FB5 Pointer to the current room's colour attribute data, calculated from
-. the room number and the base at #R$DE9E.
+g $5FB5 Room Object Data Pointer
+@ $5FB5 label=Room_Object_Data_Pointer
+D $5FB5 Pointer to the current room's object data, calculated from the room
+. number and the base at #R$DE9E. Used to track the state of collectible worms
+. and other interactive elements in the current room.
 W $5FB5,$02
 
 g $5FB7 Beep Pitch
@@ -539,9 +540,11 @@ g $5FBD Border Colour
 @ $5FBD label=BorderColour
 B $5FBD,$01
 
-g $5FBE Lives Backup?
+g $5FBE Lives Backup
 @ $5FBE label=Lives_Backup
-D $5FBE Copy of #R$5FB3 for compare/display; synced at #R$654C/#R$69EC.
+D $5FBE Copy of #R$5FB3. Set when lives are initialised, cleared at end of each
+. frame. When non-zero the main game handlers run; when zero the full sprite
+. draw runs.
 B $5FBE,$03
 
 g $5FC1 Active Tile Set Pointer
@@ -989,7 +992,7 @@ N $6277 Restore Percy's position from before the rejected move.
 c $6280 Move Percy Left
 @ $6280 label=MovePercyLeft
 D $6280 Move Percy left. Checks screen boundary and handles room transitions.
-R $6280 IX Pointer to Percys state data
+R $6280 IX Pointer to Percy's state data
 R $6280 D Number of pixels to move
   $6280,$05 Write #N$01 to *#R$5FA5 (Percy is facing left).
 N $6285 If *#R$5FAA is set, apply an extra boundary check.
@@ -1013,7 +1016,7 @@ N $629B If Percy has gone past the left edge transition into the previous room.
 c $62A2 Move Percy Right
 @ $62A2 label=MovePercyRight
 D $62A2 Move Percy right. Checks screen boundary and handles room transitions.
-R $62A2 IX Pointer to Percys state data
+R $62A2 IX Pointer to Percy's state data
 R $62A2 D Number of pixels to move
   $62A2,$04 Write #N$00 to *#R$5FA5 (Percy is facing right).
 N $62A6 If *#R$5FAA is set, apply an extra boundary check.
@@ -1035,7 +1038,7 @@ N $62BA If Percy has gone past the right edge transition into the next room.
 c $62C2 Move Percy Up
 @ $62C2 label=MovePercyUp
 D $62C2 Move Percy up. Clamps to Y position #N$00 at the top of the screen.
-R $62C2 IX Pointer to Percys state data
+R $62C2 IX Pointer to Percy's state data
 R $62C2 D Number of pixels to move
   $62C2,$04 Load #REGa with Percy's Y position (*#REGix+#N$01) - the number of
 . pixels to move (from #REGd).
@@ -1049,7 +1052,7 @@ N $62CA Percy is outside of the screen boundaries!
 
 c $62D0 Move Percy Down
 @ $62D0 label=MovePercyDown
-R $62D0 IX Pointer to Percys state data
+R $62D0 IX Pointer to Percy's state data
 R $62D0 D Number of pixels to move
   $62D0,$03 Load #REGa with Percy's Y position (*#REGix+#N$01).
   $62D3,$04 Write #REGa + the number of pixels to move (from #REGd) back to
@@ -1090,6 +1093,7 @@ N $62F8 No input so decelerate movement speed towards minimum.
 c $6307 Transition Room Right
 @ $6307 label=TransitionRoomRight
 D $6307 Percy has gone past the right edge so transition into the next room.
+R $6307 IX Pointer to Percy's state data
   $6307,$01 Stash #REGaf on the stack.
   $6308,$03 #REGa=*#R$5FC5.
 N $630B If the current room is #N$0B (the last room), wrap to room #N$01.
@@ -1107,6 +1111,7 @@ N $630B If the current room is #N$0B (the last room), wrap to room #N$01.
 c $631F Transition Room Left
 @ $631F label=TransitionRoomLeft
 D $631F Percy has gone past the left edge so transition into the previous room.
+R $631F IX Pointer to Percy's state data
   $631F,$01 Stash #REGaf on the stack.
   $6320,$03 #REGa=*#R$5FC5.
 N $6323 If the current room is room #N$01 wrap around to room #N$0B.
@@ -1126,8 +1131,7 @@ c $6338 Update Percy Animation
 D $6338 Update Percy's animation frame based on the current movement state and
 . direction. The animation counter at *#R$5FB0 cycles through frames, with bit
 . 7 indicating the second half of the cycle.
-c $6338 Update Percy Animation
-@ $6338 label=UpdatePercyAnimation
+R $6338 IX Pointer to Percy's state data
   $6338,$03 #REGa=*#R$5FB0.
   $633B,$04 Jump to #R$6349 if in the second half of the cycle.
 N $633F First half so increment the counter.
@@ -1162,7 +1166,7 @@ N $6362 Select Percy's sprite frame based on direction and animation state.
 . { #N$0D-#N$10 | Walking/ Standing left }
 . TABLE#
 @ $6362 label=UpdatePercyAnimation_SetFrame
-  $6362,$06 Jump to #R$6377 if Percy's current X position (*#REGix+#N$00) is the
+  $6362,$08 Jump to #R$6377 if Percy's current X position (*#REGix+#N$00) is the
 . same as his previous X position (*#REGix+#N$40).
 N $636A Percy has moved horizontally so cycle the wing flap counter between
 N $636A #N$01 and #N$04.
@@ -1325,10 +1329,11 @@ M $6474,$03 Mask the high byte again.
 
 c $6480 Update Energy Bar
 @ $6480 label=UpdateEnergyBar
-  $6480,$03 #REGhl=#N$52EC (screen buffer location for the energy bar).
 D $6480 Animates Percy's energy bar at the bottom of the screen. The bar
 . depletes when Percy is airborne and refills when Percy is on the ground. If
 . the bar fully depletes, Percy enters the falling state.
+R $6480 IX Pointer to Percy's state data
+  $6480,$03 #REGhl=#N$52EC (screen buffer location for the energy bar).
 N $6483 If *#R$5FA7 is non-zero, it's acting as a cooldown timer so decrement
 . it and return.
   $6483,$03 #REGa=*#R$5FA7.
@@ -1437,13 +1442,13 @@ N $64F5 #HTML(#AUDIO(lose-life.wav)(#INCLUDE(LoseLife)))
   $6512,$02 Decrease the outer counter and loop back to #R$64FC until all
 . #N$100 iterations are complete.
   $6514,$02 Restore #REGix from the stack.
-N $6516 Reset any collected worm markers in the room attribute data back to
+N $6516 Reset any collected worm markers in the room object data back to
 . #N$00.
   $6516,$03 Point #REGhl at #R$DE9E.
   $6519,$03 Set the byte counter to #N$0160 in #REGbc.
 @ $651C label=Reset_Worm_Markers
   $651C,$05 Jump to #R$6523 if *#REGhl is not equal to #N$1E (not a collected
-. marker).
+. worm marker).
   $6521,$02 Write #N$00 to *#REGhl to reset the marker.
 @ $6523 label=Reset_Worm_Markers_Next
   $6523,$01 Decrement the byte counter by one.
@@ -1691,6 +1696,7 @@ c $6683 Handler: Draw Worm Animation Frame
 D $6683 Draws an #N$08-pixel-row worm wiggle animation frame at the screen
 . address in #REGhl. Alternates between two graphic frames at #N$A7C3 and
 . #N$A7CB based on the animation toggle at #R$5FB4.
+R $6683 HL Screen buffer address for the worm graphic
   $6683,$03 Default animation frame pointer: #REGde=#N$A7C3 (worm frame 1).
   $6686,$09 Rotate *#R$5FB4 right through carry; if the carry flag is set, keep
 . worm frame 1 and skip over the alternative frame (worm frame 2).
@@ -1716,6 +1722,7 @@ c $66A8 Handler: Worm Found
 @ $66A8 label=Handler_Worm_Found
 D $66A8 A worm was found at Percy's position; check if Percy is low enough to
 . collect it and not already carrying one.
+R $66A8 IX Pointer to Percy's state data
   $66A8,$07 Jump to #R$666A if Percy's Y position is less than #N$79 (not low
 . enough to pick up the worm).
   $66AF,$06 Jump to #R$666A if *#R$5FAA is set (so Percy is already carrying a
@@ -1741,6 +1748,7 @@ c $66E1 Percy Carrying Worm
 @ $66E1 label=Position_Worm_In_Beak
 D $66E1 After scanning all entries, check if Percy is carrying a worm and
 . handle the worm-in-beak sprite positioning.
+R $66E1 IX Pointer to Percy's state data (and worm sprite at +#N$20)
   $66E1,$05 Return if *#R$5FAA (worm carrying flag) is zero.
   $66E6,$07 Jump to #R$66F4 if Percy's Y position is less than #N$8F.
   $66ED,$07 Jump to #R$6A17 if *#R$5FAC is set (a worm is being dropped to a
@@ -1752,6 +1760,7 @@ D $66E1 After scanning all entries, check if Percy is carrying a worm and
   $6700,$0A Calculate the worm-in-beak X position: if *#R$5FA5 (facing
 . direction) is zero (facing right), add #N$0C to Percy's X, otherwise add
 . #N$FB (offset left).
+  $670A,$02 #REGa=#N$FB.
   $670C,$03 Add the offset to Percy's X position.
   $670F,$03 Write the result to *#REGix+#N$20 (worm sprite X position).
   $6712,$05 Set the worm sprite Y position to Percy's Y plus #N$04.
@@ -1772,8 +1781,8 @@ N $673E Check if Percy is at the nest to deliver the worm to the baby chicks
   $674D,$06 Return if Percy's X position is #N$6B or more.
   $6753,$05 Return if *#R$5FA5 (facing direction) is zero (Percy must be facing
 . left).
-N $6758 Scan the room attribute data for a collected worm marker to convert
-. into a nest delivery.
+N $6758 Scan the room object data for a collected worm marker to convert into
+. a nest delivery.
   $6758,$03 Set the search counter to #N$0160 in #REGbc.
   $675B,$03 Point #REGhl at #R$DE9E.
 @ $675E label=Search_Nest_Slot_Loop
@@ -1787,7 +1796,7 @@ N $6758 Scan the room attribute data for a collected worm marker to convert
 . delivered/disabled entry.
   $676F,$04 Deactivate the worm-in-beak sprite by writing #N$00 to
 . *#REGix+#N$23.
-  $6773,$05 Call #R$6A86 with #REGa=#N$C8 to add #N$C8 to the score.
+  $6773,$05 Call #R$67B2 to add #N$C8 to the score.
 N $6778 Play a delivery sound effect.
 N $6778 #HTML(#AUDIO(fed-chicks.wav)(#INCLUDE(FedChicks)))
   $6778,$02 Set the sound duration in #REGe to #N$32.
@@ -1815,18 +1824,19 @@ c $679C Drop Worm
 @ $679C label=DropWorm
 D $679C Drops the worm Percy is carrying.
 .
-. The worm will reappear when the room is next redrawn.
-  $679C,$03 #REGbc=#N$0160 (number of attribute cells to search).
-  $679F,$03 #REGhl=#R$DE9E.
+. Scans the room data for the collected worm marker (#N$1E) and clears it back
+. to #N$00, so the worm will reappear when the room is next redrawn.
+  $679C,$03 Set the search counter to #N$0160 in #REGbc.
+  $679F,$03 Point #REGhl at #R$DE9E.
 @ $67A2 label=DropWorm_SearchLoop
-  $67A2,$02 #REGa=#N$1E (worm attribute value).
-  $67A4,$03 Jump to #R$67AE if *#REGhl matches.
-  $67A7,$01 Advance to the next attribute cell.
-  $67A8,$01 Decrease the search counter.
-  $67A9,$04 Jump to #R$67A2 if there are more cells to search.
-  $67AD,$01 Return (no worm found).
+  $67A2,$05 Jump to #R$67AE if *#REGhl equals #N$1E (found the collected worm
+. marker).
+  $67A7,$01 Advance to the next byte.
+  $67A8,$05 Decrement #REGbc and loop back to #R$67A2 until all #N$0160 bytes
+. are searched.
+  $67AD,$01 Return (no collected worm marker found).
 @ $67AE label=DropWorm_Found
-  $67AE,$02 Write #N$00 to *#REGhl to remove the worm.
+  $67AE,$02 Write #N$00 to *#REGhl to clear the collected marker.
   $67B0,$02 Jump to #R$6791.
 
 c $67B2 Add To Score
@@ -2096,13 +2106,13 @@ N $6911 Load the worm collection target for the new level.
   $6918,$03 Point #REGhl at #R$6961.
   $691B,$01 Add the index to get the table entry address.
   $691C,$05 Write the worm collection count for this level to *#R$5FB2.
-N $6921 Reset all collected and disabled worm markers in the room attribute
-. data back to #N$00.
+N $6921 Reset all collected and disabled worm markers in the room object data
+. back to #N$00.
   $6921,$03 Point #REGhl at #R$DE9E.
   $6924,$03 Set the byte counter to #N$0160 in #REGbc.
 @ $6927 label=ResetWorm_Markers_Loop
-  $6927,$07 If *#REGhl equals #N$1F (disabled marker), write #N$00 to *#REGhl.
-@ $692E label=ResetWorm_TestCollected
+  $6927,$07 If *#REGhl equals #N$1F (delivered marker), write #N$00 to *#REGhl.
+@ $692E label=ResetWorm_Test_Collected
   $692E,$06 If *#REGhl equals #N$1E (collected marker), write #N$00 to *#REGhl.
 @ $6934 label=ResetWorm_Markers_Next
   $6934,$01 Move to the next data byte.
@@ -2854,7 +2864,7 @@ N $6DDC Check if the car is in the crash animation.
 N $6DE6 Crash animation is playing; update the explosion frames.
   $6DE6,$04 Decrement the crash counter and write it back to *#R$7209.
 M $6DEA,$04 Mask and add #N$24 to select the front crash frame.
-  $6DEA,$02,b$01 Keep only bits 1.
+  $6DEA,$02,b$01 Keep only bit 1.
   $6DEE,$03 Write the frame to *#REGix+#N$03 (front sprite).
   $6DF1,$04 Increment by one for the rear crash frame and write to
 . *#REGix+#N$07.
@@ -2889,6 +2899,7 @@ D $6E2F Generates random parameters for a new car entering from the right side
 . of the screen. Sets a random movement speed, random sprite active flags, and
 . resets the car to the bottom of the screen. Clamps the X position to a maximum
 . of #N$DE.
+R $6E2F IX Pointer to car sprite data
 M $6E2F,$09 Generate a random car speed of #N$01-#N$04 and write to *#R$720B.
   $6E32,$02,b$01 Keep only bits 0-1.
 M $6E38,$0D Generate a random sprite active value of #N$04-#N$07 and write to
@@ -3766,6 +3777,7 @@ c $7439 Handle Red Bird Movement
 D $7439 Controls the red bird hazard movement and animation. Generates random
 . direction changes and movement delays, moves the bird according to its current
 . direction, and updates the animation frame. Used by all room handlers.
+R $7439 IX Pointer to red bird sprite data
 N $7439 Set up the red bird data pointer and check if respawning is needed.
   $7439,$04 Point #REGiy at #R$7508.
 @ $743D label=Handle_Red_Bird_Entry
@@ -3828,6 +3840,8 @@ c $74A7 Randomise Red Bird Position
 D $74A7 Generates a random position for the red bird and validates it. Keeps
 . generating new coordinates until a valid position is found, then clears the
 . spawning flag.
+R $74A7 IX Pointer to red bird sprite data
+R $74A7 IY Pointer to red bird state data
 @ $74A7 label=Randomise_Position_Loop
   $74A7,$08 Generate a random X coordinate in #REGc and a random Y coordinate
 . in #REGb by calling #R$7930 twice.
@@ -3841,6 +3855,8 @@ c $74B9 Animate Stunned Red Bird
 D $74B9 Animates the stunned red bird sequence. Increments the animation counter
 . until it reaches #N$85, cycling through animation frames. Assigns a random
 . colour attribute and plays a hit sound each frame.
+R $74B9 IX Pointer to red bird sprite data
+R $74B9 IY Pointer to red bird state data
   $74B9,$06 Return if the animation counter at *#REGiy+#N$00 has reached #N$85
 . (animation complete).
   $74BF,$04 Increment the animation counter and write it back to
@@ -3891,7 +3907,9 @@ N $74FB The egg has hit the hazard; stun it and award points.
   $74FF,$03 Call #R$71E1.
   $7502,$05 Jump to #R$67B2 to add #N$14 points to the score.
 
-g $7507
+g $7507 Red Bird Movement Boundary
+@ $7507 label=RedBird_MovementBoundary
+D $7507 Single byte used as movement boundary data; read at #R$746F.
 B $7507,$01
 
 g $7508 Red Bird Data States
@@ -4081,6 +4099,7 @@ N $7617 No collision with Percy; check if Percy's egg hits the UFO.
 c $7628 Reset UFO Position
 @ $7628 label=Reset_UFO_Position
 D $7628 Resets the UFO to a random position and clears the abduction timer.
+R $7628 IX Pointer to UFO sprite data
   $7628,$04 Point #REGiy at #N($0000,$04,$04).
   $762C,$04 Write #N$00 to clear *#R$767E.
   $7630,$03 Jump to #R$74A7 to generate a random valid position.
@@ -4090,6 +4109,7 @@ c $7633 UFO Abduct Percy
 D $7633 Handles the UFO's abduction of Percy. Teleports Percy to the UFO's
 . position while playing a tractor beam sound effect, then on the final frame
 . drops Percy downward.
+R $7633 IX Pointer to UFO sprite data
   $7633,$04 Jump to #R$7669 if the abduction timer is equal to #N$01 (final
 . frame of abduction).
 N $7637 Play the tractor beam sound effect.
@@ -4239,7 +4259,7 @@ R $768C IX Pointer to plane sprite data
   $776E,$01 Return.
 
   $776F,$02 #REGa=the contents of the Memory Refresh Register.
-  $7771,$02,b$01 Keep only bits 0.
+  $7771,$02,b$01 Keep only bit 0.
   $7773,$01 Return if #REGa is not equal to #REGa.
   $7774,$03 #REGa=*#R$DAC1.
   $7777,$02 #REGa+=#N$0A.
@@ -4468,6 +4488,7 @@ D $7930 Generates a pseudo-random number using a linear decay formula. Reads the
 . current seed from #R$7AC7, computes (seed + #N$01) * #N$FE, then derives the
 . new seed from the difference of the low and high bytes of the result. Returns
 . the new value in #REGa.
+R $7930 O:A Pseudo-random value
   $7930,$03 Fetch the current random seed from *#R$7AC7.
   $7933,$05 Set #REGhl to seed * #N$100 and copy into #REGde.
   $7938,$05 Subtract #REGde twice from #REGhl (i.e. #REGhl = seed * #N$FE).
@@ -4480,23 +4501,102 @@ D $7930 Generates a pseudo-random number using a linear decay formula. Reads the
 
 c $794A Handler: Spider
 @ $794A label=Handler_Spider
-R $794A IX Pointer to the spider object state
-  $794A,$07 Call #R$79C0 if *#R$5FBB is non-zero.
-  $7951,$03 #REGhl=#R$D800(#N$D90A).
-  $7954,$03 #REGbc=#N$0020 (one attribute row width).
-  $7957,$03 Write #N$68 to the first row.
-  $795A,$02 Write #REGa to the second row.
-  $795C,$02 Write #REGa to the third row.
-  $795E,$03 #REGhl=#N$480A (screen buffer address).
-  $7961,$01 #REGd=#REGh (save the screen third base).
-  $7962,$02 #REGc=#N$3F (base Y position of the thread).
-  $7964,$03 #REGb=*#REGix+#N$01 (current height).
-  $7967,$02 Subtract the base position to get the number of rows to draw.
-  $7969,$01 #REGb=#REGa.
+D $794A Controls the spider hazard. The spider descends and ascends on a silk
+. thread, bouncing between a minimum height of #N$43 and a maximum height of
+. #N$60. The thread is drawn as a vertical line of pixels from the top of the
+. screen down to the spider's current position. The spider randomly alternates
+. between two animation frames and checks for collision with Percy.
+R $794A IX Pointer to the spider sprite data
+N $794A Check for respawn and set the thread colour attributes.
+  $794A,$07 Call #R$79C0 to initialise the spider if *#R$5FBB (respawn flag) is
+. non-zero.
+  $7951,$03 Point #REGhl at #R$D800 (attribute buffer row).
+  $7954,$03 Set #REGbc to #N$0020 (one attribute row width).
+  $7957,$07 Write #COLOUR$68 (#N$68) to three consecutive attribute rows for
+. the thread area.
+N $795E Draw the spider's silk thread from the top of the screen down to the
+. spider's current position.
+  $795E,$03 Point #REGhl at #N$480A (screen buffer address for top of thread).
+  $7961,$01 Save the screen third base in #REGd.
+  $7962,$02 Set #REGc to #N$3F (base Y position of the thread).
+  $7964,$05 Calculate the number of pixel rows to draw by subtracting the
+. spider's current height from the base Y position.
+  $7969,$01 Set the row counter in #REGb.
+@ $796A label=Draw_Thread_Loop
+  $796A,$02 Set bit 7 of *#REGhl to draw one pixel of the thread.
+  $796C,$01 Stash the screen buffer pointer on the stack.
+  $796D,$04 Set bits 7 and 5 of #REGh to convert to the attribute buffer
+. address.
+  $7971,$02 Set bit 7 of *#REGhl to mark the thread attribute.
+  $7973,$01 Restore the screen buffer pointer from the stack.
+  $7974,$02 Advance down one pixel row.
+  $7976,$02,b$01 Keep only bits 0-2.
+M $7976,$04 Jump to #R$797F if the pixel row hasn't crossed a character cell
+. boundary.
+  $797A,$04 Add #N$20 to #REGl to move to the next character row.
+  $797E,$01 Restore #REGh from #REGd to reset the screen third base for the new
+. character row.
+@ $797F label=Draw_Thread_Next
+  $797F,$02 Decrease the row counter and loop back to #R$796A until the thread
+. is fully drawn.
+N $7981 Update the spider's vertical position based on its current direction.
+  $7981,$06 Jump to #R$7994 if *#R$79D1 (direction flag) is non-zero (spider is
+. descending).
+N $7987 Spider is ascending: increase height until reaching the maximum.
+@ $7987 label=Spider_Ascending
+  $7987,$03 Fetch the spider's current height from *#REGix+#N$01.
+  $798A,$01 Increment the height.
+  $798B,$04 Jump to #R$79A1 if it has reached #N$60 (the maximum height, switch
+. to descending).
+  $798F,$03 Write the new height to *#REGix+#N$01.
+  $7992,$02 Jump to #R$79AC.
+N $7994 Spider is descending: decrease height until reaching the minimum.
+@ $7994 label=Spider_Descending
+  $7994,$03 Fetch the spider's current height from *#REGix+#N$01.
+  $7997,$01 Decrement the height.
+  $7998,$04 Jump to #R$79A8 if it has dropped below #N$43 (minimum height,
+. switch to ascending).
+  $799C,$03 Write the new height to *#REGix+#N$01.
+  $799F,$02 Jump to #R$79AC.
+@ $79A1 label=Spider_Switch_To_Descending
+  $79A1,$05 Write #N$FF to *#R$79D1 (set direction to descending).
+  $79A6,$02 Jump to #R$79AC.
+@ $79A8 label=Spider_Switch_To_Ascending
+  $79A8,$04 Write #N$00 to *#R$79D1 (set direction to ascending).
+N $79AC Pick a random spider animation frame and check for collision with Percy.
+N $79AC #UDGTABLE(default,centre,centre) { =h Sprite ID | =h Sprite }
+. { #N$5F | #UDGS$02,$02(udg46843-56x4)(
+.   #UDG($B6FB+$08*($02*$x+$y))(*udg)
+.   udg
+. ) }
+. { #N$60 | #UDGS$02,$02(udg46875-56x4)(
+.   #UDG($B71B+$08*($02*$x+$y))(*udg)
+.   udg
+. ) } TABLE#
+@ $79AC label=Set_Spider_Frame
+M $79AC,$04 Use the Memory Refresh Register masked with #N$01 to randomly
+. select frame #N$5F or #N$60.
+  $79AE,$02,b$01 Keep only bit 0.
+  $79B0,$02 Add #N$5F to get the final frame ID.
+  $79B2,$03 Write the frame to *#REGix+#N$03.
+  $79B5,$04 Point #REGiy at #R$DAC0 (Percy sprite data).
+  $79B9,$03 Call #R$6C53 to check for collision with Percy.
+  $79BC,$01 Return if there was no collision (carry set).
+  $79BD,$03 Jump to #R$74E3.
 
+c $79C0 Initialise Spider
+@ $79C0 label=Initialise_Spider
+D $79C0 Resets the spider to its starting position, height and direction.
+R $79C0 IX Pointer to the spider sprite data
+  $79C0,$04 Write #N$46 to *#REGix+#N$01 (initial height).
+  $79C4,$04 Write #N$48 to *#REGix+#N$00 (X position).
+  $79C8,$04 Write #N$00 to clear *#REGix+#N$02 (sprite active flag).
+  $79CC,$04 Write #N$00 to *#R$79D1 to set the direction to ascending.
   $79D0,$01 Return.
 
-g $79D1
+g $79D1 Spider Direction Flag
+@ $79D1 label=Spider_Direction_Flag
+D $79D1 Direction flag for the spider. #N$00 = ascending, #N$FF = descending.
 B $79D1,$01
 
 c $79D2 Handle Parachute Descent
@@ -4659,7 +4759,7 @@ g $7B2E Jump Table: Room Handlers
 W $7B2E,$02 Handler for room #N($01+(#PC-$7B2E)/$02).
 L $7B2E,$02,$0B
 
-b $7B44
+u $7B44
 
 b $83A9 Room #N$00
 @ $83A9 label=Room00
@@ -4800,7 +4900,7 @@ b $A7FB Graphics: Bomb
 @ $A7FB label=Graphics_Bomb
   $A7FB,$08 #UDG(#PC)
 
-b $A803
+u $A803
 
 b $AB3B Graphics: Sprite Sheet
 N $AB3B Percy: flying left.
@@ -4936,7 +5036,7 @@ N $B6FB Spider.
 . ) } TABLE#
 L $AB3B,$20,$60,$02
 
-b $B73B
+u $B73B
 
 c $BB1C Draw Sprites and Merge Collision Map
 @ $BB1C label=Draw_Sprites
@@ -5242,8 +5342,7 @@ M $BCEE,$05 Write the ink bits to *#REGhl.
   $BCEF,$02,b$01 Keep only bits 3-7.
   $BCF3,$01 Return.
 
-b $BCF4
-  $BCF4,$03
+u $BCF4
 
 c $BCF7 Apply Sprite Attributes (2-Wide)
 @ $BCF7 label=ApplySpriteAttributes2Wide
@@ -5461,6 +5560,7 @@ c $BDE4 Sprite Inactive Delay
 @ $BDE4 label=Sprite_Inactive_Delay
 D $BDE4 Called when a 3-wide sprite is inactive. Executes a timing delay loop to
 . keep frame timing consistent, then advances to the next sprite entry.
+R $BDE4 IX Pointer to the inactive sprite entry (preserved)
   $BDE4,$01 Stash the sprite counter on the stack.
   $BDE5,$02 Set the delay counter to #N$C8 in #REGb.
 @ $BDE7 label=Inactive_Delay_Loop
@@ -5534,9 +5634,9 @@ B $DAC2,$01 Percy INK colour.
 @ $DAC3 label=Percy_Frame_ID
 B $DAC3,$01 Percy frame ID.
 
-g $DAC4 Sprite 1 Data States
+g $DAC4 3-Wide Sprite 1 Data States
 @ $DAC4 label=Sprite01_3Wide_X_Position
-D $DAC4 Used by the Red Bird.
+D $DAC4 Used by #R$69F7(the Red Bird).
 B $DAC4,$01 Sprite 1 X position.
 @ $DAC5 label=Sprite01_3Wide_Y_Position
 B $DAC5,$01 Sprite 1 Y position.
@@ -5545,9 +5645,9 @@ B $DAC6,$01 Sprite 1 INK colour.
 @ $DAC7 label=Sprite01_3Wide_Frame_ID
 B $DAC7,$01 Sprite 1 frame ID.
 
-g $DAC8 Sprite 2 Data States
+g $DAC8 3-Wide Sprite 2 Data States
 @ $DAC8 label=Sprite02_3Wide_X_Position
-D $DAC8 Used by Frog 1.
+D $DAC8 Used by #R$7082(Frog 1), #R$6E5D(Car Type 1).
 B $DAC8,$01 Sprite 2 X position.
 @ $DAC9 label=Sprite02_3Wide_Y_Position
 B $DAC9,$01 Sprite 2 Y position.
@@ -5556,9 +5656,9 @@ B $DACA,$01 Sprite 2 INK colour.
 @ $DACB label=Sprite02_3Wide_Frame_ID
 B $DACB,$01 Sprite 2 frame ID.
 
-g $DACC Sprite 3 Data States
+g $DACC 3-Wide Sprite 3 Data States
 @ $DACC label=Sprite03_3Wide_X_Position
-D $DACC Used by Frog 2.
+D $DACC Used by #R$7082(Frog 2).
 B $DACC,$01 Sprite 3 X position.
 @ $DACD label=Sprite03_3Wide_Y_Position
 B $DACD,$01 Sprite 3 Y position.
@@ -5567,9 +5667,9 @@ B $DACE,$01 Sprite 3 INK colour.
 @ $DACF label=Sprite03_3Wide_Frame_ID
 B $DACF,$01 Sprite 3 frame ID.
 
-g $DAD0 Sprite 4 Data States
+g $DAD0 3-Wide Sprite 4 Data States
 @ $DAD0 label=Sprite04_3Wide_X_Position
-D $DAD0 Used by Car 2.
+D $DAD0 Used by #R$7028(Car Type 3), #R$7512(Cat).
 B $DAD0,$01 Sprite 4 X position.
 @ $DAD1 label=Sprite04_3Wide_Y_Position
 B $DAD1,$01 Sprite 4 Y position.
@@ -5578,9 +5678,9 @@ B $DAD2,$01 Sprite 4 INK colour.
 @ $DAD3 label=Sprite04_3Wide_Frame_ID
 B $DAD3,$01 Sprite 4 frame ID.
 
-g $DAD4 Sprite 5 Data States
+g $DAD4 3-Wide Sprite 5 Data States
 @ $DAD4 label=Sprite05_3Wide_X_Position
-D $DAD4 Used by Car 3.
+D $DAD4 Used by #R$6F8D(Car Type 2), #R$758B(Dog), #R$7680(Plane).
 B $DAD4,$01 Sprite 5 X position.
 @ $DAD5 label=Sprite05_3Wide_Y_Position
 B $DAD5,$01 Sprite 5 Y position.
@@ -5589,9 +5689,9 @@ B $DAD6,$01 Sprite 5 INK colour.
 @ $DAD7 label=Sprite05_3Wide_Frame_ID
 B $DAD7,$01 Sprite 5 frame ID.
 
-g $DAD8 Sprite 6 Data States
+g $DAD8 3-Wide Sprite 6 Data States
 @ $DAD8 label=Sprite06_3Wide_X_Position
-D $DAD8 Used by ???
+D $DAD8 Used by #R$7439(the Red Bird), #R$79D2(Parachute).
 B $DAD8,$01 Sprite 6 X position.
 @ $DAD9 label=Sprite06_3Wide_Y_Position
 B $DAD9,$01 Sprite 6 Y position.
@@ -5600,9 +5700,9 @@ B $DADA,$01 Sprite 6 INK colour.
 @ $DADB label=Sprite06_3Wide_Frame_ID
 B $DADB,$01 Sprite 6 frame ID.
 
-g $DADC Sprite 7 Data States
+g $DADC 3-Wide Sprite 7 Data States
 @ $DADC label=Sprite07_3Wide_X_Position
-D $DADC Used by ???
+D $DADC Used by #R$7512(Cat), #R$759A(UFO), #R$7680(Plane).
 B $DADC,$01 Sprite 7 X position.
 @ $DADD label=Sprite07_3Wide_Y_Position
 B $DADD,$01 Sprite 7 Y position.
@@ -5611,18 +5711,18 @@ B $DADE,$01 Sprite 7 INK colour.
 @ $DADF label=Sprite07_3Wide_Frame_ID
 B $DADF,$01 Sprite 7 frame ID.
 
-g $DAE0 Egg States?
-@ $DAE0 label=Egg_States
-B $DAE0,$01
-B $DAE1,$01
-B $DAE2,$01
-B $DAE3,$01
+g $DAE0 Egg Sprite Data
+@ $DAE0 label=Egg_X_Position
+B $DAE0,$01 Egg X position.
+@ $DAE1 label=Egg_Y_Position
+B $DAE1,$01 Egg Y position.
+@ $DAE2 label=Egg_Colour
+B $DAE2,$01 Egg INK colour.
+@ $DAE3 label=Egg_Frame_ID
+B $DAE3,$01 Egg frame ID.
 
-g $DAE4
-B $DAE4,$01
-B $DAE5,$01
-B $DAE6,$01
-B $DAE7,$01
+u $DAE4
+B $DAE4,$04
 
 g $DAE8 2-Wide Sprite 1 Data States
 @ $DAE8 label=Sprite01_2Wide_X_Position
@@ -5684,17 +5784,99 @@ B $DAFE,$01 Sprite 6 INK colour.
 @ $DAFF label=Sprite06_2WideFrame_ID
 B $DAFF,$01 Sprite 6 frame ID.
 
-g $DB00 Percy Previous X Position
-@ $DB00 label=PercyPreviousXPosition
-D $DB00 Stores Percy's X position from the previous frame, used to detect
-. horizontal movement for the wing flap animation.
-B $DB00,$01
+g $DB00 Backup: Percy
+@ $DB00 label=Backup_Percy
+D $DB00 Backup of #R$DAC0. First byte is Percy's X from previous frame (used for
+. wing flap animation); written each frame by #R$BB91.
+B $DB00,$04
 
-g $DB0C
+g $DB04 Backup: 3-Wide Sprite 1
+@ $DB04 label=Backup_3Wide_Sprite1
+D $DB04 Backup of #R$DAC4; written each frame by #R$BB91.
+B $DB04,$04
 
-g $DE9E Room Attribute Data
-@ $DE9E label=RoomAttribute_Data
-B $DE9E,$0160,$20
+g $DB08 Backup: 3-Wide Sprite 2
+@ $DB08 label=Backup_3Wide_Sprite2
+D $DB08 Backup of #R$DAC8; written each frame by #R$BB91.
+B $DB08,$04
+
+g $DB0C Backup: 3-Wide Sprite 3
+@ $DB0C label=Backup_3Wide_Sprite3
+D $DB0C Backup of #R$DACC; written each frame by #R$BB91.
+B $DB0C,$04
+
+g $DB10 Backup: 3-Wide Sprite 4
+@ $DB10 label=Backup_3Wide_Sprite4
+D $DB10 Backup of #R$DAD0; written each frame by #R$BB91.
+B $DB10,$04
+
+g $DB14 Backup: 3-Wide Sprite 5
+@ $DB14 label=Backup_3Wide_Sprite5
+D $DB14 Backup of #R$DAD4; written each frame by #R$BB91.
+B $DB14,$04
+
+g $DB18 Backup: 3-Wide Sprite 6
+@ $DB18 label=Backup_3Wide_Sprite6
+D $DB18 Backup of #R$DAD8; written each frame by #R$BB91.
+B $DB18,$04
+
+g $DB1C Backup: 3-Wide Sprite 7
+@ $DB1C label=Backup_3Wide_Sprite7
+D $DB1C Backup of #R$DADC; written each frame by #R$BB91.
+B $DB1C,$04
+
+g $DB20 Backup: Egg
+@ $DB20 label=Backup_Egg
+D $DB20 Backup of #R$DAE0; written each frame by #R$BB91.
+B $DB20,$04
+
+u $DB24
+
+g $DB28 Backup: 2-Wide Sprite 1
+@ $DB28 label=Backup_2Wide_Sprite1
+D $DB28 Backup of #R$DAE8; written each frame by #R$BB91.
+B $DB28,$04
+
+g $DB2C Backup: 2-Wide Sprite 2
+@ $DB2C label=Backup_2Wide_Sprite2
+D $DB2C Backup of #R$DAEC; written each frame by #R$BB91.
+B $DB2C,$04
+
+g $DB30 Backup: 2-Wide Sprite 3
+@ $DB30 label=Backup_2Wide_Sprite3
+D $DB30 Backup of #R$DAF0; written each frame by #R$BB91.
+B $DB30,$04
+
+g $DB34 Backup: 2-Wide Sprite 4
+@ $DB34 label=Backup_2Wide_Sprite4
+D $DB34 Backup of #R$DAF4; written each frame by #R$BB91.
+B $DB34,$04
+
+g $DB38 Backup: 2-Wide Sprite 5
+@ $DB38 label=Backup_2Wide_Sprite5
+D $DB38 Backup of #R$DAF8; written each frame by #R$BB91.
+B $DB38,$04
+
+g $DB3C Backup: 2-Wide Sprite 6
+@ $DB3C label=Backup_2Wide_Sprite6
+D $DB3C Backup of #R$DAFC; written each frame by #R$BB91.
+B $DB3C,$04
+
+u $DB40
+B $DB40,$035E
+
+g $DE9E Room Object Data
+@ $DE9E label=Room_Object_Data
+D $DE9E Buffer holding the state of interactive objects (worms, nest slots) for
+. all rooms. Each byte can be:
+. #TABLE(default,centre,centre)
+. { =h Value | =h Meaning }
+. { #N$00 | Empty / available }
+. { #N$1E | Worm collected by Percy }
+. { #N$1F | Worm delivered to nest }
+. TABLE#
+. The buffer is #N$0160 bytes long, pointed to per-room by #R$5FB5.
+  $DE9E,$0160,$20
 
 g $E000 Sprite Buffer
 @ $E000 label=SpriteBuffer
