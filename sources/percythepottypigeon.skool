@@ -2848,6 +2848,35 @@ c$6832 LD HL,$689F   ; #REGhl=#R$689F.
 ; Look up the graphic data for the current frame. Each frame is #N$20
 ; bytes, stored from #R$AD5B onwards. Frames #N$00-#N$02 face left, frames
 ; #N$03-#N$05 face right.
+; .
+; #UDGTABLE(default,centre,centre,centre,centre,centre,centre)
+; { =h Frame | =h Sprite ID | =h Sprite | =h Frame | =h Sprite ID | =h Sprite }
+; { =h,c3 Left | =h,c3 Right }
+; { #N$00 | #N$12 | #UDGS$02,$02(udg44379-56x4)(
+;   #UDG($AD5B+$08*($02*$x+$y))(*udg)
+;   udg
+; ) |
+;   #N$03 | #N$15 | #UDGS$02,$02(udg44475-56x4)(
+;   #UDG($ADBB+$08*($02*$x+$y))(*udg)
+;   udg
+; ) }
+; { #N$01 | #N$13 | #UDGS$02,$02(udg44411-56x4)(
+;   #UDG($AD7B+$08*($02*$x+$y))(*udg)
+;   udg
+; ) |
+;   #N$04 | #N$16 | #UDGS$02,$02(udg44507-56x4)(
+;   #UDG($ADDB+$08*($02*$x+$y))(*udg)
+;   udg
+; ) }
+; { #N$02 | #N$14 | #UDGS$02,$02(udg44443-56x4)(
+;   #UDG($AD9B+$08*($02*$x+$y))(*udg)
+;   udg
+; ) |
+;   #N$05 | #N$17 | #UDGS$02,$02(udg44539-56x4)(
+;   #UDG($ADFB+$08*($02*$x+$y))(*udg)
+;   udg
+; ) }
+; TABLE#
 @label=AnimateSnapdragon_LookupGraphic
 *$6868 LD DE,$AD5B   ; #REGde=#R$AD5B (snapdragon graphic data).
  $686B LD H,$00      ; #REGh=#N$00.
@@ -3548,14 +3577,15 @@ c$6AF6 LD IX,$DAC4     ; #REGix=#R$DAC4 (red bird sprite data).
  $6BC3 LD ($6CBD),A    ; }
  $6BC6 JR $6B6E        ; Jump to #R$6B6E.
 
-; Red Bird Direction Jump Table
+; 8-Direction Movement Jump Table
 ;
 ; Used by the routines at #R$6AF6, #R$7439 and #R$759A.
 ; .
-; Movement direction jump table. The entry point is self-modified at
+; Shared 8-direction movement jump table. Used by the red bird (#R$6AF6),
+; helicopter (#R$7439) and UFO (#R$759A). The entry point is self-modified at
 ; #R$6BC8(#N$6BC9) to jump to one of 8 directional movement handlers. Each
-; handler adjusts #REGb (Y) and/or #REGc (X) by the flight speed value at
-; *#REGhl, then falls through to #R$6C0C to validate the position.
+; handler adjusts #REGb (Y) and/or #REGc (X) by the speed value at *#REGhl,
+; then falls through to #R$6C0C to validate the position.
 ; #TABLE(default,centre,centre,centre,centre)
 ; { =h Direction | =h Index | =h X | =h Y }
 ; { Up | 0 | - | −speed }
@@ -3567,32 +3597,33 @@ c$6AF6 LD IX,$DAC4     ; #REGix=#R$DAC4 (red bird sprite data).
 ; { Left | 6 | −speed | - }
 ; { Up-left | 7 | −speed | −speed }
 ; TABLE#
-@label=RedBirdDirectionJumpTable
-c$6BC8 JR $6BCA      ; Self-modified jump; offset written by #R$6B4E.
-@label=RedBirdDirection_Up
+@label=Direction_Jump_Table
+c$6BC8 JR $6BCA      ; Self-modified jump; offset written by caller (e.g.
+                     ; #R$6B4E, #R$746C, #R$75CE).
+@label=Direction_Up
 *$6BCA JR $6BDA      ; Jump to #R$6BDA (up).
-@label=RedBirdDirection_UpRight
+@label=Direction_UpRight
  $6BCC JR $6BDF      ; Jump to #R$6BDF (up-right).
-@label=RedBirdDirection_Right
+@label=Direction_Right
  $6BCE JR $6BE7      ; Jump to #R$6BE7 (right).
-@label=RedBirdDirection_DownRight
+@label=Direction_DownRight
  $6BD0 JR $6BEC      ; Jump to #R$6BEC (down-right).
-@label=RedBirdDirection_Down
+@label=Direction_Down
  $6BD2 JR $6BF4      ; Jump to #R$6BF4 (down).
-@label=RedBirdDirection_DownLeft
+@label=Direction_DownLeft
  $6BD4 JR $6BF9      ; Jump to #R$6BF9 (down-left).
-@label=RedBirdDirection_Left
+@label=Direction_Left
  $6BD6 JR $6C01      ; Jump to #R$6C01 (left).
-@label=RedBirdDirection_UpLeft
+@label=Direction_UpLeft
  $6BD8 JR $6C06      ; Jump to #R$6C06 (up-left).
 ; Movement handlers. Each adjusts #REGb and/or #REGc by the speed
 ; value at *#REGhl, then falls through to #R$6C0C.
-@label=RedBirdMove_Up
+@label=Move_Up
 *$6BDA LD A,B        ; {#REGb-=*#REGhl (subtract speed from Y).
  $6BDB SUB (HL)      ;
  $6BDC LD B,A        ; }
  $6BDD JR $6C0C      ; Jump to #R$6C0C.
-@label=RedBirdMove_UpRight
+@label=Move_UpRight
 *$6BDF LD A,B        ; {#REGb-=*#REGhl (Y − speed).
  $6BE0 SUB (HL)      ;
  $6BE1 LD B,A        ; }
@@ -3600,12 +3631,12 @@ c$6BC8 JR $6BCA      ; Self-modified jump; offset written by #R$6B4E.
  $6BE3 ADD A,(HL)    ;
  $6BE4 LD C,A        ; }
  $6BE5 JR $6C0C      ; Jump to #R$6C0C.
-@label=RedBirdMove_Right
+@label=Move_Right
 *$6BE7 LD A,C        ; {#REGc+=*#REGhl (X + speed).
  $6BE8 ADD A,(HL)    ;
  $6BE9 LD C,A        ; }
  $6BEA JR $6C0C      ; Jump to #R$6C0C.
-@label=RedBirdMove_DownRight
+@label=Move_DownRight
 *$6BEC LD A,C        ; {#REGc+=*#REGhl (X + speed).
  $6BED ADD A,(HL)    ;
  $6BEE LD C,A        ; }
@@ -3613,12 +3644,12 @@ c$6BC8 JR $6BCA      ; Self-modified jump; offset written by #R$6B4E.
  $6BF0 ADD A,(HL)    ;
  $6BF1 LD B,A        ; }
  $6BF2 JR $6C0C      ; Jump to #R$6C0C.
-@label=RedBirdMove_Down
+@label=Move_Down
 *$6BF4 LD A,B        ; {#REGb+=*#REGhl (Y + speed).
  $6BF5 ADD A,(HL)    ;
  $6BF6 LD B,A        ; }
  $6BF7 JR $6C0C      ; Jump to #R$6C0C.
-@label=RedBirdMove_DownLeft
+@label=Move_DownLeft
 *$6BF9 LD A,B        ; {#REGb+=*#REGhl (Y + speed).
  $6BFA ADD A,(HL)    ;
  $6BFB LD B,A        ; }
@@ -3626,12 +3657,12 @@ c$6BC8 JR $6BCA      ; Self-modified jump; offset written by #R$6B4E.
  $6BFD SUB (HL)      ;
  $6BFE LD C,A        ; }
  $6BFF JR $6C0C      ; Jump to #R$6C0C.
-@label=RedBirdMove_Left
+@label=Move_Left
 *$6C01 LD A,C        ; {#REGc-=*#REGhl (X − speed).
  $6C02 SUB (HL)      ;
  $6C03 LD C,A        ; }
  $6C04 JR $6C0C      ; Jump to #R$6C0C.
-@label=RedBirdMove_UpLeft
+@label=Move_UpLeft
 *$6C06 LD A,B        ; {#REGb-=*#REGhl (Y − speed).
  $6C07 SUB (HL)      ;
  $6C08 LD B,A        ; }
@@ -3640,25 +3671,27 @@ c$6BC8 JR $6BCA      ; Self-modified jump; offset written by #R$6B4E.
  $6C0B LD C,A        ; }
 ; Continue on to #R$6C0C.
 
-; Validate Red Bird Position
+; Validate Position
 ;
 ; Used by the routines at #R$69F7, #R$6AF6, #R$6BC8 and #R$74A7.
 ; .
-; Validates the red bird's proposed position (#REGb=Y, #REGc=X) against
-; the room's flight path boundary data. Scans through the boundary table at
-; *#R$6CBB looking for a region that contains the position.
+; Validates a proposed position (#REGb=Y, #REGc=X) against the boundary
+; table pointed to by *#R$6CBB. Used by the red bird (#R$6AF6), helicopter
+; (#R$7439) and UFO (#R$759A); each caller ensures #R$6CBB points to the
+; appropriate boundary data. Scans through the table for a region containing
+; the position.
 ; .
 ; Each entry is #N$04 bytes: Y-min, Y-max, X-min, X-max. If a valid region is
-; found, the position is stored and carry is clear. If no valid region is found
-; (entry is #N$00), carry is set.
+; found, the position is stored to *#REGix and carry is clear. If no valid
+; region is found (entry is #N$00), carry is set.
 ;
 ;   B Proposed Y position
 ;   C Proposed X position
-;   IX Pointer to red bird sprite data
+;   IX Pointer to sprite data (red bird, helicopter or UFO)
 ; O:F Carry clear = valid, carry set = out of bounds
-@label=ValidateRedBirdPosition
-c$6C0C LD HL,($6CBB) ; #REGhl=*#R$6CBB (flight path boundary pointer).
-@label=ValidateRedBirdPosition_Loop
+@label=Validate_Position
+c$6C0C LD HL,($6CBB) ; #REGhl=*#R$6CBB (boundary table pointer).
+@label=Validate_Position_Loop
 *$6C0F PUSH HL       ; Stash the boundary pointer on the stack.
  $6C10 LD A,(HL)     ; #REGa=*#REGhl (Y-min for this region).
  $6C11 OR A          ; {Jump to #R$6C36 if #REGa is #N$00 (end of boundary
@@ -3688,7 +3721,7 @@ c$6C0C LD HL,($6CBB) ; #REGhl=*#R$6CBB (flight path boundary pointer).
  $6C2D AND A         ; Clear carry (valid position).
  $6C2E RET           ; Return.
 ; Position is outside this region so try the next one.
-@label=ValidateRedBirdPosition_Next
+@label=Validate_Position_Next
 *$6C2F POP HL        ; Restore the boundary pointer from the stack.
  $6C30 INC HL        ; {Advance #REGhl by #N$04 (next boundary entry).
  $6C31 INC HL        ;
@@ -3696,7 +3729,7 @@ c$6C0C LD HL,($6CBB) ; #REGhl=*#R$6CBB (flight path boundary pointer).
  $6C33 INC HL        ; }
  $6C34 JR $6C0F      ; Jump to #R$6C0F.
 ; End of boundary data. No valid region found.
-@label=ValidateRedBirdPosition_OutOfBounds
+@label=Validate_Position_OutOfBounds
 *$6C36 POP HL        ; Restore the boundary pointer from the stack.
  $6C37 SCF           ; Set carry (out of bounds).
  $6C38 RET           ; Return.
@@ -3735,7 +3768,7 @@ c$6C39 LD A,($6CB7)  ; {#REGh=*#R$6CB7.
 
 ; Check Sprite Collision
 ;
-; Used by the routines at #R$69F7, #R$6E5D, #R$7082, #R$74D6, #R$759A, #R$768C
+; Used by the routines at #R$69F7, #R$6E5D, #R$7082, #R$74D6, #R$759A, #R$77B9
 ; and #R$794A.
 ; .
 ; Checks if two sprites overlap by comparing their X and Y positions.
@@ -3792,8 +3825,8 @@ c$6C53 LD A,(IX+$00) ; Load #REGa with the first sprite's X position (from
 
 ; Check Egg Collision
 ;
-; Used by the routines at #R$69F7, #R$6F54, #R$7190, #R$74D6, #R$759A and
-; #R$768C.
+; Used by the routines at #R$69F7, #R$6F54, #R$7190, #R$74D6, #R$759A, #R$7713
+; and #R$77B9.
 ; .
 ; Checks if an egg overlaps with a sprite by comparing their positions.
 ; The egg is assumed to be #N$10 pixels wide and #N$10 pixels tall, while
@@ -3991,7 +4024,7 @@ g$6CC4 DEFB $00
  $6D9F DEFB $C6,$6C,$7E,$FE,$FF,$C8,$CB,$BE
  $6DA7 DEFB $23,$18,$F7,$C9
 
-; Handle Cars
+; Handler: Cars
 ;
 ; Used by the routine at #R$69A7.
 ; .
@@ -4003,8 +4036,8 @@ g$6CC4 DEFB $00
 ; .
 ;
 ; Check if respawning; if so, reset the car state.
-@label=Handle_Cars
-c$6DAB LD A,($5FBB)    ; {Jump to #R$6DB8 if *#R$5FBB (respawn flag) is zero.
+@label=Handler_Cars
+c$6DAB LD A,($5FBB)    ; {Jump to #R$6DB8 if *#R$5FBB is unset.
  $6DAE OR A            ;
  $6DAF JR Z,$6DB8      ; }
  $6DB1 XOR A           ; {Write #N$00 to; #LIST { *#R$7208 } { *#R$7209 } LIST#
@@ -4026,8 +4059,8 @@ c$6DAB LD A,($5FBB)    ; {Jump to #R$6DB8 if *#R$5FBB (respawn flag) is zero.
 @label=Handle_Car_Movement
 *$6DCE CALL $6E5D      ; Call #R$6E5D.
  $6DD1 LD IX,$DAD0     ; Point #REGix at #R$DAD0 (car sprite data).
- $6DD5 LD A,($5FBB)    ; {Call #R$6E2F if *#R$5FBB (respawn flag) is non-zero to randomise
- $6DD8 OR A            ; the car.
+ $6DD5 LD A,($5FBB)    ; {Call #R$6E2F if *#R$5FBB is set to randomise the car.
+ $6DD8 OR A            ;
  $6DD9 CALL NZ,$6E2F   ; }
 ; Check if the car is in the crash animation.
  $6DDC LD A,($7209)    ; {Jump to #R$6DFD if *#R$7209 is zero, indicating there's been no
@@ -4059,7 +4092,17 @@ c$6DAB LD A,($5FBB)    ; {Jump to #R$6DB8 if *#R$5FBB (respawn flag) is zero.
                        ; X).
  $6E0A ADD A,$10       ; {Set the rear X position to the front X plus #N$10.
  $6E0C LD (IX+$04),A   ; }
+; #UDGTABLE(default,centre,centre) { =h Sprite ID | =h Sprite }
+; { #N$1E | #UDGS$02,$02(udg44763-56x4)(
+;   #UDG($AEDB+$08*($02*$x+$y))(*udg)
+;   udg
+; ) } TABLE#
  $6E0F LD (IX+$03),$1E ; Set the front sprite frame to #N$1E (car front).
+; #UDGTABLE(default,centre,centre) { =h Sprite ID | =h Sprite }
+; { #N$1F | #UDGS$02,$02(udg44795-56x4)(
+;   #UDG($AEFB+$08*($02*$x+$y))(*udg)
+;   udg
+; ) } TABLE#
  $6E13 LD (IX+$07),$1F ; Set the rear sprite frame to #N$1F (car rear).
 ; Check if Percy's egg has hit the car.
  $6E17 LD BC,$7209     ; {Point #REGbc at #R$7209 and #REGhl at #R$DAD0.
@@ -4315,7 +4358,7 @@ c$6F54 LD HL,$DAC8   ; #REGhl=#R$DAC8.
  $6F75 LD A,$0F      ; {Call #R$67B2 to add #N$0F points to the score.
  $6F77 CALL $67B2    ; }
 ; This entry point is used by the routines at #R$69F7, #R$7190, #R$74B9,
-; #R$74D6 and #R$768C.
+; #R$74D6, #R$7713 and #R$77B9.
 ; .
 ; Play a short random sound burst — used as a hit sound effect by
 ; multiple routines.
@@ -4348,22 +4391,22 @@ c$6F54 LD HL,$DAC8   ; #REGhl=#R$DAC8.
 c$6F8D LD IX,$DAC8     ; #REGix=#R$DAC8.
  $6F91 LD HL,$720B     ; #REGhl=#R$720B (car speed).
 ; If the room is being initialised, set up the car.
- $6F94 LD A,($5FBB)    ; #REGa=*#R$5FBB.
- $6F97 OR A            ; {Jump to #R$700C if the room buffer flag is set.
+ $6F94 LD A,($5FBB)    ; {Jump to #R$700C if *#R$5FBB is set.
+ $6F97 OR A            ;
  $6F98 JR NZ,$700C     ; }
 ; If the car crash timer is active, handle the crash animation.
- $6F9A LD A,($7208)    ; #REGa=*#R$7208.
- $6F9D OR A            ; {Jump to #R$6E6E if the crash timer is active.
+ $6F9A LD A,($7208)    ; {Jump to #R$6E6E if *#R$7208 is active.
+ $6F9D OR A            ;
  $6F9E JP NZ,$6E6E     ; }
 ; Check which road the car is on.
  $6FA1 LD A,(IX+$01)   ; #REGa=*#REGix+#N$01 (car Y position).
- $6FA4 CP $90          ; Is the car on the upper road (#N$90)?
- $6FA6 JR Z,$6FCB      ; Jump to #R$6FCB if on the upper road.
+ $6FA4 CP $90          ; {Jump to #R$6FCB if on the upper road.
+ $6FA6 JR Z,$6FCB      ; }
 ; Car is on the lower road (Y=#N$A0) — driving left.
  $6FA8 LD A,(IX+$00)   ; #REGa=*#REGix+#N$00 (car X position).
  $6FAB SUB (HL)        ; #REGa-=*#REGhl (subtract speed).
- $6FAC CP $68          ; Has the car reached #N$68 (left boundary)?
- $6FAE JR C,$6FEE      ; Jump to #R$6FEE if at the left boundary (turn around).
+ $6FAC CP $68          ; {Jump to #R$6FEE if at the left boundary (turn
+ $6FAE JR C,$6FEE      ; around).}
 ; This entry point is used by the routine at #R$7028.
 ; .
 ; Update positions and set driving left frames.
@@ -4373,8 +4416,18 @@ c$6F8D LD IX,$DAC8     ; #REGix=#R$DAC8.
  $6FB5 LD (IX+$04),A   ; Write #REGa to *#REGix+#N$04 (rear X).
  $6FB8 LD (IX+$01),$A0 ; Write #N$A0 to *#REGix+#N$01 (front Y: lower road).
  $6FBC LD (IX+$05),$A0 ; Write #N$A0 to *#REGix+#N$05 (rear Y: lower road).
+; #UDGTABLE(default,centre,centre) { =h Sprite ID | =h Sprite }
+; { #N$1E | #UDGS$02,$02(udg44763-56x4)(
+;   #UDG($AEDB+$08*($02*$x+$y))(*udg)
+;   udg
+; ) } TABLE#
  $6FC0 LD (IX+$03),$1E ; Write #N$1E to *#REGix+#N$03 (front frame: driving
                        ; left).
+; #UDGTABLE(default,centre,centre) { =h Sprite ID | =h Sprite }
+; { #N$1F | #UDGS$02,$02(udg44795-56x4)(
+;   #UDG($AEFB+$08*($02*$x+$y))(*udg)
+;   udg
+; ) } TABLE#
  $6FC4 LD (IX+$07),$1F ; Write #N$1F to *#REGix+#N$07 (rear frame: driving
                        ; left).
  $6FC8 JP $6EE8        ; Jump to #R$6EE8.
@@ -4382,8 +4435,8 @@ c$6F8D LD IX,$DAC8     ; #REGix=#R$DAC8.
 @label=Handler_CarType2_DriveRight
 *$6FCB LD A,(IX+$00)   ; #REGa=*#REGix+#N$00 (car X position).
  $6FCE ADD A,(HL)      ; #REGa+=*#REGhl (add speed).
- $6FCF CP $DE          ; Has the car reached #N$DE (right edge)?
- $6FD1 JR NC,$700C     ; Jump to #R$700C if at the right edge (reinitialise).
+ $6FCF CP $DE          ; {Jump to #R$700C if at the right edge (reinitialise).
+ $6FD1 JR NC,$700C     ; }
 ; This entry point is used by the routine at #R$7028.
 ; .
 ; Update positions and set driving right frames.
@@ -4393,8 +4446,18 @@ c$6F8D LD IX,$DAC8     ; #REGix=#R$DAC8.
  $6FD8 LD (IX+$04),A   ; Write #REGa to *#REGix+#N$04 (rear X).
  $6FDB LD (IX+$01),$90 ; Write #N$90 to *#REGix+#N$01 (front Y: upper road).
  $6FDF LD (IX+$05),$90 ; Write #N$90 to *#REGix+#N$05 (rear Y: upper road).
+; #UDGTABLE(default,centre,centre) { =h Sprite ID | =h Sprite }
+; { #N$1C | #UDGS$02,$02(udg44699-56x4)(
+;   #UDG($AE9B+$08*($02*$x+$y))(*udg)
+;   udg
+; ) } TABLE#
  $6FE3 LD (IX+$03),$1C ; Write #N$1C to *#REGix+#N$03 (front frame: driving
                        ; right).
+; #UDGTABLE(default,centre,centre) { =h Sprite ID | =h Sprite }
+; { #N$1D | #UDGS$02,$02(udg44731-56x4)(
+;   #UDG($AEBB+$08*($02*$x+$y))(*udg)
+;   udg
+; ) } TABLE#
  $6FE7 LD (IX+$07),$1D ; Write #N$1D to *#REGix+#N$07 (rear frame: driving
                        ; right).
  $6FEB JP $6EBC        ; Jump to #R$6EBC.
@@ -4405,15 +4468,18 @@ c$6F8D LD IX,$DAC8     ; #REGix=#R$DAC8.
  $6FEF CALL $6C39      ; Call #R$6C39.
  $6FF2 POP HL          ; Restore #REGhl from the stack.
  $6FF3 AND %00000011   ; Keep only bits 0-1 (random speed #N$00-#N$03).
- $6FF5 INC A           ; Increment (speed #N$01-#N$04).
+ $6FF5 INC A           ; Increment the random number by one (speed
+                       ; #N$01-#N$04).
  $6FF6 LD (HL),A       ; Write the new speed to *#REGhl.
-; Pick a new colour, rejecting #N$01 (blue).
+; Pick a new colour, rejecting #INK$01.
+@label=PickCarColour
 *$6FF7 PUSH HL         ; Stash #REGhl on the stack.
  $6FF8 CALL $6C39      ; Call #R$6C39.
  $6FFB POP HL          ; Restore #REGhl from the stack.
- $6FFC AND %00000011   ; Keep only bits 0-1.
- $6FFE CP $01          ; Is the colour #N$01 (blue)?
- $7000 JR Z,$6FF7      ; Jump to #R$6FF7 if blue (pick again).
+ $6FFC AND %00000011   ; Keep only bits 0-1 (random colour from
+                       ; #FOR$00,$03,,$01(n,#INKn)).
+ $6FFE CP $01          ; {Jump to #R$6FF7 if the colour is #INK$01 (pick
+ $7000 JR Z,$6FF7      ; again).}
  $7002 LD (IX+$02),A   ; Write #REGa to *#REGix+#N$02 (front colour).
  $7005 LD (IX+$06),A   ; Write #REGa to *#REGix+#N$06 (rear colour).
  $7008 LD A,$68        ; #REGa=#N$68 (left boundary X position).
@@ -4424,8 +4490,8 @@ c$6F8D LD IX,$DAC8     ; #REGix=#R$DAC8.
 *$700C PUSH HL         ; Stash #REGhl on the stack.
  $700D CALL $6C39      ; Call #R$6C39.
  $7010 POP HL          ; Restore #REGhl from the stack.
- $7011 AND %00000011   ; Keep only bits 0-1.
- $7013 INC A           ; Increment (speed #N$01-#N$04).
+ $7011 AND %00000011   ; Keep only bits 0-1 (random speed #N$00-#N$03).
+ $7013 INC A           ; Increment the random speed by one (speed #N$01-#N$04).
  $7014 LD (HL),A       ; Write the new speed to *#REGhl.
 ; Pick a colour, using the range #N$04-#N$07 (bright colours).
  $7015 PUSH HL         ; Stash #REGhl on the stack.
@@ -4449,17 +4515,17 @@ c$7028 LD IX,$DAC8   ; #REGix=#R$DAC8.
  $702C LD HL,$720B   ; #REGhl=#R$720B.
  $702F LD (HL),$01   ; Write #N$01 to *#REGhl (fixed speed of #N$01).
 ; If the room is being initialised, set up the car.
- $7031 LD A,($5FBB)  ; #REGa=*#R$5FBB.
- $7034 OR A          ; {Jump to #R$704E if the room buffer flag is set.
+ $7031 LD A,($5FBB)  ; {Jump to #R$704E if *#R$5FBB is set.
+ $7034 OR A          ;
  $7035 JR NZ,$704E   ; }
 ; If the car crash timer is active, handle the crash animation.
- $7037 LD A,($7208)  ; #REGa=*#R$7208.
- $703A OR A          ; {Jump to #R$6E6E if the crash timer is active.
+ $7037 LD A,($7208)  ; {Jump to #R$6E6E if *#R$7208 is active.
+ $703A OR A          ;
  $703B JP NZ,$6E6E   ; }
 ; Check which road the car is on.
  $703E LD A,(IX+$01) ; #REGa=*#REGix+#N$01 (car Y position).
- $7041 CP $90        ; Is the car on the upper road (#N$90)?
- $7043 JR Z,$7063    ; Jump to #R$7063 if on the upper road.
+ $7041 CP $90        ; {Jump to #R$7063 if the car is on the upper road.
+ $7043 JR Z,$7063    ; }
 ; Car is on the lower road — driving left.
  $7045 LD A,(IX+$00) ; #REGa=*#REGix+#N$00 (car X position).
  $7048 SUB (HL)      ; #REGa-=*#REGhl (subtract speed).
@@ -4472,9 +4538,10 @@ c$7028 LD IX,$DAC8   ; #REGix=#R$DAC8.
 *$704E PUSH HL       ; Stash #REGhl on the stack.
  $704F CALL $6C39    ; Call #R$6C39.
  $7052 POP HL        ; Restore #REGhl from the stack.
- $7053 AND %00000011 ; Keep only bits 0-1.
- $7055 CP $01        ; Is the colour #N$01 (blue)?
- $7057 JR Z,$704E    ; Jump to #R$704E if blue (pick again).
+ $7053 AND %00000011 ; Keep only bits 0-1 (random colour from
+                     ; #FOR$00,$03,,$01(n,#INKn)).
+ $7055 CP $01        ; {Jump to #R$704E if the colour is #INK$01 (pick again).
+ $7057 JR Z,$704E    ; }
  $7059 LD (IX+$02),A ; Write #REGa to *#REGix+#N$02 (front colour).
  $705C LD (IX+$06),A ; Write #REGa to *#REGix+#N$06 (rear colour).
  $705F XOR A         ; #REGa=#N$00 (start from the left edge).
@@ -4483,8 +4550,8 @@ c$7028 LD IX,$DAC8   ; #REGix=#R$DAC8.
 @label=Handler_CarType3_DriveRight
 *$7063 LD A,(IX+$00) ; #REGa=*#REGix+#N$00 (car X position).
  $7066 ADD A,(HL)    ; #REGa+=*#REGhl (add speed).
- $7067 CP $28        ; Has the car reached #N$28?
- $7069 JR NC,$706E   ; Jump to #R$706E if past the boundary.
+ $7067 CP $28        ; {Jump to #R$706E if past the boundary.
+ $7069 JR NC,$706E   ; }
  $706B JP $6FD3      ; Jump to #R$6FD3.
 ; Pick a new bright colour and restart from #N$28.
 @label=Handler_CarType3_Restart
@@ -4602,22 +4669,22 @@ c$70DB LD A,(HL)       ; {Fetch the jump timer value from *#REGhl.
 ; Ascending phase: increment the pitch and output to the speaker.
  $70FB DEC HL          ; Move back to the ascending counter.
  $70FC LD A,(HL)       ; {Calculate the speaker output from the counter: add #N$03, rotate
- $70FD ADD A,$03       ; left, mask and set bit 0 for the border; output to the speaker port.
+ $70FD ADD A,$03       ; left, mask and set bit 0 for the border.
  $70FF RLCA            ;
  $7100 AND %00011000   ;
  $7102 OR %00000001    ; }
- $7104 OUT ($FE),A     ;
- $7106 LD A,(HL)       ; {Increment the ascending counter; jump to #R$7114 if it has not
- $7107 INC A           ; reached #N$19.
- $7108 CP $19          ; }
- $710A JR NZ,$7114     ;
+ $7104 OUT ($FE),A     ; Output to the speaker port.
+ $7106 LD A,(HL)       ; {Fetch the ascending counter and increment it.
+ $7107 INC A           ; }
+ $7108 CP $19          ; {Jump to #R$7114 if the ascending counter has not
+ $710A JR NZ,$7114     ; reached #N$19.}
 ; Ascending phase complete; switch to descending.
- $710C XOR A           ; {Write #N$00 to the ascending counter, set the descending flag to
- $710D LD (HL),A       ; #N$FF, and move back.
- $710E INC HL          ;
+ $710C XOR A           ; {Write #N$00 to clear the ascending counter.
+ $710D LD (HL),A       ; }
+ $710E INC HL          ; {Set the descending flag to #N$FF.
  $710F DEC A           ;
- $7110 LD (HL),A       ;
- $7111 DEC HL          ; }
+ $7110 LD (HL),A       ; }
+ $7111 DEC HL          ; Move the pointer back to the ascending counter.
  $7112 JR $7144        ; Jump to #R$7144.
 @label=Store_Ascending_Counter
 *$7114 LD (HL),A       ; Write the updated ascending counter back.
@@ -4627,10 +4694,10 @@ c$70DB LD A,(HL)       ; {Fetch the jump timer value from *#REGhl.
 *$7117 DEC HL          ; Move back to the ascending counter (used as pitch
                        ; value).
  $7118 LD A,(HL)       ; {Calculate the speaker output from the counter: rotate left, mask
- $7119 RLCA            ; and set bit 0 for the border; output to the speaker port.
+ $7119 RLCA            ; and set bit 0 for the border.
  $711A AND %00011000   ;
  $711C OR %00000001    ; }
- $711E OUT ($FE),A     ;
+ $711E OUT ($FE),A     ; Output to the speaker port.
  $7120 DEC (HL)        ; {Decrement the counter; jump to #R$7144 if it is
  $7121 JR NZ,$7144     ; non-zero.}
  $7123 INC HL          ; {Counter has reached zero; clear the descending flag
@@ -4682,20 +4749,34 @@ c$70DB LD A,(HL)       ; {Fetch the jump timer value from *#REGhl.
  $715C ADD A,A         ;
  $715D ADD A,C         ; }
  $715E LD (IX+$00),A   ; Write it to *#REGix+#N$00.
+; #UDGTABLE(default,centre,centre) { =h Sprite ID | =h Sprite }
+; { #N$28 | #UDGS$02,$02(udg45083-56x4)(
+;   #UDG($B01B+$08*($02*$x+$y))(*udg)
+;   udg
+; ) } TABLE#
  $7161 LD (IX+$03),$28 ; Set the sprite frame to #R$B01B(#N$28) (frog jumping
                        ; right).
- $7165 BIT 7,D         ; Return if bit 7 of #REGd is not set (facing right).
- $7167 RET Z           ;
+ $7165 BIT 7,D         ; {Return if bit 7 of #REGd is not set (facing right).
+ $7167 RET Z           ; }
+; #UDGTABLE(default,centre,centre) { =h Sprite ID | =h Sprite }
+; { #N$29 | #UDGS$02,$02(udg45115-56x4)(
+;   #UDG($B03B+$08*($02*$x+$y))(*udg)
+;   udg
+; ) } TABLE#
  $7168 INC (IX+$03)    ; Increment the sprite frame to #R$B03B(#N$29) (frog
                        ; jumping left).
  $716B RET             ; Return.
 ; Frog is on the platform; set its resting position.
 @label=Frog_On_Platform
 *$716C LD (IX+$01),B   ; Set the Y position to the platform Y from #REGb.
- $716F BIT 7,D         ; Jump to #R$7184 if bit 7 of #REGd is set (frog faces
-                       ; left).
- $7171 JR NZ,$7184     ;
+ $716F BIT 7,D         ; {Jump to #R$7184 if bit 7 of #REGd is set (frog faces
+ $7171 JR NZ,$7184     ; left).}
  $7173 LD (IX+$00),C   ; Set the X position to the platform X from #REGc.
+; #UDGTABLE(default,centre,centre) { =h Sprite ID | =h Sprite }
+; { #N$2A | #UDGS$02,$02(udg45147-56x4)(
+;   #UDG($B05B+$08*($02*$x+$y))(*udg)
+;   udg
+; ) } TABLE#
  $7176 LD (IX+$03),$2A ; Set the sprite frame to #R$B05B(#N$2A) (frog sitting
                        ; right).
 @label=Random_Tongue_Flick
@@ -4703,6 +4784,17 @@ c$70DB LD A,(HL)       ; {Fetch the jump timer value from *#REGhl.
  $717C AND %00011111   ; }
  $717E OR A            ; {Return if the result is non-zero (random chance to
  $717F RET NZ          ; flick tongue).}
+; #UDGTABLE(default,centre,centre,centre,centre)
+; { =h Sprite ID | =h Sprite |  =h Sprite ID | =h Sprite }
+; { =h,c2 Right | =h,c2 Left }
+; { #N$2B | #UDGS$02,$02(udg45179-56x4)(
+;   #UDG($B07B+$08*($02*$x+$y))(*udg)
+;   udg
+; ) |
+;   #N$2D | #UDGS$02,$02(udg45243-56x4)(
+;   #UDG($B0BB+$08*($02*$x+$y))(*udg)
+;   udg
+; ) } TABLE#
  $7180 INC (IX+$03)    ; Increment the sprite frame by one (tongue-out
                        ; variant).
  $7183 RET             ; Return.
@@ -4711,6 +4803,11 @@ c$70DB LD A,(HL)       ; {Fetch the jump timer value from *#REGhl.
 *$7184 LD A,C          ; {Set the X position to platform X plus #N$68.
  $7185 ADD A,$68       ;
  $7187 LD (IX+$00),A   ; }
+; #UDGTABLE(default,centre,centre) { =h Sprite ID | =h Sprite }
+; { #N$2C | #UDGS$02,$02(udg45211-56x4)(
+;   #UDG($B09B+$08*($02*$x+$y))(*udg)
+;   udg
+; ) } TABLE#
  $718A LD (IX+$03),$2C ; Set the sprite frame to #R$B09B(#N$2C) (frog sitting
                        ; left).
  $718E JR $717A        ; Jump to #R$717A.
@@ -5208,29 +5305,29 @@ c$7413 LD A,B        ; Copy the phase counter into #REGa.
  $7435 CALL $759A    ; Call #R$759A.
  $7438 RET           ; Return.
 
-; Handle Red Bird Movement
+; Handler: Helicopter
 ;
 ; Used by the routines at #R$723F, #R$7265, #R$7286, #R$72BD, #R$72E1, #R$730E,
 ; #R$7367, #R$73A4, #R$73E1, #R$73FA and #R$7413.
 ; .
-; Controls the red bird hazard movement and animation. Generates random
-; direction changes and movement delays, moves the bird according to its current
+; Controls the helicopter hazard movement and animation. Generates random
+; direction changes and movement delays, moves the helicopter according to its current
 ; direction, and updates the animation frame. Used by all room handlers.
 ;
-; IX Pointer to red bird sprite data
+; IX Pointer to helicopter sprite data
 ;
-; Set up the red bird data pointer and check if respawning is needed.
-@label=Handle_Red_Bird
+; Set up the helicopter data pointer and check if respawning is needed.
+@label=Handler_Helicopter
 c$7439 LD IY,$7508     ; Point #REGiy at #R$7508.
 ; This entry point is used by the routines at #R$723F and #R$730E.
-@label=Handle_Red_Bird_Entry
-*$743D LD A,($5FBB)    ; {Call #R$74A7 if *#R$5FBB (respawn flag) is non-zero to randomise
- $7440 OR A            ; the red bird's position.
+@label=Handler_Helicopter_Entry
+*$743D LD A,($5FBB)    ; {Call #R$74A7 if *#R$5FBB is set to randomise the helicopter's
+ $7440 OR A            ; position.
  $7441 CALL NZ,$74A7   ; }
- $7444 BIT 7,(IY+$00)  ; {Jump to #R$74B9 if bit 7 of *#REGiy+#N$00 is set (bird is
+ $7444 BIT 7,(IY+$00)  ; {Jump to #R$74B9 if bit 7 of *#REGiy+#N$00 is set (helicopter is
  $7448 JP NZ,$74B9     ; spawning/inactive).}
 ; Decrement the movement delay timer; if it hasn't expired, skip ahead
-; to move the bird in its current direction.
+; to move the helicopter in its current direction.
  $744B DEC (IY+$01)    ; Decrement the movement delay at *#REGiy+#N$01.
  $744E JR NZ,$7466     ; Jump to #R$7466 if the delay has not reached zero.
 ; Movement delay has expired; generate a new random direction and delay.
@@ -5247,51 +5344,53 @@ c$7439 LD IY,$7508     ; Point #REGiy at #R$7508.
  $745F AND %00111111   ;
  $7461 OR %00000001    ; }
  $7463 LD (IY+$01),A   ; Write the result to *#REGiy+#N$01.
-; Move the red bird in its current direction.
-@label=Move_Red_Bird
+; Move the helicopter in its current direction.
+@label=Move_Helicopter
 *$7466 LD A,(IY+$00)   ; {Fetch the current direction from *#REGiy+#N$00, mask with #N$07
  $7469 AND %00000111   ; and double it to form a jump table index.}
  $746B ADD A,A         ;
  $746C LD ($6BC9),A    ; Write the direction index to *#R$6BC8(#N$6BC9).
- $746F LD HL,$7507     ; Point #REGhl at #R$7507 (movement boundary data).
- $7472 LD C,(IX+$00)   ; {Load the red bird's X position into #REGc and Y position into
+ $746F LD HL,$7507     ; Point #REGhl at #R$7507 (helicopter movement boundary
+                       ; data).
+ $7472 LD C,(IX+$00)   ; {Load the helicopter's X position into #REGc and Y position into
  $7475 LD B,(IX+$01)   ; #REGb from *#REGix+#N$00 and *#REGix+#N$01.}
- $7478 CALL $6BC8      ; Call #R$6BA0 to move the bird in the current
+ $7478 CALL $6BC8      ; Call #R$6BC8 to move the helicopter in the current
                        ; direction.
  $747B JR C,$7450      ; Jump to #R$7450 if the move was invalid (carry set) and pick a new
                        ; random direction.
-; Determine the facing direction based on the bird's position relative to
+; Determine the facing direction based on the helicopter's position relative to
 ; Percy.
- $747D LD A,(IX+$00)   ; {Jump to #R$748F if the red bird's X position with Percy's previous
+ $747D LD A,(IX+$00)   ; {Jump to #R$748F if the helicopter's X position with Percy's previous
  $7480 CP (IX+$40)     ; X position is equal.
  $7483 JR Z,$748F      ; }
- $7485 LD (IY+$03),$00 ; {Set *#REGiy+#N$03 to #N$00 (facing left) if the bird is to the left
+ $7485 LD (IY+$03),$00 ; {Set *#REGiy+#N$03 to #N$00 (facing left) if the helicopter is to the left
  $7489 JR C,$748F      ; of Percy; jump to #R$748F.}
- $748B LD (IY+$03),$04 ; Set *#REGiy+#N$03 to #N$04 (facing right) if the bird is to the
+ $748B LD (IY+$03),$04 ; Set *#REGiy+#N$03 to #N$04 (facing right) if the helicopter is to the
                        ; right of Percy.
-; Update the red bird's animation frame.
-@label=Update_Red_Bird_Frame
+; Update the helicopter's animation frame.
+@label=Update_Helicopter_Frame
 *$748F LD A,(IY+$04)   ; {Increment the animation counter at *#REGiy+#N$04, wrapping at
  $7492 INC A           ; #N$03 to cycle through four frames.
  $7493 AND %00000011   ; }
- $7495 LD (IY+$04),A   ; Write the result to *#REGiy+#N$03.
- $7498 ADD A,$2E       ; {Calculate the sprite frame ID: add #N$2E (base frame) plus the
- $749A ADD A,(IY+$03)  ; facing offset from *#REGiy+#N$03.}
+ $7495 LD (IY+$04),A   ; Write the result to *#REGiy+#N$04.
+ $7498 ADD A,$2E       ; {Calculate the sprite frame ID: add the immediate value (#N$2E) to
+ $749A ADD A,(IY+$03)  ; the animation counter and the facing offset from *#REGiy+#N$03.
+                       ; }
  $749D LD (IX+$03),A   ; Write the sprite frame ID to *#REGix+#N$03.
  $74A0 LD (IX+$02),$01 ; Set the sprite active flag at *#REGix+#N$02 to #N$01.
  $74A4 JP $74D6        ; Jump to #R$74D6.
 
-; Randomise Red Bird Position
+; Randomise Helicopter Position
 ;
 ; Used by the routines at #R$7439 and #R$7628.
 ; .
-; Generates a random position for the red bird and validates it. Keeps
+; Generates a random position for the helicopter and validates it. Keeps
 ; generating new coordinates until a valid position is found, then clears the
 ; spawning flag.
 ;
-; IX Pointer to red bird sprite data
-; IY Pointer to red bird state data
-@label=Randomise_Red_Bird_Position
+; IX Pointer to helicopter sprite data
+; IY Pointer to helicopter state data
+@label=Randomise_Helicopter_Position
 @label=Randomise_Position_Loop
 c$74A7 CALL $7930     ; {Generate a random X coordinate in #REGc and a random Y coordinate
  $74AA LD C,A         ; in #REGb by calling #R$7930 twice.
@@ -5299,21 +5398,22 @@ c$74A7 CALL $7930     ; {Generate a random X coordinate in #REGc and a random Y 
  $74AE LD B,A         ; }
  $74AF CALL $6C0C     ; {Call #R$6C0C and jump back to #R$74A7 if the position
  $74B2 JR C,$74A7     ; is invalid.}
- $74B4 RES 7,(IY+$00) ; Clear bit 7 of *#REGiy+#N$00 (mark the red bird as active/no longer
+ $74B4 RES 7,(IY+$00) ; Clear bit 7 of *#REGiy+#N$00 (mark the helicopter as active/no longer
                       ; spawning).
  $74B8 RET            ; Return.
 
-; Animate Stunned Red Bird
+; Animate Stunned Hazard
 ;
 ; Used by the routines at #R$7439, #R$7512, #R$768C, #R$7893 and #R$79D2.
 ; .
-; Animates the stunned red bird sequence. Increments the animation counter
-; until it reaches #N$85, cycling through animation frames. Assigns a random
-; colour attribute and plays a hit sound each frame.
+; Animates the stunned hazard sequence. Used by the helicopter, cat,
+; paratrooper, canopy and other hazards when hit by Percy's egg. Increments
+; the animation counter until it reaches #N$85, cycling through animation
+; frames. Assigns a random colour attribute and plays a hit sound each frame.
 ;
-; IX Pointer to red bird sprite data
-; IY Pointer to red bird state data
-@label=Animate_Stunned_RedBird
+; IX Pointer to hazard sprite data
+; IY Pointer to hazard state data
+@label=Animate_Stunned_Hazard
 c$74B9 LD A,(IY+$00) ; {Return if the animation counter at *#REGiy+#N$00 has reached #N$85
  $74BC CP $85        ; (animation complete).
  $74BE RET Z         ; }
@@ -5347,7 +5447,7 @@ c$74D6 PUSH IY         ; Stash the hazard state pointer on the stack.
  $74DF POP IY          ; Restore the hazard state pointer from the stack.
  $74E1 JR C,$74EA      ; Jump to #R$74EA if there's been no collision with
                        ; Percy.
-; This entry point is used by the routines at #R$768C and #R$794A.
+; This entry point is used by the routines at #R$77B9 and #R$794A.
 ; .
 ; The hazard has hit Percy.
 @label=Hazard_Hit_Percy
@@ -5369,32 +5469,43 @@ c$74D6 PUSH IY         ; Stash the hazard state pointer on the stack.
 @label=Egg_Stuns_Hazard
  $74FB LD (IY+$00),$80 ; Write #N$80 to *#REGiy+#N$00 to set bit 7 (mark the hazard as
                        ; stunned).
-; This entry point is used by the routine at #R$768C.
+; This entry point is used by the routine at #R$77B9.
 @label=Stun_Hazard_And_Score
 *$74FF CALL $71E1      ; Call #R$71E1.
  $7502 LD A,$14        ; {Jump to #R$67B2 to add #N$14 points to the score.
  $7504 JP $67B2        ; }
 
-; Red Bird Movement Boundary
+; Helicopter Movement Boundary
 ;
 ; Single byte used as movement boundary data; read at #R$746F.
-@label=RedBird_MovementBoundary
+@label=Helicopter_MovementBoundary
 g$7507 DEFB $02
 
-; Red Bird Data States
-@label=RedBird_DataStates
-g$7508 DEFB $00
- $7509 DEFB $00
- $750A DEFB $00
- $750B DEFB $00
- $750C DEFB $00
- $750D DEFB $00
- $750E DEFB $00
- $750F DEFB $00
- $7510 DEFB $00
- $7511 DEFB $00
+; Helicopter State Data
+;
+; State variables for the helicopter hazard. Two five-byte state blocks:
+; #R$7508 (first) and #R$750D (second).
+; .
+; Referenced by room handlers at #R$723F and #R$730E.
+;
+; .
+;
+; Helicopter #1
+@label=Helicopter_State_Data_1
+g$7508 DEFB $00      ; Direction / active flag (bit 7 set = spawning/inactive).
+ $7509 DEFB $00      ; Movement delay.
+ $750A DEFB $00      ; Unused.
+ $750B DEFB $00      ; Facing (#N$00=left, #N$04=right).
+ $750C DEFB $00      ; Animation counter.
+; Helicopter #2
+@label=Helicopter_State_Data_2
+ $750D DEFB $00      ; Direction / active flag (bit 7 set = spawning/inactive).
+ $750E DEFB $00      ; Movement delay.
+ $750F DEFB $00      ; Unused.
+ $7510 DEFB $00      ; Facing (#N$00=left, #N$04=right).
+ $7511 DEFB $00      ; Animation counter.
 
-; Handle Cat
+; Handler: Cat
 ;
 ; Used by the routines at #R$7265, #R$7286, #R$72E1, #R$730E, #R$7367 and
 ; #R$73A4.
@@ -5407,9 +5518,14 @@ g$7508 DEFB $00
 ; IX Pointer to the cat sprite data
 ;
 ; Set up the cat state pointer and movement parameters.
-@label=Handle_Cat
+@label=Handler_Cat
 c$7512 LD IY,$7AC8    ; Point #REGiy at #R$7AC8.
  $7516 LD HL,$7589    ; Point #REGhl at #R$7589.
+; #UDGTABLE(default,centre,centre) { =h Sprite ID | =h Sprite }
+; { #N$39 | #UDGS$02,$02(udg45627-56x4)(
+;   #UDG($B23B+$08*($02*$x+$y))(*udg)
+;   udg
+; ) } TABLE#
  $7519 LD BC,$0739    ; Set #REGb=#N$07 (sprite active value) and #REGc=#R$B23B(#N$39)
                       ; (base cat frame).
 ; This entry point is used by the routine at #R$758B.
@@ -5423,8 +5539,8 @@ c$7512 LD IY,$7AC8    ; Point #REGiy at #R$7AC8.
  $7525 ADD IY,DE      ; }
 ; This entry point is used by the routine at #R$7893.
 @label=Cat_Entry
-*$7527 LD A,($5FBB)   ; {Call #R$7574 if *#R$5FBB (respawn flag) is non-zero to reset the
- $752A OR A           ; cat position.
+*$7527 LD A,($5FBB)   ; {Call #R$7574 if *#R$5FBB is set to reset the cat
+ $752A OR A           ; position.
  $752B CALL NZ,$7574  ; }
  $752E BIT 7,(IY+$00) ; {Jump to #R$74B9 if bit 7 of *#REGiy+#N$00 is set (cat is stunned
  $7532 JR NZ,$74B9    ; by egg).}
@@ -5506,7 +5622,7 @@ g$7588 DEFB $00
 @label=Cat_Step_Size
  $758A DEFB $02
 
-; Handle Dog
+; Handler: Dog
 ;
 ; Used by the routines at #R$7286 and #R$7367.
 ; .
@@ -5515,8 +5631,13 @@ g$7588 DEFB $00
 ; and sprite frames.
 ;
 ; IX Pointer to the dog sprite data
-@label=Handle_Dog
+@label=Handler_Dog
 c$758B LD IY,$7AE8   ; Point #REGiy at #R$7AE8.
+; #UDGTABLE(default,centre,centre) { =h Sprite ID | =h Sprite }
+; { #N$41 | #UDGS$02,$02(udg45883-56x4)(
+;   #UDG($B33B+$08*($02*$x+$y))(*udg)
+;   udg
+; ) } TABLE#
  $758F LD BC,$0041   ; Set #REGb=#N$00 (sprite active value) and #REGc=#R$B33B(#N$41)
                      ; (base dog frame).
  $7592 LD HL,$7598   ; Point #REGhl at #R$7598.
@@ -5532,7 +5653,7 @@ g$7597 DEFB $00
 @label=Dog_Step_Size
  $7599 DEFB $03
 
-; Handle UFO
+; Handler: UFO
 ;
 ; Used by the routines at #R$7286, #R$730E, #R$7367 and #R$7413.
 ; .
@@ -5544,9 +5665,9 @@ g$7597 DEFB $00
 ; IX Pointer to the UFO sprite data
 ;
 ; Check for respawn.
-@label=Handle_UFO
-c$759A LD A,($5FBB)  ; {Call #R$7628 if *#R$5FBB (respawn flag) is set to reset
- $759D OR A          ; the UFO.
+@label=Handler_UFO
+c$759A LD A,($5FBB)  ; {Call #R$7628 if *#R$5FBB is set to reset the UFO.
+ $759D OR A          ;
  $759E CALL NZ,$7628 ; }
 ; Decrement the movement delay timer.
  $75A1 LD HL,$7679   ; {Decrement *#R$7679.
@@ -5600,6 +5721,11 @@ c$759A LD A,($5FBB)  ; {Call #R$7628 if *#R$5FBB (respawn flag) is set to reset
  $75E8 XOR A         ; Reset the frame back to #N$00.
 @label=Set_UFO_Frame
 *$75E9 LD (HL),A     ; Write the UFO frame to *#R$767C.
+; #UDGTABLE(default,centre,centre) { =h Sprite ID | =h Sprite }
+; { #N$4F | #UDGS$02,$02(udg46331-56x4)(
+;   #UDG($B4FB+$08*($02*$x+$y))(*udg)
+;   udg
+; ) } TABLE#
  $75EA ADD A,$4F     ; {Add #R$B4FB(#N$4F) as the base UFO frame and write it to
  $75EC LD (IX+$03),A ; *#REGix+#N$03.}
  $75EF LD A,($767D)  ; {Toggle the sprite flicker flag at *#R$767D between #N$00 and
@@ -5733,257 +5859,420 @@ c$7680 PUSH AF       ; Stash the phase counter on the stack.
  $7688 CALL $7713    ; Call #R$7713.
  $768B RET           ; Return.
 
-; Update Plane FlightPath
+; Handle Plane
 ;
 ; Used by the routine at #R$7680.
+; .
+; Controls the plane hazard. The plane flies horizontally across the screen
+; and can drop a bomb on Percy when directly above. The plane has two flight
+; directions and its speed varies by room. On room #N$03 the boundaries are
+; adjusted. When the plane reaches the screen edge it deactivates and waits for
+; a random trigger to respawn from the opposite side.
 ;
-; IX Pointer to plane sprite data
-@label=UpdatePlaneFlightPath
-c$768C LD IY,$77AF     ; #REGiy=#R$77AF.
- $7690 LD C,$04        ; #REGc=#N$04.
- $7692 LD B,$38        ; #REGb=#N$38.
+; IX Pointer to the plane sprite data
+;
+; Set up the plane state pointer and room-specific parameters.
+@label=Handle_Plane
+c$768C LD IY,$77AF     ; Point #REGiy at #R$77AF.
+ $7690 LD C,$04        ; Set the left boundary to #N$04 in #REGc.
+ $7692 LD B,$38        ; Set the right boundary to #N$38 in #REGb.
  $7694 LD A,($5FC5)    ; {Jump to #R$769E if *#R$5FC5 is not equal to #N$03.
  $7697 CP $03          ;
  $7699 JR NZ,$769E     ; }
- $769B LD C,$40        ; #REGc=#N$40.
- $769D LD B,C          ; #REGb=#REGc.
+ $769B LD C,$40        ; Set the left boundary to #N$40 in #REGc.
+ $769D LD B,C          ; Copy to #REGb (both boundaries are #N$40 on room
+                       ; #N$03).
+@label=Plane_Check_Respawn
 *$769E LD A,($5FBB)    ; {Jump to #R$76E5 if *#R$5FBB is set.
  $76A1 OR A            ;
  $76A2 JP NZ,$76E5     ; }
- $76A5 LD A,(IY+$02)   ; {Jump to #R$76DE if *#REGiy+#N$02 is zero.
- $76A8 OR A            ;
+ $76A5 LD A,(IY+$02)   ; {Jump to #R$76DE if *#REGiy+#N$02 (plane active flag) is zero
+ $76A8 OR A            ; (waiting to spawn).
  $76A9 JR Z,$76DE      ; }
- $76AB BIT 7,(IY+$00)  ; {Jump to #R$74B9 if  bit 7 of *#REGiy+#N$00 is set.
- $76AF JP NZ,$74B9     ; }
- $76B2 LD HL,$77B3     ; #REGhl=#R$77B3.
- $76B5 LD A,(IX+$00)   ; #REGa=*#REGix+#N$00.
- $76B8 BIT 7,(IY+$01)  ; Test bit 7 of *#REGiy+#N$01.
- $76BC JR NZ,$76C8     ; Jump to #R$76C8 if #REGa is not equal to #REGa.
- $76BE ADD A,(HL)      ; #REGa+=*#REGhl.
- $76BF CP $EE          ; {Jump to #R$770D if #REGa is greater than or equal to
- $76C1 JR NC,$770D     ; #N$EE.}
- $76C3 LD (IX+$00),A   ; Write #REGa to *#REGix+#N$00.
+ $76AB BIT 7,(IY+$00)  ; {Jump to #R$74B9 if bit 7 of *#REGiy+#N$00 is set (plane is stunned
+ $76AF JP NZ,$74B9     ; by egg).}
+; Plane is active; move it horizontally based on flight direction.
+ $76B2 LD HL,$77B3     ; Point #REGhl at #R$77B3.
+ $76B5 LD A,(IX+$00)   ; Fetch the plane X position from *#REGix+#N$00.
+ $76B8 BIT 7,(IY+$01)  ; Test bit 7 of *#REGiy+#N$01 (flight direction); jump to #R$76C8
+                       ; if set (flying left).
+ $76BC JR NZ,$76C8     ;
+; Flying right: add the speed to the X position.
+ $76BE ADD A,(HL)      ; Add the speed from *#REGhl.
+ $76BF CP $EE          ; {Jump to #R$770D if the X position has reached #N$EE (off-screen
+ $76C1 JR NC,$770D     ; right).}
+ $76C3 LD (IX+$00),A   ; Write the updated X position to *#REGix+#N$00.
  $76C6 JR $76CF        ; Jump to #R$76CF.
-*$76C8 SUB (HL)        ; #REGa-=*#REGhl.
- $76C9 CP C            ; {Jump to #R$770D if #REGa is less than #REGc.
- $76CA JR C,$770D      ; }
- $76CC LD (IX+$00),A   ; Write #REGa to *#REGix+#N$00.
-*$76CF LD A,$4D        ; #REGa=#N$4D.
- $76D1 BIT 7,(IY+$01)  ; {Jump to #R$76D8 if bit 7 of *#REGiy+#N$01 is set.
- $76D5 JR NZ,$76D8     ; }
- $76D7 INC A           ; Increment #REGa by one.
-*$76D8 LD (IX+$03),A   ; Write #REGa to *#REGix+#N$03.
- $76DB JP $74D6        ; Jump to #R$74D6.
-*$76DE LD A,R          ; #REGa=the contents of the Memory Refresh Register.
- $76E0 AND %01111111   ; Keep only bits 0-6.
- $76E2 CP $7F          ; {Return if #REGa is not equal to #N$7F.
- $76E4 RET NZ          ; }
-*$76E5 SET 7,(IY+$02)  ; Set bit 7 of *#REGiy+#N$02.
+; Flying left: subtract the speed from the X position.
+@label=Plane_Flying_Left
+*$76C8 SUB (HL)        ; Subtract the speed from *#REGhl.
+ $76C9 CP C            ; {Jump to #R$770D if the X position has dropped below #REGc (off-screen
+ $76CA JR C,$770D      ; left).}
+ $76CC LD (IX+$00),A   ; Write the updated X position to *#REGix+#N$00.
+; Set the plane's sprite frame based on flight direction.
+; .
+; #UDGTABLE(default,centre,centre) { =h Sprite ID | =h Sprite }
+; { #N$4D | #UDGS$02,$02(udg46267-56x4)(
+;   #UDG($B4BB+$08*($02*$x+$y))(*udg)
+;   udg
+; ) } TABLE#
+@label=Set_Plane_Frame
+*$76CF LD A,$4D        ; Set #REGa to #R$B4BB(#N$4D) (plane flying left frame).
+ $76D1 BIT 7,(IY+$01)  ; {Jump to #R$76D8 if bit 7 of *#REGiy+#N$01 is set
+ $76D5 JR NZ,$76D8     ; (flying left).}
+; #UDGTABLE(default,centre,centre) { =h Sprite ID | =h Sprite }
+; { #N$4E | #UDGS$02,$02(udg46299-56x4)(
+;   #UDG($B4DB+$08*($02*$x+$y))(*udg)
+;   udg
+; ) } TABLE#
+ $76D7 INC A           ; Increment to #R$B4DB(#N$4E) (plane flying right
+                       ; frame).
+@label=Store_Plane_Frame
+*$76D8 LD (IX+$03),A   ; Write the frame to *#REGix+#N$03.
+ $76DB JP $74D6        ; Jump to #R$74D6 to check for collision with Percy or
+                       ; egg.
+; Plane is inactive; randomly trigger a respawn.
+@label=Plane_Wait_To_Spawn
+*$76DE LD A,R          ; {Use the Memory Refresh Register masked as a random
+ $76E0 AND %01111111   ; value.}
+ $76E2 CP $7F          ; {Return if the value is not equal to #N$7F (wait for
+ $76E4 RET NZ          ; random trigger).}
+; Spawn the plane: reset all state and pick a random starting side.
+@label=Spawn_Plane
+*$76E5 SET 7,(IY+$02)  ; Set bit 7 of *#REGiy+#N$02 (mark plane as active).
  $76E9 XOR A           ; {Write #N$00 to; #LIST
  $76EA LD ($77AE),A    ; { *#R$77AE }
- $76ED LD (IY+$03),A   ; { *#REGiy+#N$03 }
- $76F0 LD (IY+$01),A   ; { *#REGiy+#N$01 }
- $76F3 LD (IX+$00),C   ; { *#REGix+#N$00 }
- $76F6 LD (IX+$02),A   ; { *#REGix+#N$02 }
- $76F9 LD (IX+$01),B   ; { *#REGix+#N$01 }
- $76FC LD (IY+$00),A   ; { *#REGiy+#N$00 }
+ $76ED LD (IY+$03),A   ; { *#REGiy+#N$03 (bomb active flag) }
+ $76F0 LD (IY+$01),A   ; { *#REGiy+#N$01 (flight direction) }
+ $76F3 LD (IX+$00),C   ; { *#REGix+#N$00 (X position) }
+ $76F6 LD (IX+$02),A   ; { *#REGix+#N$02 (sprite active flag) }
+ $76F9 LD (IX+$01),B   ; { *#REGix+#N$01 (Y position) }
+ $76FC LD (IY+$00),A   ; { *#REGiy+#N$00 (stunned flag) }
                        ; LIST#}
- $76FF LD A,R          ; #REGa=the contents of the Memory Refresh Register.
- $7701 AND %00000001   ; Keep only bit 0.
- $7703 RET Z           ; Return if #REGa is equal to #N$7F.
- $7704 LD (IX+$00),$EE ; Write #N$EE to *#REGix+#N$00.
- $7708 SET 7,(IY+$01)  ; Set bit 7 of *#REGiy+#N$01.
+ $76FF LD A,R          ; {Use the Memory Refresh Register masked to randomly pick a starting
+ $7701 AND %00000001   ; side.}
+ $7703 RET Z           ; Return if bit 0 is not set (spawn from the left at
+                       ; X=#N$00).
+ $7704 LD (IX+$00),$EE ; Write #N$EE to *#REGix+#N$00 (spawn from the right).
+ $7708 SET 7,(IY+$01)  ; Set bit 7 of *#REGiy+#N$01 (set flight direction to
+                       ; left).
  $770C RET             ; Return.
-*$770D LD (IY+$02),$00 ; Write #N$00 to *#REGiy+#N$02.
+; Plane has flown off-screen; deactivate and return to waiting state.
+@label=Plane_Off_Screen
+*$770D LD (IY+$02),$00 ; Write #N$00 to *#REGiy+#N$02 (mark plane as inactive).
  $7711 JR $76DE        ; Jump to #R$76DE.
-; This entry point is used by the routine at #R$7680.
-*$7713 LD A,($77AE)    ; #REGa=*#R$77AE.
- $7716 OR A            ; {Jump to #R$774D if #REGa is non-zero.
- $7717 JR NZ,$774D     ; }
- $7719 BIT 7,(IY+$03)  ; {Jump to #R$776F if bit 7 of *#REGiy+#N$03 not set.
- $771D JR Z,$776F      ; }
- $771F LD IX,$DAF0     ; #REGix=#R$DAF0.
- $7723 LD (IX+$03),$14 ; Write #N$14 to *#REGix+#N$03.
- $7727 LD A,(IX+$01)   ; #REGa=*#REGix+#N$01.
- $772A ADD A,$03       ; #REGa+=#N$03.
- $772C CP $A0          ; {Jump to #R$776A if #REGa is greater than or equal to
- $772E JR NC,$776A     ; #N$A0.}
- $7730 LD (IX+$01),A   ; Write #REGa to *#REGix+#N$01.
+
+; Handle Plane Bomb
+;
+; Used by the routine at #R$7680.
+; .
+; Manages the plane's bomb. When the plane is above Percy, a bomb is
+; dropped which falls downward. When the bomb hits or the explosion timer
+; expires, Percy is damaged. The explosion cycles through animation frames
+; before clearing.
+;
+; .
+;
+; Check the bomb explosion counter.
+@label=Handle_Plane_Bomb
+c$7713 LD A,($77AE)    ; Fetch the bomb explosion counter from *#R$77AE.
+ $7716 OR A            ; {Jump to #R$774D if the counter is non-zero (explosion
+ $7717 JR NZ,$774D     ; in progress).}
+ $7719 BIT 7,(IY+$03)  ; {Jump to #R$776F if bit 7 of *#REGiy+#N$03 is not set (no bomb
+ $771D JR Z,$776F      ; active).}
+; Bomb is falling; update its position.
+ $771F LD IX,$DAF0     ; Point #REGix at #R$DAF0 (bomb sprite data).
+ $7723 LD (IX+$03),$14 ; Set the bomb sprite frame to #N$14.
+ $7727 LD A,(IX+$01)   ; {Add #N$03 to the bomb Y position.
+ $772A ADD A,$03       ; }
+ $772C CP $A0          ; {Jump to #R$776A if the Y position has reached #N$A0 (hit the
+ $772E JR NC,$776A     ; ground).}
+ $7730 LD (IX+$01),A   ; Write the updated Y position to *#REGix+#N$01.
  $7733 PUSH IY         ; Stash #REGiy on the stack.
- $7735 LD IX,$DAC0     ; #REGix=#R$DAC0.
- $7739 LD IY,$DAF0     ; #REGiy=#R$DAF0.
- $773D CALL $6C85      ; Call #R$6C85.
+ $7735 LD IX,$DAC0     ; Point #REGix at #R$DAC0 (Percy sprite data).
+ $7739 LD IY,$DAF0     ; Point #REGiy at #R$DAF0 (bomb sprite data).
+ $773D CALL $6C85      ; Call #R$6C85 to check for collision between the bomb
+                       ; and Percy.
  $7740 POP IY          ; Restore #REGiy from the stack.
- $7742 RET C           ; Return if #REGa is less than #N$A0.
- $7743 LD (IY+$03),$00 ; Write #N$00 to *#REGiy+#N$03.
- $7747 LD A,$07        ; {Write #N$07 to *#R$77AE.
- $7749 LD ($77AE),A    ; }
+ $7742 RET C           ; Return if there was no collision (carry set).
+ $7743 LD (IY+$03),$00 ; Write #N$00 to *#REGiy+#N$03 (deactivate the bomb).
+ $7747 LD A,$07        ; {Write #N$07 to *#R$77AE (start the explosion
+ $7749 LD ($77AE),A    ; counter).}
  $774C RET             ; Return.
-*$774D DEC A           ; Decrease #REGa by one.
- $774E LD ($77AE),A    ; Write #REGa to *#R$77AE.
- $7751 OR A            ; {Jump to #R$7764 if #REGa is zero.
- $7752 JR Z,$7764      ; }
- $7754 RRA             ; RRA.
- $7755 ADD A,$36       ; #REGa+=#N$36.
- $7757 LD ($DAC3),A    ; Write #REGa to *#R$DAC3.
- $775A LD A,R          ; #REGa=the contents of the Memory Refresh Register.
- $775C AND %00000111   ; Keep only bits 0-2.
- $775E LD ($DAC2),A    ; Write #REGa to *#R$DAC2.
+; Bomb explosion animation is in progress.
+@label=Bomb_Explosion
+*$774D DEC A           ; Decrement the explosion counter.
+ $774E LD ($77AE),A    ; Write the updated counter to *#R$77AE.
+ $7751 OR A            ; {Jump to #R$7764 if the counter has reached zero (explosion
+ $7752 JR Z,$7764      ; finished).}
+ $7754 RRA             ; {Divide by two and add #N$36 to select the explosion animation
+ $7755 ADD A,$36       ; frame.}
+ $7757 LD ($DAC3),A    ; Write the frame to *#R$DAC3 (Percy's sprite frame, showing the
+                       ; explosion on Percy).
+ $775A LD A,R          ; {Use the Memory Refresh Register masked with #N$07 as a random
+ $775C AND %00000111   ; flicker value.}
+ $775E LD ($DAC2),A    ; Write to *#R$DAC2 (Percy's sprite active flag, for
+                       ; flicker effect).
  $7761 JP $6F7A        ; Jump to #R$6F7A.
-*$7764 LD A,$FF        ; {Write #N$FF to *#R$5FA7.
- $7766 LD ($5FA7),A    ; }
+; Explosion complete; register the hit on Percy.
+@label=Bomb_Explosion_Done
+*$7764 LD A,$FF        ; {Write #N$FF to *#R$5FA7 (set collision flag to damage
+ $7766 LD ($5FA7),A    ; Percy).}
  $7769 RET             ; Return.
-*$776A LD (IY+$03),$00 ; Write #N$00 to *#REGiy+#N$03.
+; Bomb hit the ground without hitting Percy; deactivate the bomb.
+@label=Bomb_Hit_Ground
+*$776A LD (IY+$03),$00 ; Write #N$00 to *#REGiy+#N$03 (deactivate the bomb).
  $776E RET             ; Return.
-*$776F LD A,R          ; #REGa=the contents of the Memory Refresh Register.
- $7771 AND %00000001   ; Keep only bit 0.
- $7773 RET NZ          ; Return if #REGa is not equal to #REGa.
- $7774 LD A,($DAC1)    ; #REGa=*#R$DAC1.
- $7777 ADD A,$0A       ; #REGa+=#N$0A.
- $7779 CP (IX+$01)     ; Compare #REGa with *#REGix+#N$01.
- $777C RET C           ; Return if #REGa is less than #REGa.
- $777D LD A,($DAC0)    ; #REGa=*#R$DAC0.
-@label=Plane_Y_Position
- $7780 DEFB $E6        ; Plane Y position.
-@label=Plane_Colour
- $7781 DEFB $FC        ; Plane INK colour.
-@label=Plane_Frame_ID
- $7782 DEFB $47        ; Plane frame ID.
- $7783 DEFB $DD        ;
- $7784 LD A,(HL)       ;
- $7785 NOP             ;
- $7786 AND %11111100   ; Keep only bits 2-7.
- $7788 CP B            ; {Return if #REGa is not equal to #REGb.
- $7789 RET NZ          ; }
- $778A BIT 7,(IY+$02)  ; Test bit 7 of *#REGiy+#N$02.
- $778E RET Z           ; Return if #REGa is equal to #REGb.
- $778F BIT 7,(IY+$00)  ; Test bit 7 of *#REGiy+#N$00.
- $7793 RET NZ          ; Return if #REGa is not equal to #REGb.
- $7794 LD A,(IX+$01)   ; #REGa=*#REGix+#N$01.
- $7797 ADD A,$0A       ; #REGa+=#N$0A.
- $7799 LD ($DAF1),A    ; Write #REGa to *#R$DAF1.
- $779C LD A,(IX+$00)   ; #REGa=*#REGix+#N$00.
- $779F LD ($DAF0),A    ; Write #REGa to *#R$DAF0.
- $77A2 LD A,$FF        ; Write #N$FF to *#R$DAF2.
+; No bomb active; check if the plane should drop one.
+@label=Check_Bomb_Drop
+*$776F LD A,R          ; {Use the Memory Refresh Register masked for a random
+ $7771 AND %00000001   ; check.}
+ $7773 RET NZ          ; Return if the random bit is not set (don't drop this
+                       ; frame).
+ $7774 LD A,($DAC1)    ; {Check if Percy's Y position plus #N$0A is greater than or equal to
+ $7777 ADD A,$0A       ; the plane's Y position.}
+ $7779 CP (IX+$01)     ;
+ $777C RET C           ; Return if Percy is above the plane (carry set).
+ $777D LD A,($DAC0)    ; {Mask Percy's X position with #N$FC and store in
+ $7780 AND %11111100   ; #REGb.}
+ $7782 LD B,A          ;
+ $7783 LD A,(IX+$00)   ; {Mask the plane's X position with #N$FC and compare
+ $7786 AND %11111100   ; with #REGb.}
+ $7788 CP B            ; {Return if the X positions don't match (plane not
+ $7789 RET NZ          ; above Percy).}
+ $778A BIT 7,(IY+$02)  ; Return if bit 7 of *#REGiy+#N$02 is not set (plane not
+                       ; active).
+ $778E RET Z           ;
+ $778F BIT 7,(IY+$00)  ; Return if bit 7 of *#REGiy+#N$00 is set (plane is
+                       ; stunned).
+ $7793 RET NZ          ;
+; Drop the bomb: set the bomb sprite position and activate it.
+ $7794 LD A,(IX+$01)   ; {Set the bomb Y position to the plane's Y plus #N$0A.
+ $7797 ADD A,$0A       ; }
+ $7799 LD ($DAF1),A    ; Write to *#R$DAF1 (bomb Y position).
+ $779C LD A,(IX+$00)   ; Copy the plane's X position to *#R$DAF0 (bomb X
+                       ; position).
+ $779F LD ($DAF0),A    ;
+ $77A2 LD A,$FF        ; Write #N$FF to *#R$DAF2 (bomb sprite active flag).
  $77A4 LD ($DAF2),A    ;
- $77A7 SET 7,(IY+$03)  ; Set bit 7 of *#REGiy+#N$03.
+ $77A7 SET 7,(IY+$03)  ; Set bit 7 of *#REGiy+#N$03 (mark bomb as active).
  $77AB JP $6F7A        ; Jump to #R$6F7A.
- $77AE DEFB $00        ;
-; Plane States.
-@label=Plane_X_Position
- $77AF DEFB $00        ; Plane X position.
- $77B0 NOP             ;
- $77B1 NOP             ;
- $77B2 NOP             ;
- $77B3 LD (BC),A       ;
- $77B4 LD IY,$7B04     ; #REGiy=#R$7B04.
- $77B8 RET             ; Return.
-; This entry point is used by the routines at #R$723F, #R$72BD, #R$7367,
-; #R$73A4, #R$73FA and #R$7413.
-*$77B9 LD A,($5FBB)    ; {Jump to #R$784F if *#R$5FBB is non-zero.
+
+; Bomb Explosion Counter
+;
+; Countdown for the bomb explosion animation. When non-zero, the explosion
+; frames are displayed on Percy.
+@label=Bomb_Explosion_Counter
+g$77AE DEFB $00
+
+; Plane State Data
+;
+; State variables for the plane hazard.
+@label=Plane_State_Data
+g$77AF DEFB $00      ; Stunned flag (bit 7 set = stunned by egg).
+ $77B0 DEFB $00      ; Flight direction (bit 7 set = flying left).
+ $77B1 DEFB $00      ; Active flag (bit 7 set = plane is on screen).
+ $77B2 DEFB $00      ; Bomb active flag (bit 7 set = bomb is falling).
+
+; Plane Speed
+;
+; The horizontal speed of the plane in pixels per frame.
+@label=Plane_Speed
+g$77B3 DEFB $02
+
+; Set Up Balloon State
+;
+; Initialises #REGiy to point at the balloon state data at #R$7B04.
+@label=Set_Up_Balloon_State
+c$77B4 LD IY,$7B04   ; Point #REGiy at #R$7B04.
+ $77B8 RET           ; Return.
+
+; Handler: Balloon
+;
+; Used by the routines at #R$723F, #R$72BD, #R$7367, #R$73A4, #R$73FA and
+; #R$7413.
+; .
+; Controls the balloon hazard. The balloon floats horizontally across the
+; screen, randomly changing direction at the edges and occasionally bobbing up
+; and down. When hit by Percy's egg, it pops through a deflating animation
+; before respawning.
+;
+; IX Pointer to the balloon sprite data
+@label=Handler_Balloon
+c$77B9 LD A,($5FBB)    ; {Jump to #R$784F if *#R$5FBB is set.
  $77BC OR A            ;
  $77BD JP NZ,$784F     ; }
- $77C0 LD HL,$7891     ; #REGhl=#R$7891.
- $77C3 LD A,($7892)    ; {Jump to #R$7855 if *#R$7892 is non-zero.
+ $77C0 LD HL,$7891     ; Point #REGhl at #R$7891.
+ $77C3 LD A,($7892)    ; {Jump to #R$7855 if *#R$7892 is set.
  $77C6 OR A            ;
  $77C7 JP NZ,$7855     ; }
- $77CA LD A,R          ; #REGa=the contents of the Memory Refresh Register.
- $77CC AND %01111111   ; Keep only bits 0-6.
- $77CE CP $7F          ; {Jump to #R$77D5 if #REGa is not equal to #N$7F.
+; Balloon is active; randomly toggle the float direction.
+ $77CA LD A,R          ; {Use the Memory Refresh Register masked to a number between
+ $77CC AND %01111111   ; #N$00-#N$80.}
+ $77CE CP $7F          ; {Jump to #R$77D5 if the result is not equal to #N$7F.
  $77D0 JR NZ,$77D5     ; }
- $77D2 LD A,(HL)       ; #REGa=*#REGhl.
- $77D3 CPL             ; Invert the bits in #REGa.
- $77D4 LD (HL),A       ; Write #REGa to *#REGhl.
-*$77D5 LD A,(HL)       ; {Jump to #R$77E7 if *#REGhl is non-zero.
- $77D6 OR A            ;
+ $77D2 LD A,(HL)       ; {Toggle the direction flag at *#REGhl by complementing and writing
+ $77D3 CPL             ; back.
+ $77D4 LD (HL),A       ; }
+; Move the balloon horizontally based on its direction.
+@label=Move_Balloon
+*$77D5 LD A,(HL)       ; {Jump to #R$77E7 if the direction flag is non-zero (set to floating
+ $77D6 OR A            ; left).
  $77D7 JR NZ,$77E7     ; }
- $77D9 LD A,(IX+$00)   ; #REGa=*#REGix+#N$00.
- $77DC ADD A,$01       ; #REGa+=#N$01.
- $77DE CP $EE          ; {Jump to #R$7847 if #REGa is greater than or equal to
- $77E0 JR NC,$7847     ; #N$EE.}
- $77E2 LD (IX+$00),A   ; Write #REGa to *#REGix+#N$00.
+; Floating right: increment X position.
+ $77D9 LD A,(IX+$00)   ; Fetch the balloon X position from *#REGix+#N$00.
+ $77DC ADD A,$01       ; Add #N$01.
+ $77DE CP $EE          ; {Jump to #R$7847 if the balloon X position has reached #N$EE
+ $77E0 JR NC,$7847     ; (off-screen right; reverse direction).}
+ $77E2 LD (IX+$00),A   ; Write the updated X position to *#REGix+#N$00.
  $77E5 JR $77F3        ; Jump to #R$77F3.
-*$77E7 LD A,(IX+$00)   ; #REGa=*#REGix+#N$00.
- $77EA SUB $01         ; #REGa-=#N$01.
- $77EC CP $04          ; {Jump to #R$784B if #REGa is less than #N$04.
- $77EE JR C,$784B      ; }
- $77F0 LD (IX+$00),A   ; Write #REGa to *#REGix+#N$00.
+; Floating left: decrement X position.
+@label=Balloon_Float_Left
+*$77E7 LD A,(IX+$00)   ; Fetch the balloon X position from *#REGix+#N$00.
+ $77EA SUB $01         ; Subtract #N$01.
+ $77EC CP $04          ; {Jump to #R$784B if the balloon X position has dropped below #N$04
+ $77EE JR C,$784B      ; (off-screen left; reverse direction).}
+ $77F0 LD (IX+$00),A   ; Write the updated X position to *#REGix+#N$00.
+; Randomly adjust the balloon's altitude to create a bobbing effect.
+@label=Adjust_Balloon_Altitude
 *$77F3 CALL $7930      ; Call #R$7930.
  $77F6 AND %00000011   ; Keep only bits 0-1.
- $77F8 CP $03          ; {Jump to #R$7821 if #REGa is not equal to #N$03.
- $77FA JR NZ,$7821     ; }
- $77FC LD A,R          ; #REGa=the contents of the Memory Refresh Register.
- $77FE LD B,A          ; #REGb=#REGa.
- $77FF BIT 6,A         ; {Jump to #R$7812 if bit 6 of #REGa is set.
+ $77F8 CP $03          ; Jump to #R$7821 if not equal to #N$03 (only adjust altitude on a
+                       ; 1-in-4 chance).
+ $77FA JR NZ,$7821     ;
+ $77FC LD A,R          ; {Load #REGb with the Memory Refresh Register.
+ $77FE LD B,A          ; }
+ $77FF BIT 6,A         ; {Jump to #R$7812 if bit 6 is set (move upward).
  $7801 JR NZ,$7812     ; }
- $7803 LD A,B          ; #REGa=#REGb.
- $7804 AND %00000001   ; Keep only bit 0.
- $7806 ADD A,(IX+$01)  ; #REGa+=*#REGix+#N$01.
- $7809 CP $70          ; {Jump to #R$7821 if #REGa is greater than or equal to
- $780B JR NC,$7821     ; #N$70.}
- $780D LD (IX+$01),A   ; Write #REGa to *#REGix+#N$01.
+; Bob downward.
+ $7803 LD A,B          ; {Mask #REGb to get a step of #N$00 or #N$01.
+ $7804 AND %00000001   ; }
+ $7806 ADD A,(IX+$01)  ; Add to the balloon Y position.
+ $7809 CP $70          ; {Jump to #R$7821 if the balloon Y position has reached #N$70
+ $780B JR NC,$7821     ; (maximum altitude, don't go lower).}
+ $780D LD (IX+$01),A   ; Write the updated balloon Y position back to
+                       ; *#REGix+#N$01.
  $7810 JR $7821        ; Jump to #R$7821.
-*$7812 LD A,B          ; #REGa=#REGb.
- $7813 AND %00000001   ; Keep only bit 0.
- $7815 LD B,A          ; #REGb=#REGa.
- $7816 LD A,(IX+$01)   ; #REGa=*#REGix+#N$01.
- $7819 SUB B           ; #REGa-=#REGb.
- $781A CP $18          ; {Jump to #R$7821 if #REGa is less than #N$18.
- $781C JR C,$7821      ; }
- $781E LD (IX+$01),A   ; Write #REGa to *#REGix+#N$01.
-*$7821 LD (IX+$03),$49 ; Write #N$49 to *#REGix+#N$03.
- $7825 LD IY,$DAC0     ; #REGiy=#R$DAC0.
- $7829 CALL $6C53      ; Call #R$6C53.
- $782C JR C,$7831      ; Jump to #R$7831 if #REGa is less than #N$18.
- $782E JP $74E3        ; Jump to #R$74E3.
+; Bob upward.
+@label=Balloon_Bob_Up
+*$7812 LD A,B          ; {Mask #REGb to get a step of #N$00 or #N$01.
+ $7813 AND %00000001   ;
+ $7815 LD B,A          ; }
+ $7816 LD A,(IX+$01)   ; Fetch the balloon Y position from *#REGix+#N$01.
+ $7819 SUB B           ; Subtract the step.
+ $781A CP $18          ; {Jump to #R$7821 if the balloon Y position has dropped below #N$18
+ $781C JR C,$7821      ; (minimum altitude, don't go higher).}
+ $781E LD (IX+$01),A   ; Write the updated balloon Y position back to
+                       ; *#REGix+#N$01.
+; Set the balloon frame and check for collisions.
+; .
+; #UDGTABLE(default,centre,centre) { =h Sprite ID | =h Sprite }
+; { #N$49 | #UDGS$02,$02(udg46139-56x4)(
+;   #UDG($B43B+$08*($02*$x+$y))(*udg)
+;   udg
+; ) } TABLE#
+@label=Set_Balloon_Frame
+*$7821 LD (IX+$03),$49 ; Write #R$B43B(#N$49) to *#REGix+#N$03 (balloon frame).
+ $7825 LD IY,$DAC0     ; Point #REGiy at #R$DAC0 (Percy sprite data).
+ $7829 CALL $6C53      ; Call #R$6C53 to check for collision with Percy.
+ $782C JR C,$7831      ; Jump to #R$7831 if there's been no collision.
+ $782E JP $74E3        ; Jump to #R$74E3 to register the hit on Percy.
+; No collision with Percy; check if Percy's egg hits the balloon.
+@label=Check_Balloon_Egg
 *$7831 LD A,($5FA9)    ; {Return if *#R$5FA9 is unset.
  $7834 OR A            ;
  $7835 RET Z           ; }
- $7836 LD IY,$DAE0     ; #REGiy=#R$DAE0.
- $783A CALL $6C85      ; Call #R$6C85.
- $783D RET C           ; Return if #REGa is less than #REGa.
- $783E LD A,$01        ; {Write #N$01 to *#R$7892.
+ $7836 LD IY,$DAE0     ; Point #REGiy at #R$DAE0 (egg sprite data).
+ $783A CALL $6C85      ; Call #R$6C85 to check for egg collision with the
+                       ; balloon.
+ $783D RET C           ; Return if there's been no collision with the balloon.
+ $783E LD A,$01        ; {Write #N$01 to start/ activate *#R$7892.
  $7840 LD ($7892),A    ; }
- $7843 JP $74FF        ; Jump to #R$74FF.
+ $7843 JP $74FF        ; Jump to #R$74FF to stun the balloon and award points.
  $7846 RET             ; Return.
-*$7847 LD (HL),$FF     ; Write #N$FF to *#REGhl.
+; Balloon reached the right edge; reverse direction to float left.
+@label=Balloon_Reverse_Left
+*$7847 LD (HL),$FF     ; Write #N$FF to *#REGhl (set direction to floating
+                       ; left).
  $7849 JR $7821        ; Jump to #R$7821.
-*$784B LD (HL),$00     ; Write #N$00 to *#REGhl.
+; Balloon reached the left edge; reverse direction to float right.
+@label=Balloon_Reverse_Right
+*$784B LD (HL),$00     ; Write #N$00 to *#REGhl (set direction to floating
+                       ; right).
  $784D JR $7821        ; Jump to #R$7821.
-*$784F LD A,$B9        ; {Write #N$B9 to *#R$7892.
+; Respawn the balloon after Percy respawns.
+@label=Respawn_Balloon
+*$784F LD A,$B9        ; {Write #N$B9 to *#R$7892 (set a long respawn delay).
  $7851 LD ($7892),A    ; }
  $7854 RET             ; Return.
-*$7855 LD HL,$7892     ; #REGhl=#R$7892.
- $7858 LD A,(HL)       ; #REGa=*#REGhl.
- $7859 CP $04          ; {Jump to #R$7870 if #REGa is greater than or equal to
- $785B JR NC,$7870     ; #N$04.}
- $785D INC A           ; Increment #REGa by one.
- $785E LD (HL),A       ; Write #REGa to *#REGhl.
- $785F ADD A,$48       ; #REGa+=#N$48.
- $7861 LD (IX+$03),A   ; Write #REGa to *#REGix+#N$03.
+; Balloon popping animation is in progress.
+@label=Balloon_Popping
+*$7855 LD HL,$7892     ; Point #REGhl at #R$7892.
+ $7858 LD A,(HL)       ; Fetch the current counter value.
+ $7859 CP $04          ; {Jump to #R$7870 if the counter is #N$04 or more (still in the
+ $785B JR NC,$7870     ; delay phase).}
+; Popping animation phase: cycle through deflating frames.
+; .
+; #UDGTABLE(default,centre,centre) { =h Sprite ID | =h Sprite }
+; { #N$4A | #UDGS$02,$02(udg46171-56x4)(
+;   #UDG($B45B+$08*($02*$x+$y))(*udg)
+;   udg
+; ) }
+; { #N$4B | #UDGS$02,$02(udg46203-56x4)(
+;   #UDG($B47B+$08*($02*$x+$y))(*udg)
+;   udg
+; ) }
+; { #N$4C | #UDGS$02,$02(udg46235-56x4)(
+;   #UDG($B49B+$08*($02*$x+$y))(*udg)
+;   udg
+; ) } TABLE#
+ $785D INC A           ; {Increment the counter and write back.
+ $785E LD (HL),A       ; }
+ $785F ADD A,$48       ; Add #N$48 to calculate the deflating frame.
+ $7861 LD (IX+$03),A   ; Write the frame to *#REGix+#N$03.
  $7864 CALL $7930      ; Call #R$7930.
- $7867 AND %00000111   ; Keep only bits 0-2.
- $7869 LD (IX+$02),A   ; Write #REGa to *#REGix+#N$02.
+ $7867 AND %00000111   ; Mask for a random flicker value.
+ $7869 LD (IX+$02),A   ; Write to *#REGix+#N$02 (sprite active flag, for
+                       ; flicker).
  $786C CALL $6F7A      ; Call #R$6F7A.
  $786F RET             ; Return.
-*$7870 INC A           ; Increment #REGa by one.
- $7871 LD (HL),A       ; Write #REGa to *#REGhl.
- $7872 CP $C8          ; {Return if #REGa is not equal to #N$C8.
- $7874 RET NZ          ; }
- $7875 LD (IX+$01),$38 ; Write #N$38 to *#REGix+#N$01.
- $7879 LD (IX+$02),$07 ; Write #N$07 to *#REGix+#N$02.
- $787D LD HL,$7892     ; #REGhl=#R$7892.
- $7880 LD (HL),$00     ; Write #N$00 to *#REGhl.
- $7882 LD (IX+$00),$EE ; Write #N$EE to *#REGix+#N$00.
+; Respawn delay phase: wait until the counter reaches #N$C8 before
+; respawning.
+@label=Balloon_Respawn_Delay
+*$7870 INC A           ; {Increment the counter and write back.
+ $7871 LD (HL),A       ; }
+ $7872 CP $C8          ; {Return if the counter has not reached #N$C8 (still
+ $7874 RET NZ          ; waiting).}
+; Respawn the balloon at a random horizontal position.
+ $7875 LD (IX+$01),$38 ; Write #N$38 to *#REGix+#N$01 (reset Y position).
+ $7879 LD (IX+$02),$07 ; Write #N$07 to *#REGix+#N$02 (reset sprite active
+                       ; flag).
+ $787D LD HL,$7892     ; Point #REGhl at #R$7892.
+ $7880 LD (HL),$00     ; Write #N$00 to *#REGhl (clear the counter).
+ $7882 LD (IX+$00),$EE ; Write #N$EE to *#REGix+#N$00 (spawn from the right).
  $7886 CALL $7930      ; Call #R$7930.
- $7889 BIT 0,A         ; {Return if bit 0 of #REGa is not set.
- $788B RET Z           ; }
- $788C LD (IX+$00),$04 ; Write #N$04 to *#REGix+#N$00.
+ $7889 BIT 0,A         ; {Return if bit 0 is not set (50% chance to spawn from
+ $788B RET Z           ; the right).}
+ $788C LD (IX+$00),$04 ; Write #N$04 to *#REGix+#N$00 (spawn from the left
+                       ; instead).
  $7890 RET             ; Return.
- $7891 DEFB $00        ;
- $7892 DEFB $00        ;
 
-; Handle Walking Paratrooper
+; Balloon Direction Flag
+;
+; Direction flag for the balloon. #N$00 = floating right, non-zero =
+; floating left.
+@label=Balloon_Direction_Flag
+g$7891 DEFB $00
+
+; Balloon Pop Counter
+;
+; Counter for the balloon popping and respawn sequence. Values #N$01 to
+; #N$03 show deflating frames, #N$04 to #N$C7 are the respawn delay, and
+; #N$C8 triggers the respawn.
+@label=Balloon_Pop_Counter
+g$7892 DEFB $00
+
+; Handler: Walking Paratrooper
 ;
 ; Used by the routines at #R$72E1, #R$730E and #R$73A4.
 ; .
@@ -5996,7 +6285,7 @@ c$768C LD IY,$77AF     ; #REGiy=#R$77AF.
 ; IX Pointer to the paratrooper sprite data
 ;
 ; Set up the paratrooper state pointer and movement parameters.
-@label=Handle_Walking_Paratrooper
+@label=Handler_Walking_Paratrooper
 c$7893 LD IY,$7B0D    ; Point #REGiy at #R$7B0D (paratrooper state data).
  $7897 LD HL,$7928    ; Point #REGhl at #R$7928 (per-room walking speed table).
  $789A LD A,($5FC5)   ; {Fetch the current room from *#R$5FC5, decrement to form a zero-based
@@ -6007,6 +6296,11 @@ c$7893 LD IY,$7B0D    ; Point #REGiy at #R$7B0D (paratrooper state data).
  $78A2 LD B,(HL)      ; }
  $78A3 LD HL,$7925    ; Point #REGhl at #R$7925 (paratrooper movement boundary
                       ; data).
+; #UDGTABLE(default,centre,centre) { =h Sprite ID | =h Sprite }
+; { #N$53 | #UDGS$02,$02(udg46459-56x4)(
+;   #UDG($B57B+$08*($02*$x+$y))(*udg)
+;   udg
+; ) } TABLE#
  $78A6 LD C,$53       ; Set the base sprite frame in #REGc to #R$B57B(#N$53) (paratrooper
                       ; walking right).
  $78A8 LD A,($5FC5)   ; {Fetch the current room from *#R$5FC5, decrement and multiply by
@@ -6017,7 +6311,7 @@ c$7893 LD IY,$7B0D    ; Point #REGiy at #R$7B0D (paratrooper state data).
  $78AF LD D,$00       ;
  $78B1 ADD IY,DE      ; }
 ; Check if the paratrooper needs to reset after Percy respawns.
- $78B3 LD A,($5FBB)   ; {Skip to #R$78BD if *#R$5FBB (respawn flag) is unset.
+ $78B3 LD A,($5FBB)   ; {Skip to #R$78BD if *#R$5FBB is unset.
  $78B6 OR A           ;
  $78B7 JR Z,$78BD     ; }
  $78B9 XOR A          ; {Write #N$00 to reset *#R$7927 (set the leap state to
@@ -6128,7 +6422,7 @@ g$7928 DEFB $00
 
 ; Generate Random Number
 ;
-; Used by the routines at #R$7439, #R$74A7, #R$74B9, #R$759A and #R$768C.
+; Used by the routines at #R$7439, #R$74A7, #R$74B9, #R$759A and #R$77B9.
 ; .
 ; Generates a pseudo-random number using a linear decay formula. Reads the
 ; current seed from #R$7AC7, computes (seed + #N$01) * #N$FE, then derives the
@@ -6169,8 +6463,8 @@ c$7930 LD A,($7AC7)  ; Fetch the current random seed from *#R$7AC7.
 ;
 ; Check for respawn and set the thread colour attributes.
 @label=Handler_Spider
-c$794A LD A,($5FBB)  ; {Call #R$79C0 to initialise the spider if *#R$5FBB (respawn flag) is
- $794D OR A          ; non-zero.
+c$794A LD A,($5FBB)  ; {Call #R$79C0 to initialise the spider if *#R$5FBB is
+ $794D OR A          ; set.
  $794E CALL NZ,$79C0 ; }
  $7951 LD HL,$D90A   ; Point #REGhl at #R$D800 (attribute buffer row).
  $7954 LD BC,$0020   ; Set #REGbc to #N$0020 (one attribute row width).
@@ -6279,7 +6573,7 @@ c$79C0 LD (IX+$01),$46 ; Write #N$46 to *#REGix+#N$01 (initial height).
 @label=Spider_Direction_Flag
 g$79D1 DEFB $00
 
-; Handle Parachute Descent
+; Handler: Parachute Descent
 ;
 ; Used by the routines at #R$7265, #R$73A4 and #R$73E1.
 ; .
@@ -6293,7 +6587,7 @@ g$79D1 DEFB $00
 ; IX Pointer to the parachute sprite data
 ;
 ; Set up initial state and check for respawn.
-@label=Handle_Parachute_Descent
+@label=Handler_Parachute_Descent
 c$79D2 LD A,($5FBB)    ; Fetch the respawn flag from *#R$5FBB.
  $79D5 LD B,$70        ; Set the default bottom boundary to #N$70 in #REGb.
  $79D7 LD IY,$7AC3     ; Point #REGiy at #R$7AC3.
@@ -15261,7 +15555,7 @@ b$AB3B DEFB $00,$01,$01,$03,$03,$37,$57,$FF ; {#UDGTABLE { =h Sprite ID: #N($01+
  $B1CB DEFB $00,$00,$00,$BB,$20,$70,$FC,$E2 ;   #UDG(#PC+$08*($02*$x+$y))(*udg)
  $B1D3 DEFB $E9,$FF,$FE,$38,$28,$FE,$00,$00 ;   udg
                                             ; ) } TABLE#}
-; ???
+; Explosion.
 @label=Sprite_36
  $B1DB DEFB $00,$00,$00,$00,$0D,$05,$06,$0B ; {#UDGTABLE { =h Sprite ID: #N($01+(#PC-$AB3B)/$20) }
  $B1E3 DEFB $0F,$01,$07,$0D,$01,$00,$00,$00 ; { #UDGS$02,$02(udg#PC-56x4)(
@@ -15381,8 +15675,6 @@ b$AB3B DEFB $00,$01,$01,$03,$03,$37,$57,$FF ; {#UDGTABLE { =h Sprite ID: #N($01+
  $B433 DEFB $FE,$FE,$DE,$0F,$9B,$91,$B1,$83 ;   udg
                                             ; ) } TABLE#}
 ; Paratrooper.
-; .
-; Plane: flying left.
 @label=Sprite_49
  $B43B DEFB $01,$07,$0F,$0F,$1F,$1F,$0F,$0F ; {#UDGTABLE { =h Sprite ID: #N($01+(#PC-$AB3B)/$20) }
  $B443 DEFB $07,$05,$04,$02,$02,$03,$03,$03 ; { #UDGS$02,$02(udg#PC-56x4)(
@@ -15407,13 +15699,14 @@ b$AB3B DEFB $00,$01,$01,$03,$03,$37,$57,$FF ; {#UDGTABLE { =h Sprite ID: #N($01+
  $B4AB DEFB $E0,$F0,$30,$D8,$FE,$F7,$7B,$3B ;   #UDG(#PC+$08*($02*$x+$y))(*udg)
  $B4B3 DEFB $3B,$76,$FC,$EC,$F6,$AE,$9C,$F8 ;   udg
                                             ; ) } TABLE#}
+; Plane: flying left.
+@label=Sprite_4D
  $B4BB DEFB $00,$00,$00,$00,$0E,$13,$F7,$FF ; {#UDGTABLE { =h Sprite ID: #N($01+(#PC-$AB3B)/$20) }
  $B4C3 DEFB $70,$1F,$00,$00,$00,$00,$00,$00 ; { #UDGS$02,$02(udg#PC-56x4)(
  $B4CB DEFB $00,$00,$00,$03,$07,$0F,$F9,$FF ;   #UDG(#PC+$08*($02*$x+$y))(*udg)
  $B4D3 DEFB $78,$C0,$00,$00,$00,$00,$00,$00 ;   udg
                                             ; ) } TABLE#}
 ; Plane: flying right.
-@label=Sprite_4D
 @label=Sprite_4E
  $B4DB DEFB $00,$00,$00,$C0,$E0,$F0,$9F,$FF ; {#UDGTABLE { =h Sprite ID: #N($01+(#PC-$AB3B)/$20) }
  $B4E3 DEFB $1E,$03,$00,$00,$00,$00,$00,$00 ; { #UDGS$02,$02(udg#PC-56x4)(
@@ -15494,6 +15787,7 @@ b$AB3B DEFB $00,$01,$01,$03,$03,$37,$57,$FF ; {#UDGTABLE { =h Sprite ID: #N($01+
  $B66B DEFB $E0,$F0,$F0,$F0,$E0,$C0,$C0,$40 ;   #UDG(#PC+$08*($02*$x+$y))(*udg)
  $B673 DEFB $A0,$A0,$20,$C0,$E0,$60,$60,$E0 ;   udg
                                             ; ) } TABLE#}
+; Parachute.
 @label=Sprite_5B
  $B67B DEFB $03,$0F,$3F,$3F,$7F,$7F,$FF,$FF ; {#UDGTABLE { =h Sprite ID: #N($01+(#PC-$AB3B)/$20) }
  $B683 DEFB $FF,$9F,$48,$44,$44,$44,$24,$22 ; { #UDGS$02,$02(udg#PC-56x4)(
@@ -16856,7 +17150,7 @@ g$DAD4 DEFB $00      ; Sprite 5 X position.
 
 ; 3-Wide Sprite 6 Data States
 ;
-; Used by #R$7439(the Red Bird), #R$79D2(Parachute).
+; Used by #R$7439(the Helicopter), #R$79D2(Parachute).
 @label=Sprite06_3Wide_X_Position
 g$DAD8 DEFB $00      ; Sprite 6 X position.
 @label=Sprite06_3Wide_Y_Position
