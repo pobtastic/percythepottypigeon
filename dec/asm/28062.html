@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Percy the Potty Pigeon: Routine at 28062</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-dark.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-wide.css" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-75RERFCHBG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-75RERFCHBG');
+</script>
+</head>
+<body class="Asm-c">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html"><img alt="logo" src="../images/logo.png" /></a></td>
+<td class="page-header">Routines</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="28048.html">28048</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#28062">Map</a></td>
+<td class="next">
+Next: <a href="28075.html">28075</a>
+</td>
+</tr>
+</table>
+<div class="description">28062: Reset Butterfly Collected Flags</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="5">
+<div class="details">
+<div class="paragraph">
+Used by the routine at <a href="27871.html">Handle_Butterfly</a>.
+</div>
+<div class="paragraph">
+Scans the butterfly table at <a href="27846.html">Butterfly_Room_Table</a> and clears bit 7 of each level byte, marking all butterflies as available for collection.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Reset_Butterfly_Flags</td>
+<td class="address-2"><span id="28062"></span>28062</td>
+<td class="instruction">LD HL,27846</td>
+<td class="comment-1" rowspan="1">Point <span class="register">HL</span> at <a href="27846.html">Butterfly_Room_Table</a> (butterfly room/level table).</td>
+</tr>
+<tr>
+<td class="asm-label">Reset_Butterfly_Loop</td>
+<td class="address-2"><span id="28065"></span>28065</td>
+<td class="instruction">LD A,(HL)</td>
+<td class="comment-1" rowspan="1">Fetch the room byte from *<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28066"></span>28066</td>
+<td class="instruction">CP 255</td>
+<td class="comment-1" rowspan="2">Return if the terminator byte has been found.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28068"></span>28068</td>
+<td class="instruction">RET Z</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28069"></span>28069</td>
+<td class="instruction">RES 7,(HL)</td>
+<td class="comment-1" rowspan="1">Clear bit 7 of the level byte at *<span class="register">HL</span> (mark as uncollected).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28071"></span>28071</td>
+<td class="instruction">INC HL</td>
+<td class="comment-1" rowspan="1">Advance to the next entry.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28072"></span>28072</td>
+<td class="instruction">JR <a href="28062.html#28065">Reset_Butterfly_Loop</a></td>
+<td class="comment-1" rowspan="1">Jump back to <a href="28062.html#28065">Reset_Butterfly_Loop</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="28074"></span>28074</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="28048.html">28048</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#28062">Map</a></td>
+<td class="next">
+Next: <a href="28075.html">28075</a>
+</td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
+<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
+<div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
+<div><a href="../../asm/6D9E.html">Switch to hexadecimal</a>.</div>
+</footer>
+</body>
+</html>

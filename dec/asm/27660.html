@@ -39,7 +39,7 @@ Next: <a href="27705.html">27705</a>
 <td class="routine-comment" colspan="5">
 <div class="details">
 <div class="paragraph">
-Used by the routines at <a href="27127.html">Handler_RedBird</a>, <a href="27382.html">UpdateRedBirdMovement</a>, <a href="27592.html">Direction_Jump_Table</a> and <a href="29863.html">Randomise_Position_Loop</a>.
+Used by the routines at <a href="27127.html">Handler_RedBird</a>, <a href="27382.html">UpdateRedBirdMovement</a>, <a href="27592.html">Direction_Jump_Table</a>, <a href="28048.html">Randomise_Butterfly_Position</a> and <a href="29863.html">Randomise_Position_Loop</a>.
 </div>
 <div class="paragraph">
 Validates a proposed position (<span class="register">B</span>=Y, <span class="register">C</span>=X) against the boundary table pointed to by *<a href="27835.html">Pointer_RedBirdFlightpathData</a>. Used by the red bird (<a href="27382.html">UpdateRedBirdMovement</a>), helicopter (<a href="29753.html">Handler_Helicopter</a>) and UFO (<a href="30106.html">Handler_UFO</a>); each caller ensures <a href="27835.html">Pointer_RedBirdFlightpathData</a> points to the appropriate boundary data. Scans through the table for a region containing the position.

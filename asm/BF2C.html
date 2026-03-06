@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Percy the Potty Pigeon: Unused RAM at BF2C</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-dark.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-wide.css" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-75RERFCHBG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-75RERFCHBG');
+</script>
+</head>
+<body class="Asm-u">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html"><img alt="logo" src="../images/logo.png" /></a></td>
+<td class="page-header">Unused</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="BF25.html">BF25</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#bf2c">Map</a></td>
+<td class="next">
+Next: <a href="BF35.html">BF35</a>
+</td>
+</tr>
+</table>
+<div class="description">BF2C: Unused: Copy 8 Bytes</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="5">
+<div class="details">
+<div class="paragraph">
+Unused routine to copy 08 bytes from *<span class="register">DE</span> to *<span class="register">HL</span>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Unused_Copy_8_Bytes</td>
+<td class="address-1"><span id="bf2c"></span>BF2C</td>
+<td class="instruction">LD B,$08</td>
+<td class="comment-1" rowspan="1">Set the byte counter to 08 in <span class="register">B</span>.</td>
+</tr>
+<tr>
+<td class="asm-label">Unused_Copy_Loop</td>
+<td class="address-2"><span id="bf2e"></span>BF2E</td>
+<td class="instruction">LD A,(DE)</td>
+<td class="comment-1" rowspan="2">Copy one byte from *<span class="register">DE</span> to *<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf2f"></span>BF2F</td>
+<td class="instruction">LD (HL),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf30"></span>BF30</td>
+<td class="instruction">INC HL</td>
+<td class="comment-1" rowspan="1">Advance the destination pointer.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf31"></span>BF31</td>
+<td class="instruction">INC DE</td>
+<td class="comment-1" rowspan="1">Advance the source pointer.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf32"></span>BF32</td>
+<td class="instruction">DJNZ $BF2E</td>
+<td class="comment-1" rowspan="1">Decrease the counter and loop back to <a href="BF2C.html#bf2e">Unused_Copy_Loop</a> until all 08 bytes are copied.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf34"></span>BF34</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="BF25.html">BF25</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#bf2c">Map</a></td>
+<td class="next">
+Next: <a href="BF35.html">BF35</a>
+</td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
+<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
+<div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
+<div><a href="../dec/asm/48940.html">Switch to decimal</a>.</div>
+</footer>
+</body>
+</html>

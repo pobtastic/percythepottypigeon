@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Percy the Potty Pigeon: Unused RAM at 49113</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-dark.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-wide.css" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-75RERFCHBG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-75RERFCHBG');
+</script>
+</head>
+<body class="Asm-u">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html"><img alt="logo" src="../images/logo.png" /></a></td>
+<td class="page-header">Unused</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="49044.html">49044</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#49113">Map</a></td>
+<td class="next">
+Next: <a href="49125.html">49125</a>
+</td>
+</tr>
+</table>
+<div class="description">49113: Unused: Fragment 2</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="5">
+<div class="details">
+<div class="paragraph">
+Orphaned fragment from an earlier version of the attribute writing code.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Unused_Fragment_2</td>
+<td class="address-1"><span id="49113"></span>49113</td>
+<td class="instruction">LD C,D</td>
+<td class="comment-1" rowspan="1">Copy <span class="register">D</span> to <span class="register">C</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="49114"></span>49114</td>
+<td class="instruction">RET Z</td>
+<td class="comment-1" rowspan="1">Return if zero flag is set.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="49115"></span>49115</td>
+<td class="instruction">LD BC,32</td>
+<td class="comment-1" rowspan="2">Add 0032 to advance to the next attribute row.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="49118"></span>49118</td>
+<td class="instruction">ADD HL,BC</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="49119"></span>49119</td>
+<td class="instruction">LD A,(HL)</td>
+<td class="comment-1" rowspan="4">Read, mask with 248 OR in <span class="register">E</span> and write back.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="49120"></span>49120</td>
+<td class="instruction">AND 248</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="49122"></span>49122</td>
+<td class="instruction">OR E</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="49123"></span>49123</td>
+<td class="instruction">LD (HL),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="49124"></span>49124</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="49044.html">49044</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#49113">Map</a></td>
+<td class="next">
+Next: <a href="49125.html">49125</a>
+</td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
+<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
+<div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
+<div><a href="../../asm/BFD9.html">Switch to hexadecimal</a>.</div>
+</footer>
+</body>
+</html>

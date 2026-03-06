@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Percy the Potty Pigeon: Unused RAM at BE94</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-dark.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-wide.css" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-75RERFCHBG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-75RERFCHBG');
+</script>
+</head>
+<body class="Asm-u">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html"><img alt="logo" src="../images/logo.png" /></a></td>
+<td class="page-header">Unused</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="BE93.html">BE93</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#be94">Map</a></td>
+<td class="next">
+Next: <a href="BEB2.html">BEB2</a>
+</td>
+</tr>
+</table>
+<div class="description">BE94: Unused: Draw 2-Wide Sprite With Attributes</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="5">
+<div class="details">
+<div class="paragraph">
+Unused alternative routine to draw a 2-wide sprite and apply its attributes in a single pass. Later replaced by <a href="BDA6.html">Draw_2Wide_Sprite_Column</a> and <a href="BD19.html#bd43">BD43</a>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Unused_Draw_2Wide</td>
+<td class="address-1"><span id="be94"></span>BE94</td>
+<td class="instruction">LD B,$08</td>
+<td class="comment-1" rowspan="1">Set the row counter to 08 in <span class="register">B</span>.</td>
+</tr>
+<tr>
+<td class="asm-label">Unused_Draw_2Wide_Row_Loop</td>
+<td class="address-2"><span id="be96"></span>BE96</td>
+<td class="instruction">LD A,(DE)</td>
+<td class="comment-1" rowspan="3">OR the sprite data byte from *<span class="register">DE</span> onto the first screen column at *<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="be97"></span>BE97</td>
+<td class="instruction">OR (HL)</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="be98"></span>BE98</td>
+<td class="instruction">LD (HL),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="be99"></span>BE99</td>
+<td class="instruction">INC L</td>
+<td class="comment-1" rowspan="5">Advance to the next column and OR the next sprite byte onto the second column.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="be9a"></span>BE9A</td>
+<td class="instruction">INC DE</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="be9b"></span>BE9B</td>
+<td class="instruction">LD A,(DE)</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="be9c"></span>BE9C</td>
+<td class="instruction">OR (HL)</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="be9d"></span>BE9D</td>
+<td class="instruction">LD (HL),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="be9e"></span>BE9E</td>
+<td class="instruction">DEC L</td>
+<td class="comment-1" rowspan="2">Move back to the first column and advance the sprite data pointer.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="be9f"></span>BE9F</td>
+<td class="instruction">INC DE</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bea0"></span>BEA0</td>
+<td class="instruction">INC H</td>
+<td class="comment-1" rowspan="1">Move down one pixel row in the screen buffer.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bea1"></span>BEA1</td>
+<td class="instruction">LD A,H</td>
+<td class="comment-1" rowspan="2">Check if the pixel row has crossed a character boundary.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bea2"></span>BEA2</td>
+<td class="instruction">AND C</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bea3"></span>BEA3</td>
+<td class="instruction">CALL Z,$BD67</td>
+<td class="comment-1" rowspan="1">Call BD67 to adjust the screen address if needed.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bea6"></span>BEA6</td>
+<td class="instruction">DJNZ $BE96</td>
+<td class="comment-1" rowspan="1">Decrease the row counter and loop back to <a href="BE94.html#be96">Unused_Draw_2Wide_Row_Loop</a> until all 08 rows are drawn.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="bea8"></span>
+<div class="comments">
+<div class="paragraph">
+Apply attributes for the 2-wide sprite.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bea8"></span>BEA8</td>
+<td class="instruction">LD D,$01</td>
+<td class="comment-1" rowspan="1">Set <span class="register">D</span> to 01 (flag: two columns wide).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="beaa"></span>BEAA</td>
+<td class="instruction">POP HL</td>
+<td class="comment-1" rowspan="1">Restore the screen address from the stack.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="beab"></span>BEAB</td>
+<td class="instruction">LD E,(IX+$00)</td>
+<td class="comment-1" rowspan="1">Load the sprite X position from *<span class="register">IX</span>+00 into <span class="register">E</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="beae"></span>BEAE</td>
+<td class="instruction">CALL $BECA</td>
+<td class="comment-1" rowspan="1">Call <a href="BECA.html">Unused_Apply_Attributes</a> to apply the sprite attributes.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="beb1"></span>BEB1</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="BE93.html">BE93</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#be94">Map</a></td>
+<td class="next">
+Next: <a href="BEB2.html">BEB2</a>
+</td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
+<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
+<div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
+<div><a href="../dec/asm/48788.html">Switch to decimal</a>.</div>
+</footer>
+</body>
+</html>

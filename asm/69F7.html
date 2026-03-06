@@ -610,7 +610,7 @@ Stun the red bird so set a random stun timer and award points.
 <td class="asm-label"></td>
 <td class="address-1"><span id="6a8e"></span>6A8E</td>
 <td class="instruction">LD (IX+$02),$01</td>
-<td class="comment-1" rowspan="1">Write 01 to *<span class="register">IX</span>+02 (stunned colour: blue).</td>
+<td class="comment-1" rowspan="1">Write 01 to *<span class="register">IX</span>+02 (stunned colour: BLUE).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -648,8 +648,8 @@ Cancel the egg.
 <tr>
 <td class="asm-label">HandleRedBird_Done</td>
 <td class="address-2"><span id="6a9d"></span>6A9D</td>
-<td class="instruction">CALL $6CDF</td>
-<td class="comment-1" rowspan="1">Call <a href="6CC4.html#6cdf">RedBirdWingAnimationCounter_0</a>.</td>
+<td class="instruction">CALL <a href="6CDF.html">Handle_Butterfly</a></td>
+<td class="comment-1" rowspan="1">Call <a href="6CDF.html">Handle_Butterfly</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>

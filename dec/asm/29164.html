@@ -42,16 +42,22 @@ Next: <a href="29167.html">29167</a>
 </td>
 </tr>
 <tr>
-<td class="asm-label">Frog2_StateData</td>
+<td class="asm-label">Frog2_StunCountdown</td>
 <td class="address-1"><span id="29164"></span>29164</td>
 <td class="instruction">DEFB 0</td>
 <td class="comment-1" rowspan="1">Stun countdown.</td>
 </tr>
 <tr>
-<td class="asm-label"></td>
+<td class="asm-label">Frog2_SoundCounter</td>
 <td class="address-1"><span id="29165"></span>29165</td>
-<td class="instruction">DEFB 0,0</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="instruction">DEFB 0</td>
+<td class="comment-1" rowspan="1">Ascending sound counter for frog 2. Also used as the horizontal jump offset when positioning the frog sprite (multiplied by 4 and added to the platform X position).</td>
+</tr>
+<tr>
+<td class="asm-label">Frog2_Descending_Flag</td>
+<td class="address-1"><span id="29166"></span>29166</td>
+<td class="instruction">DEFB 0</td>
+<td class="comment-1" rowspan="1">Descending sound flag for frog 2. Also determines the frog's facing direction: bit 7 set = facing left, bit 7 clear = facing right.</td>
 </tr>
 </table>
 <table class="asm-navigation">

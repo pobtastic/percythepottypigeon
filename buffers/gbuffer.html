@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Percy the Potty Pigeon: Game status buffer</title>
+<title>Percy the Potty Pigeon: Game Status Buffer</title>
 <meta charset="utf-8" />
 <link rel="stylesheet" type="text/css" href="../skoolkit.css" />
 <link rel="stylesheet" type="text/css" href="../skoolkit-dark.css" />
@@ -19,7 +19,7 @@ gtag('config', 'G-75RERFCHBG');
 <table class="header">
 <tr>
 <td class="logo"><a href="../index.html"><img alt="logo" src="../images/logo.png" /></a></td>
-<td class="page-header">Game status buffer</td>
+<td class="page-header">Game Status Buffer</td>
 </tr>
 </table>
 <div class="map-intro"></div>
@@ -642,12 +642,72 @@ Flight speed for each level. Indexed by zero-based level number.
 </tr>
 <tr>
 <td class="map-g"><span id="6cc4"></span><a href="../asm/6CC4.html">6CC4</a></td>
-<td class="map-length">231</td>
+<td class="map-length">1</td>
 <td class="map-g-desc">
 <div class="map-entry-title-11"><a class="map-entry-title" href="../asm/6CC4.html">Red Bird Wing Animation Counter</a></div>
 <div class="map-entry-desc">
 <div class="paragraph">
 Cycles through 00-07 to animate the red bird's wings. Divided by 02 and added to the frame base of 18 to select the sprite frame.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="6cc5"></span><a href="../asm/6CC5.html">6CC5</a></td>
+<td class="map-length">1</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/6CC5.html">Butterfly Movement Boundary</a></div>
+<div class="map-entry-desc">
+<div class="paragraph">
+Boundary data for the butterfly's movement, used by the direction jump table at <a href="../asm/6BC8.html">Direction_Jump_Table</a>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="6cc6"></span><a href="../asm/6CC6.html">6CC6</a></td>
+<td class="map-length">22</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/6CC6.html">Butterfly Room Table</a></div>
+<div class="map-entry-desc">
+<div class="paragraph">
+Table of room/level pairs where butterflies appear. Each entry is two bytes: the room number followed by the level number. Bit 7 of the level byte is set when the butterfly has been collected. The table is terminated by FF.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="6cdc"></span><a href="../asm/6CDC.html">6CDC</a></td>
+<td class="map-length">1</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/6CDC.html">Butterfly Wing Flap Toggle</a></div>
+<div class="map-entry-desc">
+<div class="paragraph">
+Toggled each frame to alternate the butterfly's wing animation between two frames.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="6cdd"></span><a href="../asm/6CDD.html">6CDD</a></td>
+<td class="map-length">1</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/6CDD.html">Butterfly Movement Delay</a></div>
+<div class="map-entry-desc">
+<div class="paragraph">
+Countdown timer for the butterfly's current movement direction. When it reaches zero, a new random direction and delay are generated.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="6cde"></span><a href="../asm/6CDE.html">6CDE</a></td>
+<td class="map-length">1</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/6CDE.html">Butterfly Direction</a></div>
+<div class="map-entry-desc">
+<div class="paragraph">
+Current movement direction for the butterfly, in the range 00-07.
 </div>
 </div>
 </td>
@@ -933,7 +993,7 @@ State variables for the walking paratrooper hazard. Only rooms 05, 06 and 08 hav
 </tr>
 <tr>
 <td class="map-g"><span id="be00"></span><a href="../asm/BE00.html">BE00</a></td>
-<td class="map-length">512</td>
+<td class="map-length">147</td>
 <td class="map-g-desc">
 <div class="map-entry-title-11"><a class="map-entry-title" href="../asm/BE00.html">Table: Red Bird Flight Path Data</a></div>
 <div class="map-entry-desc">
@@ -1048,6 +1108,18 @@ Used by <a href="../asm/7512.html">Cat</a>, <a href="../asm/759A.html">UFO</a>, 
 <td class="map-g-desc">
 <div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DAE0.html">Egg Sprite Data</a></div>
 <div class="map-entry-desc">
+</div>
+</td>
+</tr>
+<tr>
+<td class="map-g"><span id="dae4"></span><a href="../asm/DAE4.html">DAE4</a></td>
+<td class="map-length">4</td>
+<td class="map-g-desc">
+<div class="map-entry-title-11"><a class="map-entry-title" href="../asm/DAE4.html">Butterfly Sprite Data</a></div>
+<div class="map-entry-desc">
+<div class="paragraph">
+Sprite data for the butterfly collectible.
+</div>
 </div>
 </td>
 </tr>

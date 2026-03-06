@@ -802,7 +802,7 @@ Egg is in flight so advance its Y position.
 <td class="asm-label"></td>
 <td class="address-1"><span id="24750"></span>24750</td>
 <td class="instruction">LD A,(IX+33)</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">IX</span>+33.</td>
+<td class="comment-1" rowspan="1"><span class="register">A</span>=*<span class="register">IX</span>+33 (<a href="56032.html#56033">Egg_Y_Position</a>).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -836,7 +836,7 @@ Egg has reached its target so end the egg drop state.
 <td class="asm-label"></td>
 <td class="address-1"><span id="24759"></span>24759</td>
 <td class="instruction">LD (IX+35),0</td>
-<td class="comment-1" rowspan="1">Write 0 to *<span class="register">IX</span>+35.</td>
+<td class="comment-1" rowspan="1">Write 0 to *<span class="register">IX</span>+35 (<a href="56032.html#56035">Egg_Frame_ID</a>).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -853,7 +853,7 @@ Egg has reached its target so end the egg drop state.
 <td class="asm-label">MainGameLoop_UpdateEggY</td>
 <td class="address-2"><span id="24767"></span>24767</td>
 <td class="instruction">LD (IX+33),A</td>
-<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">IX</span>+33.</td>
+<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<span class="register">IX</span>+33 (<a href="56032.html#56033">Egg_Y_Position</a>).</td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
@@ -1036,7 +1036,7 @@ Start the egg drop sequence and set the egg's target position/ activate the egg 
 <td class="asm-label"></td>
 <td class="address-1"><span id="24823"></span>24823</td>
 <td class="instruction">LD (IX+35),15</td>
-<td class="comment-1" rowspan="1">Write 15 to *<span class="register">IX</span>+35.</td>
+<td class="comment-1" rowspan="1">Write 15 to *<span class="register">IX</span>+35 (<a href="56032.html#56035">Egg_Frame_ID</a>).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -1060,13 +1060,12 @@ Start the egg drop sequence and set the egg's target position/ activate the egg 
 <td class="asm-label"></td>
 <td class="address-1"><span id="24835"></span>24835</td>
 <td class="instruction">OR %11111111</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=255.</td>
+<td class="comment-1" rowspan="2">Write 255 to *<a href="24489.html">EggDropFlag</a> (egg drop in progress).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="24837"></span>24837</td>
 <td class="instruction">LD (24489),A</td>
-<td class="comment-1" rowspan="1">Write 255 to *<a href="24489.html">EggDropFlag</a> (egg drop in progress).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -1093,19 +1092,17 @@ Apply the direction input to Percy's movement. First ensure fire is flagged as r
 <td class="asm-label">MainGameLoop_ApplyMovement</td>
 <td class="address-2"><span id="24846"></span>24846</td>
 <td class="instruction">LD A,(24482)</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="24482.html">InputState</a>.</td>
+<td class="comment-1" rowspan="3">Set bit 0 of *<a href="24482.html">InputState</a> (mark fire as handled).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="24849"></span>24849</td>
 <td class="instruction">SET 0,A</td>
-<td class="comment-1" rowspan="1">Set bit 0 of <span class="register">A</span> (mark fire as handled).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="24851"></span>24851</td>
 <td class="instruction">LD (24482),A</td>
-<td class="comment-1" rowspan="1">Write <span class="register">A</span> to *<a href="24482.html">InputState</a>.</td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">

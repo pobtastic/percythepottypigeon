@@ -347,7 +347,7 @@ No bomb active; check if the plane should drop one.
 <td class="asm-label"></td>
 <td class="address-1"><span id="7774"></span>7774</td>
 <td class="instruction">LD A,($DAC1)</td>
-<td class="comment-1" rowspan="2">Check if Percy's Y position plus 0A is greater than or equal to the plane's Y position.</td>
+<td class="comment-1" rowspan="3">Check if Percy's Y position plus 0A is greater than or equal to the plane's Y position.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -358,7 +358,6 @@ No bomb active; check if the plane should drop one.
 <td class="asm-label"></td>
 <td class="address-1"><span id="7779"></span>7779</td>
 <td class="instruction">CP (IX+$01)</td>
-<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -370,7 +369,7 @@ No bomb active; check if the plane should drop one.
 <td class="asm-label"></td>
 <td class="address-1"><span id="777d"></span>777D</td>
 <td class="instruction">LD A,($DAC0)</td>
-<td class="comment-1" rowspan="2">Mask Percy's X position with FC and store in <span class="register">B</span>.</td>
+<td class="comment-1" rowspan="3">Mask Percy's X position and store in <span class="register">B</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -381,7 +380,6 @@ No bomb active; check if the plane should drop one.
 <td class="asm-label"></td>
 <td class="address-1"><span id="7782"></span>7782</td>
 <td class="instruction">LD B,A</td>
-<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>

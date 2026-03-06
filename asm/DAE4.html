@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Percy the Potty Pigeon: Unused RAM at DAE4</title>
+<title>Percy the Potty Pigeon: Game status buffer entry at DAE4</title>
 <meta charset="utf-8" />
 <link rel="stylesheet" type="text/css" href="../skoolkit.css" />
 <link rel="stylesheet" type="text/css" href="../skoolkit-dark.css" />
@@ -15,11 +15,11 @@ gtag('js', new Date());
 gtag('config', 'G-75RERFCHBG');
 </script>
 </head>
-<body class="Asm-u">
+<body class="Asm-g">
 <table class="header">
 <tr>
 <td class="logo"><a href="../index.html"><img alt="logo" src="../images/logo.png" /></a></td>
-<td class="page-header">Unused</td>
+<td class="page-header">Game status buffer</td>
 </tr>
 </table>
 <table class="asm-navigation">
@@ -33,18 +33,40 @@ Next: <a href="DAE8.html">DAE8</a>
 </td>
 </tr>
 </table>
-<div class="description">DAE4: Unused</div>
+<div class="description">DAE4: Butterfly Sprite Data</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
 <div class="details">
+<div class="paragraph">
+Sprite data for the butterfly collectible.
+</div>
 </div>
 </td>
 </tr>
 <tr>
+<td class="asm-label">Butterfly_X_Position</td>
 <td class="address-1"><span id="dae4"></span>DAE4</td>
-<td class="instruction">DEFB $00,$00,$00,$00</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="instruction">DEFB $00</td>
+<td class="comment-1" rowspan="1">Butterfly X position.</td>
+</tr>
+<tr>
+<td class="asm-label">Butterfly_Y_Position</td>
+<td class="address-1"><span id="dae5"></span>DAE5</td>
+<td class="instruction">DEFB $00</td>
+<td class="comment-1" rowspan="1">Butterfly Y position.</td>
+</tr>
+<tr>
+<td class="asm-label">Butterfly_Active_Flag</td>
+<td class="address-1"><span id="dae6"></span>DAE6</td>
+<td class="instruction">DEFB $00</td>
+<td class="comment-1" rowspan="1">Butterfly active flag.</td>
+</tr>
+<tr>
+<td class="asm-label">Butterfly_Frame_ID</td>
+<td class="address-1"><span id="dae7"></span>DAE7</td>
+<td class="instruction">DEFB $00</td>
+<td class="comment-1" rowspan="1">Butterfly frame ID.</td>
 </tr>
 </table>
 <table class="asm-navigation">

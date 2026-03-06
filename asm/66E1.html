@@ -179,7 +179,7 @@ After scanning all entries, check if Percy is carrying a worm and handle the wor
 <td class="asm-label"></td>
 <td class="address-1"><span id="6712"></span>6712</td>
 <td class="instruction">LD A,(IX+$01)</td>
-<td class="comment-1" rowspan="2">Set the worm sprite Y position to Percy's Y plus 04.</td>
+<td class="comment-1" rowspan="3">Set the worm sprite Y position to Percy's Y plus 04.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -190,7 +190,6 @@ After scanning all entries, check if Percy is carrying a worm and handle the wor
 <td class="asm-label"></td>
 <td class="address-1"><span id="6717"></span>6717</td>
 <td class="instruction">LD (IX+$21),A</td>
-<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -507,7 +506,7 @@ Play a delivery sound effect.
 <td class="asm-label">Delivery_Sound_Inner</td>
 <td class="address-2"><span id="677d"></span>677D</td>
 <td class="instruction">OUT ($FE),A</td>
-<td class="comment-1" rowspan="1">Output the speaker state to port FE.</td>
+<td class="comment-1" rowspan="1">Send to the speaker port.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>

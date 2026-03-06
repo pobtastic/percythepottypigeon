@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Percy the Potty Pigeon: Unused RAM at BEE0</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-dark.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-wide.css" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-75RERFCHBG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-75RERFCHBG');
+</script>
+</head>
+<body class="Asm-u">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html"><img alt="logo" src="../images/logo.png" /></a></td>
+<td class="page-header">Unused</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="BECA.html">BECA</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#bee0">Map</a></td>
+<td class="next">
+Next: <a href="BF25.html">BF25</a>
+</td>
+</tr>
+</table>
+<div class="description">BEE0: Unused: Write Sprite Attribute Cells</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="5">
+<div class="details">
+<div class="paragraph">
+Unused routine to write INK colour to attribute cells for a sprite. Converts the screen buffer address to an attribute address, then writes the colour to one or two cells depending on the sprite width, handling character row boundaries if the sprite straddles two rows.
+</div>
+</div>
+<table class="input">
+<tr class="asm-input-header">
+<th colspan="2">Input</th>
+</tr>
+<tr>
+<td class="register">C</td>
+<td class="register-desc">Attribute buffer base high byte</td>
+</tr>
+<tr>
+<td class="register">D</td>
+<td class="register-desc">Bit 0: width flag, Bit 1: set if straddling two character rows</td>
+</tr>
+<tr>
+<td class="register">E</td>
+<td class="register-desc">Attribute INK colour</td>
+</tr>
+<tr>
+<td class="register">HL</td>
+<td class="register-desc">Screen buffer address</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Unused_Write_Attribute_Cells</td>
+<td class="address-1"><span id="bee0"></span>BEE0</td>
+<td class="instruction">LD A,H</td>
+<td class="comment-1" rowspan="5">Check if the sprite straddles two character rows by testing bits 0-2 of <span class="register">H</span>; if non-zero, set bit 1 of <span class="register">D</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bee1"></span>BEE1</td>
+<td class="instruction">AND $07</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bee3"></span>BEE3</td>
+<td class="instruction">OR A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bee4"></span>BEE4</td>
+<td class="instruction">JR Z,$BEE8</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bee6"></span>BEE6</td>
+<td class="instruction">SET 1,D</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="bee8"></span>
+<div class="comments">
+<div class="paragraph">
+Convert the screen buffer address to the attribute buffer address.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Unused_Convert_To_Attribute</td>
+<td class="address-2"><span id="bee8"></span>BEE8</td>
+<td class="instruction">LD A,H</td>
+<td class="comment-1" rowspan="7">Rotate <span class="register">H</span> right three times, mask with 03 and OR with <span class="register">C</span> to form the attribute buffer high byte.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bee9"></span>BEE9</td>
+<td class="instruction">RRCA</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="beea"></span>BEEA</td>
+<td class="instruction">RRCA</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="beeb"></span>BEEB</td>
+<td class="instruction">RRCA</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="beec"></span>BEEC</td>
+<td class="instruction">AND $03</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="beee"></span>BEEE</td>
+<td class="instruction">OR C</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="beef"></span>BEEF</td>
+<td class="instruction">LD H,A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bef0"></span>BEF0</td>
+<td class="instruction">BIT 0,D</td>
+<td class="comment-1" rowspan="1">Jump to <a href="BEE0.html#bf13">Unused_Write_1Wide_Attribute</a> if bit 0 of <span class="register">D</span> is clear (one column wide).</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="bef2"></span>
+<div class="comments">
+<div class="paragraph">
+Two columns wide: write the INK colour to two adjacent attribute cells.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bef2"></span>BEF2</td>
+<td class="instruction">DEFB $28,$1F</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bef4"></span>BEF4</td>
+<td class="instruction">LD A,(HL)</td>
+<td class="comment-1" rowspan="4">Read *<span class="register">HL</span>, mask off the existing INK with F8 OR in <span class="register">E</span> and write back.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bef5"></span>BEF5</td>
+<td class="instruction">AND $F8</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bef7"></span>BEF7</td>
+<td class="instruction">OR E</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bef8"></span>BEF8</td>
+<td class="instruction">LD (HL),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bef9"></span>BEF9</td>
+<td class="instruction">INC L</td>
+<td class="comment-1" rowspan="5">Advance to the next column, read, mask, OR and write back.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="befa"></span>BEFA</td>
+<td class="instruction">LD A,(HL)</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="befb"></span>BEFB</td>
+<td class="instruction">AND $F8</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="befd"></span>BEFD</td>
+<td class="instruction">OR E</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="befe"></span>BEFE</td>
+<td class="instruction">LD (HL),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="beff"></span>BEFF</td>
+<td class="instruction">DEC L</td>
+<td class="comment-1" rowspan="1">Move back to the first column.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf00"></span>BF00</td>
+<td class="instruction">BIT 1,D</td>
+<td class="comment-1" rowspan="2">Return if bit 1 of <span class="register">D</span> is clear (no row straddling).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf02"></span>BF02</td>
+<td class="instruction">RET Z</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="bf03"></span>
+<div class="comments">
+<div class="paragraph">
+Sprite straddles two character rows: write the INK colour to the next row as well.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf03"></span>BF03</td>
+<td class="instruction">LD BC,$0020</td>
+<td class="comment-1" rowspan="2">Add 0020 to <span class="register">HL</span> to advance to the next attribute row.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf06"></span>BF06</td>
+<td class="instruction">ADD HL,BC</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf07"></span>BF07</td>
+<td class="instruction">LD A,(HL)</td>
+<td class="comment-1" rowspan="4">Read, mask with F8 OR in <span class="register">E</span> and write back.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf08"></span>BF08</td>
+<td class="instruction">AND $F8</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf0a"></span>BF0A</td>
+<td class="instruction">OR E</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf0b"></span>BF0B</td>
+<td class="instruction">LD (HL),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf0c"></span>BF0C</td>
+<td class="instruction">INC L</td>
+<td class="comment-1" rowspan="5">Advance to the next column, read, mask, OR and write back.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf0d"></span>BF0D</td>
+<td class="instruction">LD A,(HL)</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf0e"></span>BF0E</td>
+<td class="instruction">AND $F8</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf10"></span>BF10</td>
+<td class="instruction">OR E</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf11"></span>BF11</td>
+<td class="instruction">LD (HL),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf12"></span>BF12</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="bf13"></span>
+<div class="comments">
+<div class="paragraph">
+One column wide: write the INK colour to a single attribute cell.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Unused_Write_1Wide_Attribute</td>
+<td class="address-1"><span id="bf13"></span>BF13</td>
+<td class="instruction">LD A,(HL)</td>
+<td class="comment-1" rowspan="4">Read *<span class="register">HL</span>, mask with F8 OR in <span class="register">E</span> and write back.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf14"></span>BF14</td>
+<td class="instruction">AND $F8</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf16"></span>BF16</td>
+<td class="instruction">OR E</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf17"></span>BF17</td>
+<td class="instruction">LD (HL),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf18"></span>BF18</td>
+<td class="instruction">BIT 1,D</td>
+<td class="comment-1" rowspan="2">Return if bit 1 of <span class="register">D</span> is clear (no row straddling).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf1a"></span>BF1A</td>
+<td class="instruction">RET Z</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf1b"></span>BF1B</td>
+<td class="instruction">LD BC,$0020</td>
+<td class="comment-1" rowspan="2">Add 0020 to <span class="register">HL</span> to advance to the next attribute row.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf1e"></span>BF1E</td>
+<td class="instruction">ADD HL,BC</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf1f"></span>BF1F</td>
+<td class="instruction">LD A,(HL)</td>
+<td class="comment-1" rowspan="4">Read, mask with F8 OR in <span class="register">E</span> and write back.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf20"></span>BF20</td>
+<td class="instruction">AND $F8</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf22"></span>BF22</td>
+<td class="instruction">OR E</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf23"></span>BF23</td>
+<td class="instruction">LD (HL),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf24"></span>BF24</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="BECA.html">BECA</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#bee0">Map</a></td>
+<td class="next">
+Next: <a href="BF25.html">BF25</a>
+</td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
+<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
+<div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
+<div><a href="../dec/asm/48864.html">Switch to decimal</a>.</div>
+</footer>
+</body>
+</html>

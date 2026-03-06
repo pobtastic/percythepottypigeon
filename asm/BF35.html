@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Percy the Potty Pigeon: Unused RAM at BF35</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-dark.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-wide.css" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-75RERFCHBG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-75RERFCHBG');
+</script>
+</head>
+<body class="Asm-u">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html"><img alt="logo" src="../images/logo.png" /></a></td>
+<td class="page-header">Unused</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="BF2C.html">BF2C</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#bf35">Map</a></td>
+<td class="next">
+Next: <a href="BF87.html">BF87</a>
+</td>
+</tr>
+</table>
+<div class="description">BF35: Unused: Draw 3-Wide Sprite With Attributes</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="5">
+<div class="details">
+<div class="paragraph">
+Unused alternative routine to draw a 3-wide sprite and apply its attributes in a single pass. Later replaced by <a href="BD5E.html">Draw_3Wide_Sprite_Column</a> and <a href="BD5E.html#bd6e">BD6E</a>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Unused_Draw_3Wide</td>
+<td class="address-1"><span id="bf35"></span>BF35</td>
+<td class="instruction">PUSH DE</td>
+<td class="comment-1" rowspan="2">Copy <span class="register">DE</span> to <span class="register">IX</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf36"></span>BF36</td>
+<td class="instruction">POP IX</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf38"></span>BF38</td>
+<td class="instruction">LD L,(IX+$00)</td>
+<td class="comment-1" rowspan="1">Load the screen address low byte from *<span class="register">IX</span>+00.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf3b"></span>BF3B</td>
+<td class="instruction">INC IX</td>
+<td class="comment-1" rowspan="1">Advance <span class="register">IX</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf3d"></span>BF3D</td>
+<td class="instruction">LD H,(IX+$00)</td>
+<td class="comment-1" rowspan="1">Load the screen address high byte from *<span class="register">IX</span>+00.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf40"></span>BF40</td>
+<td class="instruction">PUSH HL</td>
+<td class="comment-1" rowspan="1">Stash the screen address on the stack.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf41"></span>BF41</td>
+<td class="instruction">INC IX</td>
+<td class="comment-1" rowspan="1">Advance <span class="register">IX</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf43"></span>BF43</td>
+<td class="instruction">LD A,(IX+$00)</td>
+<td class="comment-1" rowspan="1">Load the width flag from *<span class="register">IX</span>+00.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf46"></span>BF46</td>
+<td class="instruction">INC IX</td>
+<td class="comment-1" rowspan="1">Advance <span class="register">IX</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf48"></span>BF48</td>
+<td class="instruction">PUSH IX</td>
+<td class="comment-1" rowspan="1">Copy <span class="register">IX</span> to <span class="register">DE</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf4a"></span>BF4A</td>
+<td class="instruction">POP DE</td>
+<td class="comment-1" rowspan="2">Advance <span class="register">DE</span> past the data header.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf4b"></span>BF4B</td>
+<td class="instruction">INC DE</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf4c"></span>BF4C</td>
+<td class="instruction">LD C,$07</td>
+<td class="comment-1" rowspan="1">Set the row boundary mask to 07 in <span class="register">C</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf4e"></span>BF4E</td>
+<td class="instruction">OR A</td>
+<td class="comment-1" rowspan="2">Jump to <a href="BF35.html#bf6f">Unused_Draw_3Wide_1Col</a> if the width flag is zero (one column wide).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf4f"></span>BF4F</td>
+<td class="instruction">JR Z,$BF6F</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="bf51"></span>
+<div class="comments">
+<div class="paragraph">
+Draw two columns per row.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf51"></span>BF51</td>
+<td class="instruction">LD B,$08</td>
+<td class="comment-1" rowspan="1">Set the row counter to 08 in <span class="register">B</span>.</td>
+</tr>
+<tr>
+<td class="asm-label">Unused_Draw_3Wide_Row_Loop</td>
+<td class="address-2"><span id="bf53"></span>BF53</td>
+<td class="instruction">LD A,(DE)</td>
+<td class="comment-1" rowspan="3">OR the sprite data byte from *<span class="register">DE</span> onto the first screen column at *<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf54"></span>BF54</td>
+<td class="instruction">OR (HL)</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf55"></span>BF55</td>
+<td class="instruction">LD (HL),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf56"></span>BF56</td>
+<td class="instruction">INC L</td>
+<td class="comment-1" rowspan="5">Advance to the next column and OR the next byte onto the second column.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf57"></span>BF57</td>
+<td class="instruction">INC DE</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf58"></span>BF58</td>
+<td class="instruction">LD A,(DE)</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf59"></span>BF59</td>
+<td class="instruction">OR (HL)</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf5a"></span>BF5A</td>
+<td class="instruction">LD (HL),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf5b"></span>BF5B</td>
+<td class="instruction">DEC L</td>
+<td class="comment-1" rowspan="2">Move back to the first column and advance the sprite data pointer.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf5c"></span>BF5C</td>
+<td class="instruction">INC DE</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf5d"></span>BF5D</td>
+<td class="instruction">INC H</td>
+<td class="comment-1" rowspan="1">Move down one pixel row in the screen buffer.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf5e"></span>BF5E</td>
+<td class="instruction">LD A,H</td>
+<td class="comment-1" rowspan="2">Check if the pixel row has crossed a character boundary.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf5f"></span>BF5F</td>
+<td class="instruction">AND C</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf60"></span>BF60</td>
+<td class="instruction">CALL Z,<a href="BD5E.html#bd85">$BD85</a></td>
+<td class="comment-1" rowspan="1">Call BD67 to adjust the screen address if needed.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf63"></span>BF63</td>
+<td class="instruction">DJNZ $BF53</td>
+<td class="comment-1" rowspan="1">Decrease the row counter and loop back to <a href="BF35.html#bf53">Unused_Draw_3Wide_Row_Loop</a> until all 08 rows are drawn.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="bf65"></span>
+<div class="comments">
+<div class="paragraph">
+Apply attributes for the 3-wide sprite (two columns).
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf65"></span>BF65</td>
+<td class="instruction">LD D,$01</td>
+<td class="comment-1" rowspan="1">Set <span class="register">D</span> to 01 (flag: two columns wide).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf67"></span>BF67</td>
+<td class="instruction">POP HL</td>
+<td class="comment-1" rowspan="1">Restore the screen address from the stack.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf68"></span>BF68</td>
+<td class="instruction">LD E,(IX+$00)</td>
+<td class="comment-1" rowspan="1">Load the sprite X position from *<span class="register">IX</span>+00 into <span class="register">E</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf6b"></span>BF6B</td>
+<td class="instruction">CALL $BF87</td>
+<td class="comment-1" rowspan="1">Call <a href="BF87.html">Unused_Apply_3Wide_Attributes</a> to apply the sprite attributes.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf6e"></span>BF6E</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="bf6f"></span>
+<div class="comments">
+<div class="paragraph">
+Draw one column per row.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Unused_Draw_3Wide_1Col</td>
+<td class="address-2"><span id="bf6f"></span>BF6F</td>
+<td class="instruction">LD B,$08</td>
+<td class="comment-1" rowspan="1">Set the row counter to 08 in <span class="register">B</span>.</td>
+</tr>
+<tr>
+<td class="asm-label">Unused_Draw_3Wide_1Col_Loop</td>
+<td class="address-2"><span id="bf71"></span>BF71</td>
+<td class="instruction">LD A,(DE)</td>
+<td class="comment-1" rowspan="3">OR the sprite data byte from *<span class="register">DE</span> onto the screen at *<span class="register">HL</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf72"></span>BF72</td>
+<td class="instruction">OR (HL)</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf73"></span>BF73</td>
+<td class="instruction">LD (HL),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf74"></span>BF74</td>
+<td class="instruction">INC H</td>
+<td class="comment-1" rowspan="1">Move down one pixel row in the screen buffer.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf75"></span>BF75</td>
+<td class="instruction">LD A,H</td>
+<td class="comment-1" rowspan="2">Check if the pixel row has crossed a character boundary.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf76"></span>BF76</td>
+<td class="instruction">AND C</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf77"></span>BF77</td>
+<td class="instruction">CALL Z,<a href="BD5E.html#bd85">$BD85</a></td>
+<td class="comment-1" rowspan="1">Call BD67 to adjust the screen address if needed.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf7a"></span>BF7A</td>
+<td class="instruction">INC DE</td>
+<td class="comment-1" rowspan="1">Advance the sprite data pointer.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf7b"></span>BF7B</td>
+<td class="instruction">DJNZ $BF71</td>
+<td class="comment-1" rowspan="1">Decrease the row counter and loop back to <a href="BF35.html#bf71">Unused_Draw_3Wide_1Col_Loop</a> until all 08 rows are drawn.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="bf7d"></span>
+<div class="comments">
+<div class="paragraph">
+Apply attributes for the 3-wide sprite (one column).
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf7d"></span>BF7D</td>
+<td class="instruction">POP HL</td>
+<td class="comment-1" rowspan="1">Restore the screen address from the stack.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf7e"></span>BF7E</td>
+<td class="instruction">LD E,(IX+$00)</td>
+<td class="comment-1" rowspan="1">Load the sprite X position from *<span class="register">IX</span>+00 into <span class="register">E</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf81"></span>BF81</td>
+<td class="instruction">LD D,$00</td>
+<td class="comment-1" rowspan="1">Set <span class="register">D</span> to 00 (flag: one column wide).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf83"></span>BF83</td>
+<td class="instruction">CALL $BF87</td>
+<td class="comment-1" rowspan="1">Call <a href="BF87.html">Unused_Apply_3Wide_Attributes</a> to apply the sprite attributes.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bf86"></span>BF86</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="BF2C.html">BF2C</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#bf35">Map</a></td>
+<td class="next">
+Next: <a href="BF87.html">BF87</a>
+</td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
+<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
+<div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
+<div><a href="../dec/asm/48949.html">Switch to decimal</a>.</div>
+</footer>
+</body>
+</html>

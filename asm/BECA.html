@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Percy the Potty Pigeon: Unused RAM at BECA</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-dark.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-wide.css" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-75RERFCHBG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-75RERFCHBG');
+</script>
+</head>
+<body class="Asm-u">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html"><img alt="logo" src="../images/logo.png" /></a></td>
+<td class="page-header">Unused</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="BEB2.html">BEB2</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#beca">Map</a></td>
+<td class="next">
+Next: <a href="BEE0.html">BEE0</a>
+</td>
+</tr>
+</table>
+<div class="description">BECA: Unused: Apply Sprite Attributes</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="5">
+<div class="details">
+<div class="paragraph">
+Unused routine to apply colour attributes for a sprite. Handles both the overlay buffer attributes and the screen attributes.
+</div>
+</div>
+<table class="input">
+<tr class="asm-input-header">
+<th colspan="2">Input</th>
+</tr>
+<tr>
+<td class="register">D</td>
+<td class="register-desc">Bit 0: 01 = two columns wide, 00 = one column wide</td>
+</tr>
+<tr>
+<td class="register">E</td>
+<td class="register-desc">Sprite X position</td>
+</tr>
+<tr>
+<td class="register">HL</td>
+<td class="register-desc">Screen buffer address</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Unused_Apply_Attributes</td>
+<td class="address-1"><span id="beca"></span>BECA</td>
+<td class="instruction">LD C,$58</td>
+<td class="comment-1" rowspan="1">Set <span class="register">C</span> to 58 (overlay attribute buffer base high byte).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="becc"></span>BECC</td>
+<td class="instruction">LD A,(IX+$00)</td>
+<td class="comment-1" rowspan="1">Load the sprite X position from *<span class="register">IX</span>+00.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="becf"></span>BECF</td>
+<td class="instruction">CP $FF</td>
+<td class="comment-1" rowspan="2">Jump to <a href="BECA.html#bed8">Unused_Apply_Screen_Attributes</a> if the X position is FF (sprite offscreen).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bed1"></span>BED1</td>
+<td class="instruction">JR Z,$BED8</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bed3"></span>BED3</td>
+<td class="instruction">PUSH HL</td>
+<td class="comment-1" rowspan="1">Stash the screen address on the stack.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bed4"></span>BED4</td>
+<td class="instruction">CALL $BEE0</td>
+<td class="comment-1" rowspan="1">Call <a href="BEE0.html">Unused_Write_Attribute_Cells</a> to apply the overlay buffer attributes.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bed7"></span>BED7</td>
+<td class="instruction">POP HL</td>
+<td class="comment-1" rowspan="1">Restore the screen address from the stack.</td>
+</tr>
+<tr>
+<td class="asm-label">Unused_Apply_Screen_Attributes</td>
+<td class="address-2"><span id="bed8"></span>BED8</td>
+<td class="instruction">LD C,$F8</td>
+<td class="comment-1" rowspan="1">Set <span class="register">C</span> to F8 (screen attribute buffer base high byte).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="beda"></span>BEDA</td>
+<td class="instruction">LD E,$02</td>
+<td class="comment-1" rowspan="1">Set <span class="register">E</span> to 02 (attribute INK colour).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bedc"></span>BEDC</td>
+<td class="instruction">CALL $BEE0</td>
+<td class="comment-1" rowspan="1">Call <a href="BEE0.html">Unused_Write_Attribute_Cells</a> to apply the screen attributes.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="bedf"></span>BEDF</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="BEB2.html">BEB2</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#beca">Map</a></td>
+<td class="next">
+Next: <a href="BEE0.html">BEE0</a>
+</td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
+<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
+<div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
+<div><a href="../dec/asm/48842.html">Switch to decimal</a>.</div>
+</footer>
+</body>
+</html>
