@@ -33,16 +33,16 @@ Next: <a href="29910.html">29910</a>
 </td>
 </tr>
 </table>
-<div class="description">29881: Animate Stunned Red Bird</div>
+<div class="description">29881: Animate Stunned Hazard</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
 <div class="details">
 <div class="paragraph">
-Used by the routines at <a href="29753.html">Handle_Red_Bird</a>, <a href="29970.html">Handle_Cat</a>, <a href="30348.html">UpdatePlaneFlightPath</a>, <a href="30867.html">Handle_Walking_Paratrooper</a> and <a href="31186.html">Handle_Parachute_Descent</a>.
+Used by the routines at <a href="29753.html">Handler_Helicopter</a>, <a href="29970.html">Handler_Cat</a>, <a href="30348.html">Handle_Plane</a>, <a href="30867.html">Handler_Walking_Paratrooper</a> and <a href="31186.html">Handler_Parachute_Descent</a>.
 </div>
 <div class="paragraph">
-Animates the stunned red bird sequence. Increments the animation counter until it reaches 133 cycling through animation frames. Assigns a random colour attribute and plays a hit sound each frame.
+Animates the stunned hazard sequence. Used by the helicopter, cat, paratrooper, canopy and other hazards when hit by Percy's egg. Increments the animation counter until it reaches 133 cycling through animation frames. Assigns a random colour attribute and plays a hit sound each frame.
 </div>
 </div>
 <table class="input">
@@ -51,17 +51,17 @@ Animates the stunned red bird sequence. Increments the animation counter until i
 </tr>
 <tr>
 <td class="register">IX</td>
-<td class="register-desc">Pointer to red bird sprite data</td>
+<td class="register-desc">Pointer to hazard sprite data</td>
 </tr>
 <tr>
 <td class="register">IY</td>
-<td class="register-desc">Pointer to red bird state data</td>
+<td class="register-desc">Pointer to hazard state data</td>
 </tr>
 </table>
 </td>
 </tr>
 <tr>
-<td class="asm-label">Animate_Stunned_RedBird</td>
+<td class="asm-label">Animate_Stunned_Hazard</td>
 <td class="address-2"><span id="29881"></span>29881</td>
 <td class="instruction">LD A,(IY+0)</td>
 <td class="comment-1" rowspan="3">Return if the animation counter at *<span class="register">IY</span>+0 has reached 133 (animation complete).</td>

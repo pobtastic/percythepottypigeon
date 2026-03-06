@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Percy the Potty Pigeon: Routine at 30483</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-dark.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-wide.css" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-75RERFCHBG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-75RERFCHBG');
+</script>
+</head>
+<body class="Asm-c">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html"><img alt="logo" src="../images/logo.png" /></a></td>
+<td class="page-header">Routines</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="30348.html">30348</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#30483">Map</a></td>
+<td class="next">
+Next: <a href="30638.html">30638</a>
+</td>
+</tr>
+</table>
+<div class="description">30483: Handle Plane Bomb</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="5">
+<div class="details">
+<div class="paragraph">
+Used by the routine at <a href="30336.html">Handler_Plane</a>.
+</div>
+<div class="paragraph">
+Manages the plane's bomb. When the plane is above Percy, a bomb is dropped which falls downward. When the bomb hits or the explosion timer expires, Percy is damaged. The explosion cycles through animation frames before clearing.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="30483"></span>
+<div class="comments">
+<div class="paragraph">
+Check the bomb explosion counter.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Handle_Plane_Bomb</td>
+<td class="address-2"><span id="30483"></span>30483</td>
+<td class="instruction">LD A,(30638)</td>
+<td class="comment-1" rowspan="1">Fetch the bomb explosion counter from *<a href="30638.html">Bomb_Explosion_Counter</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30486"></span>30486</td>
+<td class="instruction">OR A</td>
+<td class="comment-1" rowspan="2">Jump to <a href="30483.html#30541">Bomb_Explosion</a> if the counter is non-zero (explosion in progress).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30487"></span>30487</td>
+<td class="instruction">JR NZ,<a href="30483.html#30541">Bomb_Explosion</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30489"></span>30489</td>
+<td class="instruction">BIT 7,(IY+3)</td>
+<td class="comment-1" rowspan="2">Jump to <a href="30483.html#30575">Check_Bomb_Drop</a> if bit 7 of *<span class="register">IY</span>+3 is not set (no bomb active).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30493"></span>30493</td>
+<td class="instruction">JR Z,<a href="30483.html#30575">Check_Bomb_Drop</a></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="30495"></span>
+<div class="comments">
+<div class="paragraph">
+Bomb is falling; update its position.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30495"></span>30495</td>
+<td class="instruction">LD IX,56048</td>
+<td class="comment-1" rowspan="1">Point <span class="register">IX</span> at <a href="56048.html">Sprite03_2Wide_X_Position</a> (bomb sprite data).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30499"></span>30499</td>
+<td class="instruction">LD (IX+3),20</td>
+<td class="comment-1" rowspan="1">Set the bomb sprite frame to 20.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30503"></span>30503</td>
+<td class="instruction">LD A,(IX+1)</td>
+<td class="comment-1" rowspan="2">Add 3 to the bomb Y position.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30506"></span>30506</td>
+<td class="instruction">ADD A,3</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30508"></span>30508</td>
+<td class="instruction">CP 160</td>
+<td class="comment-1" rowspan="2">Jump to <a href="30483.html#30570">Bomb_Hit_Ground</a> if the Y position has reached 160 (hit the ground).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30510"></span>30510</td>
+<td class="instruction">JR NC,<a href="30483.html#30570">Bomb_Hit_Ground</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30512"></span>30512</td>
+<td class="instruction">LD (IX+1),A</td>
+<td class="comment-1" rowspan="1">Write the updated Y position to *<span class="register">IX</span>+1.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30515"></span>30515</td>
+<td class="instruction">PUSH IY</td>
+<td class="comment-1" rowspan="1">Stash <span class="register">IY</span> on the stack.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30517"></span>30517</td>
+<td class="instruction">LD IX,56000</td>
+<td class="comment-1" rowspan="1">Point <span class="register">IX</span> at <a href="56000.html">Percy_X_Position</a> (Percy sprite data).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30521"></span>30521</td>
+<td class="instruction">LD IY,56048</td>
+<td class="comment-1" rowspan="1">Point <span class="register">IY</span> at <a href="56048.html">Sprite03_2Wide_X_Position</a> (bomb sprite data).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30525"></span>30525</td>
+<td class="instruction">CALL <a href="27781.html">CheckEggCollision</a></td>
+<td class="comment-1" rowspan="1">Call <a href="27781.html">CheckEggCollision</a> to check for collision between the bomb and Percy.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30528"></span>30528</td>
+<td class="instruction">POP IY</td>
+<td class="comment-1" rowspan="1">Restore <span class="register">IY</span> from the stack.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30530"></span>30530</td>
+<td class="instruction">RET C</td>
+<td class="comment-1" rowspan="1">Return if there was no collision (carry set).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30531"></span>30531</td>
+<td class="instruction">LD (IY+3),0</td>
+<td class="comment-1" rowspan="1">Write 0 to *<span class="register">IY</span>+3 (deactivate the bomb).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30535"></span>30535</td>
+<td class="instruction">LD A,7</td>
+<td class="comment-1" rowspan="2">Write 7 to *<a href="30638.html">Bomb_Explosion_Counter</a> (start the explosion counter).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30537"></span>30537</td>
+<td class="instruction">LD (30638),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30540"></span>30540</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="30541"></span>
+<div class="comments">
+<div class="paragraph">
+Bomb explosion animation is in progress.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Bomb_Explosion</td>
+<td class="address-2"><span id="30541"></span>30541</td>
+<td class="instruction">DEC A</td>
+<td class="comment-1" rowspan="1">Decrement the explosion counter.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30542"></span>30542</td>
+<td class="instruction">LD (30638),A</td>
+<td class="comment-1" rowspan="1">Write the updated counter to *<a href="30638.html">Bomb_Explosion_Counter</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30545"></span>30545</td>
+<td class="instruction">OR A</td>
+<td class="comment-1" rowspan="2">Jump to <a href="30483.html#30564">Bomb_Explosion_Done</a> if the counter has reached zero (explosion finished).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30546"></span>30546</td>
+<td class="instruction">JR Z,<a href="30483.html#30564">Bomb_Explosion_Done</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30548"></span>30548</td>
+<td class="instruction">RRA</td>
+<td class="comment-1" rowspan="2">Divide by two and add 54 to select the explosion animation frame.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30549"></span>30549</td>
+<td class="instruction">ADD A,54</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30551"></span>30551</td>
+<td class="instruction">LD (56003),A</td>
+<td class="comment-1" rowspan="1">Write the frame to *<a href="56000.html#56003">Percy_Frame_ID</a> (Percy's sprite frame, showing the explosion on Percy).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30554"></span>30554</td>
+<td class="instruction">LD A,R</td>
+<td class="comment-1" rowspan="2">Use the Memory Refresh Register masked with 7 as a random flicker value.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30556"></span>30556</td>
+<td class="instruction">AND %00000111</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30558"></span>30558</td>
+<td class="instruction">LD (56002),A</td>
+<td class="comment-1" rowspan="1">Write to *<a href="56000.html#56002">Percy_Colour</a> (Percy's sprite active flag, for flicker effect).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30561"></span>30561</td>
+<td class="instruction">JP <a href="28500.html#28538">PlayHitSound</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="28500.html#28538">PlayHitSound</a>.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="30564"></span>
+<div class="comments">
+<div class="paragraph">
+Explosion complete; register the hit on Percy.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Bomb_Explosion_Done</td>
+<td class="address-2"><span id="30564"></span>30564</td>
+<td class="instruction">LD A,255</td>
+<td class="comment-1" rowspan="2">Write 255 to *<a href="24487.html">FallingState</a> (set collision flag to damage Percy).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30566"></span>30566</td>
+<td class="instruction">LD (24487),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30569"></span>30569</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="30570"></span>
+<div class="comments">
+<div class="paragraph">
+Bomb hit the ground without hitting Percy; deactivate the bomb.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Bomb_Hit_Ground</td>
+<td class="address-2"><span id="30570"></span>30570</td>
+<td class="instruction">LD (IY+3),0</td>
+<td class="comment-1" rowspan="1">Write 0 to *<span class="register">IY</span>+3 (deactivate the bomb).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30574"></span>30574</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="30575"></span>
+<div class="comments">
+<div class="paragraph">
+No bomb active; check if the plane should drop one.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Check_Bomb_Drop</td>
+<td class="address-2"><span id="30575"></span>30575</td>
+<td class="instruction">LD A,R</td>
+<td class="comment-1" rowspan="2">Use the Memory Refresh Register masked for a random check.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30577"></span>30577</td>
+<td class="instruction">AND %00000001</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30579"></span>30579</td>
+<td class="instruction">RET NZ</td>
+<td class="comment-1" rowspan="1">Return if the random bit is not set (don't drop this frame).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30580"></span>30580</td>
+<td class="instruction">LD A,(56001)</td>
+<td class="comment-1" rowspan="2">Check if Percy's Y position plus 10 is greater than or equal to the plane's Y position.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30583"></span>30583</td>
+<td class="instruction">ADD A,10</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30585"></span>30585</td>
+<td class="instruction">CP (IX+1)</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30588"></span>30588</td>
+<td class="instruction">RET C</td>
+<td class="comment-1" rowspan="1">Return if Percy is above the plane (carry set).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30589"></span>30589</td>
+<td class="instruction">LD A,(56000)</td>
+<td class="comment-1" rowspan="2">Mask Percy's X position with 252 and store in <span class="register">B</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30592"></span>30592</td>
+<td class="instruction">AND %11111100</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30594"></span>30594</td>
+<td class="instruction">LD B,A</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30595"></span>30595</td>
+<td class="instruction">LD A,(IX+0)</td>
+<td class="comment-1" rowspan="2">Mask the plane's X position with 252 and compare with <span class="register">B</span>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30598"></span>30598</td>
+<td class="instruction">AND %11111100</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30600"></span>30600</td>
+<td class="instruction">CP B</td>
+<td class="comment-1" rowspan="2">Return if the X positions don't match (plane not above Percy).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30601"></span>30601</td>
+<td class="instruction">RET NZ</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30602"></span>30602</td>
+<td class="instruction">BIT 7,(IY+2)</td>
+<td class="comment-1" rowspan="1">Return if bit 7 of *<span class="register">IY</span>+2 is not set (plane not active).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30606"></span>30606</td>
+<td class="instruction">RET Z</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30607"></span>30607</td>
+<td class="instruction">BIT 7,(IY+0)</td>
+<td class="comment-1" rowspan="1">Return if bit 7 of *<span class="register">IY</span>+0 is set (plane is stunned).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30611"></span>30611</td>
+<td class="instruction">RET NZ</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="30612"></span>
+<div class="comments">
+<div class="paragraph">
+Drop the bomb: set the bomb sprite position and activate it.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30612"></span>30612</td>
+<td class="instruction">LD A,(IX+1)</td>
+<td class="comment-1" rowspan="2">Set the bomb Y position to the plane's Y plus 10.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30615"></span>30615</td>
+<td class="instruction">ADD A,10</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30617"></span>30617</td>
+<td class="instruction">LD (56049),A</td>
+<td class="comment-1" rowspan="1">Write to *<a href="56048.html#56049">Sprite03_2Wide_Y_Position</a> (bomb Y position).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30620"></span>30620</td>
+<td class="instruction">LD A,(IX+0)</td>
+<td class="comment-1" rowspan="1">Copy the plane's X position to *<a href="56048.html">Sprite03_2Wide_X_Position</a> (bomb X position).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30623"></span>30623</td>
+<td class="instruction">LD (56048),A</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30626"></span>30626</td>
+<td class="instruction">LD A,255</td>
+<td class="comment-1" rowspan="1">Write 255 to *<a href="56048.html#56050">Sprite03_2Wide_Colour</a> (bomb sprite active flag).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30628"></span>30628</td>
+<td class="instruction">LD (56050),A</td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30631"></span>30631</td>
+<td class="instruction">SET 7,(IY+3)</td>
+<td class="comment-1" rowspan="1">Set bit 7 of *<span class="register">IY</span>+3 (mark bomb as active).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="30635"></span>30635</td>
+<td class="instruction">JP <a href="28500.html#28538">PlayHitSound</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="28500.html#28538">PlayHitSound</a>.</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="30348.html">30348</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#30483">Map</a></td>
+<td class="next">
+Next: <a href="30638.html">30638</a>
+</td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
+<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
+<div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
+<div><a href="../../asm/7713.html">Switch to hexadecimal</a>.</div>
+</footer>
+</body>
+</html>

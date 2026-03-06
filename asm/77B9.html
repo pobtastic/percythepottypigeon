@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Percy the Potty Pigeon: Routine at 77B9</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-dark.css" />
+<link rel="stylesheet" type="text/css" href="../skoolkit-wide.css" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-75RERFCHBG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-75RERFCHBG');
+</script>
+</head>
+<body class="Asm-c">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html"><img alt="logo" src="../images/logo.png" /></a></td>
+<td class="page-header">Routines</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="77B4.html">77B4</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#77b9">Map</a></td>
+<td class="next">
+Next: <a href="7891.html">7891</a>
+</td>
+</tr>
+</table>
+<div class="description">77B9: Handler: Balloon</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="5">
+<div class="details">
+<div class="paragraph">
+Used by the routines at <a href="723F.html">Handler_Room01</a>, <a href="72BD.html">Handler_Room04</a>, <a href="7367.html">Handler_Room07</a>, <a href="73A4.html">Handler_Room08</a>, <a href="73FA.html">Handler_Room10</a> and <a href="7413.html">Handler_Room11</a>.
+</div>
+<div class="paragraph">
+Controls the balloon hazard. The balloon floats horizontally across the screen, randomly changing direction at the edges and occasionally bobbing up and down. When hit by Percy's egg, it pops through a deflating animation before respawning.
+</div>
+</div>
+<table class="input">
+<tr class="asm-input-header">
+<th colspan="2">Input</th>
+</tr>
+<tr>
+<td class="register">IX</td>
+<td class="register-desc">Pointer to the balloon sprite data</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Handler_Balloon</td>
+<td class="address-2"><span id="77b9"></span>77B9</td>
+<td class="instruction">LD A,($5FBB)</td>
+<td class="comment-1" rowspan="3">Jump to <a href="77B9.html#784f">Respawn_Balloon</a> if *<a href="5FBB.html">RespawnFlag</a> is set.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77bc"></span>77BC</td>
+<td class="instruction">OR A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77bd"></span>77BD</td>
+<td class="instruction">JP NZ,<a href="77B9.html#784f">Respawn_Balloon</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77c0"></span>77C0</td>
+<td class="instruction">LD HL,$7891</td>
+<td class="comment-1" rowspan="1">Point <span class="register">HL</span> at <a href="7891.html">Balloon_Direction_Flag</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77c3"></span>77C3</td>
+<td class="instruction">LD A,($7892)</td>
+<td class="comment-1" rowspan="3">Jump to <a href="77B9.html#7855">Balloon_Popping</a> if *<a href="7892.html">Balloon_Pop_Counter</a> is set.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77c6"></span>77C6</td>
+<td class="instruction">OR A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77c7"></span>77C7</td>
+<td class="instruction">JP NZ,<a href="77B9.html#7855">Balloon_Popping</a></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="77ca"></span>
+<div class="comments">
+<div class="paragraph">
+Balloon is active; randomly toggle the float direction.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77ca"></span>77CA</td>
+<td class="instruction">LD A,R</td>
+<td class="comment-1" rowspan="2">Use the Memory Refresh Register masked to a number between 00-80.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77cc"></span>77CC</td>
+<td class="instruction">AND %01111111</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77ce"></span>77CE</td>
+<td class="instruction">CP $7F</td>
+<td class="comment-1" rowspan="2">Jump to <a href="77B9.html#77d5">Move_Balloon</a> if the result is not equal to 7F.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77d0"></span>77D0</td>
+<td class="instruction">JR NZ,<a href="77B9.html#77d5">Move_Balloon</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77d2"></span>77D2</td>
+<td class="instruction">LD A,(HL)</td>
+<td class="comment-1" rowspan="3">Toggle the direction flag at *<span class="register">HL</span> by complementing and writing back.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77d3"></span>77D3</td>
+<td class="instruction">CPL</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77d4"></span>77D4</td>
+<td class="instruction">LD (HL),A</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="77d5"></span>
+<div class="comments">
+<div class="paragraph">
+Move the balloon horizontally based on its direction.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Move_Balloon</td>
+<td class="address-2"><span id="77d5"></span>77D5</td>
+<td class="instruction">LD A,(HL)</td>
+<td class="comment-1" rowspan="3">Jump to <a href="77B9.html#77e7">Balloon_Float_Left</a> if the direction flag is non-zero (set to floating left).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77d6"></span>77D6</td>
+<td class="instruction">OR A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77d7"></span>77D7</td>
+<td class="instruction">JR NZ,<a href="77B9.html#77e7">Balloon_Float_Left</a></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="77d9"></span>
+<div class="comments">
+<div class="paragraph">
+Floating right: increment X position.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77d9"></span>77D9</td>
+<td class="instruction">LD A,(IX+$00)</td>
+<td class="comment-1" rowspan="1">Fetch the balloon X position from *<span class="register">IX</span>+00.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77dc"></span>77DC</td>
+<td class="instruction">ADD A,$01</td>
+<td class="comment-1" rowspan="1">Add 01.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77de"></span>77DE</td>
+<td class="instruction">CP $EE</td>
+<td class="comment-1" rowspan="2">Jump to <a href="77B9.html#7847">Balloon_Reverse_Left</a> if the balloon X position has reached EE (off-screen right; reverse direction).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77e0"></span>77E0</td>
+<td class="instruction">JR NC,<a href="77B9.html#7847">Balloon_Reverse_Left</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77e2"></span>77E2</td>
+<td class="instruction">LD (IX+$00),A</td>
+<td class="comment-1" rowspan="1">Write the updated X position to *<span class="register">IX</span>+00.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77e5"></span>77E5</td>
+<td class="instruction">JR <a href="77B9.html#77f3">Adjust_Balloon_Altitude</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="77B9.html#77f3">Adjust_Balloon_Altitude</a>.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="77e7"></span>
+<div class="comments">
+<div class="paragraph">
+Floating left: decrement X position.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Balloon_Float_Left</td>
+<td class="address-2"><span id="77e7"></span>77E7</td>
+<td class="instruction">LD A,(IX+$00)</td>
+<td class="comment-1" rowspan="1">Fetch the balloon X position from *<span class="register">IX</span>+00.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77ea"></span>77EA</td>
+<td class="instruction">SUB $01</td>
+<td class="comment-1" rowspan="1">Subtract 01.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77ec"></span>77EC</td>
+<td class="instruction">CP $04</td>
+<td class="comment-1" rowspan="2">Jump to <a href="77B9.html#784b">Balloon_Reverse_Right</a> if the balloon X position has dropped below 04 (off-screen left; reverse direction).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77ee"></span>77EE</td>
+<td class="instruction">JR C,<a href="77B9.html#784b">Balloon_Reverse_Right</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77f0"></span>77F0</td>
+<td class="instruction">LD (IX+$00),A</td>
+<td class="comment-1" rowspan="1">Write the updated X position to *<span class="register">IX</span>+00.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="77f3"></span>
+<div class="comments">
+<div class="paragraph">
+Randomly adjust the balloon's altitude to create a bobbing effect.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Adjust_Balloon_Altitude</td>
+<td class="address-2"><span id="77f3"></span>77F3</td>
+<td class="instruction">CALL <a href="7930.html">Generate_Random_Number</a></td>
+<td class="comment-1" rowspan="1">Call <a href="7930.html">Generate_Random_Number</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77f6"></span>77F6</td>
+<td class="instruction">AND %00000011</td>
+<td class="comment-1" rowspan="1">Keep only bits 0-1.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77f8"></span>77F8</td>
+<td class="instruction">CP $03</td>
+<td class="comment-1" rowspan="1">Jump to <a href="77B9.html#7821">Set_Balloon_Frame</a> if not equal to 03 (only adjust altitude on a 1-in-4 chance).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77fa"></span>77FA</td>
+<td class="instruction">JR NZ,<a href="77B9.html#7821">Set_Balloon_Frame</a></td>
+<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77fc"></span>77FC</td>
+<td class="instruction">LD A,R</td>
+<td class="comment-1" rowspan="2">Load <span class="register">B</span> with the Memory Refresh Register.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77fe"></span>77FE</td>
+<td class="instruction">LD B,A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="77ff"></span>77FF</td>
+<td class="instruction">BIT 6,A</td>
+<td class="comment-1" rowspan="2">Jump to <a href="77B9.html#7812">Balloon_Bob_Up</a> if bit 6 is set (move upward).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7801"></span>7801</td>
+<td class="instruction">JR NZ,<a href="77B9.html#7812">Balloon_Bob_Up</a></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="7803"></span>
+<div class="comments">
+<div class="paragraph">
+Bob downward.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7803"></span>7803</td>
+<td class="instruction">LD A,B</td>
+<td class="comment-1" rowspan="2">Mask <span class="register">B</span> to get a step of 00 or 01.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7804"></span>7804</td>
+<td class="instruction">AND %00000001</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7806"></span>7806</td>
+<td class="instruction">ADD A,(IX+$01)</td>
+<td class="comment-1" rowspan="1">Add to the balloon Y position.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7809"></span>7809</td>
+<td class="instruction">CP $70</td>
+<td class="comment-1" rowspan="2">Jump to <a href="77B9.html#7821">Set_Balloon_Frame</a> if the balloon Y position has reached 70 (maximum altitude, don't go lower).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="780b"></span>780B</td>
+<td class="instruction">JR NC,<a href="77B9.html#7821">Set_Balloon_Frame</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="780d"></span>780D</td>
+<td class="instruction">LD (IX+$01),A</td>
+<td class="comment-1" rowspan="1">Write the updated balloon Y position back to *<span class="register">IX</span>+01.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7810"></span>7810</td>
+<td class="instruction">JR <a href="77B9.html#7821">Set_Balloon_Frame</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="77B9.html#7821">Set_Balloon_Frame</a>.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="7812"></span>
+<div class="comments">
+<div class="paragraph">
+Bob upward.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Balloon_Bob_Up</td>
+<td class="address-2"><span id="7812"></span>7812</td>
+<td class="instruction">LD A,B</td>
+<td class="comment-1" rowspan="3">Mask <span class="register">B</span> to get a step of 00 or 01.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7813"></span>7813</td>
+<td class="instruction">AND %00000001</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7815"></span>7815</td>
+<td class="instruction">LD B,A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7816"></span>7816</td>
+<td class="instruction">LD A,(IX+$01)</td>
+<td class="comment-1" rowspan="1">Fetch the balloon Y position from *<span class="register">IX</span>+01.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7819"></span>7819</td>
+<td class="instruction">SUB B</td>
+<td class="comment-1" rowspan="1">Subtract the step.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="781a"></span>781A</td>
+<td class="instruction">CP $18</td>
+<td class="comment-1" rowspan="2">Jump to <a href="77B9.html#7821">Set_Balloon_Frame</a> if the balloon Y position has dropped below 18 (minimum altitude, don't go higher).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="781c"></span>781C</td>
+<td class="instruction">JR C,<a href="77B9.html#7821">Set_Balloon_Frame</a></td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="781e"></span>781E</td>
+<td class="instruction">LD (IX+$01),A</td>
+<td class="comment-1" rowspan="1">Write the updated balloon Y position back to *<span class="register">IX</span>+01.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="7821"></span>
+<div class="comments">
+<div class="paragraph">
+Set the balloon frame and check for collisions.
+</div>
+<div class="paragraph">
+<table class="default">
+<tr>
+<th colspan="1" rowspan="1">Sprite ID</th>
+<th colspan="1" rowspan="1">Sprite</th>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">49</td>
+<td class="centre" colspan="1" rowspan="1"><img alt="udg46139-56x4" src="../images/udgs/udg46139-56x4.png" /></td>
+</tr>
+</table>
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Set_Balloon_Frame</td>
+<td class="address-2"><span id="7821"></span>7821</td>
+<td class="instruction">LD (IX+$03),$49</td>
+<td class="comment-1" rowspan="1">Write <a href="AB3B.html#b43b">49</a> to *<span class="register">IX</span>+03 (balloon frame).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7825"></span>7825</td>
+<td class="instruction">LD IY,$DAC0</td>
+<td class="comment-1" rowspan="1">Point <span class="register">IY</span> at <a href="DAC0.html">Percy_X_Position</a> (Percy sprite data).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7829"></span>7829</td>
+<td class="instruction">CALL <a href="6C53.html">CheckSpriteCollision</a></td>
+<td class="comment-1" rowspan="1">Call <a href="6C53.html">CheckSpriteCollision</a> to check for collision with Percy.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="782c"></span>782C</td>
+<td class="instruction">JR C,<a href="77B9.html#7831">Check_Balloon_Egg</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="77B9.html#7831">Check_Balloon_Egg</a> if there's been no collision.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="782e"></span>782E</td>
+<td class="instruction">JP <a href="74D6.html#74e3">Hazard_Hit_Percy</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="74D6.html#74e3">Hazard_Hit_Percy</a> to register the hit on Percy.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="7831"></span>
+<div class="comments">
+<div class="paragraph">
+No collision with Percy; check if Percy's egg hits the balloon.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Check_Balloon_Egg</td>
+<td class="address-2"><span id="7831"></span>7831</td>
+<td class="instruction">LD A,($5FA9)</td>
+<td class="comment-1" rowspan="3">Return if *<a href="5FA9.html">EggDropFlag</a> is unset.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7834"></span>7834</td>
+<td class="instruction">OR A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7835"></span>7835</td>
+<td class="instruction">RET Z</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7836"></span>7836</td>
+<td class="instruction">LD IY,$DAE0</td>
+<td class="comment-1" rowspan="1">Point <span class="register">IY</span> at <a href="DAE0.html">Egg_X_Position</a> (egg sprite data).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="783a"></span>783A</td>
+<td class="instruction">CALL <a href="6C85.html">CheckEggCollision</a></td>
+<td class="comment-1" rowspan="1">Call <a href="6C85.html">CheckEggCollision</a> to check for egg collision with the balloon.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="783d"></span>783D</td>
+<td class="instruction">RET C</td>
+<td class="comment-1" rowspan="1">Return if there's been no collision with the balloon.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="783e"></span>783E</td>
+<td class="instruction">LD A,$01</td>
+<td class="comment-1" rowspan="2">Write 01 to start/ activate *<a href="7892.html">Balloon_Pop_Counter</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7840"></span>7840</td>
+<td class="instruction">LD ($7892),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7843"></span>7843</td>
+<td class="instruction">JP <a href="74D6.html#74ff">Stun_Hazard_And_Score</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="74D6.html#74ff">Stun_Hazard_And_Score</a> to stun the balloon and award points.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7846"></span>7846</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="7847"></span>
+<div class="comments">
+<div class="paragraph">
+Balloon reached the right edge; reverse direction to float left.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Balloon_Reverse_Left</td>
+<td class="address-2"><span id="7847"></span>7847</td>
+<td class="instruction">LD (HL),$FF</td>
+<td class="comment-1" rowspan="1">Write FF to *<span class="register">HL</span> (set direction to floating left).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7849"></span>7849</td>
+<td class="instruction">JR <a href="77B9.html#7821">Set_Balloon_Frame</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="77B9.html#7821">Set_Balloon_Frame</a>.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="784b"></span>
+<div class="comments">
+<div class="paragraph">
+Balloon reached the left edge; reverse direction to float right.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Balloon_Reverse_Right</td>
+<td class="address-2"><span id="784b"></span>784B</td>
+<td class="instruction">LD (HL),$00</td>
+<td class="comment-1" rowspan="1">Write 00 to *<span class="register">HL</span> (set direction to floating right).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="784d"></span>784D</td>
+<td class="instruction">JR <a href="77B9.html#7821">Set_Balloon_Frame</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="77B9.html#7821">Set_Balloon_Frame</a>.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="784f"></span>
+<div class="comments">
+<div class="paragraph">
+Respawn the balloon after Percy respawns.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Respawn_Balloon</td>
+<td class="address-2"><span id="784f"></span>784F</td>
+<td class="instruction">LD A,$B9</td>
+<td class="comment-1" rowspan="2">Write B9 to *<a href="7892.html">Balloon_Pop_Counter</a> (set a long respawn delay).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7851"></span>7851</td>
+<td class="instruction">LD ($7892),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7854"></span>7854</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="7855"></span>
+<div class="comments">
+<div class="paragraph">
+Balloon popping animation is in progress.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Balloon_Popping</td>
+<td class="address-2"><span id="7855"></span>7855</td>
+<td class="instruction">LD HL,$7892</td>
+<td class="comment-1" rowspan="1">Point <span class="register">HL</span> at <a href="7892.html">Balloon_Pop_Counter</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7858"></span>7858</td>
+<td class="instruction">LD A,(HL)</td>
+<td class="comment-1" rowspan="1">Fetch the current counter value.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7859"></span>7859</td>
+<td class="instruction">CP $04</td>
+<td class="comment-1" rowspan="2">Jump to <a href="77B9.html#7870">Balloon_Respawn_Delay</a> if the counter is 04 or more (still in the delay phase).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="785b"></span>785B</td>
+<td class="instruction">JR NC,<a href="77B9.html#7870">Balloon_Respawn_Delay</a></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="785d"></span>
+<div class="comments">
+<div class="paragraph">
+Popping animation phase: cycle through deflating frames.
+</div>
+<div class="paragraph">
+<table class="default">
+<tr>
+<th colspan="1" rowspan="1">Sprite ID</th>
+<th colspan="1" rowspan="1">Sprite</th>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">4A</td>
+<td class="centre" colspan="1" rowspan="1"><img alt="udg46171-56x4" src="../images/udgs/udg46171-56x4.png" /></td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">4B</td>
+<td class="centre" colspan="1" rowspan="1"><img alt="udg46203-56x4" src="../images/udgs/udg46203-56x4.png" /></td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">4C</td>
+<td class="centre" colspan="1" rowspan="1"><img alt="udg46235-56x4" src="../images/udgs/udg46235-56x4.png" /></td>
+</tr>
+</table>
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="785d"></span>785D</td>
+<td class="instruction">INC A</td>
+<td class="comment-1" rowspan="2">Increment the counter and write back.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="785e"></span>785E</td>
+<td class="instruction">LD (HL),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="785f"></span>785F</td>
+<td class="instruction">ADD A,$48</td>
+<td class="comment-1" rowspan="1">Add 48 to calculate the deflating frame.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7861"></span>7861</td>
+<td class="instruction">LD (IX+$03),A</td>
+<td class="comment-1" rowspan="1">Write the frame to *<span class="register">IX</span>+03.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7864"></span>7864</td>
+<td class="instruction">CALL <a href="7930.html">Generate_Random_Number</a></td>
+<td class="comment-1" rowspan="1">Call <a href="7930.html">Generate_Random_Number</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7867"></span>7867</td>
+<td class="instruction">AND %00000111</td>
+<td class="comment-1" rowspan="1">Mask for a random flicker value.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7869"></span>7869</td>
+<td class="instruction">LD (IX+$02),A</td>
+<td class="comment-1" rowspan="1">Write to *<span class="register">IX</span>+02 (sprite active flag, for flicker).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="786c"></span>786C</td>
+<td class="instruction">CALL <a href="6F54.html#6f7a">PlayHitSound</a></td>
+<td class="comment-1" rowspan="1">Call <a href="6F54.html#6f7a">PlayHitSound</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="786f"></span>786F</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="7870"></span>
+<div class="comments">
+<div class="paragraph">
+Respawn delay phase: wait until the counter reaches C8 before respawning.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Balloon_Respawn_Delay</td>
+<td class="address-2"><span id="7870"></span>7870</td>
+<td class="instruction">INC A</td>
+<td class="comment-1" rowspan="2">Increment the counter and write back.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7871"></span>7871</td>
+<td class="instruction">LD (HL),A</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7872"></span>7872</td>
+<td class="instruction">CP $C8</td>
+<td class="comment-1" rowspan="2">Return if the counter has not reached C8 (still waiting).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7874"></span>7874</td>
+<td class="instruction">RET NZ</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="7875"></span>
+<div class="comments">
+<div class="paragraph">
+Respawn the balloon at a random horizontal position.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7875"></span>7875</td>
+<td class="instruction">LD (IX+$01),$38</td>
+<td class="comment-1" rowspan="1">Write 38 to *<span class="register">IX</span>+01 (reset Y position).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7879"></span>7879</td>
+<td class="instruction">LD (IX+$02),$07</td>
+<td class="comment-1" rowspan="1">Write 07 to *<span class="register">IX</span>+02 (reset sprite active flag).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="787d"></span>787D</td>
+<td class="instruction">LD HL,$7892</td>
+<td class="comment-1" rowspan="1">Point <span class="register">HL</span> at <a href="7892.html">Balloon_Pop_Counter</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7880"></span>7880</td>
+<td class="instruction">LD (HL),$00</td>
+<td class="comment-1" rowspan="1">Write 00 to *<span class="register">HL</span> (clear the counter).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7882"></span>7882</td>
+<td class="instruction">LD (IX+$00),$EE</td>
+<td class="comment-1" rowspan="1">Write EE to *<span class="register">IX</span>+00 (spawn from the right).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7886"></span>7886</td>
+<td class="instruction">CALL <a href="7930.html">Generate_Random_Number</a></td>
+<td class="comment-1" rowspan="1">Call <a href="7930.html">Generate_Random_Number</a>.</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7889"></span>7889</td>
+<td class="instruction">BIT 0,A</td>
+<td class="comment-1" rowspan="2">Return if bit 0 is not set (50% chance to spawn from the right).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="788b"></span>788B</td>
+<td class="instruction">RET Z</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="788c"></span>788C</td>
+<td class="instruction">LD (IX+$00),$04</td>
+<td class="comment-1" rowspan="1">Write 04 to *<span class="register">IX</span>+00 (spawn from the left instead).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="7890"></span>7890</td>
+<td class="instruction">RET</td>
+<td class="comment-1" rowspan="1">Return.</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev">
+Prev: <a href="77B4.html">77B4</a>
+</td>
+<td class="up">Up: <a href="../maps/all.html#77b9">Map</a></td>
+<td class="next">
+Next: <a href="7891.html">7891</a>
+</td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
+<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
+<div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
+<div><a href="../dec/asm/30649.html">Switch to decimal</a>.</div>
+</footer>
+</body>
+</html>

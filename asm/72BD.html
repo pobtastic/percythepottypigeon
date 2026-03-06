@@ -86,12 +86,12 @@ Handles room 04 logic. The phase counter in <span class="register">B</span> cont
 <td class="asm-label"></td>
 <td class="address-1"><span id="72c6"></span>72C6</td>
 <td class="instruction">CP $05</td>
-<td class="comment-1" rowspan="2">Call <a href="7439.html">Handle_Red_Bird</a> if the phase counter is not equal to 05.</td>
+<td class="comment-1" rowspan="2">Call <a href="7439.html">Handler_Helicopter</a> if the phase counter is not equal to 05.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="72c8"></span>72C8</td>
-<td class="instruction">CALL NZ,<a href="7439.html">Handle_Red_Bird</a></td>
+<td class="instruction">CALL NZ,<a href="7439.html">Handler_Helicopter</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -138,12 +138,12 @@ Handles room 04 logic. The phase counter in <span class="register">B</span> cont
 <td class="asm-label"></td>
 <td class="address-1"><span id="72db"></span>72DB</td>
 <td class="instruction">CP $04</td>
-<td class="comment-1" rowspan="2">Call <a href="768C.html#77b9">UpdatePlaneFlightPath_12</a> if the phase counter is equal to 04.</td>
+<td class="comment-1" rowspan="2">Call <a href="77B9.html">Handler_Balloon</a> if the phase counter is equal to 04.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="72dd"></span>72DD</td>
-<td class="instruction">CALL Z,<a href="768C.html#77b9">UpdatePlaneFlightPath_12</a></td>
+<td class="instruction">CALL Z,<a href="77B9.html">Handler_Balloon</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>

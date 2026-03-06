@@ -33,7 +33,7 @@ Next: <a href="30248.html">30248</a>
 </td>
 </tr>
 </table>
-<div class="description">30106: Handle UFO</div>
+<div class="description">30106: Handler: UFO</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
@@ -67,10 +67,10 @@ Check for respawn.
 </td>
 </tr>
 <tr>
-<td class="asm-label">Handle_UFO</td>
+<td class="asm-label">Handler_UFO</td>
 <td class="address-2"><span id="30106"></span>30106</td>
 <td class="instruction">LD A,(24507)</td>
-<td class="comment-1" rowspan="3">Call <a href="30248.html">Reset_UFO_Position</a> if *<a href="24507.html">RespawnFlag</a> (respawn flag) is set to reset the UFO.</td>
+<td class="comment-1" rowspan="3">Call <a href="30248.html">Reset_UFO_Position</a> if *<a href="24507.html">RespawnFlag</a> is set to reset the UFO.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -309,7 +309,7 @@ Move the UFO in its current direction.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="30170"></span>30170</td>
-<td class="instruction">CALL <a href="27592.html">RedBirdDirectionJumpTable</a></td>
+<td class="instruction">CALL <a href="27592.html">Direction_Jump_Table</a></td>
 <td class="comment-1" rowspan="1">Call <a href="27382.html#27552">27552</a> to move the UFO in the current direction.</td>
 </tr>
 <tr>
@@ -366,6 +366,25 @@ Update the UFO's animation frame, wrapping at 3.
 <td class="address-2"><span id="30185"></span>30185</td>
 <td class="instruction">LD (HL),A</td>
 <td class="comment-1" rowspan="1">Write the UFO frame to *<a href="30329.html#30332">UFO_Animation_Counter</a>.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="30186"></span>
+<div class="comments">
+<div class="paragraph">
+<table class="default">
+<tr>
+<th colspan="1" rowspan="1">Sprite ID</th>
+<th colspan="1" rowspan="1">Sprite</th>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">79</td>
+<td class="centre" colspan="1" rowspan="1"><img alt="udg46331-56x4" src="../../images/udgs/udg46331-56x4.png" /></td>
+</tr>
+</table>
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>

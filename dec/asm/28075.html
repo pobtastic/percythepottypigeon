@@ -33,7 +33,7 @@ Next: <a href="28207.html">28207</a>
 </td>
 </tr>
 </table>
-<div class="description">28075: Handle Cars</div>
+<div class="description">28075: Handler: Cars</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
@@ -58,10 +58,10 @@ Check if respawning; if so, reset the car state.
 </td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Cars</td>
+<td class="asm-label">Handler_Cars</td>
 <td class="address-2"><span id="28075"></span>28075</td>
 <td class="instruction">LD A,(24507)</td>
-<td class="comment-1" rowspan="3">Jump to <a href="28075.html#28088">Dispatch_Car_Handler</a> if *<a href="24507.html">RespawnFlag</a> (respawn flag) is zero.</td>
+<td class="comment-1" rowspan="3">Jump to <a href="28075.html#28088">Dispatch_Car_Handler</a> if *<a href="24507.html">RespawnFlag</a> is unset.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -172,7 +172,7 @@ Dispatch to the correct car handler based on the current room.
 <td class="asm-label"></td>
 <td class="address-1"><span id="28117"></span>28117</td>
 <td class="instruction">LD A,(24507)</td>
-<td class="comment-1" rowspan="3">Call <a href="28207.html">Randomise_Car_Position</a> if *<a href="24507.html">RespawnFlag</a> (respawn flag) is non-zero to randomise the car.</td>
+<td class="comment-1" rowspan="3">Call <a href="28207.html">Randomise_Car_Position</a> if *<a href="24507.html">RespawnFlag</a> is set to randomise the car.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -354,10 +354,48 @@ No crash; move the car left across the screen.
 <td class="instruction">LD (IX+4),A</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="28175"></span>
+<div class="comments">
+<div class="paragraph">
+<table class="default">
+<tr>
+<th colspan="1" rowspan="1">Sprite ID</th>
+<th colspan="1" rowspan="1">Sprite</th>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">30</td>
+<td class="centre" colspan="1" rowspan="1"><img alt="udg44763-56x4" src="../../images/udgs/udg44763-56x4.png" /></td>
+</tr>
+</table>
+</div>
+</div>
+</td>
+</tr>
+<tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28175"></span>28175</td>
 <td class="instruction">LD (IX+3),30</td>
 <td class="comment-1" rowspan="1">Set the front sprite frame to 30 (car front).</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="28179"></span>
+<div class="comments">
+<div class="paragraph">
+<table class="default">
+<tr>
+<th colspan="1" rowspan="1">Sprite ID</th>
+<th colspan="1" rowspan="1">Sprite</th>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">31</td>
+<td class="centre" colspan="1" rowspan="1"><img alt="udg44795-56x4" src="../../images/udgs/udg44795-56x4.png" /></td>
+</tr>
+</table>
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>

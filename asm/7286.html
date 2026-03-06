@@ -75,12 +75,12 @@ Handles room 03 logic. The phase counter in <span class="register">B</span> cont
 <td class="asm-label"></td>
 <td class="address-1"><span id="728c"></span>728C</td>
 <td class="instruction">CP $02</td>
-<td class="comment-1" rowspan="2">Call <a href="7439.html">Handle_Red_Bird</a> if the phase counter is not equal to 02.</td>
+<td class="comment-1" rowspan="2">Call <a href="7439.html">Handler_Helicopter</a> if the phase counter is not equal to 02.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="728e"></span>728E</td>
-<td class="instruction">CALL NZ,<a href="7439.html">Handle_Red_Bird</a></td>
+<td class="instruction">CALL NZ,<a href="7439.html">Handler_Helicopter</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -109,8 +109,8 @@ Handles room 03 logic. The phase counter in <span class="register">B</span> cont
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="7299"></span>7299</td>
-<td class="instruction">CALL NZ,<a href="7512.html">Handle_Cat</a></td>
-<td class="comment-1" rowspan="1">Call <a href="7512.html">Handle_Cat</a> if the phase counter is not equal to 01.</td>
+<td class="instruction">CALL NZ,<a href="7512.html">Handler_Cat</a></td>
+<td class="comment-1" rowspan="1">Call <a href="7512.html">Handler_Cat</a> if the phase counter is not equal to 01.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -134,12 +134,12 @@ Handles room 03 logic. The phase counter in <span class="register">B</span> cont
 <td class="asm-label"></td>
 <td class="address-1"><span id="72a2"></span>72A2</td>
 <td class="instruction">CP $01</td>
-<td class="comment-1" rowspan="2">Call <a href="758B.html">Handle_Dog</a> if the phase counter is not equal to 01.</td>
+<td class="comment-1" rowspan="2">Call <a href="758B.html">Handler_Dog</a> if the phase counter is not equal to 01.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="72a4"></span>72A4</td>
-<td class="instruction">CALL NZ,<a href="758B.html">Handle_Dog</a></td>
+<td class="instruction">CALL NZ,<a href="758B.html">Handler_Dog</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -187,12 +187,12 @@ Handles room 03 logic. The phase counter in <span class="register">B</span> cont
 <td class="asm-label"></td>
 <td class="address-1"><span id="72b7"></span>72B7</td>
 <td class="instruction">CP $05</td>
-<td class="comment-1" rowspan="2">Call <a href="759A.html">Handle_UFO</a> if the phase counter is equal to 05.</td>
+<td class="comment-1" rowspan="2">Call <a href="759A.html">Handler_UFO</a> if the phase counter is equal to 05.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="72b9"></span>72B9</td>
-<td class="instruction">CALL Z,<a href="759A.html">Handle_UFO</a></td>
+<td class="instruction">CALL Z,<a href="759A.html">Handler_UFO</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>

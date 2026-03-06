@@ -234,7 +234,7 @@ Ascending phase: increment the pitch and output to the speaker.
 <td class="asm-label"></td>
 <td class="address-1"><span id="28924"></span>28924</td>
 <td class="instruction">LD A,(HL)</td>
-<td class="comment-1" rowspan="5">Calculate the speaker output from the counter: add 3 rotate left, mask and set bit 0 for the border; output to the speaker port.</td>
+<td class="comment-1" rowspan="5">Calculate the speaker output from the counter: add 3 rotate left, mask and set bit 0 for the border.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -260,13 +260,13 @@ Ascending phase: increment the pitch and output to the speaker.
 <td class="asm-label"></td>
 <td class="address-1"><span id="28932"></span>28932</td>
 <td class="instruction">OUT (254),A</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Output to the speaker port.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28934"></span>28934</td>
 <td class="instruction">LD A,(HL)</td>
-<td class="comment-1" rowspan="3">Increment the ascending counter; jump to <a href="28891.html#28948">Store_Ascending_Counter</a> if it has not reached 25.</td>
+<td class="comment-1" rowspan="2">Fetch the ascending counter and increment it.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -277,12 +277,12 @@ Ascending phase: increment the pitch and output to the speaker.
 <td class="asm-label"></td>
 <td class="address-1"><span id="28936"></span>28936</td>
 <td class="instruction">CP 25</td>
+<td class="comment-1" rowspan="2">Jump to <a href="28891.html#28948">Store_Ascending_Counter</a> if the ascending counter has not reached 25.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="28938"></span>28938</td>
 <td class="instruction">JR NZ,<a href="28891.html#28948">Store_Ascending_Counter</a></td>
-<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
@@ -298,7 +298,7 @@ Ascending phase complete; switch to descending.
 <td class="asm-label"></td>
 <td class="address-1"><span id="28940"></span>28940</td>
 <td class="instruction">XOR A</td>
-<td class="comment-1" rowspan="6">Write 0 to the ascending counter, set the descending flag to 255 and move back.</td>
+<td class="comment-1" rowspan="2">Write 0 to clear the ascending counter.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -309,6 +309,7 @@ Ascending phase complete; switch to descending.
 <td class="asm-label"></td>
 <td class="address-1"><span id="28942"></span>28942</td>
 <td class="instruction">INC HL</td>
+<td class="comment-1" rowspan="3">Set the descending flag to 255.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -324,6 +325,7 @@ Ascending phase complete; switch to descending.
 <td class="asm-label"></td>
 <td class="address-1"><span id="28945"></span>28945</td>
 <td class="instruction">DEC HL</td>
+<td class="comment-1" rowspan="1">Move the pointer back to the ascending counter.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -363,7 +365,7 @@ Descending phase: decrement the pitch and output to the speaker.
 <td class="asm-label"></td>
 <td class="address-1"><span id="28952"></span>28952</td>
 <td class="instruction">LD A,(HL)</td>
-<td class="comment-1" rowspan="4">Calculate the speaker output from the counter: rotate left, mask and set bit 0 for the border; output to the speaker port.</td>
+<td class="comment-1" rowspan="4">Calculate the speaker output from the counter: rotate left, mask and set bit 0 for the border.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -384,7 +386,7 @@ Descending phase: decrement the pitch and output to the speaker.
 <td class="asm-label"></td>
 <td class="address-1"><span id="28958"></span>28958</td>
 <td class="instruction">OUT (254),A</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Output to the speaker port.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -647,6 +649,25 @@ Frog is mid-jump; calculate the Y position from the jump height table.
 <td class="comment-1" rowspan="1">Write it to *<span class="register">IX</span>+0.</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="29025"></span>
+<div class="comments">
+<div class="paragraph">
+<table class="default">
+<tr>
+<th colspan="1" rowspan="1">Sprite ID</th>
+<th colspan="1" rowspan="1">Sprite</th>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">40</td>
+<td class="centre" colspan="1" rowspan="1"><img alt="udg45083-56x4" src="../../images/udgs/udg45083-56x4.png" /></td>
+</tr>
+</table>
+</div>
+</div>
+</td>
+</tr>
+<tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29025"></span>29025</td>
 <td class="instruction">LD (IX+3),40</td>
@@ -656,13 +677,31 @@ Frog is mid-jump; calculate the Y position from the jump height table.
 <td class="asm-label"></td>
 <td class="address-1"><span id="29029"></span>29029</td>
 <td class="instruction">BIT 7,D</td>
-<td class="comment-1" rowspan="1">Return if bit 7 of <span class="register">D</span> is not set (facing right).</td>
+<td class="comment-1" rowspan="2">Return if bit 7 of <span class="register">D</span> is not set (facing right).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29031"></span>29031</td>
 <td class="instruction">RET Z</td>
-<td class="comment-1" rowspan="1"></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="29032"></span>
+<div class="comments">
+<div class="paragraph">
+<table class="default">
+<tr>
+<th colspan="1" rowspan="1">Sprite ID</th>
+<th colspan="1" rowspan="1">Sprite</th>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">41</td>
+<td class="centre" colspan="1" rowspan="1"><img alt="udg45115-56x4" src="../../images/udgs/udg45115-56x4.png" /></td>
+</tr>
+</table>
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -696,19 +735,37 @@ Frog is on the platform; set its resting position.
 <td class="asm-label"></td>
 <td class="address-1"><span id="29039"></span>29039</td>
 <td class="instruction">BIT 7,D</td>
-<td class="comment-1" rowspan="1">Jump to <a href="28891.html#29060">Frog_Facing_Left</a> if bit 7 of <span class="register">D</span> is set (frog faces left).</td>
+<td class="comment-1" rowspan="2">Jump to <a href="28891.html#29060">Frog_Facing_Left</a> if bit 7 of <span class="register">D</span> is set (frog faces left).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29041"></span>29041</td>
 <td class="instruction">JR NZ,<a href="28891.html#29060">Frog_Facing_Left</a></td>
-<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29043"></span>29043</td>
 <td class="instruction">LD (IX+0),C</td>
 <td class="comment-1" rowspan="1">Set the X position to the platform X from <span class="register">C</span>.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="29046"></span>
+<div class="comments">
+<div class="paragraph">
+<table class="default">
+<tr>
+<th colspan="1" rowspan="1">Sprite ID</th>
+<th colspan="1" rowspan="1">Sprite</th>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">42</td>
+<td class="centre" colspan="1" rowspan="1"><img alt="udg45147-56x4" src="../../images/udgs/udg45147-56x4.png" /></td>
+</tr>
+</table>
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -737,6 +794,33 @@ Frog is on the platform; set its resting position.
 <td class="asm-label"></td>
 <td class="address-1"><span id="29055"></span>29055</td>
 <td class="instruction">RET NZ</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="29056"></span>
+<div class="comments">
+<div class="paragraph">
+<table class="default">
+<tr>
+<th colspan="1" rowspan="1">Sprite ID</th>
+<th colspan="1" rowspan="1">Sprite</th>
+<th colspan="1" rowspan="1">Sprite ID</th>
+<th colspan="1" rowspan="1">Sprite</th>
+</tr>
+<tr>
+<th colspan="2" rowspan="1">Right</th>
+<th colspan="2" rowspan="1">Left</th>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">43</td>
+<td class="centre" colspan="1" rowspan="1"><img alt="udg45179-56x4" src="../../images/udgs/udg45179-56x4.png" /></td>
+<td class="centre" colspan="1" rowspan="1">45</td>
+<td class="centre" colspan="1" rowspan="1"><img alt="udg45243-56x4" src="../../images/udgs/udg45243-56x4.png" /></td>
+</tr>
+</table>
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -775,6 +859,25 @@ Left-facing frog on platform.
 <td class="asm-label"></td>
 <td class="address-1"><span id="29063"></span>29063</td>
 <td class="instruction">LD (IX+0),A</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="29066"></span>
+<div class="comments">
+<div class="paragraph">
+<table class="default">
+<tr>
+<th colspan="1" rowspan="1">Sprite ID</th>
+<th colspan="1" rowspan="1">Sprite</th>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">44</td>
+<td class="centre" colspan="1" rowspan="1"><img alt="udg45211-56x4" src="../../images/udgs/udg45211-56x4.png" /></td>
+</tr>
+</table>
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>

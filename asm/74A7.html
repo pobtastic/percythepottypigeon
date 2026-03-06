@@ -33,16 +33,16 @@ Next: <a href="74B9.html">74B9</a>
 </td>
 </tr>
 </table>
-<div class="description">74A7: Randomise Red Bird Position</div>
+<div class="description">74A7: Randomise Helicopter Position</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
 <div class="details">
 <div class="paragraph">
-Used by the routines at <a href="7439.html">Handle_Red_Bird</a> and <a href="7628.html">Reset_UFO_Position</a>.
+Used by the routines at <a href="7439.html">Handler_Helicopter</a> and <a href="7628.html">Reset_UFO_Position</a>.
 </div>
 <div class="paragraph">
-Generates a random position for the red bird and validates it. Keeps generating new coordinates until a valid position is found, then clears the spawning flag.
+Generates a random position for the helicopter and validates it. Keeps generating new coordinates until a valid position is found, then clears the spawning flag.
 </div>
 </div>
 <table class="input">
@@ -51,11 +51,11 @@ Generates a random position for the red bird and validates it. Keeps generating 
 </tr>
 <tr>
 <td class="register">IX</td>
-<td class="register-desc">Pointer to red bird sprite data</td>
+<td class="register-desc">Pointer to helicopter sprite data</td>
 </tr>
 <tr>
 <td class="register">IY</td>
-<td class="register-desc">Pointer to red bird state data</td>
+<td class="register-desc">Pointer to helicopter state data</td>
 </tr>
 </table>
 </td>
@@ -84,8 +84,8 @@ Generates a random position for the red bird and validates it. Keeps generating 
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="74af"></span>74AF</td>
-<td class="instruction">CALL <a href="6C0C.html">ValidateRedBirdPosition</a></td>
-<td class="comment-1" rowspan="2">Call <a href="6C0C.html">ValidateRedBirdPosition</a> and jump back to <a href="74A7.html">Randomise_Position_Loop</a> if the position is invalid.</td>
+<td class="instruction">CALL <a href="6C0C.html">Validate_Position</a></td>
+<td class="comment-1" rowspan="2">Call <a href="6C0C.html">Validate_Position</a> and jump back to <a href="74A7.html">Randomise_Position_Loop</a> if the position is invalid.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -96,7 +96,7 @@ Generates a random position for the red bird and validates it. Keeps generating 
 <td class="asm-label"></td>
 <td class="address-1"><span id="74b4"></span>74B4</td>
 <td class="instruction">RES 7,(IY+$00)</td>
-<td class="comment-1" rowspan="1">Clear bit 7 of *<span class="register">IY</span>+00 (mark the red bird as active/no longer spawning).</td>
+<td class="comment-1" rowspan="1">Clear bit 7 of *<span class="register">IY</span>+00 (mark the helicopter as active/no longer spawning).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>

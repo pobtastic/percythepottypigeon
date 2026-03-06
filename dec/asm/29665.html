@@ -86,12 +86,12 @@ Handles room 9 logic. The phase counter in <span class="register">B</span> contr
 <td class="asm-label"></td>
 <td class="address-1"><span id="29674"></span>29674</td>
 <td class="instruction">CP 3</td>
-<td class="comment-1" rowspan="2">Call <a href="29753.html">Handle_Red_Bird</a> if the phase counter is not equal to 3.</td>
+<td class="comment-1" rowspan="2">Call <a href="29753.html">Handler_Helicopter</a> if the phase counter is not equal to 3.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29676"></span>29676</td>
-<td class="instruction">CALL NZ,<a href="29753.html">Handle_Red_Bird</a></td>
+<td class="instruction">CALL NZ,<a href="29753.html">Handler_Helicopter</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -109,12 +109,12 @@ Handles room 9 logic. The phase counter in <span class="register">B</span> contr
 <td class="asm-label"></td>
 <td class="address-1"><span id="29684"></span>29684</td>
 <td class="instruction">CP 3</td>
-<td class="comment-1" rowspan="2">Call <a href="31186.html">Handle_Parachute_Descent</a> if the phase counter is greater than 3.</td>
+<td class="comment-1" rowspan="2">Call <a href="31186.html">Handler_Parachute_Descent</a> if the phase counter is greater than 3.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29686"></span>29686</td>
-<td class="instruction">CALL NC,<a href="31186.html">Handle_Parachute_Descent</a></td>
+<td class="instruction">CALL NC,<a href="31186.html">Handler_Parachute_Descent</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>

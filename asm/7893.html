@@ -25,7 +25,7 @@ gtag('config', 'G-75RERFCHBG');
 <table class="asm-navigation">
 <tr>
 <td class="prev">
-Prev: <a href="768C.html">768C</a>
+Prev: <a href="7892.html">7892</a>
 </td>
 <td class="up">Up: <a href="../maps/all.html#7893">Map</a></td>
 <td class="next">
@@ -33,7 +33,7 @@ Next: <a href="7924.html">7924</a>
 </td>
 </tr>
 </table>
-<div class="description">7893: Handle Walking Paratrooper</div>
+<div class="description">7893: Handler: Walking Paratrooper</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
@@ -67,7 +67,7 @@ Set up the paratrooper state pointer and movement parameters.
 </td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Walking_Paratrooper</td>
+<td class="asm-label">Handler_Walking_Paratrooper</td>
 <td class="address-2"><span id="7893"></span>7893</td>
 <td class="instruction">LD IY,$7B0D</td>
 <td class="comment-1" rowspan="1">Point <span class="register">IY</span> at <a href="7B0D.html">Paratrooper_State_Data</a> (paratrooper state data).</td>
@@ -114,6 +114,25 @@ Set up the paratrooper state pointer and movement parameters.
 <td class="address-1"><span id="78a3"></span>78A3</td>
 <td class="instruction">LD HL,$7925</td>
 <td class="comment-1" rowspan="1">Point <span class="register">HL</span> at <a href="7924.html#7925">Paratrooper_Direction_Flag</a> (paratrooper movement boundary data).</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="78a6"></span>
+<div class="comments">
+<div class="paragraph">
+<table class="default">
+<tr>
+<th colspan="1" rowspan="1">Sprite ID</th>
+<th colspan="1" rowspan="1">Sprite</th>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">53</td>
+<td class="centre" colspan="1" rowspan="1"><img alt="udg46459-56x4" src="../images/udgs/udg46459-56x4.png" /></td>
+</tr>
+</table>
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -171,7 +190,7 @@ Check if the paratrooper needs to reset after Percy respawns.
 <td class="asm-label"></td>
 <td class="address-1"><span id="78b3"></span>78B3</td>
 <td class="instruction">LD A,($5FBB)</td>
-<td class="comment-1" rowspan="3">Skip to <a href="7893.html#78bd">Check_Paratrooper_Leap_State</a> if *<a href="5FBB.html">RespawnFlag</a> (respawn flag) is unset.</td>
+<td class="comment-1" rowspan="3">Skip to <a href="7893.html#78bd">Check_Paratrooper_Leap_State</a> if *<a href="5FBB.html">RespawnFlag</a> is unset.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -515,12 +534,12 @@ Resume the paratrooper's walking animation or handle stunned state.
 <td class="asm-label">Paratrooper_Walk_Or_Stunned</td>
 <td class="address-2"><span id="791a"></span>791A</td>
 <td class="instruction">BIT 7,(IY+$00)</td>
-<td class="comment-1" rowspan="2">Jump to <a href="74B9.html">Animate_Stunned_RedBird</a> if bit 7 of *<span class="register">IY</span>+00 is set (paratrooper is stunned by egg).</td>
+<td class="comment-1" rowspan="2">Jump to <a href="74B9.html">Animate_Stunned_Hazard</a> if bit 7 of *<span class="register">IY</span>+00 is set (paratrooper is stunned by egg).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="791e"></span>791E</td>
-<td class="instruction">JP NZ,<a href="74B9.html">Animate_Stunned_RedBird</a></td>
+<td class="instruction">JP NZ,<a href="74B9.html">Animate_Stunned_Hazard</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -532,7 +551,7 @@ Resume the paratrooper's walking animation or handle stunned state.
 <table class="asm-navigation">
 <tr>
 <td class="prev">
-Prev: <a href="768C.html">768C</a>
+Prev: <a href="7892.html">7892</a>
 </td>
 <td class="up">Up: <a href="../maps/all.html#7893">Map</a></td>
 <td class="next">

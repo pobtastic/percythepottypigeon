@@ -33,73 +33,99 @@ Next: <a href="29970.html">29970</a>
 </td>
 </tr>
 </table>
-<div class="description">29960: Red Bird Data States</div>
+<div class="description">29960: Helicopter State Data</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
 <div class="details">
+<div class="paragraph">
+State variables for the helicopter hazard. Two five-byte state blocks: <a href="29960.html">Helicopter_State_Data_1</a> (first) and <a href="29960.html#29965">Helicopter_State_Data_2</a> (second).
+</div>
+<div class="paragraph">
+Referenced by room handlers at <a href="29247.html">Handler_Room01</a> and <a href="29454.html">Handler_Room06</a>.
+</div>
 </div>
 </td>
 </tr>
 <tr>
-<td class="asm-label">RedBird_DataStates</td>
+<td class="routine-comment" colspan="5">
+<span id="29960"></span>
+<div class="comments">
+<div class="paragraph">
+Helicopter #1
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Helicopter_State_Data_1</td>
 <td class="address-1"><span id="29960"></span>29960</td>
 <td class="instruction">DEFB 0</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Direction / active flag (bit 7 set = spawning/inactive).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29961"></span>29961</td>
 <td class="instruction">DEFB 0</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Movement delay.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29962"></span>29962</td>
 <td class="instruction">DEFB 0</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Unused.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29963"></span>29963</td>
 <td class="instruction">DEFB 0</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Facing (0=left, 4=right).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29964"></span>29964</td>
 <td class="instruction">DEFB 0</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Animation counter.</td>
 </tr>
 <tr>
-<td class="asm-label"></td>
+<td class="routine-comment" colspan="5">
+<span id="29965"></span>
+<div class="comments">
+<div class="paragraph">
+Helicopter #2
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label">Helicopter_State_Data_2</td>
 <td class="address-1"><span id="29965"></span>29965</td>
 <td class="instruction">DEFB 0</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Direction / active flag (bit 7 set = spawning/inactive).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29966"></span>29966</td>
 <td class="instruction">DEFB 0</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Movement delay.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29967"></span>29967</td>
 <td class="instruction">DEFB 0</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Unused.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29968"></span>29968</td>
 <td class="instruction">DEFB 0</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Facing (0=left, 4=right).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="29969"></span>29969</td>
 <td class="instruction">DEFB 0</td>
-<td class="comment-0" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Animation counter.</td>
 </tr>
 </table>
 <table class="asm-navigation">

@@ -33,16 +33,16 @@ Next: <a href="27660.html">27660</a>
 </td>
 </tr>
 </table>
-<div class="description">27592: Red Bird Direction Jump Table</div>
+<div class="description">27592: 8-Direction Movement Jump Table</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
 <div class="details">
 <div class="paragraph">
-Used by the routines at <a href="27382.html">UpdateRedBirdMovement</a>, <a href="29753.html">Handle_Red_Bird</a> and <a href="30106.html">Handle_UFO</a>.
+Used by the routines at <a href="27382.html">UpdateRedBirdMovement</a>, <a href="29753.html">Handler_Helicopter</a> and <a href="30106.html">Handler_UFO</a>.
 </div>
 <div class="paragraph">
-Movement direction jump table. The entry point is self-modified at <a href="27592.html">27593</a> to jump to one of 8 directional movement handlers. Each handler adjusts <span class="register">B</span> (Y) and/or <span class="register">C</span> (X) by the flight speed value at *<span class="register">HL</span>, then falls through to <a href="27660.html">ValidateRedBirdPosition</a> to validate the position. <table class="default">
+Shared 8-direction movement jump table. Used by the red bird (<a href="27382.html">UpdateRedBirdMovement</a>), helicopter (<a href="29753.html">Handler_Helicopter</a>) and UFO (<a href="30106.html">Handler_UFO</a>). The entry point is self-modified at <a href="27592.html">27593</a> to jump to one of 8 directional movement handlers. Each handler adjusts <span class="register">B</span> (Y) and/or <span class="register">C</span> (X) by the speed value at *<span class="register">HL</span>, then falls through to <a href="27660.html">Validate_Position</a> to validate the position. <table class="default">
 <tr>
 <th colspan="1" rowspan="1">Direction</th>
 <th colspan="1" rowspan="1">Index</th>
@@ -103,71 +103,71 @@ Movement direction jump table. The entry point is self-modified at <a href="2759
 </td>
 </tr>
 <tr>
-<td class="asm-label">RedBirdDirectionJumpTable</td>
+<td class="asm-label">Direction_Jump_Table</td>
 <td class="address-2"><span id="27592"></span>27592</td>
-<td class="instruction">JR <a href="27592.html#27594">RedBirdDirection_Up</a></td>
-<td class="comment-1" rowspan="1">Self-modified jump; offset written by <a href="27382.html#27470">27470</a>.</td>
+<td class="instruction">JR <a href="27592.html#27594">Direction_Up</a></td>
+<td class="comment-1" rowspan="1">Self-modified jump; offset written by caller (e.g. <a href="27382.html#27470">27470</a>, <a href="29753.html#29804">29804</a>, <a href="30106.html#30158">30158</a>).</td>
 </tr>
 <tr>
-<td class="asm-label">RedBirdDirection_Up</td>
+<td class="asm-label">Direction_Up</td>
 <td class="address-2"><span id="27594"></span>27594</td>
-<td class="instruction">JR <a href="27592.html#27610">RedBirdMove_Up</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="27592.html#27610">RedBirdMove_Up</a> (up).</td>
+<td class="instruction">JR <a href="27592.html#27610">Move_Up</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="27592.html#27610">Move_Up</a> (up).</td>
 </tr>
 <tr>
-<td class="asm-label">RedBirdDirection_UpRight</td>
+<td class="asm-label">Direction_UpRight</td>
 <td class="address-1"><span id="27596"></span>27596</td>
-<td class="instruction">JR <a href="27592.html#27615">RedBirdMove_UpRight</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="27592.html#27615">RedBirdMove_UpRight</a> (up-right).</td>
+<td class="instruction">JR <a href="27592.html#27615">Move_UpRight</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="27592.html#27615">Move_UpRight</a> (up-right).</td>
 </tr>
 <tr>
-<td class="asm-label">RedBirdDirection_Right</td>
+<td class="asm-label">Direction_Right</td>
 <td class="address-1"><span id="27598"></span>27598</td>
-<td class="instruction">JR <a href="27592.html#27623">RedBirdMove_Right</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="27592.html#27623">RedBirdMove_Right</a> (right).</td>
+<td class="instruction">JR <a href="27592.html#27623">Move_Right</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="27592.html#27623">Move_Right</a> (right).</td>
 </tr>
 <tr>
-<td class="asm-label">RedBirdDirection_DownRight</td>
+<td class="asm-label">Direction_DownRight</td>
 <td class="address-1"><span id="27600"></span>27600</td>
-<td class="instruction">JR <a href="27592.html#27628">RedBirdMove_DownRight</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="27592.html#27628">RedBirdMove_DownRight</a> (down-right).</td>
+<td class="instruction">JR <a href="27592.html#27628">Move_DownRight</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="27592.html#27628">Move_DownRight</a> (down-right).</td>
 </tr>
 <tr>
-<td class="asm-label">RedBirdDirection_Down</td>
+<td class="asm-label">Direction_Down</td>
 <td class="address-1"><span id="27602"></span>27602</td>
-<td class="instruction">JR <a href="27592.html#27636">RedBirdMove_Down</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="27592.html#27636">RedBirdMove_Down</a> (down).</td>
+<td class="instruction">JR <a href="27592.html#27636">Move_Down</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="27592.html#27636">Move_Down</a> (down).</td>
 </tr>
 <tr>
-<td class="asm-label">RedBirdDirection_DownLeft</td>
+<td class="asm-label">Direction_DownLeft</td>
 <td class="address-1"><span id="27604"></span>27604</td>
-<td class="instruction">JR <a href="27592.html#27641">RedBirdMove_DownLeft</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="27592.html#27641">RedBirdMove_DownLeft</a> (down-left).</td>
+<td class="instruction">JR <a href="27592.html#27641">Move_DownLeft</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="27592.html#27641">Move_DownLeft</a> (down-left).</td>
 </tr>
 <tr>
-<td class="asm-label">RedBirdDirection_Left</td>
+<td class="asm-label">Direction_Left</td>
 <td class="address-1"><span id="27606"></span>27606</td>
-<td class="instruction">JR <a href="27592.html#27649">RedBirdMove_Left</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="27592.html#27649">RedBirdMove_Left</a> (left).</td>
+<td class="instruction">JR <a href="27592.html#27649">Move_Left</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="27592.html#27649">Move_Left</a> (left).</td>
 </tr>
 <tr>
-<td class="asm-label">RedBirdDirection_UpLeft</td>
+<td class="asm-label">Direction_UpLeft</td>
 <td class="address-1"><span id="27608"></span>27608</td>
-<td class="instruction">JR <a href="27592.html#27654">RedBirdMove_UpLeft</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="27592.html#27654">RedBirdMove_UpLeft</a> (up-left).</td>
+<td class="instruction">JR <a href="27592.html#27654">Move_UpLeft</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="27592.html#27654">Move_UpLeft</a> (up-left).</td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
 <span id="27610"></span>
 <div class="comments">
 <div class="paragraph">
-Movement handlers. Each adjusts <span class="register">B</span> and/or <span class="register">C</span> by the speed value at *<span class="register">HL</span>, then falls through to <a href="27660.html">ValidateRedBirdPosition</a>.
+Movement handlers. Each adjusts <span class="register">B</span> and/or <span class="register">C</span> by the speed value at *<span class="register">HL</span>, then falls through to <a href="27660.html">Validate_Position</a>.
 </div>
 </div>
 </td>
 </tr>
 <tr>
-<td class="asm-label">RedBirdMove_Up</td>
+<td class="asm-label">Move_Up</td>
 <td class="address-2"><span id="27610"></span>27610</td>
 <td class="instruction">LD A,B</td>
 <td class="comment-1" rowspan="3"><span class="register">B</span>-=*<span class="register">HL</span> (subtract speed from Y).</td>
@@ -185,11 +185,11 @@ Movement handlers. Each adjusts <span class="register">B</span> and/or <span cla
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="27613"></span>27613</td>
-<td class="instruction">JR <a href="27660.html">ValidateRedBirdPosition</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="27660.html">ValidateRedBirdPosition</a>.</td>
+<td class="instruction">JR <a href="27660.html">Validate_Position</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="27660.html">Validate_Position</a>.</td>
 </tr>
 <tr>
-<td class="asm-label">RedBirdMove_UpRight</td>
+<td class="asm-label">Move_UpRight</td>
 <td class="address-2"><span id="27615"></span>27615</td>
 <td class="instruction">LD A,B</td>
 <td class="comment-1" rowspan="3"><span class="register">B</span>-=*<span class="register">HL</span> (Y − speed).</td>
@@ -223,11 +223,11 @@ Movement handlers. Each adjusts <span class="register">B</span> and/or <span cla
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="27621"></span>27621</td>
-<td class="instruction">JR <a href="27660.html">ValidateRedBirdPosition</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="27660.html">ValidateRedBirdPosition</a>.</td>
+<td class="instruction">JR <a href="27660.html">Validate_Position</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="27660.html">Validate_Position</a>.</td>
 </tr>
 <tr>
-<td class="asm-label">RedBirdMove_Right</td>
+<td class="asm-label">Move_Right</td>
 <td class="address-2"><span id="27623"></span>27623</td>
 <td class="instruction">LD A,C</td>
 <td class="comment-1" rowspan="3"><span class="register">C</span>+=*<span class="register">HL</span> (X + speed).</td>
@@ -245,11 +245,11 @@ Movement handlers. Each adjusts <span class="register">B</span> and/or <span cla
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="27626"></span>27626</td>
-<td class="instruction">JR <a href="27660.html">ValidateRedBirdPosition</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="27660.html">ValidateRedBirdPosition</a>.</td>
+<td class="instruction">JR <a href="27660.html">Validate_Position</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="27660.html">Validate_Position</a>.</td>
 </tr>
 <tr>
-<td class="asm-label">RedBirdMove_DownRight</td>
+<td class="asm-label">Move_DownRight</td>
 <td class="address-2"><span id="27628"></span>27628</td>
 <td class="instruction">LD A,C</td>
 <td class="comment-1" rowspan="3"><span class="register">C</span>+=*<span class="register">HL</span> (X + speed).</td>
@@ -283,11 +283,11 @@ Movement handlers. Each adjusts <span class="register">B</span> and/or <span cla
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="27634"></span>27634</td>
-<td class="instruction">JR <a href="27660.html">ValidateRedBirdPosition</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="27660.html">ValidateRedBirdPosition</a>.</td>
+<td class="instruction">JR <a href="27660.html">Validate_Position</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="27660.html">Validate_Position</a>.</td>
 </tr>
 <tr>
-<td class="asm-label">RedBirdMove_Down</td>
+<td class="asm-label">Move_Down</td>
 <td class="address-2"><span id="27636"></span>27636</td>
 <td class="instruction">LD A,B</td>
 <td class="comment-1" rowspan="3"><span class="register">B</span>+=*<span class="register">HL</span> (Y + speed).</td>
@@ -305,11 +305,11 @@ Movement handlers. Each adjusts <span class="register">B</span> and/or <span cla
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="27639"></span>27639</td>
-<td class="instruction">JR <a href="27660.html">ValidateRedBirdPosition</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="27660.html">ValidateRedBirdPosition</a>.</td>
+<td class="instruction">JR <a href="27660.html">Validate_Position</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="27660.html">Validate_Position</a>.</td>
 </tr>
 <tr>
-<td class="asm-label">RedBirdMove_DownLeft</td>
+<td class="asm-label">Move_DownLeft</td>
 <td class="address-2"><span id="27641"></span>27641</td>
 <td class="instruction">LD A,B</td>
 <td class="comment-1" rowspan="3"><span class="register">B</span>+=*<span class="register">HL</span> (Y + speed).</td>
@@ -343,11 +343,11 @@ Movement handlers. Each adjusts <span class="register">B</span> and/or <span cla
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="27647"></span>27647</td>
-<td class="instruction">JR <a href="27660.html">ValidateRedBirdPosition</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="27660.html">ValidateRedBirdPosition</a>.</td>
+<td class="instruction">JR <a href="27660.html">Validate_Position</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="27660.html">Validate_Position</a>.</td>
 </tr>
 <tr>
-<td class="asm-label">RedBirdMove_Left</td>
+<td class="asm-label">Move_Left</td>
 <td class="address-2"><span id="27649"></span>27649</td>
 <td class="instruction">LD A,C</td>
 <td class="comment-1" rowspan="3"><span class="register">C</span>-=*<span class="register">HL</span> (X − speed).</td>
@@ -365,11 +365,11 @@ Movement handlers. Each adjusts <span class="register">B</span> and/or <span cla
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="27652"></span>27652</td>
-<td class="instruction">JR <a href="27660.html">ValidateRedBirdPosition</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="27660.html">ValidateRedBirdPosition</a>.</td>
+<td class="instruction">JR <a href="27660.html">Validate_Position</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="27660.html">Validate_Position</a>.</td>
 </tr>
 <tr>
-<td class="asm-label">RedBirdMove_UpLeft</td>
+<td class="asm-label">Move_UpLeft</td>
 <td class="address-2"><span id="27654"></span>27654</td>
 <td class="instruction">LD A,B</td>
 <td class="comment-1" rowspan="3"><span class="register">B</span>-=*<span class="register">HL</span> (Y − speed).</td>
@@ -404,7 +404,7 @@ Movement handlers. Each adjusts <span class="register">B</span> and/or <span cla
 <td class="routine-comment" colspan="5">
 <div class="comments">
 <div class="paragraph">
-Continue on to <a href="27660.html">ValidateRedBirdPosition</a>.
+Continue on to <a href="27660.html">Validate_Position</a>.
 </div>
 </div>
 </td>

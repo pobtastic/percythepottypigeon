@@ -33,7 +33,7 @@ Next: <a href="30068.html">30068</a>
 </td>
 </tr>
 </table>
-<div class="description">29970: Handle Cat</div>
+<div class="description">29970: Handler: Cat</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
@@ -67,7 +67,7 @@ Set up the cat state pointer and movement parameters.
 </td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Cat</td>
+<td class="asm-label">Handler_Cat</td>
 <td class="address-2"><span id="29970"></span>29970</td>
 <td class="instruction">LD IY,31432</td>
 <td class="comment-1" rowspan="1">Point <span class="register">IY</span> at <a href="31432.html">Cat_State_Data</a>.</td>
@@ -77,6 +77,25 @@ Set up the cat state pointer and movement parameters.
 <td class="address-1"><span id="29974"></span>29974</td>
 <td class="instruction">LD HL,30089</td>
 <td class="comment-1" rowspan="1">Point <span class="register">HL</span> at <a href="30088.html#30089">Cat_Direction_Flag</a>.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="29977"></span>
+<div class="comments">
+<div class="paragraph">
+<table class="default">
+<tr>
+<th colspan="1" rowspan="1">Sprite ID</th>
+<th colspan="1" rowspan="1">Sprite</th>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">57</td>
+<td class="centre" colspan="1" rowspan="1"><img alt="udg45627-56x4" src="../../images/udgs/udg45627-56x4.png" /></td>
+</tr>
+</table>
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -89,7 +108,7 @@ Set up the cat state pointer and movement parameters.
 <span id="29980"></span>
 <div class="comments">
 <div class="paragraph">
-This entry point is used by the routine at <a href="30091.html">Handle_Dog</a>.
+This entry point is used by the routine at <a href="30091.html">Handler_Dog</a>.
 </div>
 </div>
 </td>
@@ -135,7 +154,7 @@ This entry point is used by the routine at <a href="30091.html">Handle_Dog</a>.
 <span id="29991"></span>
 <div class="comments">
 <div class="paragraph">
-This entry point is used by the routine at <a href="30867.html">Handle_Walking_Paratrooper</a>.
+This entry point is used by the routine at <a href="30867.html">Handler_Walking_Paratrooper</a>.
 </div>
 </div>
 </td>
@@ -144,7 +163,7 @@ This entry point is used by the routine at <a href="30867.html">Handle_Walking_P
 <td class="asm-label">Cat_Entry</td>
 <td class="address-2"><span id="29991"></span>29991</td>
 <td class="instruction">LD A,(24507)</td>
-<td class="comment-1" rowspan="3">Call <a href="30068.html">Reset_Cat_Position</a> if *<a href="24507.html">RespawnFlag</a> (respawn flag) is non-zero to reset the cat position.</td>
+<td class="comment-1" rowspan="3">Call <a href="30068.html">Reset_Cat_Position</a> if *<a href="24507.html">RespawnFlag</a> is set to reset the cat position.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -160,12 +179,12 @@ This entry point is used by the routine at <a href="30867.html">Handle_Walking_P
 <td class="asm-label"></td>
 <td class="address-1"><span id="29998"></span>29998</td>
 <td class="instruction">BIT 7,(IY+0)</td>
-<td class="comment-1" rowspan="2">Jump to <a href="29881.html">Animate_Stunned_RedBird</a> if bit 7 of *<span class="register">IY</span>+0 is set (cat is stunned by egg).</td>
+<td class="comment-1" rowspan="2">Jump to <a href="29881.html">Animate_Stunned_Hazard</a> if bit 7 of *<span class="register">IY</span>+0 is set (cat is stunned by egg).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="30002"></span>30002</td>
-<td class="instruction">JR NZ,<a href="29881.html">Animate_Stunned_RedBird</a></td>
+<td class="instruction">JR NZ,<a href="29881.html">Animate_Stunned_Hazard</a></td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
@@ -337,7 +356,7 @@ Moving left: subtract the step size from the X position.
 <span id="30047"></span>
 <div class="comments">
 <div class="paragraph">
-This entry point is used by the routine at <a href="30867.html">Handle_Walking_Paratrooper</a>.
+This entry point is used by the routine at <a href="30867.html">Handler_Walking_Paratrooper</a>.
 </div>
 <div class="paragraph">
 Update the cat's walking animation frame and check for collisions.

@@ -39,7 +39,7 @@ Next: <a href="7082.html">7082</a>
 <td class="routine-comment" colspan="5">
 <div class="details">
 <div class="paragraph">
-Used by the routine at <a href="6DAB.html">Handle_Cars</a>.
+Used by the routine at <a href="6DAB.html">Handler_Cars</a>.
 </div>
 <div class="paragraph">
 Handles a car driving left across the screen. When it reaches the left boundary it reinitialises from the right edge. Speed is fixed at 01.
@@ -79,13 +79,12 @@ If the room is being initialised, set up the car.
 <td class="asm-label"></td>
 <td class="address-1"><span id="7031"></span>7031</td>
 <td class="instruction">LD A,($5FBB)</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="5FBB.html">RespawnFlag</a>.</td>
+<td class="comment-1" rowspan="3">Jump to <a href="7028.html#704e">Handler_CarType3_Initialise</a> if *<a href="5FBB.html">RespawnFlag</a> is set.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="7034"></span>7034</td>
 <td class="instruction">OR A</td>
-<td class="comment-1" rowspan="2">Jump to <a href="7028.html#704e">Handler_CarType3_Initialise</a> if the room buffer flag is set.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -106,13 +105,12 @@ If the car crash timer is active, handle the crash animation.
 <td class="asm-label"></td>
 <td class="address-1"><span id="7037"></span>7037</td>
 <td class="instruction">LD A,($7208)</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="7208.html">CarCrashTimer</a>.</td>
+<td class="comment-1" rowspan="3">Jump to <a href="6E5D.html#6e6e">Handler_Car_Type1_0</a> if *<a href="7208.html">CarCrashTimer</a> is active.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="703a"></span>703A</td>
 <td class="instruction">OR A</td>
-<td class="comment-1" rowspan="2">Jump to <a href="6E5D.html#6e6e">Handler_Car_Type1_0</a> if the crash timer is active.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -139,13 +137,12 @@ Check which road the car is on.
 <td class="asm-label"></td>
 <td class="address-1"><span id="7041"></span>7041</td>
 <td class="instruction">CP $90</td>
-<td class="comment-1" rowspan="1">Is the car on the upper road (90)?</td>
+<td class="comment-1" rowspan="2">Jump to <a href="7028.html#7063">Handler_CarType3_DriveRight</a> if the car is on the upper road.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="7043"></span>7043</td>
 <td class="instruction">JR Z,<a href="7028.html#7063">Handler_CarType3_DriveRight</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="7028.html#7063">Handler_CarType3_DriveRight</a> if on the upper road.</td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
@@ -213,19 +210,18 @@ Initialise car type 3 — pick a random colour (rejecting 01) and start from the
 <td class="asm-label"></td>
 <td class="address-1"><span id="7053"></span>7053</td>
 <td class="instruction">AND %00000011</td>
-<td class="comment-1" rowspan="1">Keep only bits 0-1.</td>
+<td class="comment-1" rowspan="1">Keep only bits 0-1 (random colour from BLACK,BLUE,RED,MAGENTA).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="7055"></span>7055</td>
 <td class="instruction">CP $01</td>
-<td class="comment-1" rowspan="1">Is the colour 01 (blue)?</td>
+<td class="comment-1" rowspan="2">Jump to <a href="7028.html#704e">Handler_CarType3_Initialise</a> if the colour is BLUE (pick again).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="7057"></span>7057</td>
 <td class="instruction">JR Z,<a href="7028.html#704e">Handler_CarType3_Initialise</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="7028.html#704e">Handler_CarType3_Initialise</a> if blue (pick again).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -277,13 +273,12 @@ Car is on the upper road — driving right.
 <td class="asm-label"></td>
 <td class="address-1"><span id="7067"></span>7067</td>
 <td class="instruction">CP $28</td>
-<td class="comment-1" rowspan="1">Has the car reached 28?</td>
+<td class="comment-1" rowspan="2">Jump to <a href="7028.html#706e">Handler_CarType3_Restart</a> if past the boundary.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="7069"></span>7069</td>
 <td class="instruction">JR NC,<a href="7028.html#706e">Handler_CarType3_Restart</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="7028.html#706e">Handler_CarType3_Restart</a> if past the boundary.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>

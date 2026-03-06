@@ -80,8 +80,8 @@ Handles room 02 logic. The phase counter in <span class="register">B</span> cont
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="726d"></span>726D</td>
-<td class="instruction">CALL NZ,<a href="7512.html">Handle_Cat</a></td>
-<td class="comment-1" rowspan="1">Call <a href="7512.html">Handle_Cat</a> if the phase counter is not equal to 02.</td>
+<td class="instruction">CALL NZ,<a href="7512.html">Handler_Cat</a></td>
+<td class="comment-1" rowspan="1">Call <a href="7512.html">Handler_Cat</a> if the phase counter is not equal to 02.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -110,8 +110,8 @@ Handles room 02 logic. The phase counter in <span class="register">B</span> cont
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="7278"></span>7278</td>
-<td class="instruction">CALL NC,<a href="79D2.html">Handle_Parachute_Descent</a></td>
-<td class="comment-1" rowspan="1">Call <a href="79D2.html">Handle_Parachute_Descent</a> if the phase counter is greater than 04.</td>
+<td class="instruction">CALL NC,<a href="79D2.html">Handler_Parachute_Descent</a></td>
+<td class="comment-1" rowspan="1">Call <a href="79D2.html">Handler_Parachute_Descent</a> if the phase counter is greater than 04.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -129,12 +129,12 @@ Handles room 02 logic. The phase counter in <span class="register">B</span> cont
 <td class="asm-label"></td>
 <td class="address-1"><span id="7280"></span>7280</td>
 <td class="instruction">CP $03</td>
-<td class="comment-1" rowspan="2">Call <a href="7439.html">Handle_Red_Bird</a> if the phase counter is greater than 03.</td>
+<td class="comment-1" rowspan="2">Call <a href="7439.html">Handler_Helicopter</a> if the phase counter is greater than 03.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="7282"></span>7282</td>
-<td class="instruction">CALL NC,<a href="7439.html">Handle_Red_Bird</a></td>
+<td class="instruction">CALL NC,<a href="7439.html">Handler_Helicopter</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>

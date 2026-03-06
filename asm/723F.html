@@ -90,7 +90,7 @@ Set up the first object.
 <td class="asm-label"></td>
 <td class="address-1"><span id="7247"></span>7247</td>
 <td class="instruction">LD IY,$7508</td>
-<td class="comment-1" rowspan="1"><span class="register">IY</span>=<a href="7508.html">RedBird_DataStates</a>.</td>
+<td class="comment-1" rowspan="1"><span class="register">IY</span>=<a href="7508.html">Helicopter_State_Data_1</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -101,8 +101,8 @@ Set up the first object.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="724c"></span>724C</td>
-<td class="instruction">CALL <a href="7439.html">Handle_Red_Bird</a></td>
-<td class="comment-1" rowspan="1">Call <a href="7439.html">Handle_Red_Bird</a>.</td>
+<td class="instruction">CALL <a href="7439.html">Handler_Helicopter</a></td>
+<td class="comment-1" rowspan="1">Call <a href="7439.html">Handler_Helicopter</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -130,7 +130,7 @@ Set up the second object; only processed during phase 03.
 <td class="asm-label"></td>
 <td class="address-1"><span id="7254"></span>7254</td>
 <td class="instruction">LD IY,$750D</td>
-<td class="comment-1" rowspan="1"><span class="register">IY</span>=<a href="7508.html#750d">750D</a>.</td>
+<td class="comment-1" rowspan="1"><span class="register">IY</span>=<a href="7508.html#750d">Helicopter_State_Data_2</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -147,8 +147,8 @@ Set up the second object; only processed during phase 03.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="725b"></span>725B</td>
-<td class="instruction">CALL Z,<a href="7439.html#743d">Handle_Red_Bird_Entry</a></td>
-<td class="comment-1" rowspan="1">Call <a href="7439.html#743d">Handle_Red_Bird_Entry</a> if the phase counter is 03.</td>
+<td class="instruction">CALL Z,<a href="7439.html#743d">Handler_Helicopter_Entry</a></td>
+<td class="comment-1" rowspan="1">Call <a href="7439.html#743d">Handler_Helicopter_Entry</a> if the phase counter is 03.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -161,7 +161,7 @@ Set up the second object; only processed during phase 03.
 <span id="725f"></span>
 <div class="comments">
 <div class="paragraph">
-From phase 04 onwards, call <a href="768C.html#77b9">UpdatePlaneFlightPath_12</a>.
+From phase 04 onwards, call <a href="77B9.html">Handler_Balloon</a>.
 </div>
 </div>
 </td>
@@ -170,12 +170,12 @@ From phase 04 onwards, call <a href="768C.html#77b9">UpdatePlaneFlightPath_12</a
 <td class="asm-label"></td>
 <td class="address-1"><span id="725f"></span>725F</td>
 <td class="instruction">CP $04</td>
-<td class="comment-1" rowspan="2">Call <a href="768C.html#77b9">UpdatePlaneFlightPath_12</a> if the phase counter is 04 or greater.</td>
+<td class="comment-1" rowspan="2">Call <a href="77B9.html">Handler_Balloon</a> if the phase counter is 04 or greater.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="7261"></span>7261</td>
-<td class="instruction">CALL NC,<a href="768C.html#77b9">UpdatePlaneFlightPath_12</a></td>
+<td class="instruction">CALL NC,<a href="77B9.html">Handler_Balloon</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>

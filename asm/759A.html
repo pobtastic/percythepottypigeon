@@ -33,7 +33,7 @@ Next: <a href="7628.html">7628</a>
 </td>
 </tr>
 </table>
-<div class="description">759A: Handle UFO</div>
+<div class="description">759A: Handler: UFO</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
@@ -67,10 +67,10 @@ Check for respawn.
 </td>
 </tr>
 <tr>
-<td class="asm-label">Handle_UFO</td>
+<td class="asm-label">Handler_UFO</td>
 <td class="address-2"><span id="759a"></span>759A</td>
 <td class="instruction">LD A,($5FBB)</td>
-<td class="comment-1" rowspan="3">Call <a href="7628.html">Reset_UFO_Position</a> if *<a href="5FBB.html">RespawnFlag</a> (respawn flag) is set to reset the UFO.</td>
+<td class="comment-1" rowspan="3">Call <a href="7628.html">Reset_UFO_Position</a> if *<a href="5FBB.html">RespawnFlag</a> is set to reset the UFO.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -309,7 +309,7 @@ Move the UFO in its current direction.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="75da"></span>75DA</td>
-<td class="instruction">CALL <a href="6BC8.html">RedBirdDirectionJumpTable</a></td>
+<td class="instruction">CALL <a href="6BC8.html">Direction_Jump_Table</a></td>
 <td class="comment-1" rowspan="1">Call <a href="6AF6.html#6ba0">6BA0</a> to move the UFO in the current direction.</td>
 </tr>
 <tr>
@@ -366,6 +366,25 @@ Update the UFO's animation frame, wrapping at 03.
 <td class="address-2"><span id="75e9"></span>75E9</td>
 <td class="instruction">LD (HL),A</td>
 <td class="comment-1" rowspan="1">Write the UFO frame to *<a href="7679.html#767c">UFO_Animation_Counter</a>.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="75ea"></span>
+<div class="comments">
+<div class="paragraph">
+<table class="default">
+<tr>
+<th colspan="1" rowspan="1">Sprite ID</th>
+<th colspan="1" rowspan="1">Sprite</th>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">4F</td>
+<td class="centre" colspan="1" rowspan="1"><img alt="udg46331-56x4" src="../images/udgs/udg46331-56x4.png" /></td>
+</tr>
+</table>
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>

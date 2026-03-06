@@ -33,7 +33,7 @@ Next: <a href="31427.html">31427</a>
 </td>
 </tr>
 </table>
-<div class="description">31186: Handle Parachute Descent</div>
+<div class="description">31186: Handler: Parachute Descent</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
@@ -67,7 +67,7 @@ Set up initial state and check for respawn.
 </td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Parachute_Descent</td>
+<td class="asm-label">Handler_Parachute_Descent</td>
 <td class="address-2"><span id="31186"></span>31186</td>
 <td class="instruction">LD A,(24507)</td>
 <td class="comment-1" rowspan="1">Fetch the respawn flag from *<a href="24507.html">RespawnFlag</a>.</td>
@@ -558,8 +558,8 @@ Parachute has been stunned by Percy's egg; animate the stunned state.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="31366"></span>31366</td>
-<td class="instruction">CALL <a href="29881.html">Animate_Stunned_RedBird</a></td>
-<td class="comment-1" rowspan="1">Call <a href="29881.html">Animate_Stunned_RedBird</a> to animate the stunned canopy.</td>
+<td class="instruction">CALL <a href="29881.html">Animate_Stunned_Hazard</a></td>
+<td class="comment-1" rowspan="1">Call <a href="29881.html">Animate_Stunned_Hazard</a> to animate the stunned canopy.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -585,8 +585,8 @@ Parachute has been stunned by Percy's egg; animate the stunned state.
 <tr>
 <td class="asm-label">Animate_Stunned_Body</td>
 <td class="address-2"><span id="31377"></span>31377</td>
-<td class="instruction">JP <a href="29881.html">Animate_Stunned_RedBird</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="29881.html">Animate_Stunned_RedBird</a> to animate the stunned body.</td>
+<td class="instruction">JP <a href="29881.html">Animate_Stunned_Hazard</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="29881.html">Animate_Stunned_Hazard</a> to animate the stunned body.</td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">

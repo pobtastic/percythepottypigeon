@@ -74,8 +74,8 @@ Handles room 07 logic. The phase counter in <span class="register">B</span> cont
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="736d"></span>736D</td>
-<td class="instruction">CALL <a href="7439.html">Handle_Red_Bird</a></td>
-<td class="comment-1" rowspan="1">Call <a href="7439.html">Handle_Red_Bird</a>.</td>
+<td class="instruction">CALL <a href="7439.html">Handler_Helicopter</a></td>
+<td class="comment-1" rowspan="1">Call <a href="7439.html">Handler_Helicopter</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -99,12 +99,12 @@ Handles room 07 logic. The phase counter in <span class="register">B</span> cont
 <td class="asm-label"></td>
 <td class="address-1"><span id="7376"></span>7376</td>
 <td class="instruction">CP $02</td>
-<td class="comment-1" rowspan="4">Call <a href="7512.html">Handle_Cat</a> if the phase counter is equal to either 02 or 05.</td>
+<td class="comment-1" rowspan="4">Call <a href="7512.html">Handler_Cat</a> if the phase counter is equal to either 02 or 05.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="7378"></span>7378</td>
-<td class="instruction">CALL Z,<a href="7512.html">Handle_Cat</a></td>
+<td class="instruction">CALL Z,<a href="7512.html">Handler_Cat</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -114,7 +114,7 @@ Handles room 07 logic. The phase counter in <span class="register">B</span> cont
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="737d"></span>737D</td>
-<td class="instruction">CALL Z,<a href="7512.html">Handle_Cat</a></td>
+<td class="instruction">CALL Z,<a href="7512.html">Handler_Cat</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -158,8 +158,8 @@ Handles room 07 logic. The phase counter in <span class="register">B</span> cont
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="738c"></span>738C</td>
-<td class="instruction">CALL <a href="768C.html#77b9">UpdatePlaneFlightPath_12</a></td>
-<td class="comment-1" rowspan="1">Call <a href="768C.html#77b9">UpdatePlaneFlightPath_12</a>.</td>
+<td class="instruction">CALL <a href="77B9.html">Handler_Balloon</a></td>
+<td class="comment-1" rowspan="1">Call <a href="77B9.html">Handler_Balloon</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -193,8 +193,8 @@ Handles room 07 logic. The phase counter in <span class="register">B</span> cont
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="7398"></span>7398</td>
-<td class="instruction">CALL <a href="758B.html">Handle_Dog</a></td>
-<td class="comment-1" rowspan="1">Call <a href="758B.html">Handle_Dog</a>.</td>
+<td class="instruction">CALL <a href="758B.html">Handler_Dog</a></td>
+<td class="comment-1" rowspan="1">Call <a href="758B.html">Handler_Dog</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -211,8 +211,8 @@ Handles room 07 logic. The phase counter in <span class="register">B</span> cont
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="73a0"></span>73A0</td>
-<td class="instruction">CALL <a href="759A.html">Handle_UFO</a></td>
-<td class="comment-1" rowspan="1">Call <a href="759A.html">Handle_UFO</a>.</td>
+<td class="instruction">CALL <a href="759A.html">Handler_UFO</a></td>
+<td class="comment-1" rowspan="1">Call <a href="759A.html">Handler_UFO</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>

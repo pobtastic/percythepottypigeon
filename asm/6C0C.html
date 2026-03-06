@@ -33,19 +33,19 @@ Next: <a href="6C39.html">6C39</a>
 </td>
 </tr>
 </table>
-<div class="description">6C0C: Validate Red Bird Position</div>
+<div class="description">6C0C: Validate Position</div>
 <table class="disassembly">
 <tr>
 <td class="routine-comment" colspan="5">
 <div class="details">
 <div class="paragraph">
-Used by the routines at <a href="69F7.html">Handler_RedBird</a>, <a href="6AF6.html">UpdateRedBirdMovement</a>, <a href="6BC8.html">RedBirdDirectionJumpTable</a> and <a href="74A7.html">Randomise_Position_Loop</a>.
+Used by the routines at <a href="69F7.html">Handler_RedBird</a>, <a href="6AF6.html">UpdateRedBirdMovement</a>, <a href="6BC8.html">Direction_Jump_Table</a> and <a href="74A7.html">Randomise_Position_Loop</a>.
 </div>
 <div class="paragraph">
-Validates the red bird's proposed position (<span class="register">B</span>=Y, <span class="register">C</span>=X) against the room's flight path boundary data. Scans through the boundary table at *<a href="6CBB.html">Pointer_RedBirdFlightpathData</a> looking for a region that contains the position.
+Validates a proposed position (<span class="register">B</span>=Y, <span class="register">C</span>=X) against the boundary table pointed to by *<a href="6CBB.html">Pointer_RedBirdFlightpathData</a>. Used by the red bird (<a href="6AF6.html">UpdateRedBirdMovement</a>), helicopter (<a href="7439.html">Handler_Helicopter</a>) and UFO (<a href="759A.html">Handler_UFO</a>); each caller ensures <a href="6CBB.html">Pointer_RedBirdFlightpathData</a> points to the appropriate boundary data. Scans through the table for a region containing the position.
 </div>
 <div class="paragraph">
-Each entry is 04 bytes: Y-min, Y-max, X-min, X-max. If a valid region is found, the position is stored and carry is clear. If no valid region is found (entry is 00), carry is set.
+Each entry is 04 bytes: Y-min, Y-max, X-min, X-max. If a valid region is found, the position is stored to *<span class="register">IX</span> and carry is clear. If no valid region is found (entry is 00), carry is set.
 </div>
 </div>
 <table class="input">
@@ -62,7 +62,7 @@ Each entry is 04 bytes: Y-min, Y-max, X-min, X-max. If a valid region is found, 
 </tr>
 <tr>
 <td class="register">IX</td>
-<td class="register-desc">Pointer to red bird sprite data</td>
+<td class="register-desc">Pointer to sprite data (red bird, helicopter or UFO)</td>
 </tr>
 </table>
 <table class="output">
@@ -77,13 +77,13 @@ Each entry is 04 bytes: Y-min, Y-max, X-min, X-max. If a valid region is found, 
 </td>
 </tr>
 <tr>
-<td class="asm-label">ValidateRedBirdPosition</td>
+<td class="asm-label">Validate_Position</td>
 <td class="address-2"><span id="6c0c"></span>6C0C</td>
 <td class="instruction">LD HL,($6CBB)</td>
-<td class="comment-1" rowspan="1"><span class="register">HL</span>=*<a href="6CBB.html">Pointer_RedBirdFlightpathData</a> (flight path boundary pointer).</td>
+<td class="comment-1" rowspan="1"><span class="register">HL</span>=*<a href="6CBB.html">Pointer_RedBirdFlightpathData</a> (boundary table pointer).</td>
 </tr>
 <tr>
-<td class="asm-label">ValidateRedBirdPosition_Loop</td>
+<td class="asm-label">Validate_Position_Loop</td>
 <td class="address-2"><span id="6c0f"></span>6C0F</td>
 <td class="instruction">PUSH HL</td>
 <td class="comment-1" rowspan="1">Stash the boundary pointer on the stack.</td>
@@ -98,12 +98,12 @@ Each entry is 04 bytes: Y-min, Y-max, X-min, X-max. If a valid region is found, 
 <td class="asm-label"></td>
 <td class="address-1"><span id="6c11"></span>6C11</td>
 <td class="instruction">OR A</td>
-<td class="comment-1" rowspan="2">Jump to <a href="6C0C.html#6c36">ValidateRedBirdPosition_OutOfBounds</a> if <span class="register">A</span> is 00 (end of boundary data).</td>
+<td class="comment-1" rowspan="2">Jump to <a href="6C0C.html#6c36">Validate_Position_OutOfBounds</a> if <span class="register">A</span> is 00 (end of boundary data).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6c12"></span>6C12</td>
-<td class="instruction">JR Z,<a href="6C0C.html#6c36">ValidateRedBirdPosition_OutOfBounds</a></td>
+<td class="instruction">JR Z,<a href="6C0C.html#6c36">Validate_Position_OutOfBounds</a></td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
@@ -119,12 +119,12 @@ Check Y-min &lt;= B.
 <td class="asm-label"></td>
 <td class="address-1"><span id="6c14"></span>6C14</td>
 <td class="instruction">CP B</td>
-<td class="comment-1" rowspan="2">Jump to <a href="6C0C.html#6c2f">ValidateRedBirdPosition_Next</a> if <span class="register">B</span> is less than Y-min.</td>
+<td class="comment-1" rowspan="2">Jump to <a href="6C0C.html#6c2f">Validate_Position_Next</a> if <span class="register">B</span> is less than Y-min.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6c15"></span>6C15</td>
-<td class="instruction">JR NC,<a href="6C0C.html#6c2f">ValidateRedBirdPosition_Next</a></td>
+<td class="instruction">JR NC,<a href="6C0C.html#6c2f">Validate_Position_Next</a></td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
@@ -152,12 +152,12 @@ Check B &lt;= Y-max.
 <td class="asm-label"></td>
 <td class="address-1"><span id="6c19"></span>6C19</td>
 <td class="instruction">CP B</td>
-<td class="comment-1" rowspan="2">Jump to <a href="6C0C.html#6c2f">ValidateRedBirdPosition_Next</a> if <span class="register">B</span> is greater than Y-max.</td>
+<td class="comment-1" rowspan="2">Jump to <a href="6C0C.html#6c2f">Validate_Position_Next</a> if <span class="register">B</span> is greater than Y-max.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6c1a"></span>6C1A</td>
-<td class="instruction">JR C,<a href="6C0C.html#6c2f">ValidateRedBirdPosition_Next</a></td>
+<td class="instruction">JR C,<a href="6C0C.html#6c2f">Validate_Position_Next</a></td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
@@ -185,12 +185,12 @@ Check X-min &lt;= C.
 <td class="asm-label"></td>
 <td class="address-1"><span id="6c1e"></span>6C1E</td>
 <td class="instruction">CP C</td>
-<td class="comment-1" rowspan="2">Jump to <a href="6C0C.html#6c2f">ValidateRedBirdPosition_Next</a> if <span class="register">C</span> is less than X-min.</td>
+<td class="comment-1" rowspan="2">Jump to <a href="6C0C.html#6c2f">Validate_Position_Next</a> if <span class="register">C</span> is less than X-min.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6c1f"></span>6C1F</td>
-<td class="instruction">JR NC,<a href="6C0C.html#6c2f">ValidateRedBirdPosition_Next</a></td>
+<td class="instruction">JR NC,<a href="6C0C.html#6c2f">Validate_Position_Next</a></td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
@@ -218,12 +218,12 @@ Check C &lt;= X-max.
 <td class="asm-label"></td>
 <td class="address-1"><span id="6c23"></span>6C23</td>
 <td class="instruction">CP C</td>
-<td class="comment-1" rowspan="2">Jump to <a href="6C0C.html#6c2f">ValidateRedBirdPosition_Next</a> if <span class="register">C</span> is greater than X-max.</td>
+<td class="comment-1" rowspan="2">Jump to <a href="6C0C.html#6c2f">Validate_Position_Next</a> if <span class="register">C</span> is greater than X-max.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6c24"></span>6C24</td>
-<td class="instruction">JR C,<a href="6C0C.html#6c2f">ValidateRedBirdPosition_Next</a></td>
+<td class="instruction">JR C,<a href="6C0C.html#6c2f">Validate_Position_Next</a></td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
@@ -276,7 +276,7 @@ Position is outside this region so try the next one.
 </td>
 </tr>
 <tr>
-<td class="asm-label">ValidateRedBirdPosition_Next</td>
+<td class="asm-label">Validate_Position_Next</td>
 <td class="address-2"><span id="6c2f"></span>6C2F</td>
 <td class="instruction">POP HL</td>
 <td class="comment-1" rowspan="1">Restore the boundary pointer from the stack.</td>
@@ -305,8 +305,8 @@ Position is outside this region so try the next one.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6c34"></span>6C34</td>
-<td class="instruction">JR <a href="6C0C.html#6c0f">ValidateRedBirdPosition_Loop</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="6C0C.html#6c0f">ValidateRedBirdPosition_Loop</a>.</td>
+<td class="instruction">JR <a href="6C0C.html#6c0f">Validate_Position_Loop</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="6C0C.html#6c0f">Validate_Position_Loop</a>.</td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
@@ -319,7 +319,7 @@ End of boundary data. No valid region found.
 </td>
 </tr>
 <tr>
-<td class="asm-label">ValidateRedBirdPosition_OutOfBounds</td>
+<td class="asm-label">Validate_Position_OutOfBounds</td>
 <td class="address-2"><span id="6c36"></span>6C36</td>
 <td class="instruction">POP HL</td>
 <td class="comment-1" rowspan="1">Restore the boundary pointer from the stack.</td>

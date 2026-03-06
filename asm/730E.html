@@ -154,8 +154,8 @@ Second object; return early if still in phase 01.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="732c"></span>732C</td>
-<td class="instruction">CALL <a href="7512.html">Handle_Cat</a></td>
-<td class="comment-1" rowspan="1">Call <a href="7512.html">Handle_Cat</a>.</td>
+<td class="instruction">CALL <a href="7512.html">Handler_Cat</a></td>
+<td class="comment-1" rowspan="1">Call <a href="7512.html">Handler_Cat</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -194,8 +194,8 @@ Third object; initialised during phase 02 then handled every phase after.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="7337"></span>7337</td>
-<td class="instruction">CALL Z,<a href="759A.html">Handle_UFO</a></td>
-<td class="comment-1" rowspan="1">Call <a href="759A.html">Handle_UFO</a> if the phase counter is 02.</td>
+<td class="instruction">CALL Z,<a href="759A.html">Handler_UFO</a></td>
+<td class="comment-1" rowspan="1">Call <a href="759A.html">Handler_UFO</a> if the phase counter is 02.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -218,8 +218,8 @@ Third object; initialised during phase 02 then handled every phase after.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="733d"></span>733D</td>
-<td class="instruction">CALL <a href="7439.html">Handle_Red_Bird</a></td>
-<td class="comment-1" rowspan="1">Call <a href="7439.html">Handle_Red_Bird</a>.</td>
+<td class="instruction">CALL <a href="7439.html">Handler_Helicopter</a></td>
+<td class="comment-1" rowspan="1">Call <a href="7439.html">Handler_Helicopter</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -265,18 +265,18 @@ Fourth object; initialised during phase 04.
 <td class="asm-label"></td>
 <td class="address-1"><span id="7349"></span>7349</td>
 <td class="instruction">LD IY,$750D</td>
-<td class="comment-1" rowspan="1"><span class="register">IY</span>=<a href="7508.html#750d">750D</a>.</td>
+<td class="comment-1" rowspan="1"><span class="register">IY</span>=<a href="7508.html#750d">Helicopter_State_Data_2</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="734d"></span>734D</td>
 <td class="instruction">CP $04</td>
-<td class="comment-1" rowspan="2">Call <a href="7439.html#743d">Handle_Red_Bird_Entry</a> if the phase counter is 04.</td>
+<td class="comment-1" rowspan="2">Call <a href="7439.html#743d">Handler_Helicopter_Entry</a> if the phase counter is 04.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="734f"></span>734F</td>
-<td class="instruction">CALL Z,<a href="7439.html#743d">Handle_Red_Bird_Entry</a></td>
+<td class="instruction">CALL Z,<a href="7439.html#743d">Handler_Helicopter_Entry</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -321,8 +321,8 @@ Fifth object; active from phase 05 onwards.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="735b"></span>735B</td>
-<td class="instruction">CALL <a href="7893.html">Handle_Walking_Paratrooper</a></td>
-<td class="comment-1" rowspan="1">Call <a href="7893.html">Handle_Walking_Paratrooper</a>.</td>
+<td class="instruction">CALL <a href="7893.html">Handler_Walking_Paratrooper</a></td>
+<td class="comment-1" rowspan="1">Call <a href="7893.html">Handler_Walking_Paratrooper</a>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>

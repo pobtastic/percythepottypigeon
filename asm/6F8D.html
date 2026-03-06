@@ -39,7 +39,7 @@ Next: <a href="7028.html">7028</a>
 <td class="routine-comment" colspan="5">
 <div class="details">
 <div class="paragraph">
-Used by the routine at <a href="6DAB.html">Handle_Cars</a>.
+Used by the routine at <a href="6DAB.html">Handler_Cars</a>.
 </div>
 <div class="paragraph">
 Handles a car driving left across the screen. When it reaches the left boundary it turns around and drives right at ground level until reaching the right edge, then reinitialises.
@@ -73,13 +73,12 @@ If the room is being initialised, set up the car.
 <td class="asm-label"></td>
 <td class="address-1"><span id="6f94"></span>6F94</td>
 <td class="instruction">LD A,($5FBB)</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="5FBB.html">RespawnFlag</a>.</td>
+<td class="comment-1" rowspan="3">Jump to <a href="6F8D.html#700c">Handler_CarType2_Initialise</a> if *<a href="5FBB.html">RespawnFlag</a> is set.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6f97"></span>6F97</td>
 <td class="instruction">OR A</td>
-<td class="comment-1" rowspan="2">Jump to <a href="6F8D.html#700c">Handler_CarType2_Initialise</a> if the room buffer flag is set.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -100,13 +99,12 @@ If the car crash timer is active, handle the crash animation.
 <td class="asm-label"></td>
 <td class="address-1"><span id="6f9a"></span>6F9A</td>
 <td class="instruction">LD A,($7208)</td>
-<td class="comment-1" rowspan="1"><span class="register">A</span>=*<a href="7208.html">CarCrashTimer</a>.</td>
+<td class="comment-1" rowspan="3">Jump to <a href="6E5D.html#6e6e">Handler_Car_Type1_0</a> if *<a href="7208.html">CarCrashTimer</a> is active.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6f9d"></span>6F9D</td>
 <td class="instruction">OR A</td>
-<td class="comment-1" rowspan="2">Jump to <a href="6E5D.html#6e6e">Handler_Car_Type1_0</a> if the crash timer is active.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -133,13 +131,12 @@ Check which road the car is on.
 <td class="asm-label"></td>
 <td class="address-1"><span id="6fa4"></span>6FA4</td>
 <td class="instruction">CP $90</td>
-<td class="comment-1" rowspan="1">Is the car on the upper road (90)?</td>
+<td class="comment-1" rowspan="2">Jump to <a href="6F8D.html#6fcb">Handler_CarType2_DriveRight</a> if on the upper road.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6fa6"></span>6FA6</td>
 <td class="instruction">JR Z,<a href="6F8D.html#6fcb">Handler_CarType2_DriveRight</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="6F8D.html#6fcb">Handler_CarType2_DriveRight</a> if on the upper road.</td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
@@ -167,13 +164,12 @@ Car is on the lower road (Y=A0) — driving left.
 <td class="asm-label"></td>
 <td class="address-1"><span id="6fac"></span>6FAC</td>
 <td class="instruction">CP $68</td>
-<td class="comment-1" rowspan="1">Has the car reached 68 (left boundary)?</td>
+<td class="comment-1" rowspan="2">Jump to <a href="6F8D.html#6fee">Handler_CarType2_TurnAround</a> if at the left boundary (turn around).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6fae"></span>6FAE</td>
 <td class="instruction">JR C,<a href="6F8D.html#6fee">Handler_CarType2_TurnAround</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="6F8D.html#6fee">Handler_CarType2_TurnAround</a> if at the left boundary (turn around).</td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
@@ -219,10 +215,48 @@ Update positions and set driving left frames.
 <td class="comment-1" rowspan="1">Write A0 to *<span class="register">IX</span>+05 (rear Y: lower road).</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="6fc0"></span>
+<div class="comments">
+<div class="paragraph">
+<table class="default">
+<tr>
+<th colspan="1" rowspan="1">Sprite ID</th>
+<th colspan="1" rowspan="1">Sprite</th>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">1E</td>
+<td class="centre" colspan="1" rowspan="1"><img alt="udg44763-56x4" src="../images/udgs/udg44763-56x4.png" /></td>
+</tr>
+</table>
+</div>
+</div>
+</td>
+</tr>
+<tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6fc0"></span>6FC0</td>
 <td class="instruction">LD (IX+$03),$1E</td>
 <td class="comment-1" rowspan="1">Write 1E to *<span class="register">IX</span>+03 (front frame: driving left).</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="6fc4"></span>
+<div class="comments">
+<div class="paragraph">
+<table class="default">
+<tr>
+<th colspan="1" rowspan="1">Sprite ID</th>
+<th colspan="1" rowspan="1">Sprite</th>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">1F</td>
+<td class="centre" colspan="1" rowspan="1"><img alt="udg44795-56x4" src="../images/udgs/udg44795-56x4.png" /></td>
+</tr>
+</table>
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -262,13 +296,12 @@ Car is on the upper road (Y=90) — driving right.
 <td class="asm-label"></td>
 <td class="address-1"><span id="6fcf"></span>6FCF</td>
 <td class="instruction">CP $DE</td>
-<td class="comment-1" rowspan="1">Has the car reached DE (right edge)?</td>
+<td class="comment-1" rowspan="2">Jump to <a href="6F8D.html#700c">Handler_CarType2_Initialise</a> if at the right edge (reinitialise).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6fd1"></span>6FD1</td>
 <td class="instruction">JR NC,<a href="6F8D.html#700c">Handler_CarType2_Initialise</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="6F8D.html#700c">Handler_CarType2_Initialise</a> if at the right edge (reinitialise).</td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
@@ -314,10 +347,48 @@ Update positions and set driving right frames.
 <td class="comment-1" rowspan="1">Write 90 to *<span class="register">IX</span>+05 (rear Y: upper road).</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="6fe3"></span>
+<div class="comments">
+<div class="paragraph">
+<table class="default">
+<tr>
+<th colspan="1" rowspan="1">Sprite ID</th>
+<th colspan="1" rowspan="1">Sprite</th>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">1C</td>
+<td class="centre" colspan="1" rowspan="1"><img alt="udg44699-56x4" src="../images/udgs/udg44699-56x4.png" /></td>
+</tr>
+</table>
+</div>
+</div>
+</td>
+</tr>
+<tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6fe3"></span>6FE3</td>
 <td class="instruction">LD (IX+$03),$1C</td>
 <td class="comment-1" rowspan="1">Write 1C to *<span class="register">IX</span>+03 (front frame: driving right).</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="6fe7"></span>
+<div class="comments">
+<div class="paragraph">
+<table class="default">
+<tr>
+<th colspan="1" rowspan="1">Sprite ID</th>
+<th colspan="1" rowspan="1">Sprite</th>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">1D</td>
+<td class="centre" colspan="1" rowspan="1"><img alt="udg44731-56x4" src="../images/udgs/udg44731-56x4.png" /></td>
+</tr>
+</table>
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -369,7 +440,7 @@ Car reached the left boundary — turn around. Pick a new random speed and colou
 <td class="asm-label"></td>
 <td class="address-1"><span id="6ff5"></span>6FF5</td>
 <td class="instruction">INC A</td>
-<td class="comment-1" rowspan="1">Increment (speed 01-04).</td>
+<td class="comment-1" rowspan="1">Increment the random number by one (speed 01-04).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -382,13 +453,13 @@ Car reached the left boundary — turn around. Pick a new random speed and colou
 <span id="6ff7"></span>
 <div class="comments">
 <div class="paragraph">
-Pick a new colour, rejecting 01 (blue).
+Pick a new colour, rejecting BLUE.
 </div>
 </div>
 </td>
 </tr>
 <tr>
-<td class="asm-label">Handler_CarType2_0</td>
+<td class="asm-label">PickCarColour</td>
 <td class="address-2"><span id="6ff7"></span>6FF7</td>
 <td class="instruction">PUSH HL</td>
 <td class="comment-1" rowspan="1">Stash <span class="register">HL</span> on the stack.</td>
@@ -409,19 +480,18 @@ Pick a new colour, rejecting 01 (blue).
 <td class="asm-label"></td>
 <td class="address-1"><span id="6ffc"></span>6FFC</td>
 <td class="instruction">AND %00000011</td>
-<td class="comment-1" rowspan="1">Keep only bits 0-1.</td>
+<td class="comment-1" rowspan="1">Keep only bits 0-1 (random colour from BLACK,BLUE,RED,MAGENTA).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6ffe"></span>6FFE</td>
 <td class="instruction">CP $01</td>
-<td class="comment-1" rowspan="1">Is the colour 01 (blue)?</td>
+<td class="comment-1" rowspan="2">Jump to <a href="6F8D.html#6ff7">PickCarColour</a> if the colour is BLUE (pick again).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="7000"></span>7000</td>
-<td class="instruction">JR Z,<a href="6F8D.html#6ff7">Handler_CarType2_0</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="6F8D.html#6ff7">Handler_CarType2_0</a> if blue (pick again).</td>
+<td class="instruction">JR Z,<a href="6F8D.html#6ff7">PickCarColour</a></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -479,13 +549,13 @@ Initialise car type 2 — start from the right edge driving left with a random s
 <td class="asm-label"></td>
 <td class="address-1"><span id="7011"></span>7011</td>
 <td class="instruction">AND %00000011</td>
-<td class="comment-1" rowspan="1">Keep only bits 0-1.</td>
+<td class="comment-1" rowspan="1">Keep only bits 0-1 (random speed 00-03).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="7013"></span>7013</td>
 <td class="instruction">INC A</td>
-<td class="comment-1" rowspan="1">Increment (speed 01-04).</td>
+<td class="comment-1" rowspan="1">Increment the random speed by one (speed 01-04).</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
