@@ -23,7 +23,9 @@ AddressAnchor={address#IF({base}==16)(:04x)}
 GameIndex=The complete<>RAM disassembly (work in progress)
 
 [Titles]
+GameStatusBuffer=Game Status Buffer
 loader=Loading Code
+UnusedMap=Unused Addresses
 
 [OtherCode:loader]
 

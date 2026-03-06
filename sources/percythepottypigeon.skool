@@ -270,9 +270,9 @@ c$5DC0 DI              ; Disable interrupts.
  $5DDF LD ($5C48),A    ; *<a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/5C48.html">BORDCR</a>.)
                        ; }
  $5DE2 LD IX,$DAC0     ; #REGix=#R$DAC0.
- $5DE6 LD (IX+$23),$00 ; Write #N$00 to *#REGix+#N$23.
+ $5DE6 LD (IX+$23),$00 ; Write #N$00 to *#REGix+#N$23 (#R$DAE3).
  $5DEA LD (IX+$02),$07 ; Write #INK$07 to *#REGix+#N$02 (#R$DAC2).
- $5DEE LD (IX+$22),$FF ; Write #N$FF to *#REGix+#N$22.
+ $5DEE LD (IX+$22),$FF ; Write #N$FF to *#REGix+#N$22 (#R$DAE2).
  $5DF2 CALL $653D      ; Call #R$653D.
  $5DF5 LD A,$FF        ; {Write #N$FF to *#R$5FBC.
  $5DF7 LD ($5FBC),A    ; }
@@ -1140,16 +1140,16 @@ c$5FE9 LD A,($5FA7)    ; {If *#R$5FA7 is unset, call #R$653D.
  $60AB OR A            ;
  $60AC JR Z,$60D9      ; }
 ; Egg is in flight so advance its Y position.
- $60AE LD A,(IX+$21)   ; #REGa=*#REGix+#N$21.
+ $60AE LD A,(IX+$21)   ; #REGa=*#REGix+#N$21 (#R$DAE1).
  $60B1 ADD A,$04       ; #REGa+=#N$04.
  $60B3 CP $A8          ; Has the egg reached Y position #N$A8?
  $60B5 JR C,$60BF      ; Jump to #R$60BF if not yet reached.
 ; Egg has reached its target so end the egg drop state.
- $60B7 LD (IX+$23),$00 ; Write #N$00 to *#REGix+#N$23.
+ $60B7 LD (IX+$23),$00 ; Write #N$00 to *#REGix+#N$23 (#R$DAE3).
  $60BB XOR A           ; {Write #N$00 to *#R$5FA9 (egg drop complete).
  $60BC LD ($5FA9),A    ; }
 @label=MainGameLoop_UpdateEggY
-*$60BF LD (IX+$21),A   ; Write #REGa to *#REGix+#N$21.
+*$60BF LD (IX+$21),A   ; Write #REGa to *#REGix+#N$21 (#R$DAE1).
 ; Play a rising sound effect while the egg is in flight.
  $60C2 PUSH IX         ; Stash #REGix on the stack.
  $60C4 LD HL,($5FB7)   ; #REGhl=*#R$5FB7.
@@ -1181,21 +1181,21 @@ c$5FE9 LD A,($5FA7)    ; {If *#R$5FA7 is unset, call #R$653D.
  $60F0 CALL $679C      ; Call #R$679C.
  $60F3 POP AF          ; Restore #REGaf from the stack.
  $60F4 LD (IX+$21),A   ; Write #REGa to *#REGix+#N$21 (egg target Y).
- $60F7 LD (IX+$23),$0F ; Write #N$0F to *#REGix+#N$23.
+ $60F7 LD (IX+$23),$0F ; Write #N$0F to *#REGix+#N$23 (#R$DAE3).
  $60FB LD A,(IX+$00)   ; #REGa=*#REGix+#N$00 (Percy's X position).
  $60FE ADD A,$05       ; #REGa+=#N$05.
  $6100 LD (IX+$20),A   ; Write #REGa to *#REGix+#N$20 (egg target X).
- $6103 OR %11111111    ; #REGa=#N$FF.
- $6105 LD ($5FA9),A    ; Write #N$FF to *#R$5FA9 (egg drop in progress).
+ $6103 OR %11111111    ; {Write #N$FF to *#R$5FA9 (egg drop in progress).
+ $6105 LD ($5FA9),A    ; }
  $6108 LD HL,$0064     ; {Write #N($0064,$04,$04) to *#R$5FB7 (initial beep
  $610B LD ($5FB7),HL   ; pitch).}
 ; Apply the direction input to Percy's movement. First ensure fire
 ; is flagged as released, then dispatch to the appropriate movement handler for
 ; each direction.
 @label=MainGameLoop_ApplyMovement
-*$610E LD A,($5FA2)    ; #REGa=*#R$5FA2.
- $6111 SET 0,A         ; Set bit 0 of #REGa (mark fire as handled).
- $6113 LD ($5FA2),A    ; Write #REGa to *#R$5FA2.
+*$610E LD A,($5FA2)    ; {Set bit 0 of *#R$5FA2 (mark fire as handled).
+ $6111 SET 0,A         ;
+ $6113 LD ($5FA2),A    ; }
 ; If Percy is falling (*#R$5FA7 is non-zero), handle the falling state.
  $6116 LD A,($5FA7)    ; {Jump to #R$6152 if *#R$5FA7 is unset.
  $6119 OR A            ;
@@ -1985,7 +1985,7 @@ c$6480 LD HL,$52EC   ; #REGhl=#N$52EC (screen buffer location for the energy
  $64C7 RET C         ; }
  $64C8 XOR A         ; {Write #N$00 to reset *#R$5FAB.
  $64C9 LD ($5FAB),A  ; }
-; This entry point is used by the routine at #R$655C.
+; This entry point is used by the routines at #R$655C and #R$6CDF.
 ; .
 ; Refill the energy bar by shifting pixels right (filling from the left).
 ; Scans leftward to find the first non-full byte and fills it one pixel at a
@@ -2528,8 +2528,8 @@ c$66E1 LD A,($5FAA)   ; {Return if *#R$5FAA (worm carrying flag) is zero.
  $670F LD (IX+$20),A  ; Write the result to *#REGix+#N$20 (worm sprite X
                       ; position).
  $6712 LD A,(IX+$01)  ; {Set the worm sprite Y position to Percy's Y plus
- $6715 ADD A,$04      ; #N$04.}
- $6717 LD (IX+$21),A  ;
+ $6715 ADD A,$04      ; #N$04.
+ $6717 LD (IX+$21),A  ; }
  $671A LD C,$0D       ; {Set the worm sprite frame: start with #N$0D, rotate *#R$5FB4 and if
  $671C LD A,($5FB4)   ; carry is not set, increment to #N$0E for the alternate wiggle frame.
  $671F RRCA           ;
@@ -2595,7 +2595,7 @@ c$66E1 LD A,($5FAA)   ; {Return if *#R$5FAA (worm carrying flag) is zero.
 @label=Delivery_Sound_Outer
 *$677C LD B,E         ; Copy duration to #REGb.
 @label=Delivery_Sound_Inner
-*$677D OUT ($FE),A    ; Output the speaker state to port #N$FE.
+*$677D OUT ($FE),A    ; Send to the speaker port.
  $677F DJNZ $677D     ; Loop the inner delay for #REGb iterations.
  $6781 EX AF,AF'      ; {Toggle the speaker bit pattern using XOR #N$18, mixed with duration
  $6782 LD A,E         ; bits for a warbling effect.
@@ -2646,8 +2646,8 @@ c$679C LD BC,$0160   ; Set the search counter to #N$0160 in #REGbc.
 
 ; Add To Score
 ;
-; Used by the routines at #R$66E1, #R$693B, #R$69F7, #R$6F54, #R$7190 and
-; #R$74D6.
+; Used by the routines at #R$66E1, #R$693B, #R$69F7, #R$6CDF, #R$6F54, #R$7190
+; and #R$74D6.
 ; .
 ; Converts a binary score value in #REGa into three decimal digits and
 ; adds them to the current score. The digits are stored in the score buffer at
@@ -3025,7 +3025,7 @@ c$68F7 LD A,($5FB1)  ; Fetch the current level from *#R$5FB1.
  $690A LD A,(HL)     ; }
  $690B LD HL,$50F0   ; Point #REGhl at #N$50F0 (screen buffer position for the lives
                      ; display).
- $690E CALL $6581    ; Call #R$6A5F.
+ $690E CALL $6581    ; Call #R$6581.
 ; Load the worm collection target for the new level.
 @label=SetWorm_Target
 *$6911 LD A,($5FB1)  ; Fetch the current level from *#R$5FB1.
@@ -3350,7 +3350,8 @@ c$69F7 LD A,($5FBB)    ; {Jump to #R$6A1C if *#R$5FBB is not set.
  $6A86 OR %01000000    ; Set bit 6 (ensure a minimum stun duration).
  $6A88 LD ($6CB4),A    ; Write #REGa to *#R$6CB4.
  $6A8B LD ($6CB5),A    ; Write #REGa to *#R$6CB5.
- $6A8E LD (IX+$02),$01 ; Write #N$01 to *#REGix+#N$02 (stunned colour: blue).
+ $6A8E LD (IX+$02),$01 ; Write #N$01 to *#REGix+#N$02 (stunned colour:
+                       ; #INK$01).
  $6A92 LD A,$14        ; {Call #R$67B2 to add #N$14 points to the score.
  $6A94 CALL $67B2      ; }
  $6A97 CALL $6F7A      ; Call #R$6F7A.
@@ -3579,7 +3580,7 @@ c$6AF6 LD IX,$DAC4     ; #REGix=#R$DAC4 (red bird sprite data).
 
 ; 8-Direction Movement Jump Table
 ;
-; Used by the routines at #R$6AF6, #R$7439 and #R$759A.
+; Used by the routines at #R$6AF6, #R$6CDF, #R$7439 and #R$759A.
 ; .
 ; Shared 8-direction movement jump table. Used by the red bird (#R$6AF6),
 ; helicopter (#R$7439) and UFO (#R$759A). The entry point is self-modified at
@@ -3673,7 +3674,7 @@ c$6BC8 JR $6BCA      ; Self-modified jump; offset written by caller (e.g.
 
 ; Validate Position
 ;
-; Used by the routines at #R$69F7, #R$6AF6, #R$6BC8 and #R$74A7.
+; Used by the routines at #R$69F7, #R$6AF6, #R$6BC8, #R$6D90 and #R$74A7.
 ; .
 ; Validates a proposed position (#REGb=Y, #REGc=X) against the boundary
 ; table pointed to by *#R$6CBB. Used by the red bird (#R$6AF6), helicopter
@@ -3736,8 +3737,8 @@ c$6C0C LD HL,($6CBB) ; #REGhl=*#R$6CBB (boundary table pointer).
 
 ; Generate Random Number
 ;
-; Used by the routines at #R$69F7, #R$6AF6, #R$6E2F, #R$6F13, #R$6F54, #R$6F8D
-; and #R$7028.
+; Used by the routines at #R$69F7, #R$6AF6, #R$6CDF, #R$6D90, #R$6E2F, #R$6F13,
+; #R$6F54, #R$6F8D and #R$7028.
 ; .
 ; Generates a pseudo-random number using the seed stored at *#R$6CB7.
 ; The algorithm scrambles the seed value through a series of arithmetic
@@ -3825,8 +3826,8 @@ c$6C53 LD A,(IX+$00) ; Load #REGa with the first sprite's X position (from
 
 ; Check Egg Collision
 ;
-; Used by the routines at #R$69F7, #R$6F54, #R$7190, #R$74D6, #R$759A, #R$7713
-; and #R$77B9.
+; Used by the routines at #R$69F7, #R$6CDF, #R$6F54, #R$7190, #R$74D6, #R$759A,
+; #R$7713 and #R$77B9.
 ; .
 ; Checks if an egg overlaps with a sprite by comparing their positions.
 ; The egg is assumed to be #N$10 pixels wide and #N$10 pixels tall, while
@@ -3993,36 +3994,210 @@ g$6CC3 DEFB $00
 ; frame.
 @label=RedBirdWingAnimationCounter
 g$6CC4 DEFB $00
- $6CC5 DEFB $03,$02,$01,$07,$01,$09,$01,$04
- $6CCD DEFB $02,$0B,$02,$03,$03,$0A,$03,$05
- $6CD5 DEFB $04,$07,$04,$08,$05,$FF,$FF,$00
- $6CDD DEFB $01,$00
-*$6CDF DEFB $DD,$21,$E4,$DA,$DD,$36,$03,$00
- $6CE7 DEFB $3A,$BE,$5F,$B7,$C4,$9E,$6D,$3A
- $6CEF DEFB $B3,$5F,$47,$3A,$C3,$6C,$B8,$C4
- $6CF7 DEFB $9E,$6D,$3A,$C5,$5F,$4F,$3A,$B1
- $6CFF DEFB $5F,$47,$21,$C6,$6C,$7E,$FE,$FF
- $6D07 DEFB $C8,$B9,$20,$0B,$23,$7E,$B8,$20
- $6D0F DEFB $07,$CB,$7E,$20,$03,$18,$04,$23
- $6D17 DEFB $23,$18,$EA,$E5,$3E,$19,$D3,$FE
- $6D1F DEFB $3A,$BB,$5F,$B7,$C4,$90,$6D,$3A
- $6D27 DEFB $DE,$6C,$47,$3A,$DC,$6C,$EE,$01
- $6D2F DEFB $32,$DC,$6C,$C6,$03,$CB,$50,$28
- $6D37 DEFB $02,$C6,$02,$DD,$77,$03,$21,$DD
- $6D3F DEFB $6C,$35,$20,$15,$CD,$39,$6C,$F5
- $6D47 DEFB $E6,$07,$32,$DE,$6C,$F1,$21,$DD
- $6D4F DEFB $6C,$0F,$0F,$0F,$E6,$0F,$F6,$01
- $6D57 DEFB $77,$3A,$DE,$6C,$87,$32,$C9,$6B
- $6D5F DEFB $21,$C5,$6C,$DD,$4E,$00,$DD,$46
- $6D67 DEFB $01,$CD,$C8,$6B,$38,$D6,$FD,$21
- $6D6F DEFB $E4,$DA,$DD,$21,$C0,$DA,$CD,$85
- $6D77 DEFB $6C,$38,$14,$E1,$CB,$FE,$06,$60
- $6D7F DEFB $C5,$CD,$CC,$64,$C1,$10,$F9,$3E
- $6D87 DEFB $02,$CD,$B2,$67,$06,$09,$C9,$E1
- $6D8F DEFB $C9,$CD,$39,$6C,$4F,$CD,$39,$6C
- $6D97 DEFB $47,$CD,$0C,$6C,$38,$F3,$C9,$21
- $6D9F DEFB $C6,$6C,$7E,$FE,$FF,$C8,$CB,$BE
- $6DA7 DEFB $23,$18,$F7,$C9
+
+; Butterfly Movement Boundary
+;
+; Boundary data for the butterfly's movement, used by the direction jump
+; table at #R$6BC8.
+@label=Butterfly_Movement_Boundary
+g$6CC5 DEFB $03
+
+; Butterfly Room Table
+;
+; Table of room/level pairs where butterflies appear. Each entry is two
+; bytes: the room number followed by the level number. Bit 7 of the level byte
+; is set when the butterfly has been collected. The table is terminated by #N$FF.
+@label=Butterfly_Room_Table
+g$6CC6 DEFB $02,$01  ; Room #N(#PEEK(#PC))/ Level #N(#PEEK(#PC+$01)).
+ $6CC8 DEFB $07,$01  ; Room #N(#PEEK(#PC))/ Level #N(#PEEK(#PC+$01)).
+ $6CCA DEFB $09,$01  ; Room #N(#PEEK(#PC))/ Level #N(#PEEK(#PC+$01)).
+ $6CCC DEFB $04,$02  ; Room #N(#PEEK(#PC))/ Level #N(#PEEK(#PC+$01)).
+ $6CCE DEFB $0B,$02  ; Room #N(#PEEK(#PC))/ Level #N(#PEEK(#PC+$01)).
+ $6CD0 DEFB $03,$03  ; Room #N(#PEEK(#PC))/ Level #N(#PEEK(#PC+$01)).
+ $6CD2 DEFB $0A,$03  ; Room #N(#PEEK(#PC))/ Level #N(#PEEK(#PC+$01)).
+ $6CD4 DEFB $05,$04  ; Room #N(#PEEK(#PC))/ Level #N(#PEEK(#PC+$01)).
+ $6CD6 DEFB $07,$04  ; Room #N(#PEEK(#PC))/ Level #N(#PEEK(#PC+$01)).
+ $6CD8 DEFB $08,$05  ; Room #N(#PEEK(#PC))/ Level #N(#PEEK(#PC+$01)).
+ $6CDA DEFB $FF,$FF  ; Terminator.
+
+; Butterfly Wing Flap Toggle
+;
+; Toggled each frame to alternate the butterfly's wing animation between
+; two frames.
+@label=Butterfly_Wing_Toggle
+g$6CDC DEFB $00
+
+; Butterfly Movement Delay
+;
+; Countdown timer for the butterfly's current movement direction. When it
+; reaches zero, a new random direction and delay are generated.
+@label=Butterfly_Movement_Delay
+g$6CDD DEFB $01
+
+; Butterfly Direction
+;
+; Current movement direction for the butterfly, in the range #N$00-#N$07.
+@label=Butterfly_Direction
+g$6CDE DEFB $00
+
+; Handle Butterfly
+;
+; Used by the routine at #R$69F7.
+; .
+; Controls the bonus butterfly collectible. Butterflies flutter around
+; specific rooms and can be collected by Percy for #N$02 bonus points. They
+; appear only on certain room/level combinations defined in the table at
+; #R$6CC6. When collected, bit 7 of the table entry is set to prevent
+; recollection until the lives counter changes or Percy respawns.
+;
+; IX Pointer to the butterfly sprite data at #R$DAE4
+;
+; Set up the butterfly sprite and check if any collected butterflies
+; need resetting.
+@label=Handle_Butterfly
+c$6CDF LD IX,$DAE4     ; Point #REGix at #R$DAE4 (butterfly sprite data).
+ $6CE3 LD (IX+$03),$00 ; Write #N$00 to *#REGix+#N$03 (clear the butterfly
+                       ; sprite frame).
+ $6CE7 LD A,($5FBE)    ; {Call #R$6D9E to reset collected flags if *#R$5FBE (lives backup)
+ $6CEA OR A            ; is unset.
+ $6CEB CALL NZ,$6D9E   ; }
+ $6CEE LD A,($5FB3)    ; {Fetch the lives display character from *#R$5FB3 into
+ $6CF1 LD B,A          ; #REGb.}
+ $6CF2 LD A,($6CC3)    ; {Call #R$6D9E to reset collected flags if *#R$6CC3 (previous lives
+ $6CF5 CP B            ; count) does not equal #REGb (lives count has changed).
+ $6CF6 CALL NZ,$6D9E   ; }
+; Search the butterfly table for an entry matching the current room and
+; level.
+ $6CF9 LD A,($5FC5)    ; {Load the current room from *#R$5FC5 into #REGc.
+ $6CFC LD C,A          ; }
+ $6CFD LD A,($5FB1)    ; {Load the current level from *#R$5FB1 into #REGb.
+ $6D00 LD B,A          ; }
+ $6D01 LD HL,$6CC6     ; Point #REGhl at #R$6CC6 (butterfly room/level table).
+@label=Search_Butterfly_Table
+*$6D04 LD A,(HL)       ; Fetch the room number from *#REGhl.
+ $6D05 CP $FF          ; {Return if the terminator byte has been found (end of
+ $6D07 RET Z           ; table).}
+ $6D08 CP C            ; {Jump to #R$6D16 if the room number does not match
+ $6D09 JR NZ,$6D16     ; #REGc.}
+ $6D0B INC HL          ; Advance to the level byte.
+ $6D0C LD A,(HL)       ; Fetch the level number from *#REGhl.
+ $6D0D CP B            ; {Jump to #R$6D17 if the level does not match #REGb.
+ $6D0E JR NZ,$6D17     ; }
+ $6D10 BIT 7,(HL)      ; {Jump to #R$6D17 if bit 7 of *#REGhl is set (butterfly already
+ $6D12 JR NZ,$6D17     ; collected).}
+ $6D14 JR $6D1A        ; Jump to #R$6D1A (matching entry found).
+@label=Skip_Butterfly_Entry_02
+*$6D16 INC HL          ; Advance #REGhl by two bytes to skip this entry.
+@label=Skip_Butterfly_Entry_01
+*$6D17 INC HL          ; Advance #REGhl to skip this entry.
+ $6D18 JR $6D04        ; Jump back to #R$6D04.
+; Matching butterfly found; animate and move it.
+@label=Animate_Butterfly
+*$6D1A PUSH HL         ; Stash the table entry pointer on the stack.
+ $6D1B LD A,$19        ; {Set the border to yellow (#N$19 output to port
+ $6D1D OUT ($FE),A     ; #N$FE).}
+ $6D1F LD A,($5FBB)    ; {Call #R$6D90 to randomise the butterfly position if *#R$5FBB
+ $6D22 OR A            ; (respawn flag) is non-zero.
+ $6D23 CALL NZ,$6D90   ; }
+; Update the butterfly animation frame with a wing-flapping effect.
+ $6D26 LD A,($6CDE)    ; {Fetch the butterfly colour from *#R$6CDE into #REGb.
+ $6D29 LD B,A          ; }
+ $6D2A LD A,($6CDC)    ; {Toggle bit 0 of *#R$6CDC (wing flap toggle) and write
+ $6D2D XOR $01         ; back.
+ $6D2F LD ($6CDC),A    ; }
+ $6D32 ADD A,$03       ; Add #N$03 to get the base butterfly frame.
+ $6D34 BIT 2,B         ; {If bit 2 of #REGb is set, jump to #R$6D3A; otherwise add #N$02
+ $6D36 JR Z,$6D3A      ; for the alternate colour variant.}
+ $6D38 ADD A,$02       ;
+@label=Set_Butterfly_Frame
+*$6D3A LD (IX+$03),A   ; Write the frame to *#REGix+#N$03.
+; Decrement the movement delay and pick a new direction when it expires.
+ $6D3D LD HL,$6CDD     ; Point #REGhl at #R$6CDD (butterfly movement delay).
+ $6D40 DEC (HL)        ; Decrement the delay counter.
+ $6D41 JR NZ,$6D58     ; Jump to #R$6D58 if the delay has not reached zero.
+*$6D43 CALL $6C39      ; Call #R$6C39 to generate a random number.
+ $6D46 PUSH AF         ; Stash the random value on the stack.
+ $6D47 AND %00000111   ; Mask with #N$07 to get a direction.
+ $6D49 LD ($6CDE),A    ; Write the direction to *#R$6CDE.
+ $6D4C POP AF          ; Restore the random value from the stack.
+ $6D4D LD HL,$6CDD     ; Point #REGhl at #R$6CDD (butterfly movement delay).
+ $6D50 RRCA            ; {Rotate right three times.
+ $6D51 RRCA            ;
+ $6D52 RRCA            ; }
+ $6D53 AND %00001111   ; Mask with #N$0F.
+ $6D55 OR %00000001    ; Set bit 0 to ensure a minimum delay of #N$01.
+ $6D57 LD (HL),A       ; Write the new delay to *#REGhl.
+; Move the butterfly in its current direction.
+@label=Move_Butterfly
+*$6D58 LD A,($6CDE)    ; Fetch the direction from *#R$6CDE.
+ $6D5B ADD A,A         ; Double it to form a jump table index.
+ $6D5C LD ($6BC9),A    ; Write the direction index to *#R$6BC8(#N$6BC9).
+ $6D5F LD HL,$6CC5     ; Point #REGhl at #R$6CC5 (butterfly movement boundary
+                       ; data).
+ $6D62 LD C,(IX+$00)   ; {Load the butterfly's X position into #REGc and Y position into
+ $6D65 LD B,(IX+$01)   ; #REGb from *#REGix+#N$00 and *#REGix+#N$01.}
+ $6D68 CALL $6BC8      ; Call #R$6BC8 to move the butterfly in the current
+                       ; direction.
+ $6D6B JR C,$6D43      ; Jump to #R$6D43 if the move was invalid (carry set) and pick a new
+                       ; direction.
+; Check if the butterfly has collided with Percy.
+ $6D6D LD IY,$DAE4     ; Point #REGiy at #R$DAE4 (butterfly sprite data).
+ $6D71 LD IX,$DAC0     ; Point #REGix at #R$DAC0 (Percy sprite data).
+ $6D75 CALL $6C85      ; Call #R$6C85 to check for collision with Percy.
+ $6D78 JR C,$6D8E      ; Jump to #R$6D8E if carry is set (no collision).
+; Butterfly collected by Percy.
+@label=Butterfly_Collected
+ $6D7A POP HL          ; Restore the table entry pointer from the stack.
+ $6D7B SET 7,(HL)      ; Set bit 7 of *#REGhl to mark this butterfly as
+                       ; collected.
+ $6D7D LD B,$60        ; Set the sound loop counter to #N$60 in #REGb.
+@label=Butterfly_Sound_Loop
+*$6D7F PUSH BC         ; Stash the sound counter on the stack.
+ $6D80 CALL $64CC      ; Call #R$64CC to play one step of the collection sound.
+ $6D83 POP BC          ; Restore the sound counter from the stack.
+ $6D84 DJNZ $6D7F      ; Decrease the counter and loop back to #R$6D7F until the sound is
+                       ; complete.
+ $6D86 LD A,$02        ; {Call #R$67B2 to add #N$02 points to the score.
+ $6D88 CALL $67B2      ; }
+ $6D8B LD B,$09        ; Set #REGb to #N$09.
+ $6D8D RET             ; Return.
+@label=Butterfly_No_Collision
+*$6D8E POP HL          ; Restore the table entry pointer from the stack.
+ $6D8F RET             ; Return.
+
+; Randomise Butterfly Position
+;
+; Used by the routine at #R$6CDF.
+; .
+; Generates a valid random position for the butterfly by repeatedly
+; generating coordinates until one passes the boundary check.
+@label=Randomise_Butterfly_Position
+c$6D90 CALL $6C39    ; Call #R$6C39.
+ $6D93 LD C,A        ; Copy to #REGc (X position).
+ $6D94 CALL $6C39    ; Call #R$6C39.
+ $6D97 LD B,A        ; Copy to #REGb (Y position).
+ $6D98 CALL $6C0C    ; Call #R$6C0C to validate the position.
+ $6D9B JR C,$6D90    ; Jump back to #R$6D90 if the position is invalid (carry
+                     ; set).
+ $6D9D RET           ; Return.
+
+; Reset Butterfly Collected Flags
+;
+; Used by the routine at #R$6CDF.
+; .
+; Scans the butterfly table at #R$6CC6 and clears bit 7 of each level
+; byte, marking all butterflies as available for collection.
+@label=Reset_Butterfly_Flags
+c$6D9E LD HL,$6CC6   ; Point #REGhl at #R$6CC6 (butterfly room/level table).
+@label=Reset_Butterfly_Loop
+*$6DA1 LD A,(HL)     ; Fetch the room byte from *#REGhl.
+ $6DA2 CP $FF        ; {Return if the terminator byte has been found.
+ $6DA4 RET Z         ; }
+ $6DA5 RES 7,(HL)    ; Clear bit 7 of the level byte at *#REGhl (mark as
+                     ; uncollected).
+ $6DA7 INC HL        ; Advance to the next entry.
+ $6DA8 JR $6DA1      ; Jump back to #R$6DA1.
+ $6DAA RET           ; Return.
 
 ; Handler: Cars
 ;
@@ -4882,14 +5057,26 @@ c$71E1 XOR A         ; {Write #N$00 to; #LIST
  $71E8 RET           ; Return.
 
 ; Frog 1 State Data
-@label=Frog1_StateData
+@label=Frog1_StunCountdown
 g$71E9 DEFB $00      ; Stun countdown.
- $71EA DEFB $00,$00
+@label=Frog1_SoundCounter
+ $71EA DEFB $00      ; Ascending sound counter for frog 1. Also used as the horizontal jump
+                     ; offset when positioning the frog sprite (multiplied by #N$04 and added to the
+                     ; platform X position).
+@label=Frog1_Descending_Flag
+ $71EB DEFB $00      ; Descending sound flag for frog 1. Also determines the frog's facing
+                     ; direction: bit 7 set = facing left, bit 7 clear = facing right.
 
 ; Frog 2 State Data
-@label=Frog2_StateData
+@label=Frog2_StunCountdown
 g$71EC DEFB $00      ; Stun countdown.
- $71ED DEFB $00,$00
+@label=Frog2_SoundCounter
+ $71ED DEFB $00      ; Ascending sound counter for frog 2. Also used as the horizontal jump
+                     ; offset when positioning the frog sprite (multiplied by #N$04 and added to the
+                     ; platform X position).
+@label=Frog2_Descending_Flag
+ $71EE DEFB $00      ; Descending sound flag for frog 2. Also determines the frog's facing
+                     ; direction: bit 7 set = facing left, bit 7 clear = facing right.
 
 ; Table: Frog Jump Height
 ;
@@ -6030,12 +6217,12 @@ c$7713 LD A,($77AE)    ; Fetch the bomb explosion counter from *#R$77AE.
  $7773 RET NZ          ; Return if the random bit is not set (don't drop this
                        ; frame).
  $7774 LD A,($DAC1)    ; {Check if Percy's Y position plus #N$0A is greater than or equal to
- $7777 ADD A,$0A       ; the plane's Y position.}
- $7779 CP (IX+$01)     ;
+ $7777 ADD A,$0A       ; the plane's Y position.
+ $7779 CP (IX+$01)     ; }
  $777C RET C           ; Return if Percy is above the plane (carry set).
- $777D LD A,($DAC0)    ; {Mask Percy's X position with #N$FC and store in
- $7780 AND %11111100   ; #REGb.}
- $7782 LD B,A          ;
+ $777D LD A,($DAC0)    ; {Mask Percy's X position and store in #REGb.
+ $7780 AND %11111100   ;
+ $7782 LD B,A          ; }
  $7783 LD A,(IX+$00)   ; {Mask the plane's X position with #N$FC and compare
  $7786 AND %11111100   ; with #REGb.}
  $7788 CP B            ; {Return if the X positions don't match (plane not
@@ -6080,11 +6267,9 @@ g$77AF DEFB $00      ; Stunned flag (bit 7 set = stunned by egg).
 @label=Plane_Speed
 g$77B3 DEFB $02
 
-; Set Up Balloon State
-;
-; Initialises #REGiy to point at the balloon state data at #R$7B04.
-@label=Set_Up_Balloon_State
-c$77B4 LD IY,$7B04   ; Point #REGiy at #R$7B04.
+; Initialise Parachute X Position
+@label=Initialise_Parachute_XPosition
+u$77B4 LD IY,$7B04   ; Point #REGiy at #R$7B04.
  $77B8 RET           ; Return.
 
 ; Handler: Balloon
@@ -6399,26 +6584,15 @@ g$7924 DEFB $00
 ;
 ; Walking speed for the paratrooper, indexed by room number minus one.
 ; Only rooms #N$05#RAW(,) #N$06 and #N$08 have active paratrooper entries.
-;
-; .
-;
-; Room #N($01+#PC-$7928):
 @label=Table_ParatrooperSpeed
-g$7928 DEFB $00
-; Room #N($01+#PC-$7928):
- $7929 DEFB $00
-; Room #N($01+#PC-$7928):
- $792A DEFB $00
-; Room #N($01+#PC-$7928):
- $792B DEFB $00
-; Room #N($01+#PC-$7928):
- $792C DEFB $01
-; Room #N($01+#PC-$7928):
- $792D DEFB $00
-; Room #N($01+#PC-$7928):
- $792E DEFB $00
-; Room #N($01+#PC-$7928):
- $792F DEFB $06
+g$7928 DEFB $00      ;  Room #N($01+#PC-$7928).
+ $7929 DEFB $00      ;  Room #N($01+#PC-$7928).
+ $792A DEFB $00      ;  Room #N($01+#PC-$7928).
+ $792B DEFB $00      ;  Room #N($01+#PC-$7928).
+ $792C DEFB $01      ;  Room #N($01+#PC-$7928).
+ $792D DEFB $00      ;  Room #N($01+#PC-$7928).
+ $792E DEFB $00      ;  Room #N($01+#PC-$7928).
+ $792F DEFB $06      ;  Room #N($01+#PC-$7928).
 
 ; Generate Random Number
 ;
@@ -14924,9 +15098,12 @@ b$9BAA DEFB $01,$01,$03,$03,$03,$03,$01,$01 ; #UDGTABLE { Sprite ID:
                                             ; #N($08+(#PC-$9BAA)/$08) |
                                             ; #UDG(#PC) } TABLE#
 
-; Graphics: Alternate Tile Set?
+; Graphics: Alternate Tile Set
+;
+; Utilised from #R$5E72, but it doesn't appear that it's ever called and
+; the tiles here are all empty data.
 @label=TileSet_Alternate
-b$A36A DEFB $00,$00,$00,$00,$00,$00,$00,$00
+u$A36A DEFB $00,$00,$00,$00,$00,$00,$00,$00
  $A372 DEFB $00,$00,$00,$00,$00,$00,$00,$00
  $A37A DEFB $00,$00,$00,$00,$00,$00,$00,$00
  $A382 DEFB $00,$00,$00,$00,$00,$00,$00,$00
@@ -15053,7 +15230,7 @@ b$A36A DEFB $00,$00,$00,$00,$00,$00,$00,$00
  $A74A DEFB $00,$00,$00,$00,$00,$00,$00,$00
  $A752 DEFB $00,$00,$00,$00,$00,$00,$00,$00
  $A75A DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $A762 DEFB $00
+ $A762 DEFB $00                             ; Terminator.
 
 ; Graphics: Chick Frames
 @label=Graphics_ChickFrame_01
@@ -16512,7 +16689,7 @@ c$BD19 LD A,H        ; #REGa=#REGh.
  $BD39 BIT 1,D       ; Test bit 1 of #REGd.
  $BD3B RET Z         ; Return if Y-aligned.
 ; Move down one attribute row.
- $BD3C LD BC,$0020   ; #REGbc=#N$0020.
+ $BD3C LD BC,$0020   ; #REGbc=#N($0020,$04,$04).
  $BD3F ADD HL,BC     ; #REGhl+=#REGbc.
 ; Write attribute to the second row (2 cells).
  $BD40 LD A,(HL)     ; {Write the ink bits to *#REGhl.
@@ -16537,7 +16714,7 @@ c$BD19 LD A,H        ; #REGa=#REGh.
  $BD51 BIT 1,D       ; Test bit 1 of #REGd.
  $BD53 RET Z         ; Return if Y-aligned.
 ; Move down one attribute row.
- $BD54 LD BC,$0020   ; #REGbc=#N$0020.
+ $BD54 LD BC,$0020   ; #REGbc=#N($0020,$04,$04).
  $BD57 ADD HL,BC     ; #REGhl+=#REGbc.
 ; Write attribute to the second row (1 cell).
  $BD58 LD A,(HL)     ; {Write the ink bits to *#REGhl.
@@ -16813,52 +16990,361 @@ g$BE00 DEFB $05,$6F,$05,$70,$48,$77,$68,$97
  $BE86 DEFB $05,$08,$05,$90,$05,$50,$90,$EF
  $BE8E DEFB $41,$50,$05,$90
  $BE92 DEFB $00                             ; Terminator.
- $BE93 DEFB $00,$06,$08,$1A,$B6,$77,$2C,$13
- $BE9B DEFB $1A,$B6,$77,$2D,$13,$24,$7C,$A1
- $BEA3 DEFB $CC,$67,$BD,$10,$EE,$16,$01,$E1
- $BEAB DEFB $DD,$5E,$00,$CD,$CA,$BE,$C9,$06
- $BEB3 DEFB $08,$1A,$B6,$77,$24,$7C,$A1,$CC
- $BEBB DEFB $67,$BD,$13,$10,$F4,$E1,$DD,$5E
- $BEC3 DEFB $00,$16,$00,$CD,$CA,$BE,$C9,$0E
- $BECB DEFB $58,$DD,$7E,$00,$FE,$FF,$28,$05
- $BED3 DEFB $E5,$CD,$E0,$BE,$E1,$0E,$F8,$1E
- $BEDB DEFB $02,$CD,$E0,$BE,$C9,$7C,$E6,$07
- $BEE3 DEFB $B7,$28,$02,$CB,$CA,$7C,$0F,$0F
- $BEEB DEFB $0F,$E6,$03,$B1,$67,$CB,$42,$28
- $BEF3 DEFB $1F,$7E,$E6,$F8,$B3,$77,$2C,$7E
- $BEFB DEFB $E6,$F8,$B3,$77,$2D,$CB,$4A,$C8
- $BF03 DEFB $01,$20,$00,$09,$7E,$E6,$F8,$B3
- $BF0B DEFB $77,$2C,$7E,$E6,$F8,$B3,$77,$C9
- $BF13 DEFB $7E,$E6,$F8,$B3,$77,$CB,$4A,$C8
- $BF1B DEFB $01,$20,$00,$09,$7E,$E6,$F8,$B3
- $BF23 DEFB $77,$C9,$13,$F1,$C1,$10,$EC,$E1
- $BF2B DEFB $C9,$06,$08,$1A,$77,$23,$13,$10
- $BF33 DEFB $FA,$C9,$D5,$DD,$E1,$DD,$6E,$00
- $BF3B DEFB $DD,$23,$DD,$66,$00,$E5,$DD,$23
- $BF43 DEFB $DD,$7E,$00,$DD,$23,$DD,$E5,$D1
- $BF4B DEFB $13,$0E,$07,$B7,$28,$1E,$06,$08
- $BF53 DEFB $1A,$B6,$77,$2C,$13,$1A,$B6,$77
- $BF5B DEFB $2D,$13,$24,$7C,$A1,$CC,$85,$BD
- $BF63 DEFB $10,$EE,$16,$01,$E1,$DD,$5E,$00
- $BF6B DEFB $CD,$87,$BF,$C9,$06,$08,$1A,$B6
- $BF73 DEFB $77,$24,$7C,$A1,$CC,$85,$BD,$13
- $BF7B DEFB $10,$F4,$E1,$DD,$5E,$00,$16,$00
- $BF83 DEFB $CD,$87,$BF,$C9,$0E,$58,$E5,$CD
- $BF8B DEFB $94,$BF,$E1,$0E,$F8,$CD,$94,$BF
- $BF93 DEFB $C9,$7C,$E6,$07,$B7,$28,$02,$CB
- $BF9B DEFB $CA,$7C,$0F,$0F,$0F,$E6,$03,$B1
- $BFA3 DEFB $67,$CB,$42,$28,$1F,$7E,$E6,$F8
- $BFAB DEFB $B3,$77,$2C,$7E,$E6,$F8,$B3,$77
- $BFB3 DEFB $2D,$CB,$4A,$C8,$01,$20,$00,$09
- $BFBB DEFB $7E,$E6,$F8,$B3,$77,$2C,$7E,$E6
- $BFC3 DEFB $F8,$B3,$77,$C9,$7E,$E6,$F8,$B3
- $BFCB DEFB $77,$CB,$4A,$C8,$01,$20,$00,$09
- $BFD3 DEFB $7E,$E6,$F8,$B3,$77,$C9,$4A,$C8
- $BFDB DEFB $01,$20,$00,$09,$7E,$E6,$F8,$B3
- $BFE3 DEFB $77,$C9,$00,$00,$00,$00,$00,$00
- $BFEB DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $BFF3 DEFB $00,$00,$00,$00,$00,$00,$00,$00
- $BFFB DEFB $00,$00,$00,$00,$00
+
+; Unused
+u$BE93 DEFB $00
+
+; Unused: Draw 2-Wide Sprite With Attributes
+;
+; Unused alternative routine to draw a 2-wide sprite and apply its
+; attributes in a single pass. Later replaced by #R$BDA6 and #R$BD43.
+@label=Unused_Draw_2Wide
+u$BE94 LD B,$08      ; Set the row counter to #N$08 in #REGb.
+@label=Unused_Draw_2Wide_Row_Loop
+*$BE96 LD A,(DE)     ; {OR the sprite data byte from *#REGde onto the first screen column
+ $BE97 OR (HL)       ; at *#REGhl.
+ $BE98 LD (HL),A     ; }
+ $BE99 INC L         ; {Advance to the next column and OR the next sprite byte onto the
+ $BE9A INC DE        ; second column.
+ $BE9B LD A,(DE)     ;
+ $BE9C OR (HL)       ;
+ $BE9D LD (HL),A     ; }
+ $BE9E DEC L         ; {Move back to the first column and advance the sprite
+ $BE9F INC DE        ; data pointer.}
+ $BEA0 INC H         ; Move down one pixel row in the screen buffer.
+ $BEA1 LD A,H        ; {Check if the pixel row has crossed a character
+ $BEA2 AND C         ; boundary.}
+ $BEA3 CALL Z,$BD67  ; Call #N$BD67 to adjust the screen address if needed.
+ $BEA6 DJNZ $BE96    ; Decrease the row counter and loop back to #R$BE96 until all #N$08
+                     ; rows are drawn.
+; Apply attributes for the 2-wide sprite.
+ $BEA8 LD D,$01      ; Set #REGd to #N$01 (flag: two columns wide).
+ $BEAA POP HL        ; Restore the screen address from the stack.
+ $BEAB LD E,(IX+$00) ; Load the sprite X position from *#REGix+#N$00 into
+                     ; #REGe.
+ $BEAE CALL $BECA    ; Call #R$BECA to apply the sprite attributes.
+ $BEB1 RET           ; Return.
+
+; Unused: Draw 1-Wide Sprite With Attributes
+;
+; Unused alternative routine to draw a 1-wide sprite and apply its
+; attributes in a single pass.
+@label=Unused_Draw_1Wide
+u$BEB2 LD B,$08      ; Set the row counter to #N$08 in #REGb.
+@label=Unused_Draw_1Wide_Row_Loop
+*$BEB4 LD A,(DE)     ; {OR the sprite data byte from *#REGde onto the screen at
+ $BEB5 OR (HL)       ; *#REGhl.
+ $BEB6 LD (HL),A     ; }
+ $BEB7 INC H         ; Move down one pixel row in the screen buffer.
+ $BEB8 LD A,H        ; {Check if the pixel row has crossed a character
+ $BEB9 AND C         ; boundary.}
+ $BEBA CALL Z,$BD67  ; Call #N$BD67 to adjust the screen address if needed.
+ $BEBD INC DE        ; Advance the sprite data pointer.
+ $BEBE DJNZ $BEB4    ; Decrease the row counter and loop back to #R$BEB4 until all #N$08
+                     ; rows are drawn.
+; Apply attributes for the 1-wide sprite.
+ $BEC0 POP HL        ; Restore the screen address from the stack.
+ $BEC1 LD E,(IX+$00) ; Load the sprite X position from *#REGix+#N$00 into
+                     ; #REGe.
+ $BEC4 LD D,$00      ; Set #REGd to #N$00 (flag: one column wide).
+ $BEC6 CALL $BECA    ; Call #R$BECA to apply the sprite attributes.
+ $BEC9 RET           ; Return.
+
+; Unused: Apply Sprite Attributes
+;
+; Unused routine to apply colour attributes for a sprite. Handles both
+; the overlay buffer attributes and the screen attributes.
+;
+; D Bit 0: #N$01 = two columns wide, #N$00 = one column wide
+; E Sprite X position
+; HL Screen buffer address
+@label=Unused_Apply_Attributes
+u$BECA LD C,$58      ; Set #REGc to #N$58 (overlay attribute buffer base high
+                     ; byte).
+ $BECC LD A,(IX+$00) ; Load the sprite X position from *#REGix+#N$00.
+ $BECF CP $FF        ; {Jump to #R$BED8 if the X position is #N$FF (sprite
+ $BED1 JR Z,$BED8    ; offscreen).}
+ $BED3 PUSH HL       ; Stash the screen address on the stack.
+ $BED4 CALL $BEE0    ; Call #R$BEE0 to apply the overlay buffer attributes.
+ $BED7 POP HL        ; Restore the screen address from the stack.
+@label=Unused_Apply_Screen_Attributes
+*$BED8 LD C,$F8      ; Set #REGc to #N$F8 (screen attribute buffer base high
+                     ; byte).
+ $BEDA LD E,$02      ; Set #REGe to #N$02 (attribute INK colour).
+ $BEDC CALL $BEE0    ; Call #R$BEE0 to apply the screen attributes.
+ $BEDF RET           ; Return.
+
+; Unused: Write Sprite Attribute Cells
+;
+; Unused routine to write INK colour to attribute cells for a sprite.
+; Converts the screen buffer address to an attribute address, then writes
+; the colour to one or two cells depending on the sprite width, handling
+; character row boundaries if the sprite straddles two rows.
+;
+; C Attribute buffer base high byte
+; D Bit 0: width flag, Bit 1: set if straddling two character rows
+; E Attribute INK colour
+; HL Screen buffer address
+@label=Unused_Write_Attribute_Cells
+u$BEE0 LD A,H        ; {Check if the sprite straddles two character rows by testing bits
+ $BEE1 AND $07       ; 0-2 of #REGh; if non-zero, set bit 1 of #REGd.
+ $BEE3 OR A          ;
+ $BEE4 JR Z,$BEE8    ;
+ $BEE6 SET 1,D       ; }
+; Convert the screen buffer address to the attribute buffer address.
+@label=Unused_Convert_To_Attribute
+*$BEE8 LD A,H        ; {Rotate #REGh right three times, mask with #N$03 and OR with #REGc
+ $BEE9 RRCA          ; to form the attribute buffer high byte.
+ $BEEA RRCA          ;
+ $BEEB RRCA          ;
+ $BEEC AND $03       ;
+ $BEEE OR C          ;
+ $BEEF LD H,A        ; }
+ $BEF0 BIT 0,D       ; Jump to #R$BF13 if bit 0 of #REGd is clear (one column
+                     ; wide).
+; Two columns wide: write the INK colour to two adjacent attribute cells.
+ $BEF2 DEFB $28,$1F
+ $BEF4 LD A,(HL)     ; {Read *#REGhl, mask off the existing INK with #N$F8, OR in #REGe
+ $BEF5 AND $F8       ; and write back.
+ $BEF7 OR E          ;
+ $BEF8 LD (HL),A     ; }
+ $BEF9 INC L         ; {Advance to the next column, read, mask, OR and write
+ $BEFA LD A,(HL)     ; back.
+ $BEFB AND $F8       ;
+ $BEFD OR E          ;
+ $BEFE LD (HL),A     ; }
+ $BEFF DEC L         ; Move back to the first column.
+ $BF00 BIT 1,D       ; {Return if bit 1 of #REGd is clear (no row straddling).
+ $BF02 RET Z         ; }
+; Sprite straddles two character rows: write the INK colour to the next
+; row as well.
+ $BF03 LD BC,$0020   ; {Add #N($0020,$04,$04) to #REGhl to advance to the next
+ $BF06 ADD HL,BC     ; attribute row.}
+ $BF07 LD A,(HL)     ; {Read, mask with #N$F8, OR in #REGe and write back.
+ $BF08 AND $F8       ;
+ $BF0A OR E          ;
+ $BF0B LD (HL),A     ; }
+ $BF0C INC L         ; {Advance to the next column, read, mask, OR and write
+ $BF0D LD A,(HL)     ; back.
+ $BF0E AND $F8       ;
+ $BF10 OR E          ;
+ $BF11 LD (HL),A     ; }
+ $BF12 RET           ; Return.
+; One column wide: write the INK colour to a single attribute cell.
+@label=Unused_Write_1Wide_Attribute
+ $BF13 LD A,(HL)     ; {Read *#REGhl, mask with #N$F8, OR in #REGe and write
+ $BF14 AND $F8       ; back.
+ $BF16 OR E          ;
+ $BF17 LD (HL),A     ; }
+ $BF18 BIT 1,D       ; {Return if bit 1 of #REGd is clear (no row straddling).
+ $BF1A RET Z         ; }
+ $BF1B LD BC,$0020   ; {Add #N($0020,$04,$04) to #REGhl to advance to the next
+ $BF1E ADD HL,BC     ; attribute row.}
+ $BF1F LD A,(HL)     ; {Read, mask with #N$F8, OR in #REGe and write back.
+ $BF20 AND $F8       ;
+ $BF22 OR E          ;
+ $BF23 LD (HL),A     ; }
+ $BF24 RET           ; Return.
+
+; Unused: Fragment
+;
+; Appears to be an orphaned fragment from an earlier version of the sprite
+; drawing code.
+@label=Unused_Fragment
+u$BF25 INC DE        ; Advance the sprite data pointer.
+ $BF26 POP AF        ; {Restore #REGaf and #REGbc from the stack.
+ $BF27 POP BC        ; }
+ $BF28 DJNZ $BF16    ; Decrease counter and loop back to #R$BF16.
+ $BF2A POP HL        ; Restore #REGhl from the stack.
+ $BF2B RET           ; Return.
+
+; Unused: Copy 8 Bytes
+;
+; Unused routine to copy #N$08 bytes from *#REGde to *#REGhl.
+@label=Unused_Copy_8_Bytes
+u$BF2C LD B,$08      ; Set the byte counter to #N$08 in #REGb.
+@label=Unused_Copy_Loop
+*$BF2E LD A,(DE)     ; {Copy one byte from *#REGde to *#REGhl.
+ $BF2F LD (HL),A     ; }
+ $BF30 INC HL        ; Advance the destination pointer.
+ $BF31 INC DE        ; Advance the source pointer.
+ $BF32 DJNZ $BF2E    ; Decrease the counter and loop back to #R$BF2E until all #N$08
+                     ; bytes are copied.
+ $BF34 RET           ; Return.
+
+; Unused: Draw 3-Wide Sprite With Attributes
+;
+; Unused alternative routine to draw a 3-wide sprite and apply its
+; attributes in a single pass. Later replaced by #R$BD5E and #R$BD6E.
+@label=Unused_Draw_3Wide
+u$BF35 PUSH DE       ; {Copy #REGde to #REGix.
+ $BF36 POP IX        ; }
+ $BF38 LD L,(IX+$00) ; Load the screen address low byte from *#REGix+#N$00.
+ $BF3B INC IX        ; Advance #REGix.
+ $BF3D LD H,(IX+$00) ; Load the screen address high byte from *#REGix+#N$00.
+ $BF40 PUSH HL       ; Stash the screen address on the stack.
+ $BF41 INC IX        ; Advance #REGix.
+ $BF43 LD A,(IX+$00) ; Load the width flag from *#REGix+#N$00.
+ $BF46 INC IX        ; Advance #REGix.
+ $BF48 PUSH IX       ; Copy #REGix to #REGde.
+ $BF4A POP DE        ; {Advance #REGde past the data header.
+ $BF4B INC DE        ; }
+ $BF4C LD C,$07      ; Set the row boundary mask to #N$07 in #REGc.
+ $BF4E OR A          ; {Jump to #R$BF6F if the width flag is zero (one column
+ $BF4F JR Z,$BF6F    ; wide).}
+; Draw two columns per row.
+ $BF51 LD B,$08      ; Set the row counter to #N$08 in #REGb.
+@label=Unused_Draw_3Wide_Row_Loop
+*$BF53 LD A,(DE)     ; {OR the sprite data byte from *#REGde onto the first screen column
+ $BF54 OR (HL)       ; at *#REGhl.
+ $BF55 LD (HL),A     ; }
+ $BF56 INC L         ; {Advance to the next column and OR the next byte onto the second
+ $BF57 INC DE        ; column.
+ $BF58 LD A,(DE)     ;
+ $BF59 OR (HL)       ;
+ $BF5A LD (HL),A     ; }
+ $BF5B DEC L         ; {Move back to the first column and advance the sprite
+ $BF5C INC DE        ; data pointer.}
+ $BF5D INC H         ; Move down one pixel row in the screen buffer.
+ $BF5E LD A,H        ; {Check if the pixel row has crossed a character
+ $BF5F AND C         ; boundary.}
+ $BF60 CALL Z,$BD85  ; Call #N$BD67 to adjust the screen address if needed.
+ $BF63 DJNZ $BF53    ; Decrease the row counter and loop back to #R$BF53 until all #N$08
+                     ; rows are drawn.
+; Apply attributes for the 3-wide sprite (two columns).
+ $BF65 LD D,$01      ; Set #REGd to #N$01 (flag: two columns wide).
+ $BF67 POP HL        ; Restore the screen address from the stack.
+ $BF68 LD E,(IX+$00) ; Load the sprite X position from *#REGix+#N$00 into
+                     ; #REGe.
+ $BF6B CALL $BF87    ; Call #R$BF87 to apply the sprite attributes.
+ $BF6E RET           ; Return.
+; Draw one column per row.
+@label=Unused_Draw_3Wide_1Col
+*$BF6F LD B,$08      ; Set the row counter to #N$08 in #REGb.
+@label=Unused_Draw_3Wide_1Col_Loop
+*$BF71 LD A,(DE)     ; {OR the sprite data byte from *#REGde onto the screen at
+ $BF72 OR (HL)       ; *#REGhl.
+ $BF73 LD (HL),A     ; }
+ $BF74 INC H         ; Move down one pixel row in the screen buffer.
+ $BF75 LD A,H        ; {Check if the pixel row has crossed a character
+ $BF76 AND C         ; boundary.}
+ $BF77 CALL Z,$BD85  ; Call #N$BD67 to adjust the screen address if needed.
+ $BF7A INC DE        ; Advance the sprite data pointer.
+ $BF7B DJNZ $BF71    ; Decrease the row counter and loop back to #R$BF71 until all #N$08
+                     ; rows are drawn.
+; Apply attributes for the 3-wide sprite (one column).
+ $BF7D POP HL        ; Restore the screen address from the stack.
+ $BF7E LD E,(IX+$00) ; Load the sprite X position from *#REGix+#N$00 into
+                     ; #REGe.
+ $BF81 LD D,$00      ; Set #REGd to #N$00 (flag: one column wide).
+ $BF83 CALL $BF87    ; Call #R$BF87 to apply the sprite attributes.
+ $BF86 RET           ; Return.
+
+; Unused: Apply 3-Wide Sprite Attributes
+;
+; Unused routine to apply colour attributes for a 3-wide sprite. Handles
+; both the overlay buffer and screen attributes.
+;
+; D Bit 0: #N$01 = two columns wide, #N$00 = one column wide
+; E Sprite X position
+; HL Screen buffer address
+@label=Unused_Apply_3Wide_Attributes
+u$BF87 LD C,$58      ; Set #REGc to #N$58 (overlay attribute buffer base high
+                     ; byte).
+ $BF89 PUSH HL       ; Stash the screen address on the stack.
+ $BF8A CALL $BF94    ; Call #R$BF94 to apply the overlay buffer attributes.
+ $BF8D POP HL        ; Restore the screen address from the stack.
+ $BF8E LD C,$F8      ; Set #REGc to #N$F8 (screen attribute buffer base high
+                     ; byte).
+ $BF90 CALL $BF94    ; Call #R$BF94 to apply the screen attributes.
+ $BF93 RET           ; Return.
+
+; Unused: Write 3-Wide Attribute Cells
+;
+; Unused routine to write INK colour to attribute cells for a 3-wide
+; sprite. Identical in structure to #R$BEE0 but used by the 3-wide drawing
+; path.
+;
+; C Attribute buffer base high byte
+; D Bit 0: width flag, Bit 1: set if straddling two character rows
+; E Attribute INK colour
+; HL Screen buffer address
+@label=Unused_Write_3Wide_Attributes
+u$BF94 LD A,H        ; {Check if the sprite straddles two character rows by testing bits
+ $BF95 AND $07       ; 0-2 of #REGh; if non-zero, set bit 1 of #REGd.
+ $BF97 OR A          ;
+ $BF98 JR Z,$BF9C    ; }
+ $BF9A DEFB $CB,$CA
+@label=Unused_3Wide_Convert_Attr
+*$BF9C LD A,H        ; {Convert the screen address to the attribute address using #REGc as
+ $BF9D RRCA          ; the base high byte.
+ $BF9E RRCA          ;
+ $BF9F RRCA          ;
+ $BFA0 AND $03       ;
+ $BFA2 OR C          ;
+ $BFA3 LD H,A        ; }
+ $BFA4 BIT 0,D       ; {Jump to #R$BFC7 if bit 0 of #REGd is clear (one column
+ $BFA6 JR Z,$BFC7    ; wide).}
+; Two columns wide: write the INK colour to two adjacent attribute cells.
+ $BFA8 LD A,(HL)     ; {Read *#REGhl, mask with #N$F8, OR in #REGe and write
+ $BFA9 AND $F8       ; back.
+ $BFAB OR E          ;
+ $BFAC LD (HL),A     ; }
+ $BFAD INC L         ; {Advance to the next column, read, mask, OR and write
+ $BFAE LD A,(HL)     ; back.
+ $BFAF AND $F8       ;
+ $BFB1 OR E          ;
+ $BFB2 LD (HL),A     ; }
+ $BFB3 DEC L         ; Move back to the first column.
+ $BFB4 BIT 1,D       ; {Return if bit 1 of #REGd is clear (no row straddling).
+ $BFB6 RET Z         ; }
+ $BFB7 LD BC,$0020   ; {Add #N($0020,$04,$04) to advance to the next attribute
+ $BFBA ADD HL,BC     ; row.}
+ $BFBB LD A,(HL)     ; {Read, mask with #N$F8, OR in #REGe and write back.
+ $BFBC AND $F8       ;
+ $BFBE OR E          ;
+ $BFBF LD (HL),A     ; }
+ $BFC0 INC L         ; {Advance to the next column, read, mask, OR and write
+ $BFC1 LD A,(HL)     ; back.
+ $BFC2 AND $F8       ;
+ $BFC4 OR E          ;
+ $BFC5 LD (HL),A     ; }
+ $BFC6 RET           ; Return.
+; One column wide: write the INK colour to a single attribute cell.
+@label=Unused_3Wide_Write_1Col_Attr
+*$BFC7 LD A,(HL)     ; {Read *#REGhl, mask with #N$F8, OR in #REGe and write
+ $BFC8 AND $F8       ; back.
+ $BFCA OR E          ;
+ $BFCB LD (HL),A     ; }
+ $BFCC BIT 1,D       ; {Return if bit 1 of #REGd is clear (no row straddling).
+ $BFCE RET Z         ; }
+ $BFCF LD BC,$0020   ; {Add #N($0020,$04,$04) to advance to the next attribute
+ $BFD2 ADD HL,BC     ; row.}
+ $BFD3 LD A,(HL)     ; {Read, mask with #N$F8, OR in #REGe and write back.
+ $BFD4 AND $F8       ;
+ $BFD6 OR E          ;
+ $BFD7 LD (HL),A     ; }
+ $BFD8 RET           ; Return.
+
+; Unused: Fragment 2
+;
+; Orphaned fragment from an earlier version of the attribute writing code.
+@label=Unused_Fragment_2
+u$BFD9 LD C,D        ; Copy #REGd to #REGc.
+ $BFDA RET Z         ; Return if zero flag is set.
+ $BFDB LD BC,$0020   ; {Add #N($0020,$04,$04) to advance to the next attribute
+ $BFDE ADD HL,BC     ; row.}
+ $BFDF LD A,(HL)     ; {Read, mask with #N$F8, OR in #REGe and write back.
+ $BFE0 AND $F8       ;
+ $BFE2 OR E          ;
+ $BFE3 LD (HL),A     ; }
+ $BFE4 RET           ; Return.
+
+; Unused
+u$BFE5 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $BFED DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $BFF5 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $BFFD DEFB $00,$00,$00
 
 ; Room Buffer
 @label=RoomBuffer
@@ -17182,8 +17668,17 @@ g$DAE0 DEFB $00      ; Egg X position.
 @label=Egg_Frame_ID
  $DAE3 DEFB $00      ; Egg frame ID.
 
-; Unused
-u$DAE4 DEFB $00,$00,$00,$00
+; Butterfly Sprite Data
+;
+; Sprite data for the butterfly collectible.
+@label=Butterfly_X_Position
+g$DAE4 DEFB $00      ; Butterfly X position.
+@label=Butterfly_Y_Position
+ $DAE5 DEFB $00      ; Butterfly Y position.
+@label=Butterfly_Active_Flag
+ $DAE6 DEFB $00      ; Butterfly active flag.
+@label=Butterfly_Frame_ID
+ $DAE7 DEFB $00      ; Butterfly frame ID.
 
 ; 2-Wide Sprite 1 Data States
 @label=Sprite01_2Wide_X_Position

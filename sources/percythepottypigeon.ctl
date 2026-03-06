@@ -47,9 +47,9 @@ N $5DDD #HTML(Sets the border colour to use when calling
   $5DDD,$05 #HTML(Write #INK$0F to
 . *<a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/5C48.html">BORDCR</a>.)
   $5DE2,$04 #REGix=#R$DAC0.
-  $5DE6,$04 Write #N$00 to *#REGix+#N$23.
+  $5DE6,$04 Write #N$00 to *#REGix+#N$23 (#R$DAE3).
   $5DEA,$04 Write #INK$07 to *#REGix+#N$02 (#R$DAC2).
-  $5DEE,$04 Write #N$FF to *#REGix+#N$22.
+  $5DEE,$04 Write #N$FF to *#REGix+#N$22 (#R$DAE2).
   $5DF2,$03 Call #R$653D.
   $5DF5,$05 Write #N$FF to *#R$5FBC.
 N $5DFA Game pause input loop.
@@ -744,15 +744,15 @@ N $60A8 Handle Percy's egg drop state. If *#R$5FA9 is set, Percy has dropped
 @ $60A8 label=MainGameLoop_HandleEggDrop
   $60A8,$06 Jump to #R$60D9 if *#R$5FA9 is unset (no egg active).
 N $60AE Egg is in flight so advance its Y position.
-  $60AE,$03 #REGa=*#REGix+#N$21.
+  $60AE,$03 #REGa=*#REGix+#N$21 (#R$DAE1).
   $60B1,$02 #REGa+=#N$04.
   $60B3,$02 Has the egg reached Y position #N$A8?
   $60B5,$02 Jump to #R$60BF if not yet reached.
 N $60B7 Egg has reached its target so end the egg drop state.
-  $60B7,$04 Write #N$00 to *#REGix+#N$23.
+  $60B7,$04 Write #N$00 to *#REGix+#N$23 (#R$DAE3).
   $60BB,$04 Write #N$00 to *#R$5FA9 (egg drop complete).
 @ $60BF label=MainGameLoop_UpdateEggY
-  $60BF,$03 Write #REGa to *#REGix+#N$21.
+  $60BF,$03 Write #REGa to *#REGix+#N$21 (#R$DAE1).
 N $60C2 Play a rising sound effect while the egg is in flight.
   $60C2,$02 Stash #REGix on the stack.
   $60C4,$03 #REGhl=*#R$5FB7.
@@ -777,20 +777,18 @@ N $60ED Start the egg drop sequence and set the egg's target position/
   $60F0,$03 Call #R$679C.
   $60F3,$01 Restore #REGaf from the stack.
   $60F4,$03 Write #REGa to *#REGix+#N$21 (egg target Y).
-  $60F7,$04 Write #N$0F to *#REGix+#N$23.
+  $60F7,$04 Write #N$0F to *#REGix+#N$23 (#R$DAE3).
   $60FB,$03 #REGa=*#REGix+#N$00 (Percy's X position).
   $60FE,$02 #REGa+=#N$05.
   $6100,$03 Write #REGa to *#REGix+#N$20 (egg target X).
   $6103,$02,b$01 #REGa=#N$FF.
-  $6105,$03 Write #N$FF to *#R$5FA9 (egg drop in progress).
+M $6103,$05 Write #N$FF to *#R$5FA9 (egg drop in progress).
   $6108,$06 Write #N($0064,$04,$04) to *#R$5FB7 (initial beep pitch).
 N $610E Apply the direction input to Percy's movement. First ensure fire
 . is flagged as released, then dispatch to the appropriate movement handler for
 . each direction.
 @ $610E label=MainGameLoop_ApplyMovement
-  $610E,$03 #REGa=*#R$5FA2.
-  $6111,$02 Set bit 0 of #REGa (mark fire as handled).
-  $6113,$03 Write #REGa to *#R$5FA2.
+  $610E,$08 Set bit 0 of *#R$5FA2 (mark fire as handled).
 N $6116 If Percy is falling (*#R$5FA7 is non-zero), handle the falling state.
   $6116,$06 Jump to #R$6152 if *#R$5FA7 is unset.
   $611C,$04 Jump to #R$612B if #REGa is #N$FE.
@@ -1769,7 +1767,7 @@ M $66FB,$05 Set *#R$5FAC to #N$FF (enable worm drop).
   $670A,$02 #REGa=#N$FB.
   $670C,$03 Add the offset to Percy's X position.
   $670F,$03 Write the result to *#REGix+#N$20 (worm sprite X position).
-  $6712,$05 Set the worm sprite Y position to Percy's Y plus #N$04.
+  $6712,$08 Set the worm sprite Y position to Percy's Y plus #N$04.
   $671A,$0C Set the worm sprite frame: start with #N$0D, rotate *#R$5FB4 and if
 . carry is not set, increment to #N$0E for the alternate wiggle frame.
 @ $6726 label=Set_Worm_Sprite_Frame
@@ -1810,7 +1808,7 @@ N $6778 #HTML(#AUDIO(fed-chicks.wav)(#INCLUDE(FedChicks)))
 @ $677C label=Delivery_Sound_Outer
   $677C,$01 Copy duration to #REGb.
 @ $677D label=Delivery_Sound_Inner
-  $677D,$02 Output the speaker state to port #N$FE.
+  $677D,$02 Send to the speaker port.
   $677F,$02 Loop the inner delay for #REGb iterations.
 M $6781,$09 Toggle the speaker bit pattern using XOR #N$18, mixed with duration
 . bits for a warbling effect.
@@ -2134,7 +2132,7 @@ N $6909 Award an extra life on level #N$04.
   $6909,$02 Increment the lives display character at *#REGhl.
   $690B,$03 Point #REGhl at #N$50F0 (screen buffer position for the lives
 . display).
-  $690E,$03 Call #R$6A5F.
+  $690E,$03 Call #R$6581.
 N $6911 Load the worm collection target for the new level.
 @ $6911 label=SetWorm_Target
   $6911,$03 Fetch the current level from *#R$5FB1.
@@ -2369,7 +2367,7 @@ N $6A83 Stun the red bird so set a random stun timer and award points.
   $6A86,$02,b$01 Set bit 6 (ensure a minimum stun duration).
   $6A88,$03 Write #REGa to *#R$6CB4.
   $6A8B,$03 Write #REGa to *#R$6CB5.
-  $6A8E,$04 Write #N$01 to *#REGix+#N$02 (stunned colour: blue).
+  $6A8E,$04 Write #N$01 to *#REGix+#N$02 (stunned colour: #INK$01).
   $6A92,$05 Call #R$67B2 to add #N$14 points to the score.
   $6A97,$03 Call #R$6F7A.
 N $6A9A Cancel the egg.
@@ -2871,7 +2869,161 @@ D $6CC4 Cycles through #N$00-#N$07 to animate the red bird's wings. Divided
 . frame.
 B $6CC4,$01
 
-  $6CDF
+g $6CC5 Butterfly Movement Boundary
+@ $6CC5 label=Butterfly_Movement_Boundary
+D $6CC5 Boundary data for the butterfly's movement, used by the direction jump
+. table at #R$6BC8.
+B $6CC5,$01
+
+g $6CC6 Butterfly Room Table
+@ $6CC6 label=Butterfly_Room_Table
+D $6CC6 Table of room/level pairs where butterflies appear. Each entry is two
+. bytes: the room number followed by the level number. Bit 7 of the level byte
+. is set when the butterfly has been collected. The table is terminated by #N$FF.
+B $6CC6,$02 Room #N(#PEEK(#PC))/ Level #N(#PEEK(#PC+$01)).
+L $6CC6,$02,$0A
+B $6CDA,$02 Terminator.
+
+g $6CDC Butterfly Wing Flap Toggle
+@ $6CDC label=Butterfly_Wing_Toggle
+D $6CDC Toggled each frame to alternate the butterfly's wing animation between
+. two frames.
+B $6CDC,$01
+
+g $6CDD Butterfly Movement Delay
+@ $6CDD label=Butterfly_Movement_Delay
+D $6CDD Countdown timer for the butterfly's current movement direction. When it
+. reaches zero, a new random direction and delay are generated.
+B $6CDD,$01
+
+g $6CDE Butterfly Direction
+@ $6CDE label=Butterfly_Direction
+D $6CDE Current movement direction for the butterfly, in the range #N$00-#N$07.
+B $6CDE,$01
+
+c $6CDF Handle Butterfly
+@ $6CDF label=Handle_Butterfly
+D $6CDF Controls the bonus butterfly collectible. Butterflies flutter around
+. specific rooms and can be collected by Percy for #N$02 bonus points. They
+. appear only on certain room/level combinations defined in the table at
+. #R$6CC6. When collected, bit 7 of the table entry is set to prevent
+. recollection until the lives counter changes or Percy respawns.
+R $6CDF IX Pointer to the butterfly sprite data at #R$DAE4
+N $6CDF Set up the butterfly sprite and check if any collected butterflies
+. need resetting.
+  $6CDF,$04 Point #REGix at #R$DAE4 (butterfly sprite data).
+  $6CE3,$04 Write #N$00 to *#REGix+#N$03 (clear the butterfly sprite frame).
+  $6CE7,$07 Call #R$6D9E to reset collected flags if *#R$5FBE (lives backup)
+. is unset.
+  $6CEE,$04 Fetch the lives display character from *#R$5FB3 into #REGb.
+  $6CF2,$07 Call #R$6D9E to reset collected flags if *#R$6CC3 (previous lives
+. count) does not equal #REGb (lives count has changed).
+N $6CF9 Search the butterfly table for an entry matching the current room and
+. level.
+  $6CF9,$04 Load the current room from *#R$5FC5 into #REGc.
+  $6CFD,$04 Load the current level from *#R$5FB1 into #REGb.
+  $6D01,$03 Point #REGhl at #R$6CC6 (butterfly room/level table).
+@ $6D04 label=Search_Butterfly_Table
+  $6D04,$01 Fetch the room number from *#REGhl.
+  $6D05,$03 Return if the terminator byte has been found (end of table).
+  $6D08,$03 Jump to #R$6D16 if the room number does not match #REGc.
+  $6D0B,$01 Advance to the level byte.
+  $6D0C,$01 Fetch the level number from *#REGhl.
+  $6D0D,$03 Jump to #R$6D17 if the level does not match #REGb.
+  $6D10,$04 Jump to #R$6D17 if bit 7 of *#REGhl is set (butterfly already
+. collected).
+  $6D14,$02 Jump to #R$6D1A (matching entry found).
+@ $6D16 label=Skip_Butterfly_Entry_02
+  $6D16,$01 Advance #REGhl by two bytes to skip this entry.
+@ $6D17 label=Skip_Butterfly_Entry_01
+  $6D17,$01 Advance #REGhl to skip this entry.
+  $6D18,$02 Jump back to #R$6D04.
+N $6D1A Matching butterfly found; animate and move it.
+@ $6D1A label=Animate_Butterfly
+  $6D1A,$01 Stash the table entry pointer on the stack.
+  $6D1B,$04 Set the border to yellow (#N$19 output to port #N$FE).
+  $6D1F,$07 Call #R$6D90 to randomise the butterfly position if *#R$5FBB
+. (respawn flag) is non-zero.
+N $6D26 Update the butterfly animation frame with a wing-flapping effect.
+  $6D26,$04 Fetch the butterfly colour from *#R$6CDE into #REGb.
+  $6D2A,$08 Toggle bit 0 of *#R$6CDC (wing flap toggle) and write back.
+  $6D32,$02 Add #N$03 to get the base butterfly frame.
+  $6D34,$04 If bit 2 of #REGb is set, jump to #R$6D3A; otherwise add #N$02
+. for the alternate colour variant.
+@ $6D3A label=Set_Butterfly_Frame
+  $6D3A,$03 Write the frame to *#REGix+#N$03.
+N $6D3D Decrement the movement delay and pick a new direction when it expires.
+  $6D3D,$03 Point #REGhl at #R$6CDD (butterfly movement delay).
+  $6D40,$01 Decrement the delay counter.
+  $6D41,$02 Jump to #R$6D58 if the delay has not reached zero.
+  $6D43,$03 Call #R$6C39 to generate a random number.
+  $6D46,$01 Stash the random value on the stack.
+  $6D47,$02,b$01 Mask with #N$07 to get a direction.
+  $6D49,$03 Write the direction to *#R$6CDE.
+  $6D4C,$01 Restore the random value from the stack.
+  $6D4D,$03 Point #REGhl at #R$6CDD (butterfly movement delay).
+  $6D50,$03 Rotate right three times.
+  $6D53,$02,b$01 Mask with #N$0F.
+  $6D55,$02,b$01 Set bit 0 to ensure a minimum delay of #N$01.
+  $6D57,$01 Write the new delay to *#REGhl.
+N $6D58 Move the butterfly in its current direction.
+@ $6D58 label=Move_Butterfly
+  $6D58,$03 Fetch the direction from *#R$6CDE.
+  $6D5B,$01 Double it to form a jump table index.
+  $6D5C,$03 Write the direction index to *#R$6BC8(#N$6BC9).
+  $6D5F,$03 Point #REGhl at #R$6CC5 (butterfly movement boundary data).
+  $6D62,$06 Load the butterfly's X position into #REGc and Y position into
+. #REGb from *#REGix+#N$00 and *#REGix+#N$01.
+  $6D68,$03 Call #R$6BC8 to move the butterfly in the current direction.
+  $6D6B,$02 Jump to #R$6D43 if the move was invalid (carry set) and pick a new
+. direction.
+N $6D6D Check if the butterfly has collided with Percy.
+  $6D6D,$04 Point #REGiy at #R$DAE4 (butterfly sprite data).
+  $6D71,$04 Point #REGix at #R$DAC0 (Percy sprite data).
+  $6D75,$03 Call #R$6C85 to check for collision with Percy.
+  $6D78,$02 Jump to #R$6D8E if carry is set (no collision).
+N $6D7A Butterfly collected by Percy.
+@ $6D7A label=Butterfly_Collected
+  $6D7A,$01 Restore the table entry pointer from the stack.
+  $6D7B,$02 Set bit 7 of *#REGhl to mark this butterfly as collected.
+  $6D7D,$02 Set the sound loop counter to #N$60 in #REGb.
+@ $6D7F label=Butterfly_Sound_Loop
+  $6D7F,$01 Stash the sound counter on the stack.
+  $6D80,$03 Call #R$64CC to play one step of the collection sound.
+  $6D83,$01 Restore the sound counter from the stack.
+  $6D84,$02 Decrease the counter and loop back to #R$6D7F until the sound is
+. complete.
+  $6D86,$05 Call #R$67B2 to add #N$02 points to the score.
+  $6D8B,$02 Set #REGb to #N$09.
+  $6D8D,$01 Return.
+@ $6D8E label=Butterfly_No_Collision
+  $6D8E,$01 Restore the table entry pointer from the stack.
+  $6D8F,$01 Return.
+
+c $6D90 Randomise Butterfly Position
+@ $6D90 label=Randomise_Butterfly_Position
+D $6D90 Generates a valid random position for the butterfly by repeatedly
+. generating coordinates until one passes the boundary check.
+  $6D90,$03 Call #R$6C39.
+  $6D93,$01 Copy to #REGc (X position).
+  $6D94,$03 Call #R$6C39.
+  $6D97,$01 Copy to #REGb (Y position).
+  $6D98,$03 Call #R$6C0C to validate the position.
+  $6D9B,$02 Jump back to #R$6D90 if the position is invalid (carry set).
+  $6D9D,$01 Return.
+
+c $6D9E Reset Butterfly Collected Flags
+@ $6D9E label=Reset_Butterfly_Flags
+D $6D9E Scans the butterfly table at #R$6CC6 and clears bit 7 of each level
+. byte, marking all butterflies as available for collection.
+  $6D9E,$03 Point #REGhl at #R$6CC6 (butterfly room/level table).
+@ $6DA1 label=Reset_Butterfly_Loop
+  $6DA1,$01 Fetch the room byte from *#REGhl.
+  $6DA2,$03 Return if the terminator byte has been found.
+  $6DA5,$02 Clear bit 7 of the level byte at *#REGhl (mark as uncollected).
+  $6DA7,$01 Advance to the next entry.
+  $6DA8,$02 Jump back to #R$6DA1.
+  $6DAA,$01 Return.
 
 c $6DAB Handler: Cars
 @ $6DAB label=Handler_Cars
@@ -3533,14 +3685,26 @@ c $71E1 Cancel Egg Drop
   $71E8,$01 Return.
 
 g $71E9 Frog 1 State Data
-@ $71E9 label=Frog1_StateData
+@ $71E9 label=Frog1_StunCountdown
   $71E9,$01 Stun countdown.
-  $71EA,$02
+@ $71EA label=Frog1_SoundCounter
+  $71EA,$01 Ascending sound counter for frog 1. Also used as the horizontal jump
+. offset when positioning the frog sprite (multiplied by #N$04 and added to the
+. platform X position).
+@ $71EB label=Frog1_Descending_Flag
+  $71EB,$01 Descending sound flag for frog 1. Also determines the frog's facing
+. direction: bit 7 set = facing left, bit 7 clear = facing right.
 
 g $71EC Frog 2 State Data
-@ $71EC label=Frog2_StateData
+@ $71EC label=Frog2_StunCountdown
   $71EC,$01 Stun countdown.
-  $71ED,$02
+@ $71ED label=Frog2_SoundCounter
+  $71ED,$01 Ascending sound counter for frog 2. Also used as the horizontal jump
+. offset when positioning the frog sprite (multiplied by #N$04 and added to the
+. platform X position).
+@ $71EE label=Frog2_Descending_Flag
+  $71EE,$01 Descending sound flag for frog 2. Also determines the frog's facing
+. direction: bit 7 set = facing left, bit 7 clear = facing right.
 
 g $71EF Table: Frog Jump Height
 @ $71EF label=Table_FrogJumpHeight
@@ -4439,10 +4603,10 @@ N $776F No bomb active; check if the plane should drop one.
 M $776F,$04 Use the Memory Refresh Register masked for a random check.
   $7771,$02,b$01 Keep only bits 0.
   $7773,$01 Return if the random bit is not set (don't drop this frame).
-  $7774,$05 Check if Percy's Y position plus #N$0A is greater than or equal to
+  $7774,$08 Check if Percy's Y position plus #N$0A is greater than or equal to
 . the plane's Y position.
   $777C,$01 Return if Percy is above the plane (carry set).
-M $777D,$05 Mask Percy's X position with #N$FC and store in #REGb.
+M $777D,$06 Mask Percy's X position and store in #REGb.
   $7780,$02,b$01 Keep only bits 2-7.
 M $7783,$05 Mask the plane's X position with #N$FC and compare with #REGb.
   $7786,$02,b$01 Keep only bits 2-7.
@@ -4476,11 +4640,10 @@ g $77B3 Plane Speed
 D $77B3 The horizontal speed of the plane in pixels per frame.
 B $77B3,$01
 
-c $77B4 Set Up Balloon State
-@ $77B4 label=Set_Up_Balloon_State
-D $77B4 Initialises #REGiy to point at the balloon state data at #R$7B04.
-  $77B4,$04 Point #REGiy at #R$7B04.
-  $77B8,$01 Return.
+u $77B4 Initialise Parachute X Position
+@ $77B4 label=Initialise_Parachute_XPosition
+C $77B4,$04 Point #REGiy at #R$7B04.
+C $77B8,$01 Return.
 
 c $77B9 Handler: Balloon
 @ $77B9 label=Handler_Balloon
@@ -4727,8 +4890,7 @@ g $7928 Table: Paratrooper Walking Speed
 @ $7928 label=Table_ParatrooperSpeed
 D $7928 Walking speed for the paratrooper, indexed by room number minus one.
 . Only rooms #N$05#RAW(,) #N$06 and #N$08 have active paratrooper entries.
-N $7928 Room #N($01+#PC-$7928):
-B $7928,$01
+B $7928,$01  Room #N($01+#PC-$7928).
 L $7928,$01,$08
 
 c $7930 Generate Random Number
@@ -11884,9 +12046,12 @@ b $9BAA Graphics: Default Tile Set
   $9BAA,$08 #UDGTABLE { Sprite ID: #N($08+(#PC-$9BAA)/$08) | #UDG(#PC) } TABLE#
 L $9BAA,$08,$F8
 
-b $A36A Graphics: Alternate Tile Set?
+u $A36A Graphics: Alternate Tile Set
 @ $A36A label=TileSet_Alternate
-  $A36A,$08
+D $A36A Utilised from #R$5E72, but it doesn't appear that it's ever called and
+. the tiles here are all empty data.
+B $A36A,$08
+B $A762,$01 Terminator.
 
 b $A763 Graphics: Chick Frames
 @ $A763 label=Graphics_ChickFrame_01
@@ -12448,7 +12613,7 @@ N $BD38 Return if Y-aligned, otherwise write a second row.
   $BD39,$02 Test bit 1 of #REGd.
   $BD3B,$01 Return if Y-aligned.
 N $BD3C Move down one attribute row.
-  $BD3C,$03 #REGbc=#N$0020.
+  $BD3C,$03 #REGbc=#N($0020,$04,$04).
   $BD3F,$01 #REGhl+=#REGbc.
 N $BD40 Write attribute to the second row (2 cells).
 M $BD40,$04 Write the ink bits to *#REGhl.
@@ -12467,7 +12632,7 @@ N $BD51 Return if Y-aligned, otherwise write a second row.
   $BD51,$02 Test bit 1 of #REGd.
   $BD53,$01 Return if Y-aligned.
 N $BD54 Move down one attribute row.
-  $BD54,$03 #REGbc=#N$0020.
+  $BD54,$03 #REGbc=#N($0020,$04,$04).
   $BD57,$01 #REGhl+=#REGbc.
 N $BD58 Write attribute to the second row (1 cell).
 M $BD58,$04 Write the ink bits to *#REGhl.
@@ -12658,6 +12823,242 @@ N $BE86 Room #N$0B.
   $BE86,$0C
   $BE92,$01 Terminator.
 
+u $BE93
+B $BE93,$01
+
+u $BE94 Unused: Draw 2-Wide Sprite With Attributes
+@ $BE94 label=Unused_Draw_2Wide
+D $BE94 Unused alternative routine to draw a 2-wide sprite and apply its
+. attributes in a single pass. Later replaced by #R$BDA6 and #R$BD43.
+C $BE94,$02 Set the row counter to #N$08 in #REGb.
+@ $BE96 label=Unused_Draw_2Wide_Row_Loop
+C $BE96,$03 OR the sprite data byte from *#REGde onto the first screen column
+. at *#REGhl.
+C $BE99,$05 Advance to the next column and OR the next sprite byte onto the
+. second column.
+C $BE9E,$02 Move back to the first column and advance the sprite data pointer.
+C $BEA0,$01 Move down one pixel row in the screen buffer.
+C $BEA1,$02 Check if the pixel row has crossed a character boundary.
+C $BEA3,$03 Call #N$BD67 to adjust the screen address if needed.
+C $BEA6,$02 Decrease the row counter and loop back to #R$BE96 until all #N$08
+. rows are drawn.
+N $BEA8 Apply attributes for the 2-wide sprite.
+C $BEA8,$02 Set #REGd to #N$01 (flag: two columns wide).
+C $BEAA,$01 Restore the screen address from the stack.
+C $BEAB,$03 Load the sprite X position from *#REGix+#N$00 into #REGe.
+C $BEAE,$03 Call #R$BECA to apply the sprite attributes.
+C $BEB1,$01 Return.
+
+u $BEB2 Unused: Draw 1-Wide Sprite With Attributes
+@ $BEB2 label=Unused_Draw_1Wide
+D $BEB2 Unused alternative routine to draw a 1-wide sprite and apply its
+. attributes in a single pass.
+C $BEB2,$02 Set the row counter to #N$08 in #REGb.
+@ $BEB4 label=Unused_Draw_1Wide_Row_Loop
+C $BEB4,$03 OR the sprite data byte from *#REGde onto the screen at *#REGhl.
+C $BEB7,$01 Move down one pixel row in the screen buffer.
+C $BEB8,$02 Check if the pixel row has crossed a character boundary.
+C $BEBA,$03 Call #N$BD67 to adjust the screen address if needed.
+C $BEBD,$01 Advance the sprite data pointer.
+C $BEBE,$02 Decrease the row counter and loop back to #R$BEB4 until all #N$08
+. rows are drawn.
+N $BEC0 Apply attributes for the 1-wide sprite.
+C $BEC0,$01 Restore the screen address from the stack.
+C $BEC1,$03 Load the sprite X position from *#REGix+#N$00 into #REGe.
+C $BEC4,$02 Set #REGd to #N$00 (flag: one column wide).
+C $BEC6,$03 Call #R$BECA to apply the sprite attributes.
+C $BEC9,$01 Return.
+
+u $BECA Unused: Apply Sprite Attributes
+@ $BECA label=Unused_Apply_Attributes
+D $BECA Unused routine to apply colour attributes for a sprite. Handles both
+. the overlay buffer attributes and the screen attributes.
+R $BECA D Bit 0: #N$01 = two columns wide, #N$00 = one column wide
+R $BECA E Sprite X position
+R $BECA HL Screen buffer address
+C $BECA,$02 Set #REGc to #N$58 (overlay attribute buffer base high byte).
+C $BECC,$03 Load the sprite X position from *#REGix+#N$00.
+C $BECF,$04 Jump to #R$BED8 if the X position is #N$FF (sprite offscreen).
+C $BED3,$01 Stash the screen address on the stack.
+C $BED4,$03 Call #R$BEE0 to apply the overlay buffer attributes.
+C $BED7,$01 Restore the screen address from the stack.
+@ $BED8 label=Unused_Apply_Screen_Attributes
+C $BED8,$02 Set #REGc to #N$F8 (screen attribute buffer base high byte).
+C $BEDA,$02 Set #REGe to #N$02 (attribute INK colour).
+C $BEDC,$03 Call #R$BEE0 to apply the screen attributes.
+C $BEDF,$01 Return.
+
+u $BEE0 Unused: Write Sprite Attribute Cells
+@ $BEE0 label=Unused_Write_Attribute_Cells
+D $BEE0 Unused routine to write INK colour to attribute cells for a sprite.
+. Converts the screen buffer address to an attribute address, then writes
+. the colour to one or two cells depending on the sprite width, handling
+. character row boundaries if the sprite straddles two rows.
+R $BEE0 C Attribute buffer base high byte
+R $BEE0 D Bit 0: width flag, Bit 1: set if straddling two character rows
+R $BEE0 E Attribute INK colour
+R $BEE0 HL Screen buffer address
+C $BEE0,$08 Check if the sprite straddles two character rows by testing bits
+. 0-2 of #REGh; if non-zero, set bit 1 of #REGd.
+N $BEE8 Convert the screen buffer address to the attribute buffer address.
+@ $BEE8 label=Unused_Convert_To_Attribute
+C $BEE8,$08 Rotate #REGh right three times, mask with #N$03 and OR with #REGc
+. to form the attribute buffer high byte.
+C $BEF0,$04 Jump to #R$BF13 if bit 0 of #REGd is clear (one column wide).
+N $BEF2 Two columns wide: write the INK colour to two adjacent attribute cells.
+C $BEF4,$05 Read *#REGhl, mask off the existing INK with #N$F8, OR in #REGe
+. and write back.
+C $BEF9,$06 Advance to the next column, read, mask, OR and write back.
+C $BEFF,$01 Move back to the first column.
+C $BF00,$03 Return if bit 1 of #REGd is clear (no row straddling).
+N $BF03 Sprite straddles two character rows: write the INK colour to the next
+. row as well.
+C $BF03,$04 Add #N($0020,$04,$04) to #REGhl to advance to the next attribute row.
+C $BF07,$05 Read, mask with #N$F8, OR in #REGe and write back.
+C $BF0C,$06 Advance to the next column, read, mask, OR and write back.
+C $BF12,$01 Return.
+N $BF13 One column wide: write the INK colour to a single attribute cell.
+@ $BF13 label=Unused_Write_1Wide_Attribute
+C $BF13,$05 Read *#REGhl, mask with #N$F8, OR in #REGe and write back.
+C $BF18,$03 Return if bit 1 of #REGd is clear (no row straddling).
+C $BF1B,$04 Add #N($0020,$04,$04) to #REGhl to advance to the next attribute row.
+C $BF1F,$05 Read, mask with #N$F8, OR in #REGe and write back.
+C $BF24,$01 Return.
+
+u $BF25 Unused: Fragment
+@ $BF25 label=Unused_Fragment
+D $BF25 Appears to be an orphaned fragment from an earlier version of the sprite
+. drawing code.
+C $BF25,$01 Advance the sprite data pointer.
+C $BF26,$02 Restore #REGaf and #REGbc from the stack.
+C $BF28,$02 Decrease counter and loop back to #R$BF16.
+C $BF2A,$01 Restore #REGhl from the stack.
+C $BF2B,$01 Return.
+
+u $BF2C Unused: Copy 8 Bytes
+@ $BF2C label=Unused_Copy_8_Bytes
+D $BF2C Unused routine to copy #N$08 bytes from *#REGde to *#REGhl.
+C $BF2C,$02 Set the byte counter to #N$08 in #REGb.
+@ $BF2E label=Unused_Copy_Loop
+C $BF2E,$02 Copy one byte from *#REGde to *#REGhl.
+C $BF30,$01 Advance the destination pointer.
+C $BF31,$01 Advance the source pointer.
+C $BF32,$02 Decrease the counter and loop back to #R$BF2E until all #N$08
+. bytes are copied.
+C $BF34,$01 Return.
+
+u $BF35 Unused: Draw 3-Wide Sprite With Attributes
+@ $BF35 label=Unused_Draw_3Wide
+D $BF35 Unused alternative routine to draw a 3-wide sprite and apply its
+. attributes in a single pass. Later replaced by #R$BD5E and #R$BD6E.
+C $BF35,$03 Copy #REGde to #REGix.
+C $BF38,$03 Load the screen address low byte from *#REGix+#N$00.
+C $BF3B,$02 Advance #REGix.
+C $BF3D,$03 Load the screen address high byte from *#REGix+#N$00.
+C $BF40,$01 Stash the screen address on the stack.
+C $BF41,$02 Advance #REGix.
+C $BF43,$03 Load the width flag from *#REGix+#N$00.
+C $BF46,$02 Advance #REGix.
+C $BF48,$02 Copy #REGix to #REGde.
+C $BF4A,$02 Advance #REGde past the data header.
+C $BF4C,$02 Set the row boundary mask to #N$07 in #REGc.
+C $BF4E,$03 Jump to #R$BF6F if the width flag is zero (one column wide).
+N $BF51 Draw two columns per row.
+C $BF51,$02 Set the row counter to #N$08 in #REGb.
+@ $BF53 label=Unused_Draw_3Wide_Row_Loop
+C $BF53,$03 OR the sprite data byte from *#REGde onto the first screen column
+. at *#REGhl.
+C $BF56,$05 Advance to the next column and OR the next byte onto the second
+. column.
+C $BF5B,$02 Move back to the first column and advance the sprite data pointer.
+C $BF5D,$01 Move down one pixel row in the screen buffer.
+C $BF5E,$02 Check if the pixel row has crossed a character boundary.
+C $BF60,$03 Call #N$BD67 to adjust the screen address if needed.
+C $BF63,$02 Decrease the row counter and loop back to #R$BF53 until all #N$08
+. rows are drawn.
+N $BF65 Apply attributes for the 3-wide sprite (two columns).
+C $BF65,$02 Set #REGd to #N$01 (flag: two columns wide).
+C $BF67,$01 Restore the screen address from the stack.
+C $BF68,$03 Load the sprite X position from *#REGix+#N$00 into #REGe.
+C $BF6B,$03 Call #R$BF87 to apply the sprite attributes.
+C $BF6E,$01 Return.
+N $BF6F Draw one column per row.
+@ $BF6F label=Unused_Draw_3Wide_1Col
+C $BF6F,$02 Set the row counter to #N$08 in #REGb.
+@ $BF71 label=Unused_Draw_3Wide_1Col_Loop
+C $BF71,$03 OR the sprite data byte from *#REGde onto the screen at *#REGhl.
+C $BF74,$01 Move down one pixel row in the screen buffer.
+C $BF75,$02 Check if the pixel row has crossed a character boundary.
+C $BF77,$03 Call #N$BD67 to adjust the screen address if needed.
+C $BF7A,$01 Advance the sprite data pointer.
+C $BF7B,$02 Decrease the row counter and loop back to #R$BF71 until all #N$08
+. rows are drawn.
+N $BF7D Apply attributes for the 3-wide sprite (one column).
+C $BF7D,$01 Restore the screen address from the stack.
+C $BF7E,$03 Load the sprite X position from *#REGix+#N$00 into #REGe.
+C $BF81,$02 Set #REGd to #N$00 (flag: one column wide).
+C $BF83,$03 Call #R$BF87 to apply the sprite attributes.
+C $BF86,$01 Return.
+
+u $BF87 Unused: Apply 3-Wide Sprite Attributes
+@ $BF87 label=Unused_Apply_3Wide_Attributes
+D $BF87 Unused routine to apply colour attributes for a 3-wide sprite. Handles
+. both the overlay buffer and screen attributes.
+R $BF87 D Bit 0: #N$01 = two columns wide, #N$00 = one column wide
+R $BF87 E Sprite X position
+R $BF87 HL Screen buffer address
+C $BF87,$02 Set #REGc to #N$58 (overlay attribute buffer base high byte).
+C $BF89,$01 Stash the screen address on the stack.
+C $BF8A,$03 Call #R$BF94 to apply the overlay buffer attributes.
+C $BF8D,$01 Restore the screen address from the stack.
+C $BF8E,$02 Set #REGc to #N$F8 (screen attribute buffer base high byte).
+C $BF90,$03 Call #R$BF94 to apply the screen attributes.
+C $BF93,$01 Return.
+
+u $BF94 Unused: Write 3-Wide Attribute Cells
+@ $BF94 label=Unused_Write_3Wide_Attributes
+D $BF94 Unused routine to write INK colour to attribute cells for a 3-wide
+. sprite. Identical in structure to #R$BEE0 but used by the 3-wide drawing
+. path.
+R $BF94 C Attribute buffer base high byte
+R $BF94 D Bit 0: width flag, Bit 1: set if straddling two character rows
+R $BF94 E Attribute INK colour
+R $BF94 HL Screen buffer address
+C $BF94,$06 Check if the sprite straddles two character rows by testing bits
+. 0-2 of #REGh; if non-zero, set bit 1 of #REGd.
+@ $BF9C label=Unused_3Wide_Convert_Attr
+C $BF9C,$08 Convert the screen address to the attribute address using #REGc as
+. the base high byte.
+C $BFA4,$04 Jump to #R$BFC7 if bit 0 of #REGd is clear (one column wide).
+N $BFA8 Two columns wide: write the INK colour to two adjacent attribute cells.
+C $BFA8,$05 Read *#REGhl, mask with #N$F8, OR in #REGe and write back.
+C $BFAD,$06 Advance to the next column, read, mask, OR and write back.
+C $BFB3,$01 Move back to the first column.
+C $BFB4,$03 Return if bit 1 of #REGd is clear (no row straddling).
+C $BFB7,$04 Add #N($0020,$04,$04) to advance to the next attribute row.
+C $BFBB,$05 Read, mask with #N$F8, OR in #REGe and write back.
+C $BFC0,$06 Advance to the next column, read, mask, OR and write back.
+C $BFC6,$01 Return.
+N $BFC7 One column wide: write the INK colour to a single attribute cell.
+@ $BFC7 label=Unused_3Wide_Write_1Col_Attr
+C $BFC7,$05 Read *#REGhl, mask with #N$F8, OR in #REGe and write back.
+C $BFCC,$03 Return if bit 1 of #REGd is clear (no row straddling).
+C $BFCF,$04 Add #N($0020,$04,$04) to advance to the next attribute row.
+C $BFD3,$05 Read, mask with #N$F8, OR in #REGe and write back.
+C $BFD8,$01 Return.
+
+u $BFD9 Unused: Fragment 2
+@ $BFD9 label=Unused_Fragment_2
+D $BFD9 Orphaned fragment from an earlier version of the attribute writing code.
+C $BFD9,$01 Copy #REGd to #REGc.
+C $BFDA,$01 Return if zero flag is set.
+C $BFDB,$04 Add #N($0020,$04,$04) to advance to the next attribute row.
+C $BFDF,$05 Read, mask with #N$F8, OR in #REGe and write back.
+C $BFE4,$01 Return.
+
+u $BFE5
+B $BFE5,$1B
+
 g $C000 Room Buffer
 @ $C000 label=RoomBuffer
 B $C000,$1800,$20
@@ -12761,8 +13162,16 @@ B $DAE2,$01 Egg INK colour.
 @ $DAE3 label=Egg_Frame_ID
 B $DAE3,$01 Egg frame ID.
 
-u $DAE4
-B $DAE4,$04
+g $DAE4 Butterfly Sprite Data
+@ $DAE4 label=Butterfly_X_Position
+D $DAE4 Sprite data for the butterfly collectible.
+B $DAE4,$01 Butterfly X position.
+@ $DAE5 label=Butterfly_Y_Position
+B $DAE5,$01 Butterfly Y position.
+@ $DAE6 label=Butterfly_Active_Flag
+B $DAE6,$01 Butterfly active flag.
+@ $DAE7 label=Butterfly_Frame_ID
+B $DAE7,$01 Butterfly frame ID.
 
 g $DAE8 2-Wide Sprite 1 Data States
 @ $DAE8 label=Sprite01_2Wide_X_Position
