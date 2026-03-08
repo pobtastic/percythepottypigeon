@@ -4458,7 +4458,7 @@ R $7680 IX Pointer to plane sprite data
   $7680,$01 Stash the phase counter on the stack.
   $7681,$03 Call #R$768C.
   $7684,$01 Restore the phase counter from the stack.
-N $7685 The plane can only deploy paratroopers from phase #N$04 onwards.
+N $7685 The plane can only drop bombs from phase #N$04 onwards.
   $7685,$03 Return if the phase counter is less than #N$04.
   $7688,$03 Call #R$7713.
   $768B,$01 Return.
@@ -4890,7 +4890,7 @@ g $7928 Table: Paratrooper Walking Speed
 @ $7928 label=Table_ParatrooperSpeed
 D $7928 Walking speed for the paratrooper, indexed by room number minus one.
 . Only rooms #N$05#RAW(,) #N$06 and #N$08 have active paratrooper entries.
-B $7928,$01  Room #N($01+#PC-$7928).
+B $7928,$01 Room #N($01+#PC-$7928).
 L $7928,$01,$08
 
 c $7930 Generate Random Number
@@ -12039,7 +12039,7 @@ N $9994 Attribute overlay: skip.
   $9996,$01 End of attribute overlay.
   $9997,$01 Terminator.
 
-b $9998
+u $9998
 
 b $9BAA Graphics: Default Tile Set
 @ $9BAA label=TileSet_Default
@@ -12067,11 +12067,11 @@ b $A773 Graphics: Mayfly Frames
   $A773,$08 #UDG(#PC,attr=$68)
 L $A773,$08,$04
 
-b $A793 Graphics:
-@ $A793 label=Graphics_Frame_01
-@ $A79B label=Graphics_Frame_02
-@ $A7A3 label=Graphics_Frame_03
-@ $A7AB label=Graphics_Frame_04
+b $A793 Graphics: Butterfly Frames
+@ $A793 label=Graphics_ButterflyFrame_01
+@ $A79B label=Graphics_ButterflyFrame_02
+@ $A7A3 label=Graphics_ButterflyFrame_03
+@ $A7AB label=Graphics_ButterflyFrame_04
   $A793,$08 #UDG(#PC)
 L $A793,$08,$04
 

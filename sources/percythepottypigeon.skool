@@ -6040,7 +6040,7 @@ g$7679 DEFB $00
 c$7680 PUSH AF       ; Stash the phase counter on the stack.
  $7681 CALL $768C    ; Call #R$768C.
  $7684 POP AF        ; Restore the phase counter from the stack.
-; The plane can only deploy paratroopers from phase #N$04 onwards.
+; The plane can only drop bombs from phase #N$04 onwards.
  $7685 CP $04        ; {Return if the phase counter is less than #N$04.
  $7687 RET C         ; }
  $7688 CALL $7713    ; Call #R$7713.
@@ -6585,14 +6585,14 @@ g$7924 DEFB $00
 ; Walking speed for the paratrooper, indexed by room number minus one.
 ; Only rooms #N$05#RAW(,) #N$06 and #N$08 have active paratrooper entries.
 @label=Table_ParatrooperSpeed
-g$7928 DEFB $00      ;  Room #N($01+#PC-$7928).
- $7929 DEFB $00      ;  Room #N($01+#PC-$7928).
- $792A DEFB $00      ;  Room #N($01+#PC-$7928).
- $792B DEFB $00      ;  Room #N($01+#PC-$7928).
- $792C DEFB $01      ;  Room #N($01+#PC-$7928).
- $792D DEFB $00      ;  Room #N($01+#PC-$7928).
- $792E DEFB $00      ;  Room #N($01+#PC-$7928).
- $792F DEFB $06      ;  Room #N($01+#PC-$7928).
+g$7928 DEFB $00      ; Room #N($01+#PC-$7928).
+ $7929 DEFB $00      ; Room #N($01+#PC-$7928).
+ $792A DEFB $00      ; Room #N($01+#PC-$7928).
+ $792B DEFB $00      ; Room #N($01+#PC-$7928).
+ $792C DEFB $01      ; Room #N($01+#PC-$7928).
+ $792D DEFB $00      ; Room #N($01+#PC-$7928).
+ $792E DEFB $00      ; Room #N($01+#PC-$7928).
+ $792F DEFB $06      ; Room #N($01+#PC-$7928).
 
 ; Generate Random Number
 ;
@@ -14282,8 +14282,8 @@ b$9904 DEFB $01      ; Command (#N$01).
  $9996 DEFB $24      ; End of attribute overlay.
  $9997 DEFB $00      ; Terminator.
 
-; Data block at 9998
-b$9998 DEFB $C2,$24,$00,$00,$00,$00,$00,$00
+; Unused
+u$9998 DEFB $C2,$24,$00,$00,$00,$00,$00,$00
  $99A0 DEFB $00,$00,$00,$00,$00,$00,$00,$00
  $99A8 DEFB $00,$00,$00,$00,$00,$00,$00,$00
  $99B0 DEFB $00,$00,$00,$00,$00,$00,$00,$00
@@ -15248,14 +15248,14 @@ b$A773 DEFB $70,$90,$8B,$6B,$1C,$3C,$7A,$E4 ; #UDG(#PC,attr=$68)
 @label=Graphics_MayflyFrame_04
  $A78B DEFB $00,$04,$CB,$D5,$3B,$3C,$5E,$27 ; #UDG(#PC,attr=$68)
 
-; Graphics:
-@label=Graphics_Frame_01
+; Graphics: Butterfly Frames
+@label=Graphics_ButterflyFrame_01
 b$A793 DEFB $00,$00,$20,$30,$20,$78,$30,$00 ; #UDG(#PC)
-@label=Graphics_Frame_02
+@label=Graphics_ButterflyFrame_02
  $A79B DEFB $00,$00,$00,$08,$30,$78,$30,$00 ; #UDG(#PC)
-@label=Graphics_Frame_03
+@label=Graphics_ButterflyFrame_03
  $A7A3 DEFB $00,$00,$04,$0C,$04,$1E,$0C,$00 ; #UDG(#PC)
-@label=Graphics_Frame_04
+@label=Graphics_ButterflyFrame_04
  $A7AB DEFB $00,$00,$00,$10,$0C,$1E,$0C,$00 ; #UDG(#PC)
 
 ; Graphics: Worm
