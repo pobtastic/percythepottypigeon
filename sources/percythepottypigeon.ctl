@@ -536,7 +536,7 @@ B $5FBB,$01
 
 g $5FBC Pause Flag
 @ $5FBC label=Pause_Flag
-D $5FBC #N$00=not paused, #N$FF=paused; set at #R$5DF5.
+D $5FBC #N$00=not paused, #N$FF=paused; set at #R$5DC0.
 B $5FBC,$01
 
 g $5FBD Border Colour
@@ -569,7 +569,7 @@ c $5FC6 Set Room Data Pointer
 @ $5FC6 label=FindRoomData
 D $5FC6 Sets the room data pointer for the current room.
 .
-. The room data is stored as a series of blocks from #R$83AA, separated by
+. The room data is stored as a series of blocks from #R$83A9, separated by
 . #N$00 terminators. This routine scans through the data to find the block
 . matching the *#R$5FC5.
   $5FC6,$04 #REGd=*#R$5FC5.
@@ -578,7 +578,7 @@ D $5FC6 Sets the room data pointer for the current room.
 . defaults to the first room).
 N $5FCE Scan through the room data blocks. Each block is terminated by #N$00,
 . so count terminators to find the Nth room.
-  $5FCE,$03 #REGhl=#R$83AA (start of room data).
+  $5FCE,$03 #REGhl=#R$83A9(#N$83AA) (start of room data + #N$01 for no real reason).
 @ $5FD1 label=FindRoomData_ScanLoop
   $5FD1,$01 #REGa=*#REGhl.
   $5FD2,$01 Advance the data pointer.
@@ -2314,6 +2314,7 @@ N $6A14 Found the correct room's data so store the flight path pointer.
 @ $6A14 label=HandleRedBird_InitPath
   $6A14,$03 Write #REGhl to *#R$6CBB (current flight path pointer).
 N $6A17 Seed the random animation state from the Memory Refresh Register.
+@ $6A17 label=HandleRedBird_SetAnimationSeed
   $6A17,$05 Write the contents of the Memory Refresh Register to *#R$6CB7.
 N $6A1C Update the red bird's position and check for collisions.
 @ $6A1C label=HandleRedBird_Update
@@ -2567,7 +2568,7 @@ D $6BC8 Shared 8-direction movement jump table. Used by the red bird (#R$6AF6),
 . { Up-left | 7 | −speed | −speed }
 . TABLE#
 E $6BC8 Continue on to #R$6C0C.
-  $6BC8,$02 Self-modified jump; offset written by caller (e.g. #R$6B4E, #R$746C, #R$75CE).
+  $6BC8,$02 Self-modified jump; offset written by caller routine.
 @ $6BCA label=Direction_Up
   $6BCA,$02 Jump to #R$6BDA (up).
 @ $6BCC label=Direction_UpRight
@@ -3741,11 +3742,11 @@ N $720F This is a self-modified instruction so the immediate value is patched at
   $7211,$03 Jump to #R$7217 if #REGa is zero.
   $7214,$03 Write #REGa to *#R$5FB1.
 N $7217 If *#R$5FBB is non-zero, clear #N$07FF bytes of the sprite attribute
-. buffer at #R$E800.
+. buffer at #R$E000(#N$E800).
 @ $7217 label=RoomHandlerDispatch_TestSpriteAttributes
   $7217,$03 #REGa=*#R$5FBB.
   $721A,$03 Jump to #R$722A if #REGa is zero.
-  $721D,$0D Clear #N$07FF bytes from #R$E800 onwards.
+  $721D,$0D Clear #N$07FF bytes from #R$E000(#N$E800) onwards.
 N $722A Look up the handler address for the current room from the jump table at
 . #R$7B2E. Each entry is a two-byte address; the room number (one-indexed) is
 . decremented to form a zero-based index.
@@ -4172,7 +4173,7 @@ N $74FB The egg has hit the hazard; stun it and award points.
 
 g $7507 Helicopter Movement Boundary
 @ $7507 label=Helicopter_MovementBoundary
-D $7507 Single byte used as movement boundary data; read at #R$746F.
+D $7507 Single byte used as movement boundary data; read at #R$7466.
 B $7507,$01
 
 g $7508 Helicopter State Data
@@ -4348,7 +4349,7 @@ M $75C9,$05 Load the direction from *#REGhl+#N$01, mask and double to form a
   $75D1,$03 Point #REGhl at #R$767B.
   $75D4,$06 Load the UFO's X position into #REGc and Y position into #REGb from
 . *#REGix+#N$00 and *#REGix+#N$01.
-  $75DA,$03 Call #R$6BA0 to move the UFO in the current direction.
+  $75DA,$03 Call #R$6BC8 to move the UFO in the current direction.
   $75DD,$02 Jump to #R$75A7 if the move was invalid (carry set) and pick a new
 . direction.
 N $75DF Update the UFO's animation frame, wrapping at #N$03.
@@ -12829,7 +12830,7 @@ B $BE93,$01
 u $BE94 Unused: Draw 2-Wide Sprite With Attributes
 @ $BE94 label=Unused_Draw_2Wide
 D $BE94 Unused alternative routine to draw a 2-wide sprite and apply its
-. attributes in a single pass. Later replaced by #R$BDA6 and #R$BD43.
+. attributes in a single pass.
 C $BE94,$02 Set the row counter to #N$08 in #REGb.
 @ $BE96 label=Unused_Draw_2Wide_Row_Loop
 C $BE96,$03 OR the sprite data byte from *#REGde onto the first screen column
@@ -12920,6 +12921,7 @@ C $BF12,$01 Return.
 N $BF13 One column wide: write the INK colour to a single attribute cell.
 @ $BF13 label=Unused_Write_1Wide_Attribute
 C $BF13,$05 Read *#REGhl, mask with #N$F8, OR in #REGe and write back.
+@ $BF16 label=Unused_Write_1Wide_Attribute_Loop
 C $BF18,$03 Return if bit 1 of #REGd is clear (no row straddling).
 C $BF1B,$04 Add #N($0020,$04,$04) to #REGhl to advance to the next attribute row.
 C $BF1F,$05 Read, mask with #N$F8, OR in #REGe and write back.
@@ -12950,7 +12952,7 @@ C $BF34,$01 Return.
 u $BF35 Unused: Draw 3-Wide Sprite With Attributes
 @ $BF35 label=Unused_Draw_3Wide
 D $BF35 Unused alternative routine to draw a 3-wide sprite and apply its
-. attributes in a single pass. Later replaced by #R$BD5E and #R$BD6E.
+. attributes in a single pass.
 C $BF35,$03 Copy #REGde to #REGix.
 C $BF38,$03 Load the screen address low byte from *#REGix+#N$00.
 C $BF3B,$02 Advance #REGix.
@@ -13236,79 +13238,79 @@ B $DAFF,$01 Sprite 6 frame ID.
 g $DB00 Backup: Percy
 @ $DB00 label=Backup_Percy
 D $DB00 Backup of #R$DAC0. First byte is Percy's X from previous frame (used for
-. wing flap animation); written each frame by #R$BB91.
+. wing flap animation); written each frame by #R$BB1C.
 B $DB00,$04
 
 g $DB04 Backup: 3-Wide Sprite 1
 @ $DB04 label=Backup_3Wide_Sprite1
-D $DB04 Backup of #R$DAC4; written each frame by #R$BB91.
+D $DB04 Backup of #R$DAC4; written each frame by #R$BB1C.
 B $DB04,$04
 
 g $DB08 Backup: 3-Wide Sprite 2
 @ $DB08 label=Backup_3Wide_Sprite2
-D $DB08 Backup of #R$DAC8; written each frame by #R$BB91.
+D $DB08 Backup of #R$DAC8; written each frame by #R$BB1C.
 B $DB08,$04
 
 g $DB0C Backup: 3-Wide Sprite 3
 @ $DB0C label=Backup_3Wide_Sprite3
-D $DB0C Backup of #R$DACC; written each frame by #R$BB91.
+D $DB0C Backup of #R$DACC; written each frame by #R$BB1C.
 B $DB0C,$04
 
 g $DB10 Backup: 3-Wide Sprite 4
 @ $DB10 label=Backup_3Wide_Sprite4
-D $DB10 Backup of #R$DAD0; written each frame by #R$BB91.
+D $DB10 Backup of #R$DAD0; written each frame by #R$BB1C.
 B $DB10,$04
 
 g $DB14 Backup: 3-Wide Sprite 5
 @ $DB14 label=Backup_3Wide_Sprite5
-D $DB14 Backup of #R$DAD4; written each frame by #R$BB91.
+D $DB14 Backup of #R$DAD4; written each frame by #R$BB1C.
 B $DB14,$04
 
 g $DB18 Backup: 3-Wide Sprite 6
 @ $DB18 label=Backup_3Wide_Sprite6
-D $DB18 Backup of #R$DAD8; written each frame by #R$BB91.
+D $DB18 Backup of #R$DAD8; written each frame by #R$BB1C.
 B $DB18,$04
 
 g $DB1C Backup: 3-Wide Sprite 7
 @ $DB1C label=Backup_3Wide_Sprite7
-D $DB1C Backup of #R$DADC; written each frame by #R$BB91.
+D $DB1C Backup of #R$DADC; written each frame by #R$BB1C.
 B $DB1C,$04
 
 g $DB20 Backup: Egg
 @ $DB20 label=Backup_Egg
-D $DB20 Backup of #R$DAE0; written each frame by #R$BB91.
+D $DB20 Backup of #R$DAE0; written each frame by #R$BB1C.
 B $DB20,$04
 
 u $DB24
 
 g $DB28 Backup: 2-Wide Sprite 1
 @ $DB28 label=Backup_2Wide_Sprite1
-D $DB28 Backup of #R$DAE8; written each frame by #R$BB91.
+D $DB28 Backup of #R$DAE8; written each frame by #R$BB1C.
 B $DB28,$04
 
 g $DB2C Backup: 2-Wide Sprite 2
 @ $DB2C label=Backup_2Wide_Sprite2
-D $DB2C Backup of #R$DAEC; written each frame by #R$BB91.
+D $DB2C Backup of #R$DAEC; written each frame by #R$BB1C.
 B $DB2C,$04
 
 g $DB30 Backup: 2-Wide Sprite 3
 @ $DB30 label=Backup_2Wide_Sprite3
-D $DB30 Backup of #R$DAF0; written each frame by #R$BB91.
+D $DB30 Backup of #R$DAF0; written each frame by #R$BB1C.
 B $DB30,$04
 
 g $DB34 Backup: 2-Wide Sprite 4
 @ $DB34 label=Backup_2Wide_Sprite4
-D $DB34 Backup of #R$DAF4; written each frame by #R$BB91.
+D $DB34 Backup of #R$DAF4; written each frame by #R$BB1C.
 B $DB34,$04
 
 g $DB38 Backup: 2-Wide Sprite 5
 @ $DB38 label=Backup_2Wide_Sprite5
-D $DB38 Backup of #R$DAF8; written each frame by #R$BB91.
+D $DB38 Backup of #R$DAF8; written each frame by #R$BB1C.
 B $DB38,$04
 
 g $DB3C Backup: 2-Wide Sprite 6
 @ $DB3C label=Backup_2Wide_Sprite6
-D $DB3C Backup of #R$DAFC; written each frame by #R$BB91.
+D $DB3C Backup of #R$DAFC; written each frame by #R$BB1C.
 B $DB3C,$04
 
 u $DB40
