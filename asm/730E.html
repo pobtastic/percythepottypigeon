@@ -39,7 +39,35 @@ Next: <a href="7367.html">7367</a>
 <td class="routine-comment" colspan="5">
 <div class="details">
 <div class="paragraph">
-Handles room 06 logic (the starting screen). The phase counter in <span class="register">B</span> controls which objects are initialised or activated on each pass, progressively setting up more objects as the phase increases.
+Handles room 06 logic (the starting screen). The current level in <span class="register">B</span> controls which objects are initialised or activated on each pass, progressively setting up more objects as the level increases.
+</div>
+<div class="paragraph">
+<table class="default">
+<tr>
+<th colspan="1" rowspan="1">Levels</th>
+<th colspan="1" rowspan="1">Baddies</th>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">01</td>
+<td class="centre" colspan="1" rowspan="1">Spider</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">02</td>
+<td class="centre" colspan="1" rowspan="1">Cat, UFO</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">03</td>
+<td class="centre" colspan="1" rowspan="1">Spider, Cat, Helicopter</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">04</td>
+<td class="centre" colspan="1" rowspan="1">Spider, Cat, Helicopter, Plane</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">05+</td>
+<td class="centre" colspan="1" rowspan="1">Cat, Helicopter, Plane, Walking Paratrooper</td>
+</tr>
+</table>
 </div>
 </div>
 <table class="input">
@@ -48,7 +76,7 @@ Handles room 06 logic (the starting screen). The phase counter in <span class="r
 </tr>
 <tr>
 <td class="register">B</td>
-<td class="register-desc">Room phase counter (from *<a href="5FB1.html">CurrentLevel</a>)</td>
+<td class="register-desc">Current level</td>
 </tr>
 </table>
 </td>
@@ -57,14 +85,14 @@ Handles room 06 logic (the starting screen). The phase counter in <span class="r
 <td class="asm-label">Handler_Room06</td>
 <td class="address-2"><span id="730e"></span>730E</td>
 <td class="instruction">LD A,B</td>
-<td class="comment-1" rowspan="1">Copy the phase counter into <span class="register">A</span>.</td>
+<td class="comment-1" rowspan="1">Copy the current level into <span class="register">A</span>.</td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
 <span id="730f"></span>
 <div class="comments">
 <div class="paragraph">
-First object; initialised during phases 01 03 and 04.
+Add the spider during levels 01 03 and 04.
 </div>
 </div>
 </td>
@@ -79,13 +107,13 @@ First object; initialised during phases 01 03 and 04.
 <td class="asm-label"></td>
 <td class="address-1"><span id="7313"></span>7313</td>
 <td class="instruction">PUSH AF</td>
-<td class="comment-1" rowspan="1">Stash the phase counter on the stack.</td>
+<td class="comment-1" rowspan="1">Stash the current level on the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="7314"></span>7314</td>
 <td class="instruction">CP $01</td>
-<td class="comment-1" rowspan="6">Call <a href="794A.html">Handler_Spider</a> if the phase counter is 01, 03 or 04.</td>
+<td class="comment-1" rowspan="6">Call <a href="794A.html">Handler_Spider</a> if this is level 01, 03 or 04.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -116,14 +144,14 @@ First object; initialised during phases 01 03 and 04.
 <td class="asm-label"></td>
 <td class="address-1"><span id="7323"></span>7323</td>
 <td class="instruction">POP AF</td>
-<td class="comment-1" rowspan="1">Restore the phase counter from the stack.</td>
+<td class="comment-1" rowspan="1">Restore the current level from the stack.</td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
 <span id="7324"></span>
 <div class="comments">
 <div class="paragraph">
-Second object; return early if still in phase 01.
+Add a cat (return early if still in level 01).
 </div>
 </div>
 </td>
@@ -138,7 +166,7 @@ Second object; return early if still in phase 01.
 <td class="asm-label"></td>
 <td class="address-1"><span id="7328"></span>7328</td>
 <td class="instruction">CP $01</td>
-<td class="comment-1" rowspan="2">Return if the phase counter is 01.</td>
+<td class="comment-1" rowspan="2">Return if this is level 01.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -149,7 +177,7 @@ Second object; return early if still in phase 01.
 <td class="asm-label"></td>
 <td class="address-1"><span id="732b"></span>732B</td>
 <td class="instruction">PUSH AF</td>
-<td class="comment-1" rowspan="1">Stash the phase counter on the stack.</td>
+<td class="comment-1" rowspan="1">Stash the current level on the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -161,14 +189,14 @@ Second object; return early if still in phase 01.
 <td class="asm-label"></td>
 <td class="address-1"><span id="732f"></span>732F</td>
 <td class="instruction">POP AF</td>
-<td class="comment-1" rowspan="1">Restore the phase counter from the stack.</td>
+<td class="comment-1" rowspan="1">Restore the current level from the stack.</td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
 <span id="7330"></span>
 <div class="comments">
 <div class="paragraph">
-Third object; initialised during phase 02 then handled every phase after.
+Add the UFO if level 02 or the helicopter for level 03 and above.
 </div>
 </div>
 </td>
@@ -183,37 +211,37 @@ Third object; initialised during phase 02 then handled every phase after.
 <td class="asm-label"></td>
 <td class="address-1"><span id="7334"></span>7334</td>
 <td class="instruction">CP $02</td>
-<td class="comment-1" rowspan="1">Is the phase counter 02?</td>
+<td class="comment-1" rowspan="1">Is this level 02?</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="7336"></span>7336</td>
 <td class="instruction">PUSH AF</td>
-<td class="comment-1" rowspan="1">Stash the phase counter on the stack.</td>
+<td class="comment-1" rowspan="1">Stash the current level on the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="7337"></span>7337</td>
 <td class="instruction">CALL Z,<a href="759A.html">Handler_UFO</a></td>
-<td class="comment-1" rowspan="1">Call <a href="759A.html">Handler_UFO</a> if the phase counter is 02.</td>
+<td class="comment-1" rowspan="1">Call <a href="759A.html">Handler_UFO</a> if this is level 02.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="733a"></span>733A</td>
 <td class="instruction">POP AF</td>
-<td class="comment-1" rowspan="1">Restore the phase counter from the stack.</td>
+<td class="comment-1" rowspan="1">Restore the current level from the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="733b"></span>733B</td>
 <td class="instruction">RET Z</td>
-<td class="comment-1" rowspan="1">Return if the phase counter was 02.</td>
+<td class="comment-1" rowspan="1">Return if this was level 02.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="733c"></span>733C</td>
 <td class="instruction">PUSH AF</td>
-<td class="comment-1" rowspan="1">Stash the phase counter on the stack.</td>
+<td class="comment-1" rowspan="1">Stash the current level on the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -225,13 +253,13 @@ Third object; initialised during phase 02 then handled every phase after.
 <td class="asm-label"></td>
 <td class="address-1"><span id="7340"></span>7340</td>
 <td class="instruction">POP AF</td>
-<td class="comment-1" rowspan="1">Restore the phase counter from the stack.</td>
+<td class="comment-1" rowspan="1">Restore the current level from the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="7341"></span>7341</td>
 <td class="instruction">CP $03</td>
-<td class="comment-1" rowspan="1">Return if the phase counter is 03.</td>
+<td class="comment-1" rowspan="1">Return if this is level 03.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -244,7 +272,7 @@ Third object; initialised during phase 02 then handled every phase after.
 <span id="7344"></span>
 <div class="comments">
 <div class="paragraph">
-Fourth object; initialised during phase 04.
+Add the fourth object (plane) during level 04.
 </div>
 </div>
 </td>
@@ -259,7 +287,7 @@ Fourth object; initialised during phase 04.
 <td class="asm-label"></td>
 <td class="address-1"><span id="7348"></span>7348</td>
 <td class="instruction">PUSH AF</td>
-<td class="comment-1" rowspan="1">Stash the phase counter on the stack.</td>
+<td class="comment-1" rowspan="1">Stash the current level on the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -271,7 +299,7 @@ Fourth object; initialised during phase 04.
 <td class="asm-label"></td>
 <td class="address-1"><span id="734d"></span>734D</td>
 <td class="instruction">CP $04</td>
-<td class="comment-1" rowspan="2">Call <a href="7439.html#743d">Handler_Helicopter_Entry</a> if the phase counter is 04.</td>
+<td class="comment-1" rowspan="2">Call <a href="7439.html#743d">Handler_Helicopter_Entry</a> if this is level 04.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -282,13 +310,13 @@ Fourth object; initialised during phase 04.
 <td class="asm-label"></td>
 <td class="address-1"><span id="7352"></span>7352</td>
 <td class="instruction">POP AF</td>
-<td class="comment-1" rowspan="1">Restore the phase counter from the stack.</td>
+<td class="comment-1" rowspan="1">Restore the current level from the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="7353"></span>7353</td>
 <td class="instruction">CP $04</td>
-<td class="comment-1" rowspan="1">Return if the phase counter is 04.</td>
+<td class="comment-1" rowspan="1">Return if this is level 04.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -301,7 +329,7 @@ Fourth object; initialised during phase 04.
 <span id="7356"></span>
 <div class="comments">
 <div class="paragraph">
-Fifth object; active from phase 05 onwards.
+Add the walking paratrooper from level 05 onwards.
 </div>
 </div>
 </td>
@@ -316,7 +344,7 @@ Fifth object; active from phase 05 onwards.
 <td class="asm-label"></td>
 <td class="address-1"><span id="735a"></span>735A</td>
 <td class="instruction">PUSH AF</td>
-<td class="comment-1" rowspan="1">Stash the phase counter on the stack.</td>
+<td class="comment-1" rowspan="1">Stash the current level on the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -328,14 +356,14 @@ Fifth object; active from phase 05 onwards.
 <td class="asm-label"></td>
 <td class="address-1"><span id="735e"></span>735E</td>
 <td class="instruction">POP AF</td>
-<td class="comment-1" rowspan="1">Restore the phase counter from the stack.</td>
+<td class="comment-1" rowspan="1">Restore the current level from the stack.</td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
 <span id="735f"></span>
 <div class="comments">
 <div class="paragraph">
-Update the fourth object.
+Update the fourth object (plane).
 </div>
 </div>
 </td>

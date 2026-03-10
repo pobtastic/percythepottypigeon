@@ -61,7 +61,7 @@ Used by the routines at <a href="7286.html">Handler_Room03</a>, <a href="72BD.ht
 <td class="asm-label">Handler_Plane</td>
 <td class="address-2"><span id="7680"></span>7680</td>
 <td class="instruction">PUSH AF</td>
-<td class="comment-1" rowspan="1">Stash the phase counter on the stack.</td>
+<td class="comment-1" rowspan="1">Stash the current level on the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -73,14 +73,14 @@ Used by the routines at <a href="7286.html">Handler_Room03</a>, <a href="72BD.ht
 <td class="asm-label"></td>
 <td class="address-1"><span id="7684"></span>7684</td>
 <td class="instruction">POP AF</td>
-<td class="comment-1" rowspan="1">Restore the phase counter from the stack.</td>
+<td class="comment-1" rowspan="1">Restore the current level from the stack.</td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
 <span id="7685"></span>
 <div class="comments">
 <div class="paragraph">
-The plane can only drop bombs from phase 04 onwards.
+The plane can only drop bombs from level 04 onwards.
 </div>
 </div>
 </td>
@@ -89,7 +89,7 @@ The plane can only drop bombs from phase 04 onwards.
 <td class="asm-label"></td>
 <td class="address-1"><span id="7685"></span>7685</td>
 <td class="instruction">CP $04</td>
-<td class="comment-1" rowspan="2">Return if the phase counter is less than 04.</td>
+<td class="comment-1" rowspan="2">Return if this is below level 04.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>

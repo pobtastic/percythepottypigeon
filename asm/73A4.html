@@ -39,7 +39,35 @@ Next: <a href="73E1.html">73E1</a>
 <td class="routine-comment" colspan="5">
 <div class="details">
 <div class="paragraph">
-Handles room 08 logic. The phase counter in <span class="register">B</span> controls which objects are initialised or updated on each pass.
+Handles room 08 logic. The current level in <span class="register">B</span> controls which objects are initialised or updated on each pass.
+</div>
+<div class="paragraph">
+<table class="default">
+<tr>
+<th colspan="1" rowspan="1">Levels</th>
+<th colspan="1" rowspan="1">Baddies</th>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">01</td>
+<td class="centre" colspan="1" rowspan="1">None</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">02</td>
+<td class="centre" colspan="1" rowspan="1">Helicopter, Cat</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">03</td>
+<td class="centre" colspan="1" rowspan="1">Helicopter</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">04</td>
+<td class="centre" colspan="1" rowspan="1">Helicopter, Cat, Balloon, Parachute</td>
+</tr>
+<tr>
+<td class="centre" colspan="1" rowspan="1">05+</td>
+<td class="centre" colspan="1" rowspan="1">Helicopter, Cat, Balloon, Parachute, Walking Paratrooper</td>
+</tr>
+</table>
 </div>
 </div>
 <table class="input">
@@ -48,7 +76,7 @@ Handles room 08 logic. The phase counter in <span class="register">B</span> cont
 </tr>
 <tr>
 <td class="register">B</td>
-<td class="register-desc">Room phase counter (from *<a href="5FB1.html">CurrentLevel</a>)</td>
+<td class="register-desc">Current level</td>
 </tr>
 </table>
 </td>
@@ -57,7 +85,7 @@ Handles room 08 logic. The phase counter in <span class="register">B</span> cont
 <td class="asm-label">Handler_Room08</td>
 <td class="address-2"><span id="73a4"></span>73A4</td>
 <td class="instruction">LD A,B</td>
-<td class="comment-1" rowspan="1">Copy the phase counter into <span class="register">A</span>.</td>
+<td class="comment-1" rowspan="1">Copy the current level into <span class="register">A</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -69,7 +97,17 @@ Handles room 08 logic. The phase counter in <span class="register">B</span> cont
 <td class="asm-label"></td>
 <td class="address-1"><span id="73a9"></span>73A9</td>
 <td class="instruction">PUSH AF</td>
-<td class="comment-1" rowspan="1">Stash the phase counter on the stack.</td>
+<td class="comment-1" rowspan="1">Stash the current level on the stack.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="73aa"></span>
+<div class="comments">
+<div class="paragraph">
+Add the helicopter.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -81,7 +119,17 @@ Handles room 08 logic. The phase counter in <span class="register">B</span> cont
 <td class="asm-label"></td>
 <td class="address-1"><span id="73ad"></span>73AD</td>
 <td class="instruction">POP AF</td>
-<td class="comment-1" rowspan="1">Restore the phase counter from the stack.</td>
+<td class="comment-1" rowspan="1">Restore the current level from the stack.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="73ae"></span>
+<div class="comments">
+<div class="paragraph">
+Add a cat for any level other than level 03.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -93,7 +141,7 @@ Handles room 08 logic. The phase counter in <span class="register">B</span> cont
 <td class="asm-label"></td>
 <td class="address-1"><span id="73b2"></span>73B2</td>
 <td class="instruction">CP $01</td>
-<td class="comment-1" rowspan="2">Return if the phase counter is equal to 01.</td>
+<td class="comment-1" rowspan="2">Return if this is level 01.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -104,13 +152,13 @@ Handles room 08 logic. The phase counter in <span class="register">B</span> cont
 <td class="asm-label"></td>
 <td class="address-1"><span id="73b5"></span>73B5</td>
 <td class="instruction">PUSH AF</td>
-<td class="comment-1" rowspan="1">Stash the phase counter on the stack.</td>
+<td class="comment-1" rowspan="1">Stash the current level on the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="73b6"></span>73B6</td>
 <td class="instruction">CP $03</td>
-<td class="comment-1" rowspan="2">Call <a href="7512.html">Handler_Cat</a> if the phase counter is not equal to 03.</td>
+<td class="comment-1" rowspan="2">Call <a href="7512.html">Handler_Cat</a> if this is not level 03.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -121,13 +169,13 @@ Handles room 08 logic. The phase counter in <span class="register">B</span> cont
 <td class="asm-label"></td>
 <td class="address-1"><span id="73bb"></span>73BB</td>
 <td class="instruction">POP AF</td>
-<td class="comment-1" rowspan="1">Restore the phase counter from the stack.</td>
+<td class="comment-1" rowspan="1">Restore the current level from the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="73bc"></span>73BC</td>
 <td class="instruction">CP $02</td>
-<td class="comment-1" rowspan="4">Return if the phase counter is equal to either 02 or 03.</td>
+<td class="comment-1" rowspan="4">Return if this is level 02 or 03.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -145,10 +193,20 @@ Handles room 08 logic. The phase counter in <span class="register">B</span> cont
 <td class="instruction">RET Z</td>
 </tr>
 <tr>
+<td class="routine-comment" colspan="5">
+<span id="73c2"></span>
+<div class="comments">
+<div class="paragraph">
+Add the balloon for level 04 and above.
+</div>
+</div>
+</td>
+</tr>
+<tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="73c2"></span>73C2</td>
 <td class="instruction">PUSH AF</td>
-<td class="comment-1" rowspan="1">Stash the phase counter on the stack.</td>
+<td class="comment-1" rowspan="1">Stash the current level on the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -166,13 +224,23 @@ Handles room 08 logic. The phase counter in <span class="register">B</span> cont
 <td class="asm-label"></td>
 <td class="address-1"><span id="73ca"></span>73CA</td>
 <td class="instruction">POP AF</td>
-<td class="comment-1" rowspan="1">Restore the phase counter from the stack.</td>
+<td class="comment-1" rowspan="1">Restore the current level from the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="73cb"></span>73CB</td>
 <td class="instruction">PUSH AF</td>
-<td class="comment-1" rowspan="1">Stash the phase counter on the stack.</td>
+<td class="comment-1" rowspan="1">Stash the current level on the stack.</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="73cc"></span>
+<div class="comments">
+<div class="paragraph">
+Add the parachute if this is level 04 or higher.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -184,7 +252,7 @@ Handles room 08 logic. The phase counter in <span class="register">B</span> cont
 <td class="asm-label"></td>
 <td class="address-1"><span id="73d0"></span>73D0</td>
 <td class="instruction">CP $03</td>
-<td class="comment-1" rowspan="2">Call <a href="79D2.html">Handler_Parachute_Descent</a> if the phase counter is greater than 03.</td>
+<td class="comment-1" rowspan="2">Call <a href="79D2.html">Handler_Parachute_Descent</a> if this is level 04 or higher.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -195,18 +263,28 @@ Handles room 08 logic. The phase counter in <span class="register">B</span> cont
 <td class="asm-label"></td>
 <td class="address-1"><span id="73d5"></span>73D5</td>
 <td class="instruction">POP AF</td>
-<td class="comment-1" rowspan="1">Restore the phase counter from the stack.</td>
+<td class="comment-1" rowspan="1">Restore the current level from the stack.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="73d6"></span>73D6</td>
 <td class="instruction">CP $04</td>
-<td class="comment-1" rowspan="2">Return if the phase counter is equal to 04.</td>
+<td class="comment-1" rowspan="2">Return if this is level 04.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="73d8"></span>73D8</td>
 <td class="instruction">RET Z</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="5">
+<span id="73d9"></span>
+<div class="comments">
+<div class="paragraph">
+Add the walking paratrooper if this is level 05.
+</div>
+</div>
+</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
