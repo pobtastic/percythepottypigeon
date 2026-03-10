@@ -12,6 +12,13 @@
 
 #AUDIO(fed-chicks.wav)(#INCLUDE(FedChicks))
 
+[Audio:hit:Hit By ... Things]
+Used by #R$69F7, #R$6F54, #R$7190, #R$74B9, #R$74D6, #R$7713 and #R$77B9.
+
+#AUDIO(hit.wav)(#INCLUDE(Hit))
+
+Note, this uses #R$6C39 and so isn't the same twice.
+
 [Audio:lose-life:Lose Life]
 
 #AUDIO(lose-life.wav)(#INCLUDE(LoseLife))

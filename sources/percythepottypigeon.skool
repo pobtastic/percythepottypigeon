@@ -891,7 +891,7 @@ g$5FBB DEFB $00
 
 ; Pause Flag
 ;
-; #N$00=not paused, #N$FF=paused; set at #R$5DF5.
+; #N$00=not paused, #N$FF=paused; set at #R$5DC0.
 @label=Pause_Flag
 g$5FBC DEFB $00
 
@@ -3015,7 +3015,7 @@ c$68B8 LD HL,$5FB2   ; {Decrease *#R$5FB2 by one.
 @label=SetUp_NextLevel
 c$68F7 LD A,($5FB1)  ; Fetch the current level from *#R$5FB1.
  $68FA LD HL,$5FB3   ; Point #REGhl at #R$5FB3.
- $68FD CP $05        ; {Jump to #R$6911 if the current level is equal to #N$05 (don't
+ $68FD CP $05        ; {Jump to #R$6911 if this is level #N$05 (don't
  $68FF JR Z,$6911    ; increment past the maximum).}
  $6901 INC A         ; {Increment the level number and write it back to
  $6902 LD ($5FB1),A  ; *#R$5FB1.}
@@ -4538,6 +4538,8 @@ c$6F54 LD HL,$DAC8   ; #REGhl=#R$DAC8.
 ; .
 ; Play a short random sound burst — used as a hit sound effect by
 ; multiple routines.
+; .
+; #HTML(#AUDIO(hit.wav)(#INCLUDE(Hit)))
 @label=PlayHitSound
 *$6F7A LD B,$00      ; #REGb=#N$00 (loop #N$100 times).
 @label=PlayHitSound_Loop
@@ -5156,339 +5158,469 @@ c$720F LD A,$00      ; #REGa=#N$00.
 
 ; Handler: Room #N$01
 ;
-; Handles room #N$01 logic. The phase counter in #REGb controls which
+; Handles room #N$01 logic. The current level in #REGb controls which
 ; objects are initialised or updated on each pass.
+; .
+; #TABLE(default,centre,centre)
+;   { =h Levels | =h Baddies }
+;   { #N$01 | None }
+;   { #N$02 | Helicopter }
+;   { #N$03 | Helicopter, Helicopter (2nd) }
+;   { #N$04 | Helicopter, Balloon }
+;   { #N$05+ | Helicopter, Balloon }
+; TABLE#
 ;
-; B Room phase counter (from *#R$5FB1)
+; B Current level
 @label=Handler_Room01
-c$723F LD A,B        ; Copy the phase counter into #REGa.
- $7240 CP $01        ; {Return if the phase counter is #N$01.
+c$723F LD A,B        ; Copy the current level into #REGa.
+ $7240 CP $01        ; {Return if this is level #N$01.
  $7242 RET Z         ; }
-; Set up the first object.
+; Add the helicopter.
  $7243 LD IX,$DAD8   ; #REGix=#R$DAD8.
  $7247 LD IY,$7508   ; #REGiy=#R$7508.
- $724B PUSH AF       ; Stash the phase counter on the stack.
+ $724B PUSH AF       ; Stash the current level on the stack.
  $724C CALL $7439    ; Call #R$7439.
- $724F POP AF        ; Restore the phase counter from the stack.
-; Set up the second object; only processed during phase #N$03.
+ $724F POP AF        ; Restore the current level from the stack.
+; Add the second object (level #N$03 only).
  $7250 LD IX,$DADC   ; #REGix=#R$DADC.
  $7254 LD IY,$750D   ; #REGiy=#R$750D.
- $7258 CP $03        ; Is the phase counter equal to #N$03?
- $725A PUSH AF       ; Stash the phase counter on the stack.
- $725B CALL Z,$743D  ; Call #R$743D if the phase counter is #N$03.
- $725E POP AF        ; Restore the phase counter from the stack.
-; From phase #N$04 onwards, call #R$77B9.
- $725F CP $04        ; {Call #R$77B9 if the phase counter is #N$04 or greater.
+ $7258 CP $03        ; Is this level #N$03?
+ $725A PUSH AF       ; Stash the current level on the stack.
+ $725B CALL Z,$743D  ; Call #R$743D if this is level #N$03.
+ $725E POP AF        ; Restore the current level from the stack.
+; Add the balloon if this is level #N$04 or higher.
+ $725F CP $04        ; {Call #R$77B9 if this is level #N$04 or higher.
  $7261 CALL NC,$77B9 ; }
  $7264 RET           ; Return.
 
 ; Handler: Room #N$02
 ;
-; Handles room #N$02 logic. The phase counter in #REGb controls which
+; Handles room #N$02 logic. The current level in #REGb controls which
 ; objects are initialised or updated on each pass.
+; .
+; #TABLE(default,centre,centre)
+;   { =h Levels | =h Baddies }
+;   { #N$01 | Cat }
+;   { #N$02 | None }
+;   { #N$03 | Cat }
+;   { #N$04 | Cat, Helicopter }
+;   { #N$05+ | Cat, Parachute, Helicopter }
+; TABLE#
 ;
-; B Room phase counter (from *#R$5FB1)
+; B Current level
 @label=Handler_Room02
-c$7265 LD A,B        ; Copy the phase counter into #REGa.
+c$7265 LD A,B        ; Copy the current level into #REGa.
+; Add a cat for any level other than level #N$02.
  $7266 LD IX,$DAD0   ; #REGix=#R$DAD0.
- $726A CP $02        ; Is the phase counter equal to #N$02?
- $726C PUSH AF       ; Stash the phase counter on the stack.
- $726D CALL NZ,$7512 ; Call #R$7512 if the phase counter is not equal to #N$02.
- $7270 POP AF        ; Restore the phase counter from the stack.
+ $726A CP $02        ; Is this level #N$02?
+ $726C PUSH AF       ; Stash the current level on the stack.
+ $726D CALL NZ,$7512 ; Call #R$7512 if this is not level #N$02.
+ $7270 POP AF        ; Restore the current level from the stack.
+; Add the parachute if this is level #N$05 or higher.
  $7271 LD IX,$DAD8   ; #REGix=#R$DAD8.
- $7275 PUSH AF       ; Stash the phase counter on the stack.
- $7276 CP $04        ; Is the phase counter equal to #N$04?
- $7278 CALL NC,$79D2 ; Call #R$79D2 if the phase counter is greater than #N$04.
- $727B POP AF        ; Restore the phase counter from the stack.
+ $7275 PUSH AF       ; Stash the current level on the stack.
+ $7276 CP $04        ; Is this level #N$04?
+ $7278 CALL NC,$79D2 ; Call #R$79D2 if this is level #N$05 or higher.
+ $727B POP AF        ; Restore the current level from the stack.
+; Add the helicopter if this is level #N$04 or higher.
  $727C LD IX,$DAD4   ; #REGix=#R$DAD4.
- $7280 CP $03        ; {Call #R$7439 if the phase counter is greater than
- $7282 CALL NC,$7439 ; #N$03.}
+ $7280 CP $03        ; {Call #R$7439 if this is level #N$04 or higher.
+ $7282 CALL NC,$7439 ; }
  $7285 RET           ; Return.
 
 ; Handler: Room #N$03
 ;
-; Handles room #N$03 logic. The phase counter in #REGb controls which
+; Handles room #N$03 logic. The current level in #REGb controls which
 ; objects are initialised or updated on each pass.
+; .
+; #TABLE(default,centre,centre)
+;   { =h Levels | =h Baddies }
+;   { #N$01 | Helicopter }
+;   { #N$02 | Cat, Dog }
+;   { #N$03 | Helicopter, Cat, Dog }
+;   { #N$04 | Helicopter, Cat, Dog, Plane }
+;   { #N$05+ | Helicopter, Cat, Dog, Plane, UFO }
+; TABLE#
 ;
-; B Room phase counter (from *#R$5FB1)
+; B Current level
 @label=Handler_Room03
-c$7286 LD A,B        ; Copy the phase counter into #REGa.
+c$7286 LD A,B        ; Copy the current level into #REGa.
+; Add a helicopter for every level other than level #N$02.
  $7287 LD IX,$DAC8   ; #REGix=#R$DAC8.
- $728B PUSH AF       ; Stash the phase counter on the stack.
- $728C CP $02        ; {Call #R$7439 if the phase counter is not equal to
- $728E CALL NZ,$7439 ; #N$02.}
- $7291 POP AF        ; Restore the phase counter from the stack.
+ $728B PUSH AF       ; Stash the current level on the stack.
+ $728C CP $02        ; {Call #R$7439 if this is not level #N$02.
+ $728E CALL NZ,$7439 ; }
+; Add a cat to this room for any level other than level #N$01.
+ $7291 POP AF        ; Restore the current level from the stack.
  $7292 LD IX,$DACC   ; #REGix=#R$DACC.
- $7296 CP $01        ; Is the phase counter equal to #N$01?
- $7298 PUSH AF       ; Stash the phase counter on the stack.
- $7299 CALL NZ,$7512 ; Call #R$7512 if the phase counter is not equal to #N$01.
- $729C POP AF        ; Restore the phase counter from the stack.
+ $7296 CP $01        ; Is this level #N$01?
+ $7298 PUSH AF       ; Stash the current level on the stack.
+ $7299 CALL NZ,$7512 ; Call #R$7512 if this is not level #N$01.
+; Add a dog to this room for any level other than level #N$01.
+ $729C POP AF        ; Restore the current level from the stack.
  $729D LD IX,$DAD0   ; #REGix=#R$DAD0.
- $72A1 PUSH AF       ; Stash the phase counter on the stack.
- $72A2 CP $01        ; {Call #R$758B if the phase counter is not equal to
- $72A4 CALL NZ,$758B ; #N$01.}
- $72A7 POP AF        ; Restore the phase counter from the stack.
+ $72A1 PUSH AF       ; Stash the current level on the stack.
+ $72A2 CP $01        ; {Call #R$758B if this is not level #N$01.
+ $72A4 CALL NZ,$758B ; }
+; Add the plane if this is level #N$04 or higher.
+ $72A7 POP AF        ; Restore the current level from the stack.
  $72A8 LD IX,$DAD8   ; #REGix=#R$DAD8.
- $72AC CP $04        ; Is the phase counter equal to #N$04?
- $72AE PUSH AF       ; Stash the phase counter on the stack.
- $72AF CALL NC,$7680 ; Call #R$7680 if the phase counter is greater than #N$04.
- $72B2 POP AF        ; Restore the phase counter from the stack.
+ $72AC CP $04        ; Is this level #N$04?
+ $72AE PUSH AF       ; Stash the current level on the stack.
+ $72AF CALL NC,$7680 ; Call #R$7680 if this is level #N$05 or higher.
+; Add a UFO if this is level #N$05.
+ $72B2 POP AF        ; Restore the current level from the stack.
  $72B3 LD IX,$DADC   ; #REGix=#R$DADC.
- $72B7 CP $05        ; {Call #R$759A if the phase counter is equal to #N$05.
+ $72B7 CP $05        ; {Call #R$759A if this is level #N$05.
  $72B9 CALL Z,$759A  ; }
  $72BC RET           ; Return.
 
 ; Handler: Room #N$04
 ;
-; Handles room #N$04 logic. The phase counter in #REGb controls which
+; Handles room #N$04 logic. The current level in #REGb controls which
 ; objects are initialised or updated on each pass.
+; .
+; #TABLE(default,centre,centre)
+;   { =h Levels | =h Baddies }
+;   { #N$01 | None }
+;   { #N$02 | Helicopter }
+;   { #N$03 | Helicopter }
+;   { #N$04 | Helicopter, Plane, Balloon }
+;   { #N$05+ | Plane }
+; TABLE#
 ;
-; B Room phase counter (from *#R$5FB1)
+; B Current level
 @label=Handler_Room04
-c$72BD LD A,B        ; Copy the phase counter into #REGa.
+c$72BD LD A,B        ; Copy the current level into #REGa.
  $72BE CP $01        ; {Return if #REGa is equal to #N$01.
  $72C0 RET Z         ; }
- $72C1 PUSH AF       ; Stash the phase counter on the stack.
+ $72C1 PUSH AF       ; Stash the current level on the stack.
+; Add the helicopter for levels #N$02 to #N$04.
  $72C2 LD IX,$DAD0   ; #REGix=#R$DAD0.
- $72C6 CP $05        ; {Call #R$7439 if the phase counter is not equal to
- $72C8 CALL NZ,$7439 ; #N$05.}
- $72CB POP AF        ; Restore the phase counter from the stack.
+ $72C6 CP $05        ; {Call #R$7439 if this is not level #N$05.
+ $72C8 CALL NZ,$7439 ; }
+ $72CB POP AF        ; Restore the current level from the stack.
+; Add the plane if this is level #N$04 or higher.
  $72CC LD IX,$DAD4   ; #REGix=#R$DAD4.
- $72D0 PUSH AF       ; Stash the phase counter on the stack.
- $72D1 CP $03        ; {Call #R$7680 if the phase counter is greater than
- $72D3 CALL NC,$7680 ; #N$03.}
- $72D6 POP AF        ; Restore the phase counter from the stack.
+ $72D0 PUSH AF       ; Stash the current level on the stack.
+ $72D1 CP $03        ; {Call #R$7680 if this is level #N$04 or higher.
+ $72D3 CALL NC,$7680 ; }
+ $72D6 POP AF        ; Restore the current level from the stack.
+; Add the balloon if this is level #N$04.
  $72D7 LD IX,$DAD8   ; #REGix=#R$DAD8.
- $72DB CP $04        ; {Call #R$77B9 if the phase counter is equal to #N$04.
+ $72DB CP $04        ; {Call #R$77B9 if this is level #N$04.
  $72DD CALL Z,$77B9  ; }
  $72E0 RET           ; Return.
 
 ; Handler: Room #N$05
 ;
-; Handles room #N$05 logic. The phase counter in #REGb controls which
+; Handles room #N$05 logic. The current level in #REGb controls which
 ; objects are initialised or updated on each pass.
+; .
+; #TABLE(default,centre,centre)
+;   { =h Levels | =h Baddies }
+;   { #N$01 | Helicopter }
+;   { #N$02 | Helicopter, Cat }
+;   { #N$03 | Helicopter, Cat, Plane }
+;   { #N$04 | Helicopter, Cat, Plane, Walking Paratrooper }
+;   { #N$05+ | Helicopter, Cat, Plane, Walking Paratrooper }
+; TABLE#
 ;
-; B Room phase counter (from *#R$5FB1)
+; B Current level
 @label=Handler_Room05
-c$72E1 LD A,B        ; Copy the phase counter into #REGa.
+c$72E1 LD A,B        ; Copy the current level into #REGa.
+; Add the helicopter.
  $72E2 LD IX,$DAC8   ; #REGix=#R$DAC8.
- $72E6 PUSH AF       ; Stash the phase counter on the stack.
+ $72E6 PUSH AF       ; Stash the current level on the stack.
  $72E7 CALL $7439    ; Call #R$7439.
- $72EA POP AF        ; Restore the phase counter from the stack.
- $72EB CP $01        ; {Return if the phase counter is equal to #N$01.
+ $72EA POP AF        ; Restore the current level from the stack.
+ $72EB CP $01        ; {Return if this is level #N$01.
  $72ED RET Z         ; }
- $72EE PUSH AF       ; Stash the phase counter on the stack.
+ $72EE PUSH AF       ; Stash the current level on the stack.
+; Add the cat.
  $72EF LD IX,$DACC   ; #REGix=#R$DACC.
  $72F3 CALL $7512    ; Call #R$7512.
- $72F6 POP AF        ; Restore the phase counter from the stack.
- $72F7 CP $02        ; {Return if the phase counter is equal to #N$02.
+ $72F6 POP AF        ; Restore the current level from the stack.
+ $72F7 CP $02        ; {Return if this is level #N$02.
  $72F9 RET Z         ; }
+; Add the plane.
  $72FA LD IX,$DAD0   ; #REGix=#R$DAD0.
- $72FE PUSH AF       ; Stash the phase counter on the stack.
+ $72FE PUSH AF       ; Stash the current level on the stack.
  $72FF CALL $7680    ; Call #R$7680.
- $7302 POP AF        ; Restore the phase counter from the stack.
- $7303 CP $03        ; {Return if the phase counter is equal to #N$03.
+ $7302 POP AF        ; Restore the current level from the stack.
+ $7303 CP $03        ; {Return if this is level #N$03.
  $7305 RET Z         ; }
+; Add the walking paratrooper.
  $7306 LD IX,$DAD4   ; #REGix=#R$DAD4.
  $730A CALL $7893    ; Call #R$7893.
  $730D RET           ; Return.
 
 ; Handler: Room #N$06
 ;
-; Handles room #N$06 logic (the starting screen). The phase counter in
+; Handles room #N$06 logic (the starting screen). The current level in
 ; #REGb controls which objects are initialised or activated on each pass,
-; progressively setting up more objects as the phase increases.
+; progressively setting up more objects as the level increases.
+; .
+; #TABLE(default,centre,centre)
+;   { =h Levels | =h Baddies }
+;   { #N$01 | Spider }
+;   { #N$02 | Cat, UFO }
+;   { #N$03 | Spider, Cat, Helicopter }
+;   { #N$04 | Spider, Cat, Helicopter, Plane }
+;   { #N$05+ | Cat, Helicopter, Plane, Walking Paratrooper }
+; TABLE#
 ;
-; B Room phase counter (from *#R$5FB1)
+; B Current level
 @label=Handler_Room06
-c$730E LD A,B        ; Copy the phase counter into #REGa.
-; First object; initialised during phases #N$01, #N$03 and #N$04.
+c$730E LD A,B        ; Copy the current level into #REGa.
+; Add the spider during levels #N$01, #N$03 and #N$04.
  $730F LD IX,$DAC8   ; #REGix=#R$DAC8.
- $7313 PUSH AF       ; Stash the phase counter on the stack.
- $7314 CP $01        ; {Call #R$794A if the phase counter is #N$01#RAW(,) #N$03
- $7316 CALL Z,$794A  ; or #N$04.
+ $7313 PUSH AF       ; Stash the current level on the stack.
+ $7314 CP $01        ; {Call #R$794A if this is level #N$01#RAW(,) #N$03 or
+ $7316 CALL Z,$794A  ; #N$04.
  $7319 CP $03        ;
  $731B CALL Z,$794A  ;
  $731E CP $04        ;
  $7320 CALL Z,$794A  ; }
- $7323 POP AF        ; Restore the phase counter from the stack.
-; Second object; return early if still in phase #N$01.
+ $7323 POP AF        ; Restore the current level from the stack.
+; Add a cat (return early if still in level #N$01).
  $7324 LD IX,$DACC   ; #REGix=#R$DACC.
- $7328 CP $01        ; {Return if the phase counter is #N$01.
+ $7328 CP $01        ; {Return if this is level #N$01.
  $732A RET Z         ; }
- $732B PUSH AF       ; Stash the phase counter on the stack.
+ $732B PUSH AF       ; Stash the current level on the stack.
  $732C CALL $7512    ; Call #R$7512.
- $732F POP AF        ; Restore the phase counter from the stack.
-; Third object; initialised during phase #N$02, then handled every phase
-; after.
+ $732F POP AF        ; Restore the current level from the stack.
+; Add the UFO if level #N$02, or the helicopter for level #N$03 and above.
  $7330 LD IX,$DAD0   ; #REGix=#R$DAD0.
- $7334 CP $02        ; Is the phase counter #N$02?
- $7336 PUSH AF       ; Stash the phase counter on the stack.
- $7337 CALL Z,$759A  ; Call #R$759A if the phase counter is #N$02.
- $733A POP AF        ; Restore the phase counter from the stack.
- $733B RET Z         ; Return if the phase counter was #N$02.
- $733C PUSH AF       ; Stash the phase counter on the stack.
+ $7334 CP $02        ; Is this level #N$02?
+ $7336 PUSH AF       ; Stash the current level on the stack.
+ $7337 CALL Z,$759A  ; Call #R$759A if this is level #N$02.
+ $733A POP AF        ; Restore the current level from the stack.
+ $733B RET Z         ; Return if this was level #N$02.
+ $733C PUSH AF       ; Stash the current level on the stack.
  $733D CALL $7439    ; Call #R$7439.
- $7340 POP AF        ; Restore the phase counter from the stack.
- $7341 CP $03        ; Return if the phase counter is #N$03.
+ $7340 POP AF        ; Restore the current level from the stack.
+ $7341 CP $03        ; Return if this is level #N$03.
  $7343 RET Z         ; Return.
-; Fourth object; initialised during phase #N$04.
+; Add the fourth object (plane) during level #N$04.
  $7344 LD IX,$DAD4   ; #REGix=#R$DAD4.
- $7348 PUSH AF       ; Stash the phase counter on the stack.
+ $7348 PUSH AF       ; Stash the current level on the stack.
  $7349 LD IY,$750D   ; #REGiy=#R$750D.
- $734D CP $04        ; {Call #R$743D if the phase counter is #N$04.
+ $734D CP $04        ; {Call #R$743D if this is level #N$04.
  $734F CALL Z,$743D  ; }
- $7352 POP AF        ; Restore the phase counter from the stack.
- $7353 CP $04        ; Return if the phase counter is #N$04.
+ $7352 POP AF        ; Restore the current level from the stack.
+ $7353 CP $04        ; Return if this is level #N$04.
  $7355 RET Z         ; Return.
-; Fifth object; active from phase #N$05 onwards.
+; Add the walking paratrooper from level #N$05 onwards.
  $7356 LD IX,$DAD8   ; #REGix=#R$DAD8.
- $735A PUSH AF       ; Stash the phase counter on the stack.
+ $735A PUSH AF       ; Stash the current level on the stack.
  $735B CALL $7893    ; Call #R$7893.
- $735E POP AF        ; Restore the phase counter from the stack.
-; Update the fourth object.
+ $735E POP AF        ; Restore the current level from the stack.
+; Update the fourth object (plane).
  $735F LD IX,$DAD4   ; #REGix=#R$DAD4.
  $7363 CALL $7680    ; Call #R$7680.
  $7366 RET           ; Return.
 
 ; Handler: Room #N$07
 ;
-; Handles room #N$07 logic. The phase counter in #REGb controls which
+; Handles room #N$07 logic. The current level in #REGb controls which
 ; objects are initialised or updated on each pass.
+; .
+; #TABLE(default,centre,centre)
+;   { =h Levels | =h Baddies }
+;   { #N$01 | Helicopter }
+;   { #N$02 | Helicopter, Cat }
+;   { #N$03 | Helicopter }
+;   { #N$04 | Helicopter, Balloon }
+;   { #N$05+ | Helicopter, Cat, Balloon, Dog, UFO }
+; TABLE#
 ;
-; B Room phase counter (from *#R$5FB1)
+; B Current level
 @label=Handler_Room07
-c$7367 LD A,B        ; Copy the phase counter into #REGa.
+c$7367 LD A,B        ; Copy the current level into #REGa.
+; Add the helicopter.
  $7368 LD IX,$DAC8   ; #REGix=#R$DAC8.
- $736C PUSH AF       ; Stash the phase counter on the stack.
+ $736C PUSH AF       ; Stash the current level on the stack.
  $736D CALL $7439    ; Call #R$7439.
- $7370 POP AF        ; Restore the phase counter from the stack.
+ $7370 POP AF        ; Restore the current level from the stack.
+; Add a cat if this is level #N$02 or #N$05.
  $7371 LD IX,$DACC   ; #REGix=#R$DACC.
- $7375 PUSH AF       ; Stash the phase counter on the stack.
- $7376 CP $02        ; {Call #R$7512 if the phase counter is equal to either
- $7378 CALL Z,$7512  ; #N$02 or #N$05.
+ $7375 PUSH AF       ; Stash the current level on the stack.
+ $7376 CP $02        ; {Call #R$7512 if this is level #N$02 or #N$05.
+ $7378 CALL Z,$7512  ;
  $737B CP $05        ;
  $737D CALL Z,$7512  ; }
- $7380 POP AF        ; Restore the phase counter from the stack.
- $7381 CP $01        ; {Return if the phase counter is equal to #N$01 or less
- $7383 RET Z         ; than #N$04.
+ $7380 POP AF        ; Restore the current level from the stack.
+ $7381 CP $01        ; {Return if this is below level #N$04.
+ $7383 RET Z         ;
  $7384 CP $04        ;
  $7386 RET C         ; }
+; Add the balloon for level #N$04 and above.
  $7387 LD IX,$DAD0   ; #REGix=#R$DAD0.
- $738B PUSH AF       ; Stash the phase counter on the stack.
+ $738B PUSH AF       ; Stash the current level on the stack.
  $738C CALL $77B9    ; Call #R$77B9.
- $738F POP AF        ; Restore the phase counter from the stack.
- $7390 CP $04        ; {Return if the phase counter is equal to #N$04.
+ $738F POP AF        ; Restore the current level from the stack.
+ $7390 CP $04        ; {Return if this is level #N$04.
  $7392 RET Z         ; }
+; Add the dog if this is level #N$05.
  $7393 LD IX,$DAD8   ; #REGix=#R$DAD8.
- $7397 PUSH AF       ; Stash the phase counter on the stack.
+ $7397 PUSH AF       ; Stash the current level on the stack.
  $7398 CALL $758B    ; Call #R$758B.
- $739B POP AF        ; Restore the phase counter from the stack.
+ $739B POP AF        ; Restore the current level from the stack.
+; Add the UFO if this is level #N$05.
  $739C LD IX,$DADC   ; #REGix=#R$DADC.
  $73A0 CALL $759A    ; Call #R$759A.
  $73A3 RET           ; Return.
 
 ; Handler: Room #N$08
 ;
-; Handles room #N$08 logic. The phase counter in #REGb controls which
+; Handles room #N$08 logic. The current level in #REGb controls which
 ; objects are initialised or updated on each pass.
+; .
+; #TABLE(default,centre,centre)
+;   { =h Levels | =h Baddies }
+;   { #N$01 | None }
+;   { #N$02 | Helicopter, Cat }
+;   { #N$03 | Helicopter }
+;   { #N$04 | Helicopter, Cat, Balloon, Parachute }
+;   { #N$05+ | Helicopter, Cat, Balloon, Parachute, Walking Paratrooper }
+; TABLE#
 ;
-; B Room phase counter (from *#R$5FB1)
+; B Current level
 @label=Handler_Room08
-c$73A4 LD A,B        ; Copy the phase counter into #REGa.
+c$73A4 LD A,B        ; Copy the current level into #REGa.
  $73A5 LD IX,$DAC8   ; #REGix=#R$DAC8.
- $73A9 PUSH AF       ; Stash the phase counter on the stack.
+ $73A9 PUSH AF       ; Stash the current level on the stack.
+; Add the helicopter.
  $73AA CALL $7439    ; Call #R$7439.
- $73AD POP AF        ; Restore the phase counter from the stack.
+ $73AD POP AF        ; Restore the current level from the stack.
+; Add a cat for any level other than level #N$03.
  $73AE LD IX,$DACC   ; #REGix=#R$DACC.
- $73B2 CP $01        ; {Return if the phase counter is equal to #N$01.
+ $73B2 CP $01        ; {Return if this is level #N$01.
  $73B4 RET Z         ; }
- $73B5 PUSH AF       ; Stash the phase counter on the stack.
- $73B6 CP $03        ; {Call #R$7512 if the phase counter is not equal to
- $73B8 CALL NZ,$7512 ; #N$03.}
- $73BB POP AF        ; Restore the phase counter from the stack.
- $73BC CP $02        ; {Return if the phase counter is equal to either #N$02 or
- $73BE RET Z         ; #N$03.
+ $73B5 PUSH AF       ; Stash the current level on the stack.
+ $73B6 CP $03        ; {Call #R$7512 if this is not level #N$03.
+ $73B8 CALL NZ,$7512 ; }
+ $73BB POP AF        ; Restore the current level from the stack.
+ $73BC CP $02        ; {Return if this is level #N$02 or #N$03.
+ $73BE RET Z         ;
  $73BF CP $03        ;
  $73C1 RET Z         ; }
- $73C2 PUSH AF       ; Stash the phase counter on the stack.
+; Add the balloon for level #N$04 and above.
+ $73C2 PUSH AF       ; Stash the current level on the stack.
  $73C3 LD IX,$DAD0   ; #REGix=#R$DAD0.
  $73C7 CALL $77B9    ; Call #R$77B9.
- $73CA POP AF        ; Restore the phase counter from the stack.
- $73CB PUSH AF       ; Stash the phase counter on the stack.
+ $73CA POP AF        ; Restore the current level from the stack.
+ $73CB PUSH AF       ; Stash the current level on the stack.
+; Add the parachute if this is level #N$04 or higher.
  $73CC LD IX,$DAD8   ; #REGix=#R$DAD8.
- $73D0 CP $03        ; {Call #R$79D2 if the phase counter is greater than
- $73D2 CALL NC,$79D2 ; #N$03.}
- $73D5 POP AF        ; Restore the phase counter from the stack.
- $73D6 CP $04        ; {Return if the phase counter is equal to #N$04.
+ $73D0 CP $03        ; {Call #R$79D2 if this is level #N$04 or higher.
+ $73D2 CALL NC,$79D2 ; }
+ $73D5 POP AF        ; Restore the current level from the stack.
+ $73D6 CP $04        ; {Return if this is level #N$04.
  $73D8 RET Z         ; }
+; Add the walking paratrooper if this is level #N$05.
  $73D9 LD IX,$DAD4   ; #REGix=#R$DAD4.
  $73DD CALL $7893    ; Call #R$7893.
  $73E0 RET           ; Return.
 
 ; Handler: Room #N$09
 ;
-; Handles room #N$09 logic. The phase counter in #REGb controls which
+; Handles room #N$09 logic. The current level in #REGb controls which
 ; objects are initialised or updated on each pass.
+; .
+; #TABLE(default,centre,centre)
+;   { =h Levels | =h Baddies }
+;   { #N$01 | None }
+;   { #N$02 | Helicopter }
+;   { #N$03 | None }
+;   { #N$04 | Helicopter, Parachute }
+;   { #N$05+ | Helicopter, Parachute }
+; TABLE#
 ;
-; B Room phase counter (from *#R$5FB1)
+; B Current level
 @label=Handler_Room09
-c$73E1 LD A,B        ; Copy the phase counter into #REGa.
- $73E2 CP $01        ; {Return if the phase counter is equal to #N$01.
+c$73E1 LD A,B        ; Copy the current level into #REGa.
+ $73E2 CP $01        ; {Return if this is level #N$01.
  $73E4 RET Z         ; }
+; Add the helicopter for any level other than level #N$03.
  $73E5 LD IX,$DAD0   ; #REGix=#R$DAD0.
- $73E9 PUSH AF       ; Stash the phase counter on the stack.
- $73EA CP $03        ; {Call #R$7439 if the phase counter is not equal to
- $73EC CALL NZ,$7439 ; #N$03.}
- $73EF POP AF        ; Restore the phase counter from the stack.
+ $73E9 PUSH AF       ; Stash the current level on the stack.
+ $73EA CP $03        ; {Call #R$7439 if this is not level #N$03.
+ $73EC CALL NZ,$7439 ; }
+ $73EF POP AF        ; Restore the current level from the stack.
+; Add the parachute if this is level #N$04 or higher.
  $73F0 LD IX,$DAD8   ; #REGix=#R$DAD8.
- $73F4 CP $03        ; {Call #R$79D2 if the phase counter is greater than
- $73F6 CALL NC,$79D2 ; #N$03.}
+ $73F4 CP $03        ; {Call #R$79D2 if this is level #N$04 or higher.
+ $73F6 CALL NC,$79D2 ; }
  $73F9 RET           ; Return.
 
 ; Handler: Room #N$0A
 ;
-; Handles room #N$0A logic. The phase counter in #REGb controls which
+; Handles room #N$0A logic. The current level in #REGb controls which
 ; objects are initialised or updated on each pass.
+; .
+; #TABLE(default,centre,centre)
+;   { =h Levels | =h Baddies }
+;   { #N$01 | None }
+;   { #N$02 | None }
+;   { #N$03 | Helicopter }
+;   { #N$04 | Balloon }
+;   { #N$05+ | Helicopter, Balloon }
+; TABLE#
 ;
-; B Room phase counter (from *#R$5FB1)
+; B Current level
 @label=Handler_Room10
-c$73FA LD A,B        ; Copy the phase counter into #REGa.
- $73FB CP $03        ; {Return if the phase counter is less than #N$03.
+c$73FA LD A,B        ; Copy the current level into #REGa.
+ $73FB CP $03        ; {Return if this is below level #N$03.
  $73FD RET C         ; }
+; Add the helicopter for any level other than level #N$04.
  $73FE LD IX,$DAD8   ; #REGix=#R$DAD8.
- $7402 PUSH AF       ; Stash the phase counter on the stack.
- $7403 CP $04        ; {Call #R$7439 if the phase counter is not equal to
- $7405 CALL NZ,$7439 ; #N$04.}
- $7408 POP AF        ; Restore the phase counter from the stack.
+ $7402 PUSH AF       ; Stash the current level on the stack.
+ $7403 CP $04        ; {Call #R$7439 if this is not level #N$04.
+ $7405 CALL NZ,$7439 ; }
+ $7408 POP AF        ; Restore the current level from the stack.
+; Add the balloon for level #N$04 and above.
  $7409 LD IX,$DADC   ; #REGix=#R$DADC.
- $740D CP $03        ; {Call #R$77B9 if the phase counter is not equal to
- $740F CALL NZ,$77B9 ; #N$03.}
+ $740D CP $03        ; {Call #R$77B9 if this is not level #N$03.
+ $740F CALL NZ,$77B9 ; }
  $7412 RET           ; Return.
 
 ; Handler: Room #N$0B
 ;
-; Handles room #N$0B logic. The phase counter in #REGb controls which
+; Handles room #N$0B logic. The current level in #REGb controls which
 ; objects are initialised or updated on each pass.
+; .
+; #TABLE(default,centre,centre)
+;   { =h Levels | =h Baddies }
+;   { #N$01 | None }
+;   { #N$02 | None }
+;   { #N$03 | Helicopter }
+;   { #N$04 | Helicopter, Balloon }
+;   { #N$05+ | Balloon, UFO }
+; TABLE#
 ;
-; B Room phase counter (from *#R$5FB1)
+; B Current level
 @label=Handler_Room11
-c$7413 LD A,B        ; Copy the phase counter into #REGa.
- $7414 CP $03        ; {Return if the phase counter is less than #N$03.
+c$7413 LD A,B        ; Copy the current level into #REGa.
+ $7414 CP $03        ; {Return if this is below level #N$03.
  $7416 RET C         ; }
+; Add the helicopter for levels #N$03 and #N$04.
  $7417 LD IX,$DAD8   ; #REGix=#R$DAD8.
- $741B PUSH AF       ; Stash the phase counter on the stack.
- $741C CP $05        ; {Call #R$7439 if the phase counter is not equal to
- $741E CALL NZ,$7439 ; #N$05.}
- $7421 POP AF        ; Restore the phase counter from the stack.
- $7422 CP $03        ; {Return if the phase counter is equal to #N$03.
+ $741B PUSH AF       ; Stash the current level on the stack.
+ $741C CP $05        ; {Call #R$7439 if this is not level #N$05.
+ $741E CALL NZ,$7439 ; }
+ $7421 POP AF        ; Restore the current level from the stack.
+ $7422 CP $03        ; {Return if this is level #N$03.
  $7424 RET Z         ; }
+; Add the balloon for level #N$04 and above.
  $7425 LD IX,$DADC   ; #REGix=#R$DADC.
- $7429 PUSH AF       ; Stash the phase counter on the stack.
+ $7429 PUSH AF       ; Stash the current level on the stack.
  $742A CALL $77B9    ; Call #R$77B9.
- $742D POP AF        ; Restore the phase counter from the stack.
- $742E CP $04        ; {Return if the phase counter is equal to #N$04.
+ $742D POP AF        ; Restore the current level from the stack.
+ $742E CP $04        ; {Return if this is level #N$04.
  $7430 RET Z         ; }
+; Add the UFO if this is level #N$05.
  $7431 LD IX,$DAD8   ; #REGix=#R$DAD8.
  $7435 CALL $759A    ; Call #R$759A.
  $7438 RET           ; Return.
@@ -6038,11 +6170,11 @@ g$7679 DEFB $00
 ; A Phase counter
 ; IX Pointer to plane sprite data
 @label=Handler_Plane
-c$7680 PUSH AF       ; Stash the phase counter on the stack.
+c$7680 PUSH AF       ; Stash the current level on the stack.
  $7681 CALL $768C    ; Call #R$768C.
- $7684 POP AF        ; Restore the phase counter from the stack.
-; The plane can only drop bombs from phase #N$04 onwards.
- $7685 CP $04        ; {Return if the phase counter is less than #N$04.
+ $7684 POP AF        ; Restore the current level from the stack.
+; The plane can only drop bombs from level #N$04 onwards.
+ $7685 CP $04        ; {Return if this is below level #N$04.
  $7687 RET C         ; }
  $7688 CALL $7713    ; Call #R$7713.
  $768B RET           ; Return.

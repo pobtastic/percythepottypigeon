@@ -24,7 +24,7 @@ GameIndex=The complete<>RAM disassembly (work in progress)
 
 [Titles]
 GameStatusBuffer=Game Status Buffer
-loader=Loading Code
+loader-Index=Loading Code
 UnusedMap=Unused Addresses
 
 [OtherCode:loader]
@@ -45,3 +45,10 @@ GameStatusBuffer
 [Index:Graphics:Graphics And Sounds]
 Rooms
 Sound
+
+[Index:MemoryMaps:Memory Maps]
+MemoryMap
+RoutinesMap
+DataMap
+MessagesMap
+UnusedMap
