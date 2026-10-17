@@ -1639,7 +1639,7 @@ c $662B Handler: Worm Collection and Delivery
 D $662B Manages the worm collectibles in each room. Scans the room attribute data
 . to find active worm tiles, animates them with a wiggling effect, and checks if
 . Percy is at the correct position to pick one up. When Percy is carrying a worm,
-. the worm-in-beak sprite is positioned relative to Percy. On level #N$06, checks
+. the worm-in-beak sprite is positioned relative to Percy. In room #N$06, checks
 . if Percy is at the nest to deliver the worm to the baby chicks for bonus points.
 N $662B Calculate Percy's tile map position from his pixel coordinates.
   $662B,$04 Point #REGix at #R$DAC0.
@@ -1777,9 +1777,9 @@ M $66FB,$05 Set *#R$5FAC to #N$FF (enable worm drop).
 @ $6736 label=Adjust_Worm_Y_Up
   $6736,$08 Subtract #N$04 from the worm Y position to adjust it upward.
 N $673E Check if Percy is at the nest to deliver the worm to the baby chicks
-. (only on level #N$06).
+. (only in room #N$06).
 @ $673E label=Check_Nest_Delivery
-  $673E,$06 Return if *#R$5FC5 (current level) is not equal to #N$06.
+  $673E,$06 Return if *#R$5FC5 (current room) is not equal to #N$06.
   $6744,$06 Return if Percy's Y position is less than #N$11.
   $674A,$03 Return if Percy's Y position is #N$21 or more.
   $674D,$06 Return if Percy's X position is #N$6B or more.
@@ -3805,8 +3805,8 @@ D $7265 Handles room #N$02 logic. The current level in #REGb controls which
 .   { =h Levels | =h Baddies }
 .   { #N$01 | Cat }
 .   { #N$02 | None }
-.   { #N$03 | Cat }
-.   { #N$04 | Cat, Helicopter }
+.   { #N$03 | Cat, Helicopter }
+.   { #N$04 | Cat, Parachute, Helicopter }
 .   { #N$05+ | Cat, Parachute, Helicopter }
 . TABLE#
 R $7265 B Current level
@@ -3817,15 +3817,15 @@ N $7266 Add a cat for any level other than level #N$02.
   $726C,$01 Stash the current level on the stack.
   $726D,$03 Call #R$7512 if this is not level #N$02.
   $7270,$01 Restore the current level from the stack.
-N $7271 Add the parachute if this is level #N$05 or higher.
+N $7271 Add the parachute if this is level #N$04 or higher.
   $7271,$04 #REGix=#R$DAD8.
   $7275,$01 Stash the current level on the stack.
-  $7276,$02 Is this level #N$04?
-  $7278,$03 Call #R$79D2 if this is level #N$05 or higher.
+  $7276,$02 Compare the level with #N$04.
+  $7278,$03 Call #R$79D2 if this is level #N$04 or higher.
   $727B,$01 Restore the current level from the stack.
-N $727C Add the helicopter if this is level #N$04 or higher.
+N $727C Add the helicopter if this is level #N$03 or higher.
   $727C,$04 #REGix=#R$DAD4.
-  $7280,$05 Call #R$7439 if this is level #N$04 or higher.
+  $7280,$05 Call #R$7439 if this is level #N$03 or higher.
   $7285,$01 Return.
 
 c $7286 Handler: Room #N$03
@@ -3861,9 +3861,9 @@ N $729C Add a dog to this room for any level other than level #N$01.
 N $72A7 Add the plane if this is level #N$04 or higher.
   $72A7,$01 Restore the current level from the stack.
   $72A8,$04 #REGix=#R$DAD8.
-  $72AC,$02 Is this level #N$04?
+  $72AC,$02 Compare the level with #N$04.
   $72AE,$01 Stash the current level on the stack.
-  $72AF,$03 Call #R$7680 if this is level #N$05 or higher.
+  $72AF,$03 Call #R$7680 if this is level #N$04 or higher.
 N $72B2 Add a UFO if this is level #N$05.
   $72B2,$01 Restore the current level from the stack.
   $72B3,$04 #REGix=#R$DADC.
@@ -3879,7 +3879,7 @@ D $72BD Handles room #N$04 logic. The current level in #REGb controls which
 .   { =h Levels | =h Baddies }
 .   { #N$01 | None }
 .   { #N$02 | Helicopter }
-.   { #N$03 | Helicopter }
+.   { #N$03 | Helicopter, Plane }
 .   { #N$04 | Helicopter, Plane, Balloon }
 .   { #N$05+ | Plane }
 . TABLE#
@@ -3891,10 +3891,10 @@ N $72C2 Add the helicopter for levels #N$02 to #N$04.
   $72C2,$04 #REGix=#R$DAD0.
   $72C6,$05 Call #R$7439 if this is not level #N$05.
   $72CB,$01 Restore the current level from the stack.
-N $72CC Add the plane if this is level #N$04 or higher.
+N $72CC Add the plane if this is level #N$03 or higher.
   $72CC,$04 #REGix=#R$DAD4.
   $72D0,$01 Stash the current level on the stack.
-  $72D1,$05 Call #R$7680 if this is level #N$04 or higher.
+  $72D1,$05 Call #R$7680 if this is level #N$03 or higher.
   $72D6,$01 Restore the current level from the stack.
 N $72D7 Add the balloon if this is level #N$04.
   $72D7,$04 #REGix=#R$DAD8.
@@ -3950,7 +3950,7 @@ D $730E Handles room #N$06 logic (the starting screen). The current level in
 .   { #N$01 | Spider }
 .   { #N$02 | Cat, UFO }
 .   { #N$03 | Spider, Cat, Helicopter }
-.   { #N$04 | Spider, Cat, Helicopter, Plane }
+.   { #N$04 | Spider, Cat, Helicopter, Helicopter (2nd) }
 .   { #N$05+ | Cat, Helicopter, Plane, Walking Paratrooper }
 . TABLE#
 R $730E B Current level
@@ -3978,7 +3978,7 @@ N $7330 Add the UFO if level #N$02, or the helicopter for level #N$03 and above.
   $7340,$01 Restore the current level from the stack.
   $7341,$02 Return if this is level #N$03.
   $7343,$01 Return.
-N $7344 Add the fourth object (plane) during level #N$04.
+N $7344 Add the second helicopter during level #N$04.
   $7344,$04 #REGix=#R$DAD4.
   $7348,$01 Stash the current level on the stack.
   $7349,$04 #REGiy=#R$750D.
@@ -3991,7 +3991,7 @@ N $7356 Add the walking paratrooper from level #N$05 onwards.
   $735A,$01 Stash the current level on the stack.
   $735B,$03 Call #R$7893.
   $735E,$01 Restore the current level from the stack.
-N $735F Update the fourth object (plane).
+N $735F Add the plane from level #N$05 onwards.
   $735F,$04 #REGix=#R$DAD4.
   $7363,$03 Call #R$7680.
   $7366,$01 Return.
@@ -4045,7 +4045,7 @@ D $73A4 Handles room #N$08 logic. The current level in #REGb controls which
 .
 . #TABLE(default,centre,centre)
 .   { =h Levels | =h Baddies }
-.   { #N$01 | None }
+.   { #N$01 | Helicopter }
 .   { #N$02 | Helicopter, Cat }
 .   { #N$03 | Helicopter }
 .   { #N$04 | Helicopter, Cat, Balloon, Parachute }
@@ -4073,7 +4073,7 @@ N $73C2 Add the balloon for level #N$04 and above.
   $73CB,$01 Stash the current level on the stack.
 N $73CC Add the parachute if this is level #N$04 or higher.
   $73CC,$04 #REGix=#R$DAD8.
-  $73D0,$05 Call #R$79D2 if this is level #N$04 or higher.
+  $73D0,$05 Call #R$79D2 if this is level #N$03 or higher.
   $73D5,$01 Restore the current level from the stack.
   $73D6,$03 Return if this is level #N$04.
 N $73D9 Add the walking paratrooper if this is level #N$05.
@@ -4090,7 +4090,7 @@ D $73E1 Handles room #N$09 logic. The current level in #REGb controls which
 .   { =h Levels | =h Baddies }
 .   { #N$01 | None }
 .   { #N$02 | Helicopter }
-.   { #N$03 | None }
+.   { #N$03 | Parachute }
 .   { #N$04 | Helicopter, Parachute }
 .   { #N$05+ | Helicopter, Parachute }
 . TABLE#
@@ -4102,9 +4102,9 @@ N $73E5 Add the helicopter for any level other than level #N$03.
   $73E9,$01 Stash the current level on the stack.
   $73EA,$05 Call #R$7439 if this is not level #N$03.
   $73EF,$01 Restore the current level from the stack.
-N $73F0 Add the parachute if this is level #N$04 or higher.
+N $73F0 Add the parachute if this is level #N$03 or higher.
   $73F0,$04 #REGix=#R$DAD8.
-  $73F4,$05 Call #R$79D2 if this is level #N$04 or higher.
+  $73F4,$05 Call #R$79D2 if this is level #N$03 or higher.
   $73F9,$01 Return.
 
 c $73FA Handler: Room #N$0A

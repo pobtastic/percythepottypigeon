@@ -2332,7 +2332,7 @@ c$6621 LD A,(HL)     ; #REGa=*#REGhl.
 ; Manages the worm collectibles in each room. Scans the room attribute data
 ; to find active worm tiles, animates them with a wiggling effect, and checks if
 ; Percy is at the correct position to pick one up. When Percy is carrying a worm,
-; the worm-in-beak sprite is positioned relative to Percy. On level #N$06, checks
+; the worm-in-beak sprite is positioned relative to Percy. In room #N$06, checks
 ; if Percy is at the nest to deliver the worm to the baby chicks for bonus points.
 ;
 ; .
@@ -2550,9 +2550,9 @@ c$66E1 LD A,($5FAA)   ; {Return if *#R$5FAA (worm carrying flag) is zero.
  $6739 SUB $04        ; upward.
  $673B LD (IX+$21),A  ; }
 ; Check if Percy is at the nest to deliver the worm to the baby chicks
-; (only on level #N$06).
+; (only in room #N$06).
 @label=Check_Nest_Delivery
-*$673E LD A,($5FC5)   ; {Return if *#R$5FC5 (current level) is not equal to
+*$673E LD A,($5FC5)   ; {Return if *#R$5FC5 (current room) is not equal to
  $6741 CP $06         ; #N$06.
  $6743 RET NZ         ; }
  $6744 LD A,(IX+$01)  ; {Return if Percy's Y position is less than #N$11.
@@ -5202,8 +5202,8 @@ c$723F LD A,B        ; Copy the current level into #REGa.
 ;   { =h Levels | =h Baddies }
 ;   { #N$01 | Cat }
 ;   { #N$02 | None }
-;   { #N$03 | Cat }
-;   { #N$04 | Cat, Helicopter }
+;   { #N$03 | Cat, Helicopter }
+;   { #N$04 | Cat, Parachute, Helicopter }
 ;   { #N$05+ | Cat, Parachute, Helicopter }
 ; TABLE#
 ;
@@ -5216,15 +5216,15 @@ c$7265 LD A,B        ; Copy the current level into #REGa.
  $726C PUSH AF       ; Stash the current level on the stack.
  $726D CALL NZ,$7512 ; Call #R$7512 if this is not level #N$02.
  $7270 POP AF        ; Restore the current level from the stack.
-; Add the parachute if this is level #N$05 or higher.
+; Add the parachute if this is level #N$04 or higher.
  $7271 LD IX,$DAD8   ; #REGix=#R$DAD8.
  $7275 PUSH AF       ; Stash the current level on the stack.
- $7276 CP $04        ; Is this level #N$04?
- $7278 CALL NC,$79D2 ; Call #R$79D2 if this is level #N$05 or higher.
+ $7276 CP $04        ; Compare the level with #N$04.
+ $7278 CALL NC,$79D2 ; Call #R$79D2 if this is level #N$04 or higher.
  $727B POP AF        ; Restore the current level from the stack.
-; Add the helicopter if this is level #N$04 or higher.
+; Add the helicopter if this is level #N$03 or higher.
  $727C LD IX,$DAD4   ; #REGix=#R$DAD4.
- $7280 CP $03        ; {Call #R$7439 if this is level #N$04 or higher.
+ $7280 CP $03        ; {Call #R$7439 if this is level #N$03 or higher.
  $7282 CALL NC,$7439 ; }
  $7285 RET           ; Return.
 
@@ -5265,9 +5265,9 @@ c$7286 LD A,B        ; Copy the current level into #REGa.
 ; Add the plane if this is level #N$04 or higher.
  $72A7 POP AF        ; Restore the current level from the stack.
  $72A8 LD IX,$DAD8   ; #REGix=#R$DAD8.
- $72AC CP $04        ; Is this level #N$04?
+ $72AC CP $04        ; Compare the level with #N$04.
  $72AE PUSH AF       ; Stash the current level on the stack.
- $72AF CALL NC,$7680 ; Call #R$7680 if this is level #N$05 or higher.
+ $72AF CALL NC,$7680 ; Call #R$7680 if this is level #N$04 or higher.
 ; Add a UFO if this is level #N$05.
  $72B2 POP AF        ; Restore the current level from the stack.
  $72B3 LD IX,$DADC   ; #REGix=#R$DADC.
@@ -5284,7 +5284,7 @@ c$7286 LD A,B        ; Copy the current level into #REGa.
 ;   { =h Levels | =h Baddies }
 ;   { #N$01 | None }
 ;   { #N$02 | Helicopter }
-;   { #N$03 | Helicopter }
+;   { #N$03 | Helicopter, Plane }
 ;   { #N$04 | Helicopter, Plane, Balloon }
 ;   { #N$05+ | Plane }
 ; TABLE#
@@ -5300,10 +5300,10 @@ c$72BD LD A,B        ; Copy the current level into #REGa.
  $72C6 CP $05        ; {Call #R$7439 if this is not level #N$05.
  $72C8 CALL NZ,$7439 ; }
  $72CB POP AF        ; Restore the current level from the stack.
-; Add the plane if this is level #N$04 or higher.
+; Add the plane if this is level #N$03 or higher.
  $72CC LD IX,$DAD4   ; #REGix=#R$DAD4.
  $72D0 PUSH AF       ; Stash the current level on the stack.
- $72D1 CP $03        ; {Call #R$7680 if this is level #N$04 or higher.
+ $72D1 CP $03        ; {Call #R$7680 if this is level #N$03 or higher.
  $72D3 CALL NC,$7680 ; }
  $72D6 POP AF        ; Restore the current level from the stack.
 ; Add the balloon if this is level #N$04.
@@ -5366,7 +5366,7 @@ c$72E1 LD A,B        ; Copy the current level into #REGa.
 ;   { #N$01 | Spider }
 ;   { #N$02 | Cat, UFO }
 ;   { #N$03 | Spider, Cat, Helicopter }
-;   { #N$04 | Spider, Cat, Helicopter, Plane }
+;   { #N$04 | Spider, Cat, Helicopter, Helicopter (2nd) }
 ;   { #N$05+ | Cat, Helicopter, Plane, Walking Paratrooper }
 ; TABLE#
 ;
@@ -5402,7 +5402,7 @@ c$730E LD A,B        ; Copy the current level into #REGa.
  $7340 POP AF        ; Restore the current level from the stack.
  $7341 CP $03        ; Return if this is level #N$03.
  $7343 RET Z         ; Return.
-; Add the fourth object (plane) during level #N$04.
+; Add the second helicopter during level #N$04.
  $7344 LD IX,$DAD4   ; #REGix=#R$DAD4.
  $7348 PUSH AF       ; Stash the current level on the stack.
  $7349 LD IY,$750D   ; #REGiy=#R$750D.
@@ -5416,7 +5416,7 @@ c$730E LD A,B        ; Copy the current level into #REGa.
  $735A PUSH AF       ; Stash the current level on the stack.
  $735B CALL $7893    ; Call #R$7893.
  $735E POP AF        ; Restore the current level from the stack.
-; Update the fourth object (plane).
+; Add the plane from level #N$05 onwards.
  $735F LD IX,$DAD4   ; #REGix=#R$DAD4.
  $7363 CALL $7680    ; Call #R$7680.
  $7366 RET           ; Return.
@@ -5479,7 +5479,7 @@ c$7367 LD A,B        ; Copy the current level into #REGa.
 ; .
 ; #TABLE(default,centre,centre)
 ;   { =h Levels | =h Baddies }
-;   { #N$01 | None }
+;   { #N$01 | Helicopter }
 ;   { #N$02 | Helicopter, Cat }
 ;   { #N$03 | Helicopter }
 ;   { #N$04 | Helicopter, Cat, Balloon, Parachute }
@@ -5514,7 +5514,7 @@ c$73A4 LD A,B        ; Copy the current level into #REGa.
  $73CB PUSH AF       ; Stash the current level on the stack.
 ; Add the parachute if this is level #N$04 or higher.
  $73CC LD IX,$DAD8   ; #REGix=#R$DAD8.
- $73D0 CP $03        ; {Call #R$79D2 if this is level #N$04 or higher.
+ $73D0 CP $03        ; {Call #R$79D2 if this is level #N$03 or higher.
  $73D2 CALL NC,$79D2 ; }
  $73D5 POP AF        ; Restore the current level from the stack.
  $73D6 CP $04        ; {Return if this is level #N$04.
@@ -5533,7 +5533,7 @@ c$73A4 LD A,B        ; Copy the current level into #REGa.
 ;   { =h Levels | =h Baddies }
 ;   { #N$01 | None }
 ;   { #N$02 | Helicopter }
-;   { #N$03 | None }
+;   { #N$03 | Parachute }
 ;   { #N$04 | Helicopter, Parachute }
 ;   { #N$05+ | Helicopter, Parachute }
 ; TABLE#
@@ -5549,9 +5549,9 @@ c$73E1 LD A,B        ; Copy the current level into #REGa.
  $73EA CP $03        ; {Call #R$7439 if this is not level #N$03.
  $73EC CALL NZ,$7439 ; }
  $73EF POP AF        ; Restore the current level from the stack.
-; Add the parachute if this is level #N$04 or higher.
+; Add the parachute if this is level #N$03 or higher.
  $73F0 LD IX,$DAD8   ; #REGix=#R$DAD8.
- $73F4 CP $03        ; {Call #R$79D2 if this is level #N$04 or higher.
+ $73F4 CP $03        ; {Call #R$79D2 if this is level #N$03 or higher.
  $73F6 CALL NC,$79D2 ; }
  $73F9 RET           ; Return.
 
