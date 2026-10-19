@@ -24,7 +24,7 @@ i $5BFF
 > $5DC0 @expand=#DEF(#COLOUR(id)#LET(ink=$id&$07)#IF({ink}>=$00)(INK:#MAP({ink})(UNKNOWN,0:BLACK,1:BLUE,2:RED,3:MAGENTA,4:GREEN,5:CYAN,6:YELLOW,7:WHITE)), #LET(paper=$id>>$03&$07)#IF({paper}>=$00)(PAPER:#MAP({paper})(UNKNOWN,0:BLACK,1:BLUE,2:RED,3:MAGENTA,4:GREEN,5:CYAN,6:YELLOW,7:WHITE))#LET(bright=$id&$40)#IF({bright}>$00)( (BRIGHT))#LET(flash=$id&$80)#IF({flash}>$00)( (FLASH: ON)))
 > $5DC0 @expand=#DEF(#INK(id)#LET(bright=$id&$40)#LET(flash=$id&$80)#LET(ink=$id&$07)#IF({ink}>=$00)(#MAP({ink})(UNKNOWN,0:BLACK,1:BLUE,2:RED,3:MAGENTA,4:GREEN,5:CYAN,6:YELLOW,7:WHITE))#IF({bright}>$00)( (BRIGHT))#IF({flash}>$00)( (FLASH: ON)))
 > $5DC0 @expand=#DEF(#ROOM(id)#SIM(start=$5DD0,stop=$5DDD)#UDGTABLE { #POKES$5FC5,$id;$5FA1,$01#SIM(start=$65A3,stop=$65A6,sp=$5BFE)#SCR$02(room-$id) } TABLE#)
-> $5DC0 @expand=#DEF(#POPROOM(id,level=$01)#PUSHS#SIM(start=$5DD0,stop=$5DDD)#UDGTABLE { =h Room #N($id)/ Level #N($level) } { #POKES$E000,$00,$1800;$5FC5,$id;$5FA1,$01;$5FB1,$level;$5FBE,$03#SIM(start=$65A3,stop=$65A6,sp=$5BFE)#SIM(start=$6992,stop=$69A6,sp=$5BFE)#SCR$02(populated-room-$id-level-$level) } TABLE##POPS)
+> $5DC0 @expand=#DEF(#POPROOM(id,level=$01)#UDGTABLE { =h Room #N($id) / Level #N($level) } { #PUSHS #SIM(start=$5DD0,stop=$5DDD)#POKES$E000,$00,$1800;$5FC5,$id;$5FA1,$01;$5FB1,$level;$5FBE,$03#SIM(start=$65A3,stop=$65A6,sp=$5BFE)#SIM(start=$6992,stop=$69A6,sp=$5BFE)#SCR$02(populated-room-$id-level-$level)#POPS } TABLE#)
 > $5DC0 @set-handle-unsupported-macros=1
 > $5DC0 @org
 c $5DC0 Game Initialise
@@ -1842,6 +1842,7 @@ D $679C Drops the worm Percy is carrying.
   $67A8,$05 Decrement #REGbc and loop back to #R$67A2 until all #N$0160 bytes
 . are searched.
   $67AD,$01 Return (no collected worm marker found).
+N $67AE Found the worm marker, so clear it.
 @ $67AE label=DropWorm_Found
   $67AE,$02 Write #N$00 to *#REGhl to clear the collected marker.
   $67B0,$02 Jump to #R$6791.
