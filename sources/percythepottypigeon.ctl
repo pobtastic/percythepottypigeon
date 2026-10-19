@@ -24,7 +24,6 @@ i $5BFF
 > $5DC0 @expand=#DEF(#COLOUR(id)#LET(ink=$id&$07)#IF({ink}>=$00)(INK:#MAP({ink})(UNKNOWN,0:BLACK,1:BLUE,2:RED,3:MAGENTA,4:GREEN,5:CYAN,6:YELLOW,7:WHITE)), #LET(paper=$id>>$03&$07)#IF({paper}>=$00)(PAPER:#MAP({paper})(UNKNOWN,0:BLACK,1:BLUE,2:RED,3:MAGENTA,4:GREEN,5:CYAN,6:YELLOW,7:WHITE))#LET(bright=$id&$40)#IF({bright}>$00)( (BRIGHT))#LET(flash=$id&$80)#IF({flash}>$00)( (FLASH: ON)))
 > $5DC0 @expand=#DEF(#INK(id)#LET(bright=$id&$40)#LET(flash=$id&$80)#LET(ink=$id&$07)#IF({ink}>=$00)(#MAP({ink})(UNKNOWN,0:BLACK,1:BLUE,2:RED,3:MAGENTA,4:GREEN,5:CYAN,6:YELLOW,7:WHITE))#IF({bright}>$00)( (BRIGHT))#IF({flash}>$00)( (FLASH: ON)))
 > $5DC0 @expand=#DEF(#ROOM(id)#SIM(start=$5DD0,stop=$5DDD)#UDGTABLE { #POKES$5FC5,$id;$5FA1,$01#SIM(start=$65A3,stop=$65A6,sp=$5BFE)#SCR$02(room-$id) } TABLE#)
-> $5DC0 ; #POPROOM: #POKES$E000,$00,$1800 stands in for a full sprite-buffer wipe. #R$721D only clears the middle third (#N$E800, #N$07FF bytes). #R$BBCD (Merge_Sprite_Column) zeroes each sprite byte after it is drawn, so it does not scrub leftover snapshot bytes in the top third or at #N$F000 (lower road) before they are ORed.
 > $5DC0 @expand=#DEF(#POPROOM(id,level=$01)#PUSHS#SIM(start=$5DD0,stop=$5DDD)#UDGTABLE { =h Room #N($id)/ Level #N($level) } { #POKES$E000,$00,$1800;$5FC5,$id;$5FA1,$01;$5FB1,$level;$5FBE,$03#SIM(start=$65A3,stop=$65A6,sp=$5BFE)#SIM(start=$6992,stop=$69A6,sp=$5BFE)#SCR$02(populated-room-$id-level-$level) } TABLE##POPS)
 > $5DC0 @set-handle-unsupported-macros=1
 > $5DC0 @org
