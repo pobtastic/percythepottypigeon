@@ -1,6 +1,8 @@
 @rom
 @start
+@expand=#DEF1(#SKOOLKID(addr)(name)#HTML(<a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/#EVAL({addr},16,4).html">){name}#HTML(</a>))
 
+@org=$4000
 ; Loading Screen
 ;
 ; #UDGTABLE
@@ -227,6 +229,7 @@ b$4000 DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$1C,$F7,$19,$20,$FA,$5E,$00,
 
 i$5B00
 
+@org=$5BFE
 ; Stack
 ;
 ; Top of the stack (so, pushes below this point).
@@ -235,15 +238,15 @@ g$5BFE DEFB $00
 
 i$5BFF
 
-@expand=#DEF(#POKE #LINK:Pokes)
+@expand=#DEF(#POKE()(anchor,text) #LINK(Pokes#$anchor)($text))
 @expand=#DEF(#ANIMATE(delay,count=$50)(name=$a)*$name-1,$delay;#FOR$02,$count||x|$name-x|;||($name-animation))
 @expand=#DEF(#COLOUR(id)#LET(ink=$id&$07)#IF({ink}>=$00)(INK:#MAP({ink})(UNKNOWN,0:BLACK,1:BLUE,2:RED,3:MAGENTA,4:GREEN,5:CYAN,6:YELLOW,7:WHITE)), #LET(paper=$id>>$03&$07)#IF({paper}>=$00)(PAPER:#MAP({paper})(UNKNOWN,0:BLACK,1:BLUE,2:RED,3:MAGENTA,4:GREEN,5:CYAN,6:YELLOW,7:WHITE))#LET(bright=$id&$40)#IF({bright}>$00)( (BRIGHT))#LET(flash=$id&$80)#IF({flash}>$00)( (FLASH: ON)))
 @expand=#DEF(#INK(id)#LET(bright=$id&$40)#LET(flash=$id&$80)#LET(ink=$id&$07)#IF({ink}>=$00)(#MAP({ink})(UNKNOWN,0:BLACK,1:BLUE,2:RED,3:MAGENTA,4:GREEN,5:CYAN,6:YELLOW,7:WHITE))#IF({bright}>$00)( (BRIGHT))#IF({flash}>$00)( (FLASH: ON)))
 @expand=#DEF(#ROOM(id)#SIM(start=$5DD0,stop=$5DDD)#UDGTABLE { #POKES$5FC5,$id;$5FA1,$01#SIM(start=$65A3,stop=$65A6,sp=$5BFE)#SCR$02(room-$id) } TABLE#)
 @expand=#DEF(#POPROOM(id,level=$01)#UDGTABLE { =h Room #N($id) / Level #N($level) } { #PUSHS #SIM(start=$5DD0,stop=$5DDD)#POKES$E000,$00,$1800;$5FC5,$id;$5FA1,$01;$5FB1,$level;$5FBE,$03#SIM(start=$65A3,stop=$65A6,sp=$5BFE)#SIM(start=$6992,stop=$69A6,sp=$5BFE)#SCR$02(populated-room-$id-level-$level)#POPS } TABLE#)
 @set-handle-unsupported-macros=1
-@org
 
+@org=$5DC0
 ; Game Initialise
 @label=Game_Initialise
 c$5DC0 DI              ; Disable interrupts.
@@ -255,21 +258,18 @@ c$5DC0 DI              ; Disable interrupts.
                        ; { *#R$5FAA }
                        ; LIST#}
  $5DCB OUT ($FE),A     ; Set border to: #INK$00.
-; #HTML(Open channel #N$02 (upper screen) via <a rel="noopener nofollow"
-; href="https://skoolkit.ca/disassemblies/rom/hex/asm/1601.html">CHAN_OPEN</a>.)
- $5DCD CALL $1601      ; #HTML(Call <a rel="noopener nofollow"
-                       ; href="https://skoolkit.ca/disassemblies/rom/hex/asm/1601.html">CHAN_OPEN</a>.)
+; Open channel #N$02 (upper screen) via #SKOOLKID$1601(CHAN_OPEN).
+ $5DCD CALL $1601      ; Call #SKOOLKID$1601(CHAN_OPEN).
 ; Clear the screen.
  $5DD0 LD HL,$5AFF     ; {Clear the screen and attribute buffers by filling #N$1AFF bytes
  $5DD3 LD DE,$5AFE     ; from #N$5AFE downwards with #N$00.
  $5DD6 LD (HL),$00     ;
  $5DD8 LD BC,$1AFF     ;
  $5DDB LDDR            ; }
-; #HTML(Sets the border colour to use when calling
-; <a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/0D6B.html">CLS</a>.)
- $5DDD LD A,$0F        ; {#HTML(Write #INK$0F to
- $5DDF LD ($5C48),A    ; *<a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/5C48.html">BORDCR</a>.)
-                       ; }
+; Sets the border colour to use when calling
+; #SKOOLKID$0D6B(CLS).
+ $5DDD LD A,$0F        ; {Write #INK$0F to
+ $5DDF LD ($5C48),A    ; *#SKOOLKID$5C48(BORDCR).}
  $5DE2 LD IX,$DAC0     ; #REGix=#R$DAC0.
  $5DE6 LD (IX+$23),$00 ; Write #N$00 to *#REGix+#N$23 (#R$DAE3).
  $5DEA LD (IX+$02),$07 ; Write #INK$07 to *#REGix+#N$02 (#R$DAC2).
@@ -847,7 +847,7 @@ g$5FB2 DEFB $00
 ;
 ; .
 ;
-; See #POKE#255_lives(255 Lives).
+; See #POKE(255_lives,255 Lives).
 @label=LivesDisplayCharacter
 g$5FB3 DEFB $33
 
@@ -1805,22 +1805,22 @@ t$63E9 DEFB $16,$00,$00                             ; PRINT AT:
                                                     ; #INK(#PEEK(#PC+$01)).
  $63EE DEFB $13,$01                                 ; BRIGHT
                                                     ; "#MAP(#PEEK(#PC+$01))(?,0:OFF,1:ON)".
- $63F0 DEFM " "                                     ; #FONT#(:(#STR(#PC,$04,$01)))$3D00,attr=$47(header-01)
+ $63F0 DEFM " "                                     ; #FONT#(($3D00,attr=$47)(#STR(#PC,$04,$01)))(header-01)
  $63F1 DEFB $10,$07                                 ; Set INK:
                                                     ; #INK(#PEEK(#PC+$01)).
- $63F3 DEFM " Energy      Lives     Score    "      ; #FONT#(:(#STR(#PC,$04,$20)))$3D00,attr=$47(header-02)
+ $63F3 DEFM " Energy      Lives     Score    "      ; #FONT#(($3D00,attr=$47)(#STR(#PC,$04,$20)))(header-02)
 ; Forms the energy bar:
  $6413 DEFB $10,$02                                 ; Set INK:
                                                     ; #INK(#PEEK(#PC+$01)).
- $6415 DEFM $A3,$A3                                 ; #FONT#(:(#STR(#PC,$04,$02)))$FBD8,attr=$42(header-03)
+ $6415 DEFM $A3,$A3                                 ; #FONT#(($FBD8,attr=$42)(#STR(#PC,$04,$02)))(header-03)
  $6417 DEFB $10,$06                                 ; Set INK:
                                                     ; #INK(#PEEK(#PC+$01)).
- $6419 DEFM $A3,$A3,$A3,$A3,$A3,$A3,$A3,$A3,$A3,$A3 ; #FONT#(:(#STR(#PC,$04,$0A)))$FBD8,attr=$46(header-04)
+ $6419 DEFM $A3,$A3,$A3,$A3,$A3,$A3,$A3,$A3,$A3,$A3 ; #FONT#(($FBD8,attr=$46)(#STR(#PC,$04,$0A)))(header-04)
  $6423 DEFB $10,$07                                 ; Set INK:
                                                     ; #INK(#PEEK(#PC+$01)).
- $6425 DEFB $A4                                     ; #FONT#(:(#STR(#PC,$04,$01)))$FBD8,attr=$47(header-06)
+ $6425 DEFB $A4                                     ; #FONT#(($FBD8,attr=$47)(#STR(#PC,$04,$01)))(header-06)
 ; Prints lives and score:
- $6426 DEFM "  3      0000000  "                    ; #FONT#(:(#STR(#PC,$04,$12)))$3D00,attr=$47(header-07)
+ $6426 DEFM "  3      0000000  "                    ; #FONT#(($3D00,attr=$47)(#STR(#PC,$04,$12)))(header-07)
 
 ; Draw Room Rows
 ;
@@ -2041,7 +2041,7 @@ c$64E7 LD HL,$DAC1   ; {Write #N$90 to *#R$DAC1 (set Percy's Y position to the
  $64F2 CALL $6992    ; Call #R$6992.
 ; Play the "lose a life" sound effect.
 ; .
-; #HTML(#AUDIO(lose-life.wav)(#INCLUDE(LoseLife)))
+; #HTML(#AUDIO0(lose-life.wav)(#INCLUDE(LoseLife)))
  $64F5 LD HL,$0000   ; Set #REGhl to #N($0000,$04,$04) (sound data pointer).
  $64F8 LD A,$01      ; Set #REGa to #N$01 (initial speaker state).
  $64FA LD B,$00      ; Set #REGb to #N$00 (outer loop counter, #N$100
@@ -2085,7 +2085,7 @@ c$64E7 LD HL,$DAC1   ; {Write #N$90 to *#R$DAC1 (set Percy's Y position to the
  $6529 CALL $6791    ; Call #R$6791 to reset the worm-carrying state.
 ; Decrease the lives counter by one.
 ; .
-; See #POKE#infinite_lives(Infinite Lives).
+; See #POKE(infinite_lives,Infinite Lives).
  $652C LD HL,$5FB3   ; Point #REGhl at #R$5FB3.
  $652F DEC (HL)      ; Decrement the lives counter at *#REGhl.
  $6530 LD A,(HL)     ; {Jump to #R$655C if *#R$5FB3 has not reached ASCII "#CHR$30"
@@ -2114,7 +2114,7 @@ c$653D NOP           ;
  $6547 NOP           ;
  $6548 NOP           ;
  $6549 NOP           ;
-; See #POKE#255_lives(255 Lives).
+; See #POKE(255_lives,255 Lives).
  $654A LD A,$33      ; {Write ASCII #N$33 ("#CHR$33") to; #LIST
  $654C LD ($5FBE),A  ; { *#R$5FBE }
  $654F LD ($5FB3),A  ; { *#R$5FB3 }
@@ -2480,7 +2480,7 @@ c$66A8 LD A,(IX+$01) ; {Jump to #R$666A if Percy's Y position is less than #N$79
  $66BF DEC HL        ;
  $66C0 LD (HL),$1E   ; }
  $66C2 PUSH IX       ; Stash #REGix on the stack.
-; #HTML(#AUDIO(collect-worm.wav)(#INCLUDE(CollectWorm)))
+; #HTML(#AUDIO0(collect-worm.wav)(#INCLUDE(CollectWorm)))
  $66C4 LD DE,$0064   ; {#HTML(Play a two-part collection sound effect by calling
  $66C7 LD HL,$00C8   ; <a rel="noopener nofollow" href="https://skoolkid.github.io/rom/asm/03B5.html">BEEP</a>
  $66CA CALL $03B5    ; with durations of #N($0064,$04,$04)/ #N($00C8,$04,$04) then
@@ -2591,7 +2591,7 @@ c$66E1 LD A,($5FAA)   ; {Return if *#R$5FAA (worm carrying flag) is zero.
  $6775 CALL $67B2     ; }
 ; Play a delivery sound effect.
 ; .
-; #HTML(#AUDIO(fed-chicks.wav)(#INCLUDE(FedChicks)))
+; #HTML(#AUDIO0(fed-chicks.wav)(#INCLUDE(FedChicks)))
  $6778 LD E,$32       ; Set the sound duration in #REGe to #N$32.
  $677A LD A,$01       ; Set the initial speaker state to #N$01.
 @label=Delivery_Sound_Outer
@@ -2993,7 +2993,7 @@ c$68B8 LD HL,$5FB2   ; {Decrease *#R$5FB2 by one.
                      ; the level splash screen.
  $68E2 LD ($5FC5),A  ; Write the result to *#R$5FC5.
  $68E5 CALL $5E24    ; Call #R$5E24.
-; #HTML(#AUDIO(lose-life.wav)(#INCLUDE(LoseLife)))
+; #HTML(#AUDIO0(lose-life.wav)(#INCLUDE(LoseLife)))
  $68E8 LD HL,$FBF9   ; #REGhl=#R$FBF9.
  $68EB CALL $FAC4    ; Call #R$FAC4.
  $68EE DI            ; Disable interrupts.
@@ -4541,7 +4541,7 @@ c$6F54 LD HL,$DAC8   ; #REGhl=#R$DAC8.
 ; Play a short random sound burst — used as a hit sound effect by
 ; multiple routines.
 ; .
-; #HTML(#AUDIO(hit.wav)(#INCLUDE(Hit)))
+; #HTML(#AUDIO0(hit.wav)(#INCLUDE(Hit)))
 @label=PlayHitSound
 *$6F7A LD B,$00      ; #REGb=#N$00 (loop #N$100 times).
 @label=PlayHitSound_Loop
@@ -18355,7 +18355,7 @@ g$F800 DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,
 ;
 ; .
 ;
-; #HTML(#AUDIO(next-level.wav)(#INCLUDE(NextLevel)))
+; #HTML(#AUDIO0(next-level.wav)(#INCLUDE(NextLevel)))
 @label=PlaySound_NextLevelJingle
 c$FAC1 LD HL,$FAF9   ; Load #REGhl with a pointer to #R$FAF9.
 ; This entry point is used by the routine at #R$68B8.
