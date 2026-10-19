@@ -24,6 +24,8 @@ i $5BFF
 > $5DC0 @expand=#DEF(#COLOUR(id)#LET(ink=$id&$07)#IF({ink}>=$00)(INK:#MAP({ink})(UNKNOWN,0:BLACK,1:BLUE,2:RED,3:MAGENTA,4:GREEN,5:CYAN,6:YELLOW,7:WHITE)), #LET(paper=$id>>$03&$07)#IF({paper}>=$00)(PAPER:#MAP({paper})(UNKNOWN,0:BLACK,1:BLUE,2:RED,3:MAGENTA,4:GREEN,5:CYAN,6:YELLOW,7:WHITE))#LET(bright=$id&$40)#IF({bright}>$00)( (BRIGHT))#LET(flash=$id&$80)#IF({flash}>$00)( (FLASH: ON)))
 > $5DC0 @expand=#DEF(#INK(id)#LET(bright=$id&$40)#LET(flash=$id&$80)#LET(ink=$id&$07)#IF({ink}>=$00)(#MAP({ink})(UNKNOWN,0:BLACK,1:BLUE,2:RED,3:MAGENTA,4:GREEN,5:CYAN,6:YELLOW,7:WHITE))#IF({bright}>$00)( (BRIGHT))#IF({flash}>$00)( (FLASH: ON)))
 > $5DC0 @expand=#DEF(#ROOM(id)#SIM(start=$5DD0,stop=$5DDD)#UDGTABLE { #POKES$5FC5,$id;$5FA1,$01#SIM(start=$65A3,stop=$65A6,sp=$5BFE)#SCR$02(room-$id) } TABLE#)
+> $5DC0 ; #POPROOM: #POKES$E000,$00,$1800 stands in for a full sprite-buffer wipe. #R$721D only clears the middle third (#N$E800, #N$07FF bytes). #R$BBCD (Merge_Sprite_Column) zeroes each sprite byte after it is drawn, so it does not scrub leftover snapshot bytes in the top third or at #N$F000 (lower road) before they are ORed.
+> $5DC0 @expand=#DEF(#POPROOM(id,level=$01)#PUSHS#SIM(start=$5DD0,stop=$5DDD)#UDGTABLE { =h Room #N($id)/ Level #N($level) } { #POKES$E000,$00,$1800;$5FC5,$id;$5FA1,$01;$5FB1,$level;$5FBE,$03#SIM(start=$65A3,stop=$65A6,sp=$5BFE)#SIM(start=$6992,stop=$69A6,sp=$5BFE)#SCR$02(populated-room-$id-level-$level) } TABLE##POPS)
 > $5DC0 @set-handle-unsupported-macros=1
 > $5DC0 @org
 c $5DC0 Game Initialise
@@ -1639,7 +1641,7 @@ c $662B Handler: Worm Collection and Delivery
 D $662B Manages the worm collectibles in each room. Scans the room attribute data
 . to find active worm tiles, animates them with a wiggling effect, and checks if
 . Percy is at the correct position to pick one up. When Percy is carrying a worm,
-. the worm-in-beak sprite is positioned relative to Percy. On level #N$06, checks
+. the worm-in-beak sprite is positioned relative to Percy. In room #N$06, checks
 . if Percy is at the nest to deliver the worm to the baby chicks for bonus points.
 N $662B Calculate Percy's tile map position from his pixel coordinates.
   $662B,$04 Point #REGix at #R$DAC0.
@@ -1777,9 +1779,9 @@ M $66FB,$05 Set *#R$5FAC to #N$FF (enable worm drop).
 @ $6736 label=Adjust_Worm_Y_Up
   $6736,$08 Subtract #N$04 from the worm Y position to adjust it upward.
 N $673E Check if Percy is at the nest to deliver the worm to the baby chicks
-. (only on level #N$06).
+. (only in room #N$06).
 @ $673E label=Check_Nest_Delivery
-  $673E,$06 Return if *#R$5FC5 (current level) is not equal to #N$06.
+  $673E,$06 Return if *#R$5FC5 (current room) is not equal to #N$06.
   $6744,$06 Return if Percy's Y position is less than #N$11.
   $674A,$03 Return if Percy's Y position is #N$21 or more.
   $674D,$06 Return if Percy's X position is #N$6B or more.
@@ -3765,6 +3767,7 @@ N $722A Look up the handler address for the current room from the jump table at
 
 c $723F Handler: Room #N$01
 @ $723F label=Handler_Room01
+D $723F #POPROOM$01
 D $723F Handles room #N$01 logic. The current level in #REGb controls which
 . objects are initialised or updated on each pass.
 .
@@ -3798,6 +3801,7 @@ N $725F Add the balloon if this is level #N$04 or higher.
 
 c $7265 Handler: Room #N$02
 @ $7265 label=Handler_Room02
+D $7265 #POPROOM$02
 D $7265 Handles room #N$02 logic. The current level in #REGb controls which
 . objects are initialised or updated on each pass.
 .
@@ -3830,6 +3834,7 @@ N $727C Add the helicopter if this is level #N$04 or higher.
 
 c $7286 Handler: Room #N$03
 @ $7286 label=Handler_Room03
+D $7286 #POPROOM$03
 D $7286 Handles room #N$03 logic. The current level in #REGb controls which
 . objects are initialised or updated on each pass.
 .
@@ -3872,6 +3877,7 @@ N $72B2 Add a UFO if this is level #N$05.
 
 c $72BD Handler: Room #N$04
 @ $72BD label=Handler_Room04
+D $72BD #POPROOM$04
 D $72BD Handles room #N$04 logic. The current level in #REGb controls which
 . objects are initialised or updated on each pass.
 .
@@ -3903,6 +3909,7 @@ N $72D7 Add the balloon if this is level #N$04.
 
 c $72E1 Handler: Room #N$05
 @ $72E1 label=Handler_Room05
+D $72E1 #POPROOM$05
 D $72E1 Handles room #N$05 logic. The current level in #REGb controls which
 . objects are initialised or updated on each pass.
 .
@@ -3941,6 +3948,7 @@ N $7306 Add the walking paratrooper.
 
 c $730E Handler: Room #N$06
 @ $730E label=Handler_Room06
+D $730E #POPROOM$06
 D $730E Handles room #N$06 logic (the starting screen). The current level in
 . #REGb controls which objects are initialised or activated on each pass,
 . progressively setting up more objects as the level increases.
@@ -3998,6 +4006,7 @@ N $735F Update the fourth object (plane).
 
 c $7367 Handler: Room #N$07
 @ $7367 label=Handler_Room07
+D $7367 #POPROOM$07
 D $7367 Handles room #N$07 logic. The current level in #REGb controls which
 . objects are initialised or updated on each pass.
 .
@@ -4040,6 +4049,7 @@ N $739C Add the UFO if this is level #N$05.
 
 c $73A4 Handler: Room #N$08
 @ $73A4 label=Handler_Room08
+D $73A4 #POPROOM$08
 D $73A4 Handles room #N$08 logic. The current level in #REGb controls which
 . objects are initialised or updated on each pass.
 .
@@ -4083,6 +4093,7 @@ N $73D9 Add the walking paratrooper if this is level #N$05.
 
 c $73E1 Handler: Room #N$09
 @ $73E1 label=Handler_Room09
+D $73E1 #POPROOM$09
 D $73E1 Handles room #N$09 logic. The current level in #REGb controls which
 . objects are initialised or updated on each pass.
 .
@@ -4109,6 +4120,7 @@ N $73F0 Add the parachute if this is level #N$04 or higher.
 
 c $73FA Handler: Room #N$0A
 @ $73FA label=Handler_Room10
+D $73FA #POPROOM$0A
 D $73FA Handles room #N$0A logic. The current level in #REGb controls which
 . objects are initialised or updated on each pass.
 .
@@ -4135,6 +4147,7 @@ N $7409 Add the balloon for level #N$04 and above.
 
 c $7413 Handler: Room #N$0B
 @ $7413 label=Handler_Room11
+D $7413 #POPROOM$0B
 D $7413 Handles room #N$0B logic. The current level in #REGb controls which
 . objects are initialised or updated on each pass.
 .
@@ -4199,7 +4212,7 @@ M $745C,$07 Rotate right three times, mask and set bit 0 to produce a delay of
   $7463,$03 Write the result to *#REGiy+#N$01.
 N $7466 Move the helicopter in its current direction.
 @ $7466 label=Move_Helicopter
-M $7466,$05 Fetch the current direction from *#REGiy+#N$00, mask with #N$07
+M $7466,$06 Fetch the current direction from *#REGiy+#N$00, mask with #N$07
 . and double it to form a jump table index.
   $7469,$02,b$01 Keep only bits 0-2.
   $746C,$03 Write the direction index to *#R$6BC8(#N$6BC9).
