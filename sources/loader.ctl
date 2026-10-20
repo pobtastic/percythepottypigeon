@@ -3,20 +3,21 @@
 ; Label naming is loosely based on Action_ActionName_SubAction e.g. Print_HighScore_Loop.
 
 > $C1DD @start
-> $C1DD @org
+> $C1DD @expand=#DEF1(#SKOOLKID(addr)(name)#HTML(<a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/#EVAL({addr},16,4).html">){name}#HTML(</a>))
 > $C1DD @remote=main:$C1DD
 c $C1DD Game Entry Point
 @ $C1DD label=GameEntryPoint
+@ $C1DD org=$C1DD
   $C1DD,$0B Copy #N$0176 bytes of data from #N$053F to #R$C000@main(RoomBuffer).
-  $C1E8,$06 #HTML(Write #R$FF58@main(Graphics_CustomUDGs) to
-. *<a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/5C7B.html">UDG</a>.)
-  $C1EE,$06 #HTML(Write <a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/3D00.html">#N$3C00</a>
+  $C1E8,$06 Write #R$FF58@main(Graphics_CustomUDGs) to
+. *#SKOOLKID$5C7B(UDG).
+  $C1EE,$06 Write #SKOOLKID$3D00(#N$3C00)
 . (CHARSET-#N$100) to
-. *<a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/5C36.html">CHARS</a>.)
+. *#SKOOLKID$5C36(CHARS).
   $C1F4,$0C Blank #N$1770 bytes of data starting from #R$E000@main(SpriteBuffer).
 N $C200 Set the lower screen to the default #N$02 lines.
-  $C200,$05 #HTML(Write #N$02 to
-. *<a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/5C6B.html">DF_SZ</a>.)
+  $C200,$05 Write #N$02 to
+. *#SKOOLKID$5C6B(DF_SZ).
   $C205,$03 Jump to #R$5DC0@main(Game_Initialise).
 
 i $C208

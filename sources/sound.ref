@@ -2,27 +2,27 @@
 
 [Audio:menu:Menu]
 
-#AUDIO(menu.wav)(#INCLUDE(Menu))
+#AUDIO0(menu.wav)(#INCLUDE(Menu))
 
 [Audio:collect-worm:Collect Worm]
 
-#AUDIO(collect-worm.wav)(#INCLUDE(CollectWorm))
+#AUDIO0(collect-worm.wav)(#INCLUDE(CollectWorm))
 
 [Audio:fed-chicks:Fed The Chicks]
 
-#AUDIO(fed-chicks.wav)(#INCLUDE(FedChicks))
+#AUDIO0(fed-chicks.wav)(#INCLUDE(FedChicks))
 
 [Audio:hit:Hit By ... Things]
 Used by #R$69F7, #R$6F54, #R$7190, #R$74B9, #R$74D6, #R$7713 and #R$77B9.
 
-#AUDIO(hit.wav)(#INCLUDE(Hit))
+#AUDIO0(hit.wav)(#INCLUDE(Hit))
 
 Note, this uses #R$6C39 and so isn't the same twice.
 
 [Audio:lose-life:Lose Life]
 
-#AUDIO(lose-life.wav)(#INCLUDE(LoseLife))
+#AUDIO0(lose-life.wav)(#INCLUDE(LoseLife))
 
 [Audio:next-level:Next Level]
 
-#AUDIO(next-level.wav)(#INCLUDE(NextLevel))
+#AUDIO0(next-level.wav)(#INCLUDE(NextLevel))
