@@ -23,7 +23,7 @@ B $5BFE,$01
 i $5BFF
 
 > $5DC0 @expand=#DEF(#POKE()(anchor,text) #LINK(Pokes#$anchor)($text))
-> $5DC0 @expand=#DEF(#ANIMATE(delay,count=$50)(name=$a)*$name-1,$delay;#FOR$02,$count||x|$name-x|;||($name-animation))
+> $5DC0 @expand=#DEF(#ANIMATE(delay,count=$50)(name=$a)#FRAMES#(($name-1,$delay;#FOR$02,$count||x|$name-x|;||))($name-animation))
 > $5DC0 @expand=#DEF(#COLOUR(id)#LET(ink=$id&$07)#IF({ink}>=$00)(INK:#MAP({ink})(UNKNOWN,0:BLACK,1:BLUE,2:RED,3:MAGENTA,4:GREEN,5:CYAN,6:YELLOW,7:WHITE)), #LET(paper=$id>>$03&$07)#IF({paper}>=$00)(PAPER:#MAP({paper})(UNKNOWN,0:BLACK,1:BLUE,2:RED,3:MAGENTA,4:GREEN,5:CYAN,6:YELLOW,7:WHITE))#LET(bright=$id&$40)#IF({bright}>$00)( (BRIGHT))#LET(flash=$id&$80)#IF({flash}>$00)( (FLASH: ON)))
 > $5DC0 @expand=#DEF(#INK(id)#LET(bright=$id&$40)#LET(flash=$id&$80)#LET(ink=$id&$07)#IF({ink}>=$00)(#MAP({ink})(UNKNOWN,0:BLACK,1:BLUE,2:RED,3:MAGENTA,4:GREEN,5:CYAN,6:YELLOW,7:WHITE))#IF({bright}>$00)( (BRIGHT))#IF({flash}>$00)( (FLASH: ON)))
 > $5DC0 @expand=#DEF(#ROOM(id)#SIM(start=$5DD0,stop=$5DDD)#UDGTABLE { #POKES$5FC5,$id;$5FA1,$01#SIM(start=$65A3,stop=$65A6,sp=$5BFE)#SCR$02(room-$id) } TABLE#)
@@ -1259,18 +1259,18 @@ t $63E9 Messaging: Header
 B $63E9,$03 PRINT AT: #N(#PEEK(#PC+$01)), #N(#PEEK(#PC+$02)).
 B $63EC,$02 Set PAPER: #INK(#PEEK(#PC+$01)).
 B $63EE,$02 BRIGHT "#MAP(#PEEK(#PC+$01))(?,0:OFF,1:ON)".
-  $63F0,$01 #FONT#(($3D00,attr=$47)(#STR(#PC,$04,$01)))(header-01)
+  $63F0,$01 #FONT#($3D00,attr=$47,chars=0(#STR(#PC,$04,$01)))(header-01)
 B $63F1,$02 Set INK: #INK(#PEEK(#PC+$01)).
-  $63F3,$20 #FONT#(($3D00,attr=$47)(#STR(#PC,$04,$20)))(header-02)
+  $63F3,$20 #FONT#($3D00,attr=$47,chars=0(#STR(#PC,$04,$20)))(header-02)
 N $6413 Forms the energy bar:
 B $6413,$02 Set INK: #INK(#PEEK(#PC+$01)).
-  $6415,$02 #FONT#(($FBD8,attr=$42)(#STR(#PC,$04,$02)))(header-03)
+  $6415,$02 #FONT#($FBD8,attr=$42,chars=0(#STR(#PC,$04,$02)))(header-03)
 B $6417,$02 Set INK: #INK(#PEEK(#PC+$01)).
-  $6419,$0A #FONT#(($FBD8,attr=$46)(#STR(#PC,$04,$0A)))(header-04)
+  $6419,$0A #FONT#($FBD8,attr=$46,chars=0(#STR(#PC,$04,$0A)))(header-04)
 B $6423,$02 Set INK: #INK(#PEEK(#PC+$01)).
-B $6425,$01 #FONT#(($FBD8,attr=$47)(#STR(#PC,$04,$01)))(header-06)
+B $6425,$01 #FONT#($FBD8,attr=$47,chars=0(#STR(#PC,$04,$01)))(header-06)
 N $6426 Prints lives and score:
-  $6426,$12 #FONT#(($3D00,attr=$47)(#STR(#PC,$04,$12)))(header-07)
+  $6426,$12 #FONT#($3D00,attr=$47,chars=0(#STR(#PC,$04,$12)))(header-07)
 
 c $6438 Draw Room Rows
 @ $6438 label=Draw_Room_Rows
@@ -2952,16 +2952,18 @@ N $6D1A Matching butterfly found; animate and move it.
 . (respawn flag) is non-zero.
 N $6D26 Update the butterfly animation frame with a wing-flapping effect.
   $6D26,$04 Fetch the butterfly colour from *#R$6CDE into #REGb.
-  $6D2A,$08 Toggle bit 0 of *#R$6CDC (wing flap toggle) and write back.
+M $6D2A,$08 Toggle bit 0 of *#R$6CDC (wing flap toggle) and write back.
+  $6D2D,$02,b$01 Flip bit 0.
   $6D32,$02 Add #N$03 to get the base butterfly frame.
-  $6D34,$04 If bit 2 of #REGb is set, jump to #R$6D3A; otherwise add #N$02
-. for the alternate colour variant.
+  $6D34,$04 Jump to #R$6D3A if bit 2 of #REGb is set.
+  $6D38,$02 Otherwise add #N$02 for the alternate colour variant.
 @ $6D3A label=Set_Butterfly_Frame
   $6D3A,$03 Write the frame to *#REGix+#N$03.
 N $6D3D Decrement the movement delay and pick a new direction when it expires.
   $6D3D,$03 Point #REGhl at #R$6CDD (butterfly movement delay).
   $6D40,$01 Decrement the delay counter.
   $6D41,$02 Jump to #R$6D58 if the delay has not reached zero.
+@ $6D43 label=Pick_Butterfly_Direction
   $6D43,$03 Call #R$6C39 to generate a random number.
   $6D46,$01 Stash the random value on the stack.
   $6D47,$02,b$01 Mask with #N$07 to get a direction.
@@ -3812,8 +3814,8 @@ D $7265 Handles room #N$02 logic. The current level in #REGb controls which
 .   { =h Levels | =h Baddies }
 .   { #N$01 | Cat }
 .   { #N$02 | None }
-.   { #N$03 | Cat }
-.   { #N$04 | Cat, Helicopter }
+.   { #N$03 | Cat, Helicopter }
+.   { #N$04 | Cat, Parachute, Helicopter }
 .   { #N$05+ | Cat, Parachute, Helicopter }
 . TABLE#
 R $7265 B Current level
@@ -3824,15 +3826,15 @@ N $7266 Add a cat for any level other than level #N$02.
   $726C,$01 Stash the current level on the stack.
   $726D,$03 Call #R$7512 if this is not level #N$02.
   $7270,$01 Restore the current level from the stack.
-N $7271 Add the parachute if this is level #N$05 or higher.
+N $7271 Add the parachute if this is level #N$04 or higher.
   $7271,$04 #REGix=#R$DAD8.
   $7275,$01 Stash the current level on the stack.
-  $7276,$02 Is this level #N$04?
-  $7278,$03 Call #R$79D2 if this is level #N$05 or higher.
+  $7276,$02 Compare the level with #N$04.
+  $7278,$03 Call #R$79D2 if this is level #N$04 or higher.
   $727B,$01 Restore the current level from the stack.
-N $727C Add the helicopter if this is level #N$04 or higher.
+N $727C Add the helicopter if this is level #N$03 or higher.
   $727C,$04 #REGix=#R$DAD4.
-  $7280,$05 Call #R$7439 if this is level #N$04 or higher.
+  $7280,$05 Call #R$7439 if this is level #N$03 or higher.
   $7285,$01 Return.
 
 c $7286 Handler: Room #N$03
@@ -3869,9 +3871,9 @@ N $729C Add a dog to this room for any level other than level #N$01.
 N $72A7 Add the plane if this is level #N$04 or higher.
   $72A7,$01 Restore the current level from the stack.
   $72A8,$04 #REGix=#R$DAD8.
-  $72AC,$02 Is this level #N$04?
+  $72AC,$02 Compare the level with #N$04.
   $72AE,$01 Stash the current level on the stack.
-  $72AF,$03 Call #R$7680 if this is level #N$05 or higher.
+  $72AF,$03 Call #R$7680 if this is level #N$04 or higher.
 N $72B2 Add a UFO if this is level #N$05.
   $72B2,$01 Restore the current level from the stack.
   $72B3,$04 #REGix=#R$DADC.
@@ -3888,7 +3890,7 @@ D $72BD Handles room #N$04 logic. The current level in #REGb controls which
 .   { =h Levels | =h Baddies }
 .   { #N$01 | None }
 .   { #N$02 | Helicopter }
-.   { #N$03 | Helicopter }
+.   { #N$03 | Helicopter, Plane }
 .   { #N$04 | Helicopter, Plane, Balloon }
 .   { #N$05+ | Plane }
 . TABLE#
@@ -3900,10 +3902,10 @@ N $72C2 Add the helicopter for levels #N$02 to #N$04.
   $72C2,$04 #REGix=#R$DAD0.
   $72C6,$05 Call #R$7439 if this is not level #N$05.
   $72CB,$01 Restore the current level from the stack.
-N $72CC Add the plane if this is level #N$04 or higher.
+N $72CC Add the plane if this is level #N$03 or higher.
   $72CC,$04 #REGix=#R$DAD4.
   $72D0,$01 Stash the current level on the stack.
-  $72D1,$05 Call #R$7680 if this is level #N$04 or higher.
+  $72D1,$05 Call #R$7680 if this is level #N$03 or higher.
   $72D6,$01 Restore the current level from the stack.
 N $72D7 Add the balloon if this is level #N$04.
   $72D7,$04 #REGix=#R$DAD8.
@@ -3961,7 +3963,7 @@ D $730E Handles room #N$06 logic (the starting screen). The current level in
 .   { #N$01 | Spider }
 .   { #N$02 | Cat, UFO }
 .   { #N$03 | Spider, Cat, Helicopter }
-.   { #N$04 | Spider, Cat, Helicopter, Plane }
+.   { #N$04 | Spider, Cat, Helicopter, Helicopter (2nd) }
 .   { #N$05+ | Cat, Helicopter, Plane, Walking Paratrooper }
 . TABLE#
 R $730E B Current level
@@ -3989,7 +3991,7 @@ N $7330 Add the UFO if level #N$02, or the helicopter for level #N$03 and above.
   $7340,$01 Restore the current level from the stack.
   $7341,$02 Return if this is level #N$03.
   $7343,$01 Return.
-N $7344 Add the fourth object (plane) during level #N$04.
+N $7344 Add the second helicopter during level #N$04.
   $7344,$04 #REGix=#R$DAD4.
   $7348,$01 Stash the current level on the stack.
   $7349,$04 #REGiy=#R$750D.
@@ -4002,7 +4004,7 @@ N $7356 Add the walking paratrooper from level #N$05 onwards.
   $735A,$01 Stash the current level on the stack.
   $735B,$03 Call #R$7893.
   $735E,$01 Restore the current level from the stack.
-N $735F Update the fourth object (plane).
+N $735F Add the plane from level #N$05 onwards.
   $735F,$04 #REGix=#R$DAD4.
   $7363,$03 Call #R$7680.
   $7366,$01 Return.
@@ -4058,7 +4060,7 @@ D $73A4 Handles room #N$08 logic. The current level in #REGb controls which
 .
 . #TABLE(default,centre,centre)
 .   { =h Levels | =h Baddies }
-.   { #N$01 | None }
+.   { #N$01 | Helicopter }
 .   { #N$02 | Helicopter, Cat }
 .   { #N$03 | Helicopter }
 .   { #N$04 | Helicopter, Cat, Balloon, Parachute }
@@ -4086,7 +4088,7 @@ N $73C2 Add the balloon for level #N$04 and above.
   $73CB,$01 Stash the current level on the stack.
 N $73CC Add the parachute if this is level #N$04 or higher.
   $73CC,$04 #REGix=#R$DAD8.
-  $73D0,$05 Call #R$79D2 if this is level #N$04 or higher.
+  $73D0,$05 Call #R$79D2 (parachute); only reached on level #N$04 or higher, as earlier levels have already returned.
   $73D5,$01 Restore the current level from the stack.
   $73D6,$03 Return if this is level #N$04.
 N $73D9 Add the walking paratrooper if this is level #N$05.
@@ -4104,7 +4106,7 @@ D $73E1 Handles room #N$09 logic. The current level in #REGb controls which
 .   { =h Levels | =h Baddies }
 .   { #N$01 | None }
 .   { #N$02 | Helicopter }
-.   { #N$03 | None }
+.   { #N$03 | Parachute }
 .   { #N$04 | Helicopter, Parachute }
 .   { #N$05+ | Helicopter, Parachute }
 . TABLE#
@@ -4116,9 +4118,9 @@ N $73E5 Add the helicopter for any level other than level #N$03.
   $73E9,$01 Stash the current level on the stack.
   $73EA,$05 Call #R$7439 if this is not level #N$03.
   $73EF,$01 Restore the current level from the stack.
-N $73F0 Add the parachute if this is level #N$04 or higher.
+N $73F0 Add the parachute if this is level #N$03 or higher.
   $73F0,$04 #REGix=#R$DAD8.
-  $73F4,$05 Call #R$79D2 if this is level #N$04 or higher.
+  $73F4,$05 Call #R$79D2 if this is level #N$03 or higher.
   $73F9,$01 Return.
 
 c $73FA Handler: Room #N$0A
@@ -5116,9 +5118,11 @@ N $7994 Spider is descending: decrease height until reaching the minimum.
 . switch to ascending).
   $799C,$03 Write the new height to *#REGix+#N$01.
   $799F,$02 Jump to #R$79AC.
+N $79A1 Switch the spiders direction to descending.
 @ $79A1 label=Spider_Switch_To_Descending
   $79A1,$05 Write #N$FF to *#R$79D1 (set direction to descending).
   $79A6,$02 Jump to #R$79AC.
+N $79A8 Switch the spiders direction to ascending.
 @ $79A8 label=Spider_Switch_To_Ascending
   $79A8,$04 Write #N$00 to *#R$79D1 (set direction to ascending).
 N $79AC Pick a random spider animation frame and check for collision with Percy.
@@ -12444,7 +12448,7 @@ N $BB91 Back up current sprite positions for the next frame's erase pass.
 N $BB9C Scan the collision overlay buffer and merge sprite pixels onto the
 . background. Each non-zero, non-#N$FF byte in the buffer is a countdown;
 . when it reaches zero the sprite pixel data is composited with the scenery.
-  $BB9C,$03 Set #REGhl to #N$F7FF (one byte before the overlay buffer).
+  $BB9C,$03 Set #REGhl to #R$F800(#N$F7FF) (one byte before the overlay buffer).
   $BB9F,$01 Set #REGa to #N$00.
 @ $BBA0 label=Collision_Scan_Loop
   $BBA0,$05 Increment #REGhl and jump back to #R$BBA0 if *#REGhl is zero
@@ -13046,32 +13050,67 @@ R $BEE0 C Attribute buffer base high byte
 R $BEE0 D Bit 0: width flag, Bit 1: set if straddling two character rows
 R $BEE0 E Attribute INK colour
 R $BEE0 HL Screen buffer address
-C $BEE0,$08 Check if the sprite straddles two character rows by testing bits
+M $BEE0,$08 Check if the sprite straddles two character rows by testing bits
 . 0-2 of #REGh; if non-zero, set bit 1 of #REGd.
+C $BEE0,$01 #REGa=#REGh.
+C $BEE1,$02,b$01 Keep only bits 0-2.
+C $BEE3,$03 Jump to #R$BEE8 if #REGa is zero.
+C $BEE6,$02 Set bit 1 of #REGd.
 N $BEE8 Convert the screen buffer address to the attribute buffer address.
 @ $BEE8 label=Unused_Convert_To_Attribute
-C $BEE8,$08 Rotate #REGh right three times, mask with #N$03 and OR with #REGc
+M $BEE8,$08 Rotate #REGh right three times, mask with #N$03 and OR with #REGc
 . to form the attribute buffer high byte.
+C $BEE8,$01 #REGa=#REGh.
+C $BEE9,$03 Rotate #REGh right three times.
+C $BEEC,$02,b$01 Keep only bits 0-1.
+C $BEEE,$01 Set the bits from #REGc.
+C $BEEF,$01 #REGh=#REGa.
 C $BEF0,$04 Jump to #R$BF13 if bit 0 of #REGd is clear (one column wide).
-N $BEF2 Two columns wide: write the INK colour to two adjacent attribute cells.
-C $BEF4,$05 Read *#REGhl, mask off the existing INK with #N$F8, OR in #REGe
+N $BEF4 Two columns wide: write the INK colour to two adjacent attribute cells.
+M $BEF4,$05 Read *#REGhl, mask off the existing INK with #N$F8, OR in #REGe
 . and write back.
-C $BEF9,$06 Advance to the next column, read, mask, OR and write back.
+C $BEF4,$01 #REGa=*#REGhl.
+C $BEF5,$02,b$01 Keep only bits 3-7.
+C $BEF7,$01 Set the bits from #REGe.
+C $BEF8,$01 Write #REGa to *#REGhl.
+M $BEF9,$06 Advance to the next column, read, mask, OR and write back.
+C $BEF9,$01 Increment #REGl by one.
+C $BEFA,$01 #REGa=*#REGhl.
+C $BEFB,$02,b$01 Keep only bits 3-7.
+C $BEFD,$01 Set the bits from #REGe.
+C $BEFE,$01 Write #REGa to *#REGhl.
 C $BEFF,$01 Move back to the first column.
 C $BF00,$03 Return if bit 1 of #REGd is clear (no row straddling).
 N $BF03 Sprite straddles two character rows: write the INK colour to the next
 . row as well.
 C $BF03,$04 Add #N($0020,$04,$04) to #REGhl to advance to the next attribute row.
-C $BF07,$05 Read, mask with #N$F8, OR in #REGe and write back.
-C $BF0C,$06 Advance to the next column, read, mask, OR and write back.
+M $BF07,$05 Read, mask with #N$F8, OR in #REGe and write back.
+C $BF07,$01 #REGa=*#REGhl.
+C $BF08,$02,b$01 Keep only bits 3-7.
+C $BF0A,$01 Set the bits from #REGe.
+C $BF0B,$01 Write #REGa to *#REGhl.
+M $BF0C,$06 Advance to the next column, read, mask, OR and write back.
+C $BF0C,$01 Increment #REGl by one.
+C $BF0D,$01 #REGa=*#REGhl.
+C $BF0E,$02,b$01 Keep only bits 3-7.
+C $BF10,$01 Set the bits from #REGe.
+C $BF11,$01 Write #REGa to *#REGhl.
 C $BF12,$01 Return.
 N $BF13 One column wide: write the INK colour to a single attribute cell.
 @ $BF13 label=Unused_Write_1Wide_Attribute
-C $BF13,$05 Read *#REGhl, mask with #N$F8, OR in #REGe and write back.
+M $BF13,$05 Read *#REGhl, mask with #N$F8, OR in #REGe and write back.
+C $BF13,$01 #REGa=*#REGhl.
+C $BF14,$02,b$01 Keep only bits 3-7.
 @ $BF16 label=Unused_Write_1Wide_Attribute_Loop
+C $BF16,$01 Set the bits from #REGe.
+C $BF17,$01 Write #REGa to *#REGhl.
 C $BF18,$03 Return if bit 1 of #REGd is clear (no row straddling).
 C $BF1B,$04 Add #N($0020,$04,$04) to #REGhl to advance to the next attribute row.
-C $BF1F,$05 Read, mask with #N$F8, OR in #REGe and write back.
+M $BF1F,$05 Read, mask with #N$F8, OR in #REGe and write back.
+C $BF1F,$01 #REGa=*#REGhl.
+C $BF20,$02,b$01 Keep only bits 3-7.
+C $BF22,$01 Set the bits from #REGe.
+C $BF23,$01 Write #REGa to *#REGhl.
 C $BF24,$01 Return.
 
 u $BF25 Unused: Fragment
@@ -13122,7 +13161,7 @@ C $BF56,$05 Advance to the next column and OR the next byte onto the second
 C $BF5B,$02 Move back to the first column and advance the sprite data pointer.
 C $BF5D,$01 Move down one pixel row in the screen buffer.
 C $BF5E,$02 Check if the pixel row has crossed a character boundary.
-C $BF60,$03 Call #N$BD67 to adjust the screen address if needed.
+C $BF60,$03 Call #N$BD85 to adjust the screen address if needed.
 C $BF63,$02 Decrease the row counter and loop back to #R$BF53 until all #N$08
 . rows are drawn.
 N $BF65 Apply attributes for the 3-wide sprite (two columns).
@@ -13138,7 +13177,7 @@ C $BF6F,$02 Set the row counter to #N$08 in #REGb.
 C $BF71,$03 OR the sprite data byte from *#REGde onto the screen at *#REGhl.
 C $BF74,$01 Move down one pixel row in the screen buffer.
 C $BF75,$02 Check if the pixel row has crossed a character boundary.
-C $BF77,$03 Call #N$BD67 to adjust the screen address if needed.
+C $BF77,$03 Call #N$BD85 to adjust the screen address if needed.
 C $BF7A,$01 Advance the sprite data pointer.
 C $BF7B,$02 Decrease the row counter and loop back to #R$BF71 until all #N$08
 . rows are drawn.
@@ -13173,27 +13212,61 @@ R $BF94 C Attribute buffer base high byte
 R $BF94 D Bit 0: width flag, Bit 1: set if straddling two character rows
 R $BF94 E Attribute INK colour
 R $BF94 HL Screen buffer address
-C $BF94,$06 Check if the sprite straddles two character rows by testing bits
+M $BF94,$08 Check if the sprite straddles two character rows by testing bits
 . 0-2 of #REGh; if non-zero, set bit 1 of #REGd.
+C $BF94,$01 #REGa=#REGh.
+C $BF95,$02,b$01 Keep only bits 0-2.
+C $BF97,$03 Jump to #R$BF9C if #REGa is zero.
+C $BF9A,$02 Set bit 1 of #REGd.
 @ $BF9C label=Unused_3Wide_Convert_Attr
-C $BF9C,$08 Convert the screen address to the attribute address using #REGc as
+M $BF9C,$08 Convert the screen address to the attribute address using #REGc as
 . the base high byte.
+C $BF9C,$04 Rotate #REGh right three times.
+C $BFA0,$02,b$01 Keep only bits 0-1.
+C $BFA2,$01 Set the bits from #REGc.
+C $BFA3,$01 #REGh=#REGa.
 C $BFA4,$04 Jump to #R$BFC7 if bit 0 of #REGd is clear (one column wide).
 N $BFA8 Two columns wide: write the INK colour to two adjacent attribute cells.
-C $BFA8,$05 Read *#REGhl, mask with #N$F8, OR in #REGe and write back.
-C $BFAD,$06 Advance to the next column, read, mask, OR and write back.
+M $BFA8,$05 Read *#REGhl, mask with #N$F8, OR in #REGe and write back.
+C $BFA8,$01 #REGa=*#REGhl.
+C $BFA9,$02,b$01 Keep only bits 3-7.
+C $BFAB,$01 Set the bits from #REGe.
+C $BFAC,$01 Write #REGa to *#REGhl.
+M $BFAD,$06 Advance to the next column, read, mask, OR and write back.
+C $BFAD,$01 Increment #REGl by one.
+C $BFAE,$01 #REGa=*#REGhl.
+C $BFAF,$02,b$01 Keep only bits 3-7.
+C $BFB1,$01 Set the bits from #REGe.
+C $BFB2,$01 Write #REGa to *#REGhl.
 C $BFB3,$01 Move back to the first column.
 C $BFB4,$03 Return if bit 1 of #REGd is clear (no row straddling).
 C $BFB7,$04 Add #N($0020,$04,$04) to advance to the next attribute row.
-C $BFBB,$05 Read, mask with #N$F8, OR in #REGe and write back.
-C $BFC0,$06 Advance to the next column, read, mask, OR and write back.
+M $BFBB,$05 Read, mask with #N$F8, OR in #REGe and write back.
+C $BFBB,$01 #REGa=*#REGhl.
+C $BFBC,$02,b$01 Keep only bits 3-7.
+C $BFBE,$01 Set the bits from #REGe.
+C $BFBF,$01 Write #REGa to *#REGhl.
+M $BFC0,$06 Advance to the next column, read, mask, OR and write back.
+C $BFC0,$01 Increment #REGl by one.
+C $BFC1,$01 #REGa=*#REGhl.
+C $BFC2,$02,b$01 Keep only bits 3-7.
+C $BFC4,$01 Set the bits from #REGe.
+C $BFC5,$01 Write #REGa to *#REGhl.
 C $BFC6,$01 Return.
 N $BFC7 One column wide: write the INK colour to a single attribute cell.
 @ $BFC7 label=Unused_3Wide_Write_1Col_Attr
-C $BFC7,$05 Read *#REGhl, mask with #N$F8, OR in #REGe and write back.
+M $BFC7,$05 Read *#REGhl, mask with #N$F8, OR in #REGe and write back.
+C $BFC7,$01 #REGa=*#REGhl.
+C $BFC8,$02,b$01 Keep only bits 3-7.
+C $BFCA,$01 Set the bits from #REGe.
+C $BFCB,$01 Write #REGa to *#REGhl.
 C $BFCC,$03 Return if bit 1 of #REGd is clear (no row straddling).
 C $BFCF,$04 Add #N($0020,$04,$04) to advance to the next attribute row.
-C $BFD3,$05 Read, mask with #N$F8, OR in #REGe and write back.
+M $BFD3,$05 Read, mask with #N$F8, OR in #REGe and write back.
+C $BFD3,$01 #REGa=*#REGhl.
+C $BFD4,$02,b$01 Keep only bits 3-7.
+C $BFD6,$01 Set the bits from #REGe.
+C $BFD7,$01 Write #REGa to *#REGhl.
 C $BFD8,$01 Return.
 
 u $BFD9 Unused: Fragment 2
@@ -13202,7 +13275,11 @@ D $BFD9 Orphaned fragment from an earlier version of the attribute writing code.
 C $BFD9,$01 Copy #REGd to #REGc.
 C $BFDA,$01 Return if zero flag is set.
 C $BFDB,$04 Add #N($0020,$04,$04) to advance to the next attribute row.
-C $BFDF,$05 Read, mask with #N$F8, OR in #REGe and write back.
+M $BFDF,$05 Read, mask with #N$F8, OR in #REGe and write back.
+C $BFDF,$01 #REGa=*#REGhl.
+C $BFE0,$02,b$01 Keep only bits 3-7.
+C $BFE2,$01 Set the bits from #REGe.
+C $BFE3,$01 Write #REGa to *#REGhl.
 C $BFE4,$01 Return.
 
 u $BFE5
