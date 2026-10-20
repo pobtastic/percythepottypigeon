@@ -69,12 +69,12 @@ Unused routine to write INK colour to attribute cells for a 3-wide sprite. Ident
 <td class="asm-label">Unused_Write_3Wide_Attributes</td>
 <td class="address-1"><span id="49044"></span>49044</td>
 <td class="instruction">LD A,H</td>
-<td class="comment-1" rowspan="4">Check if the sprite straddles two character rows by testing bits 0-2 of <span class="register">H</span>; if non-zero, set bit 1 of <span class="register">D</span>.</td>
+<td class="comment-1" rowspan="5">Check if the sprite straddles two character rows by testing bits 0-2 of <span class="register">H</span>; if non-zero, set bit 1 of <span class="register">D</span>.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="49045"></span>49045</td>
-<td class="instruction">AND 7</td>
+<td class="instruction">AND %00000111</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -89,8 +89,7 @@ Unused routine to write INK colour to attribute cells for a 3-wide sprite. Ident
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="49050"></span>49050</td>
-<td class="instruction">DEFB 203,202</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="instruction">SET 1,D</td>
 </tr>
 <tr>
 <td class="asm-label">Unused_3Wide_Convert_Attr</td>
@@ -116,7 +115,7 @@ Unused routine to write INK colour to attribute cells for a 3-wide sprite. Ident
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="49056"></span>49056</td>
-<td class="instruction">AND 3</td>
+<td class="instruction">AND %00000011</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -158,7 +157,7 @@ Two columns wide: write the INK colour to two adjacent attribute cells.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="49065"></span>49065</td>
-<td class="instruction">AND 248</td>
+<td class="instruction">AND %11111000</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -184,7 +183,7 @@ Two columns wide: write the INK colour to two adjacent attribute cells.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="49071"></span>49071</td>
-<td class="instruction">AND 248</td>
+<td class="instruction">AND %11111000</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -233,7 +232,7 @@ Two columns wide: write the INK colour to two adjacent attribute cells.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="49084"></span>49084</td>
-<td class="instruction">AND 248</td>
+<td class="instruction">AND %11111000</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -259,7 +258,7 @@ Two columns wide: write the INK colour to two adjacent attribute cells.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="49090"></span>49090</td>
-<td class="instruction">AND 248</td>
+<td class="instruction">AND %11111000</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -296,7 +295,7 @@ One column wide: write the INK colour to a single attribute cell.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="49096"></span>49096</td>
-<td class="instruction">AND 248</td>
+<td class="instruction">AND %11111000</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -339,7 +338,7 @@ One column wide: write the INK colour to a single attribute cell.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="49108"></span>49108</td>
-<td class="instruction">AND 248</td>
+<td class="instruction">AND %11111000</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -372,7 +371,7 @@ Next: <a href="49113.html">49113</a>
 <footer>
 <div class="release"></div>
 <div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
-<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
+<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 10.1.</div>
 <div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
 <div><a href="../../asm/BF94.html">Switch to hexadecimal</a>.</div>
 </footer>

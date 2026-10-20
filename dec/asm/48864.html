@@ -74,7 +74,7 @@ Unused routine to write INK colour to attribute cells for a sprite. Converts the
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="48865"></span>48865</td>
-<td class="instruction">AND 7</td>
+<td class="instruction">AND %00000111</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -125,7 +125,7 @@ Convert the screen buffer address to the attribute buffer address.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="48876"></span>48876</td>
-<td class="instruction">AND 3</td>
+<td class="instruction">AND %00000011</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -141,23 +141,22 @@ Convert the screen buffer address to the attribute buffer address.
 <td class="asm-label"></td>
 <td class="address-1"><span id="48880"></span>48880</td>
 <td class="instruction">BIT 0,D</td>
-<td class="comment-1" rowspan="1">Jump to <a href="48864.html#48915">Unused_Write_1Wide_Attribute</a> if bit 0 of <span class="register">D</span> is clear (one column wide).</td>
+<td class="comment-1" rowspan="2">Jump to <a href="48864.html#48915">Unused_Write_1Wide_Attribute</a> if bit 0 of <span class="register">D</span> is clear (one column wide).</td>
+</tr>
+<tr>
+<td class="asm-label"></td>
+<td class="address-1"><span id="48882"></span>48882</td>
+<td class="instruction">JR Z,48915</td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
-<span id="48882"></span>
+<span id="48884"></span>
 <div class="comments">
 <div class="paragraph">
 Two columns wide: write the INK colour to two adjacent attribute cells.
 </div>
 </div>
 </td>
-</tr>
-<tr>
-<td class="asm-label"></td>
-<td class="address-1"><span id="48882"></span>48882</td>
-<td class="instruction">DEFB 40,31</td>
-<td class="comment-1" rowspan="1"></td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -168,7 +167,7 @@ Two columns wide: write the INK colour to two adjacent attribute cells.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="48885"></span>48885</td>
-<td class="instruction">AND 248</td>
+<td class="instruction">AND %11111000</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -194,7 +193,7 @@ Two columns wide: write the INK colour to two adjacent attribute cells.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="48891"></span>48891</td>
-<td class="instruction">AND 248</td>
+<td class="instruction">AND %11111000</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -253,7 +252,7 @@ Sprite straddles two character rows: write the INK colour to the next row as wel
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="48904"></span>48904</td>
-<td class="instruction">AND 248</td>
+<td class="instruction">AND %11111000</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -279,7 +278,7 @@ Sprite straddles two character rows: write the INK colour to the next row as wel
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="48910"></span>48910</td>
-<td class="instruction">AND 248</td>
+<td class="instruction">AND %11111000</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -309,14 +308,14 @@ One column wide: write the INK colour to a single attribute cell.
 </tr>
 <tr>
 <td class="asm-label">Unused_Write_1Wide_Attribute</td>
-<td class="address-1"><span id="48915"></span>48915</td>
+<td class="address-2"><span id="48915"></span>48915</td>
 <td class="instruction">LD A,(HL)</td>
 <td class="comment-1" rowspan="4">Read *<span class="register">HL</span>, mask with 248 OR in <span class="register">E</span> and write back.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="48916"></span>48916</td>
-<td class="instruction">AND 248</td>
+<td class="instruction">AND %11111000</td>
 </tr>
 <tr>
 <td class="asm-label">Unused_Write_1Wide_Attribute_Loop</td>
@@ -359,7 +358,7 @@ One column wide: write the INK colour to a single attribute cell.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="48928"></span>48928</td>
-<td class="instruction">AND 248</td>
+<td class="instruction">AND %11111000</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -392,7 +391,7 @@ Next: <a href="48933.html">48933</a>
 <footer>
 <div class="release"></div>
 <div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
-<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
+<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 10.1.</div>
 <div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
 <div><a href="../../asm/BEE0.html">Switch to hexadecimal</a>.</div>
 </footer>

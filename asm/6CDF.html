@@ -318,7 +318,7 @@ Update the butterfly animation frame with a wing-flapping effect.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6d2d"></span>6D2D</td>
-<td class="instruction">XOR $01</td>
+<td class="instruction">XOR %00000001</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -335,7 +335,7 @@ Update the butterfly animation frame with a wing-flapping effect.
 <td class="asm-label"></td>
 <td class="address-1"><span id="6d34"></span>6D34</td>
 <td class="instruction">BIT 2,B</td>
-<td class="comment-1" rowspan="2">If bit 2 of <span class="register">B</span> is set, jump to <a href="6CDF.html#6d3a">Set_Butterfly_Frame</a>; otherwise add 02 for the alternate colour variant.</td>
+<td class="comment-1" rowspan="2">Jump to <a href="6CDF.html#6d3a">Set_Butterfly_Frame</a> if bit 2 of <span class="register">B</span> is set.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -346,7 +346,7 @@ Update the butterfly animation frame with a wing-flapping effect.
 <td class="asm-label"></td>
 <td class="address-1"><span id="6d38"></span>6D38</td>
 <td class="instruction">ADD A,$02</td>
-<td class="comment-1" rowspan="1"></td>
+<td class="comment-1" rowspan="1">Otherwise add 02 for the alternate colour variant.</td>
 </tr>
 <tr>
 <td class="asm-label">Set_Butterfly_Frame</td>
@@ -383,7 +383,7 @@ Decrement the movement delay and pick a new direction when it expires.
 <td class="comment-1" rowspan="1">Jump to <a href="6CDF.html#6d58">Move_Butterfly</a> if the delay has not reached zero.</td>
 </tr>
 <tr>
-<td class="asm-label">Handle_Butterfly_0</td>
+<td class="asm-label">Pick_Butterfly_Direction</td>
 <td class="address-2"><span id="6d43"></span>6D43</td>
 <td class="instruction">CALL <a href="6C39.html">GenerateRandomNumber</a></td>
 <td class="comment-1" rowspan="1">Call <a href="6C39.html">GenerateRandomNumber</a> to generate a random number.</td>
@@ -506,8 +506,8 @@ Move the butterfly in its current direction.
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="6d6b"></span>6D6B</td>
-<td class="instruction">JR C,<a href="6CDF.html#6d43">Handle_Butterfly_0</a></td>
-<td class="comment-1" rowspan="1">Jump to <a href="6CDF.html#6d43">Handle_Butterfly_0</a> if the move was invalid (carry set) and pick a new direction.</td>
+<td class="instruction">JR C,<a href="6CDF.html#6d43">Pick_Butterfly_Direction</a></td>
+<td class="comment-1" rowspan="1">Jump to <a href="6CDF.html#6d43">Pick_Butterfly_Direction</a> if the move was invalid (carry set) and pick a new direction.</td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
@@ -645,7 +645,7 @@ Next: <a href="6D90.html">6D90</a>
 <footer>
 <div class="release"></div>
 <div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
-<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
+<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 10.1.</div>
 <div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
 <div><a href="../dec/asm/27871.html">Switch to decimal</a>.</div>
 </footer>

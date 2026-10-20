@@ -39,6 +39,16 @@ Next: <a href="7286.html">7286</a>
 <td class="routine-comment" colspan="5">
 <div class="details">
 <div class="paragraph">
+<table class="">
+<tr>
+<th colspan="1" rowspan="1">Room 02 / Level 01</th>
+</tr>
+<tr>
+<td class="" colspan="1" rowspan="1"><img alt="populated-room-2-level-1" src="../images/scr/populated-room-2-level-1.png" /></td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
 Handles room 02 logic. The current level in <span class="register">B</span> controls which objects are initialised or updated on each pass.
 </div>
 <div class="paragraph">
@@ -57,11 +67,11 @@ Handles room 02 logic. The current level in <span class="register">B</span> cont
 </tr>
 <tr>
 <td class="centre" colspan="1" rowspan="1">03</td>
-<td class="centre" colspan="1" rowspan="1">Cat</td>
+<td class="centre" colspan="1" rowspan="1">Cat, Helicopter</td>
 </tr>
 <tr>
 <td class="centre" colspan="1" rowspan="1">04</td>
-<td class="centre" colspan="1" rowspan="1">Cat, Helicopter</td>
+<td class="centre" colspan="1" rowspan="1">Cat, Parachute, Helicopter</td>
 </tr>
 <tr>
 <td class="centre" colspan="1" rowspan="1">05+</td>
@@ -132,7 +142,7 @@ Add a cat for any level other than level 02.
 <span id="7271"></span>
 <div class="comments">
 <div class="paragraph">
-Add the parachute if this is level 05 or higher.
+Add the parachute if this is level 04 or higher.
 </div>
 </div>
 </td>
@@ -153,13 +163,13 @@ Add the parachute if this is level 05 or higher.
 <td class="asm-label"></td>
 <td class="address-1"><span id="7276"></span>7276</td>
 <td class="instruction">CP $04</td>
-<td class="comment-1" rowspan="1">Is this level 04?</td>
+<td class="comment-1" rowspan="1">Compare the level with 04.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
 <td class="address-1"><span id="7278"></span>7278</td>
 <td class="instruction">CALL NC,<a href="79D2.html">Handler_Parachute_Descent</a></td>
-<td class="comment-1" rowspan="1">Call <a href="79D2.html">Handler_Parachute_Descent</a> if this is level 05 or higher.</td>
+<td class="comment-1" rowspan="1">Call <a href="79D2.html">Handler_Parachute_Descent</a> if this is level 04 or higher.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -172,7 +182,7 @@ Add the parachute if this is level 05 or higher.
 <span id="727c"></span>
 <div class="comments">
 <div class="paragraph">
-Add the helicopter if this is level 04 or higher.
+Add the helicopter if this is level 03 or higher.
 </div>
 </div>
 </td>
@@ -187,7 +197,7 @@ Add the helicopter if this is level 04 or higher.
 <td class="asm-label"></td>
 <td class="address-1"><span id="7280"></span>7280</td>
 <td class="instruction">CP $03</td>
-<td class="comment-1" rowspan="2">Call <a href="7439.html">Handler_Helicopter</a> if this is level 04 or higher.</td>
+<td class="comment-1" rowspan="2">Call <a href="7439.html">Handler_Helicopter</a> if this is level 03 or higher.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -215,7 +225,7 @@ Next: <a href="7286.html">7286</a>
 <footer>
 <div class="release"></div>
 <div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
-<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
+<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 10.1.</div>
 <div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
 <div><a href="../dec/asm/29285.html">Switch to decimal</a>.</div>
 </footer>

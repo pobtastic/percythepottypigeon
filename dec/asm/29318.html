@@ -39,6 +39,16 @@ Next: <a href="29373.html">29373</a>
 <td class="routine-comment" colspan="5">
 <div class="details">
 <div class="paragraph">
+<table class="">
+<tr>
+<th colspan="1" rowspan="1">Room 3 / Level 1</th>
+</tr>
+<tr>
+<td class="" colspan="1" rowspan="1"><img alt="populated-room-3-level-1" src="../../images/scr/populated-room-3-level-1.png" /></td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
 Handles room 3 logic. The current level in <span class="register">B</span> controls which objects are initialised or updated on each pass.
 </div>
 <div class="paragraph">
@@ -225,7 +235,7 @@ Add the plane if this is level 4 or higher.
 <td class="asm-label"></td>
 <td class="address-1"><span id="29356"></span>29356</td>
 <td class="instruction">CP 4</td>
-<td class="comment-1" rowspan="1">Is this level 4?</td>
+<td class="comment-1" rowspan="1">Compare the level with 4.</td>
 </tr>
 <tr>
 <td class="asm-label"></td>
@@ -237,7 +247,7 @@ Add the plane if this is level 4 or higher.
 <td class="asm-label"></td>
 <td class="address-1"><span id="29359"></span>29359</td>
 <td class="instruction">CALL NC,<a href="30336.html">Handler_Plane</a></td>
-<td class="comment-1" rowspan="1">Call <a href="30336.html">Handler_Plane</a> if this is level 5 or higher.</td>
+<td class="comment-1" rowspan="1">Call <a href="30336.html">Handler_Plane</a> if this is level 4 or higher.</td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
@@ -293,7 +303,7 @@ Next: <a href="29373.html">29373</a>
 <footer>
 <div class="release"></div>
 <div class="copyright">&copy; 2026 Urbanscan<br />&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
-<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 9.6.</div>
+<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 10.1.</div>
 <div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
 <div><a href="../../asm/7286.html">Switch to hexadecimal</a>.</div>
 </footer>
