@@ -1,9 +1,9 @@
-; Copyright 1984 Gremlin Graphics Software Ltd, 2026 Urbanscan, 2026 ArcadeGeek LTD.
+; Copyright Gremlin Graphics Software Ltd 1984, Urbanscan Ltd, 2026 ArcadeGeek LTD.
 ; NOTE: Disassembly is Work-In-Progress.
 ; Label naming is loosely based on Action_ActionName_SubAction e.g. Print_HighScore_Loop.
 
 > $C1DD @start
-> $C1DD @expand=#DEF1(#SKOOLKID(addr)(name)#HTML(<a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/#EVAL({addr},16,4).html">){name}#HTML(</a>))
+> $C1DD @expand=#DEF1(#SKOOLKID(addr,anchor=0)(name)#HTML(<a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/#IF({{mode[base]}}==16)(hex/)asm/#IF({{mode[base]}}==16)(#EVAL({addr},16,4),#EVAL({addr})).html#IF({anchor})(#CHR(35)#IF({{mode[base]}}==16)(#EVAL({anchor},16,4),#EVAL({anchor})))">){name}#HTML(</a>))
 > $C1DD @remote=main:$C1DD
 c $C1DD Game Entry Point
 @ $C1DD label=GameEntryPoint
