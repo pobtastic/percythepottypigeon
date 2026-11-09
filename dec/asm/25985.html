@@ -1,8 +1,74 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <title>Percy the Potty Pigeon: Routine at 25985</title>
 <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="Percy the Potty Pigeon: Routine at 25985. Complete ZX Spectrum RAM disassembly." />
+<meta property="og:title" content="Percy the Potty Pigeon: Routine at 25985" />
+<meta property="og:description" content="Percy the Potty Pigeon: Routine at 25985. Complete ZX Spectrum RAM disassembly." />
+<meta property="og:site_name" content="ArcadeGeek" />
+<meta property="og:type" content="article" />
+<link rel="canonical" href="https://skoolkit.arcadegeek.co.uk/percythepottypigeon/asm/25985.html" />
+<meta property="og:url" content="https://skoolkit.arcadegeek.co.uk/percythepottypigeon/asm/25985.html" />
+<meta property="og:image" content="https://skoolkit.arcadegeek.co.uk/percythepottypigeon/images/logo.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<script type="application/ld+json">
+{
+"@context": "https://schema.org",
+"@graph": [
+{
+"@type": "WebSite",
+"@id": "https://skoolkit.arcadegeek.co.uk/#website",
+"name": "ArcadeGeek",
+"url": "https://skoolkit.arcadegeek.co.uk/"
+},
+{
+"@type": "TechArticle",
+"headline": "Percy the Potty Pigeon: Routine at 25985",
+"name": "Percy the Potty Pigeon: Routine at 25985",
+"description": "Percy the Potty Pigeon: Routine at 25985. Complete ZX Spectrum RAM disassembly.",
+"inLanguage": "en",
+"isPartOf": {"@id": "https://skoolkit.arcadegeek.co.uk/#website"},
+"author": {
+"@type": "Organization",
+"name": "ArcadeGeek",
+"url": "https://www.arcadegeek.co.uk/"
+},
+"about": {
+"@type": "VideoGame",
+"name": "Percy the Potty Pigeon",
+"gamePlatform": "ZX Spectrum"
+}
+,"url": "https://skoolkit.arcadegeek.co.uk/percythepottypigeon/asm/25985.html"
+,"image": "https://skoolkit.arcadegeek.co.uk/percythepottypigeon/images/logo.png"
+},
+{
+"@type": "BreadcrumbList",
+"itemListElement": [
+{
+"@type": "ListItem",
+"position": 1,
+"name": "ArcadeGeek",
+"item": "https://skoolkit.arcadegeek.co.uk/"
+},
+{
+"@type": "ListItem",
+"position": 2,
+"name": "Percy the Potty Pigeon"
+,"item": "https://skoolkit.arcadegeek.co.uk/percythepottypigeon/"
+}
+,{
+"@type": "ListItem",
+"position": 3,
+"name": "Routine at 25985"
+,"item": "https://skoolkit.arcadegeek.co.uk/percythepottypigeon/asm/25985.html"
+}
+]
+}
+]
+}
+</script>
 <link rel="stylesheet" type="text/css" href="../skoolkit.css" />
 <link rel="stylesheet" type="text/css" href="../skoolkit-dark.css" />
 <link rel="stylesheet" type="text/css" href="../skoolkit-wide.css" />
@@ -67,7 +133,7 @@ Used by the routines at <a href="25831.html">Lose_Life</a>, <a href="25948.html"
 <td class="asm-label"></td>
 <td class="address-1"><span id="25986"></span>25986</td>
 <td class="instruction">LD DE,(23606)</td>
-<td class="comment-1" rowspan="1"><span class="register">DE</span>=*<a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/5C36.html">CHARS</a>.</td>
+<td class="comment-1" rowspan="1"><span class="register">DE</span>=*<a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/asm/23606.html">CHARS</a>.</td>
 </tr>
 <tr>
 <td class="routine-comment" colspan="5">
@@ -90,7 +156,7 @@ Font data starts at character 32 (ASCII "SPACE"), so this allows us to reference
 <span id="25992"></span>
 <div class="comments">
 <div class="paragraph">
-<a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/5C36.html">CHARS</a> points 256 bytes before the actual font data, so incrementing <span class="register">D</span> adds 256 to compensate.
+<a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/asm/23606.html">CHARS</a> points 256 bytes before the actual font data, so incrementing <span class="register">D</span> adds 256 to compensate.
 </div>
 </div>
 </td>
@@ -211,7 +277,7 @@ Next: <a href="26011.html">26011</a>
 <footer>
 <div class="release"></div>
 <div class="copyright">&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; Urbanscan Ltd<br />&copy; 2026 ArcadeGeek LTD.</div>
-<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 10.1.</div>
+<div class="created">Created using <a href="https://skoolkit.ca">SkoolKit</a> 10.2.</div>
 <div class="repository">Link to <a rel="noopener nofollow" href="https://github.com/pobtastic/percythepottypigeon/">Source code</a>.</div>
 <div><a href="../../asm/6581.html">Switch to hexadecimal</a>.</div>
 </footer>
