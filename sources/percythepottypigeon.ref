@@ -5,7 +5,7 @@
 ;
 ; To build the HTML disassembly, run these commands:
 ;   tap2sna.py @percythepottypigeon.t2s
-;   sna2skool.py -H -c sources/percythepottypigeon.ctl PercythePottyPigeon.z80 > sources/percythepottypigeon.skool
+;   sna2skool.py -H --ini ListRefs=2 -c sources/percythepottypigeon.ctl PercythePottyPigeon.z80 > sources/percythepottypigeon.skool
 ;   skool2html.py -H sources/percythepottypigeon.skool -T dark -T wide -toOa
 
 [Config]
@@ -18,6 +18,9 @@ Game=Percy the Potty Pigeon
 Logo=#SCR$02,$00,$00,$18,$06,$4000,$5800(/images/logo)
 Copyright=&copy; 1984 Gremlin Graphics Software Ltd<br />&copy; Urbanscan Ltd<br />&copy; 2026 ArcadeGeek LTD.
 Repository=https://github.com/pobtastic/percythepottypigeon/
+Canonical=https://skoolkit.arcadegeek.co.uk/percythepottypigeon/
+GameIndexUrl=https://skoolkit.arcadegeek.co.uk/percythepottypigeon/
+OgImage=https://skoolkit.arcadegeek.co.uk/percythepottypigeon/images/logo.png
 LinkInternalOperands=1
 AddressAnchor={address#IF({base}==16)(:04x)}
 

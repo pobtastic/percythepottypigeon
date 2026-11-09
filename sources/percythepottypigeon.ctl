@@ -122,8 +122,8 @@ N $5E52 The main room data parsing loop. Reads a command byte from the room
 N $5E6D If none of the above matched, trigger an error (with an arbitrary error
 . code).
 @ $5E6D label=PopulateRoomBuffer_Error
-  $5E6D,$01 #HTML(Run the ERROR_1 routine:
-. <a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/0008.html">RST #N$08</a>.)
+  $5E6D,$01 Run the ERROR_1 routine:
+. #SKOOLKID$0008(RST #N$08).
 B $5E6E,$01 Error code: #N$04 ("Out of memory").
 N $5E6F Command #N$00: no-op. Skip this byte and continue parsing.
 @ $5E6F label=Command00_Skip
@@ -606,8 +606,8 @@ D $5FE7 #HTML(<code>RST #N$08</code> with the "Invalid argument" error code.)
 .
 . Used when the table index >= #N$11 in #R$5FC6, and when an invalid tile set
 . is requested in #R$5E72.
-  $5FE7,$01 #HTML(Run the ERROR_1 routine:
-. <a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/0008.html">RST #N$08</a>.)
+  $5FE7,$01 Run the ERROR_1 routine:
+. #SKOOLKID$0008(RST #N$08).
 B $5FE8,$01 Error code: #N$0A ("Invalid argument").
 
 c $5FE9 Main Game Loop
@@ -763,7 +763,7 @@ N $60C2 Play a rising sound effect while the egg is in flight.
   $60C7,$04 #REGhl+=#N$0010.
   $60CB,$03 Write #REGhl to *#R$5FB7.
   $60CE,$03 #REGde=#N($0004,$04,$04).
-  $60D1,$03 #HTML(Call <a rel="noopener nofollow" href="https://skoolkid.github.io/rom/asm/03B5.html">BEEP</a>.)
+  $60D1,$03 Call #SKOOLKID$03B5(BEEP).
   $60D4,$01 Disable interrupts.
   $60D5,$02 Restore #REGix from the stack.
   $60D7,$02 Jump to #R$610E.
@@ -804,7 +804,7 @@ N $612B Percy is falling so play a descending beep and move downward.
   $612B,$0A Write *#R$5FB7 + #N($0010,$04,$04) back to *#R$5FB7.
   $6135,$03 #REGde=#N($0004,$04,$04).
   $6138,$02 Stash #REGix on the stack.
-  $613A,$03 #HTML(Call <a rel="noopener nofollow" href="https://skoolkid.github.io/rom/asm/03B5.html">BEEP</a>.)
+  $613A,$03 Call #SKOOLKID$03B5(BEEP).
   $613D,$02 Restore #REGix from the stack.
   $613F,$04 Write #N$FF to *#REGix+#N$02.
 N $6143 Override input and force all directions inactive and only allow down.
@@ -1186,7 +1186,7 @@ N $6377 Determine whether Percy is airborne or grounded, and facing left or
 . right.
 @ $6377 label=UpdatePercyAnimation_ChooseFrame
   $6377,$0D Jump to #R$639E if Percy's Y position (*#REGix+#N$01) is on the
-. ground, or if *#R$5FAD is set (and percy has landed on a platform).
+. ground, or if *#R$5FAD is set (and Percy has landed on a platform).
 N $6384 Percy is airborne so select flying frame based on direction.
   $6384,$06 Jump to #R$6393 if *#R$5FA5 is unset (Percy is facing right).
 N $638A Flying left: frame = flap counter + #N$00.
@@ -1222,8 +1222,8 @@ D $63BB Prints the heads-up display header showing Energy, Lives and Score, then
 . create a colourful ground strip.
   $63BB,$05 Write #N$01 to *#R$5FA1.
 N $63C0 Print the HUD string to the upper screen.
-  $63C0,$03 #HTML(Call <a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/1601.html">CHAN_OPEN</a>
-. to open channel #N$02 (upper screen).)
+  $63C0,$03 Call #SKOOLKID$1601(CHAN_OPEN)
+. to open channel #N$02 (upper screen).
   $63C3,$03 Point #REGhl at #R$63E9.
   $63C6,$02 Set a counter in #REGb for the length of the string (#N$4F
 . characters).
@@ -1359,7 +1359,8 @@ N $6495 Percy is airborne so deplete the energy bar. Uses a slower frame delay
 N $649F Reset the frame counter and check if Percy is on a platform (energy
 . doesn't deplete while landed).
   $649F,$04 Write #N$00 to reset *#R$5FAB.
-  $64A3,$05 Return if *#R$5FAD is set, indicating Percy is landed on a platform.
+  $64A3,$05 Return if *#R$5FAD is set, indicating Percy has landed on a
+. platform.
 N $64A8 Deplete the energy bar by shifting pixels left. Scans rightward from
 . the current position to find the rightmost filled byte, then shifts it left
 . by one pixel.
@@ -1508,13 +1509,13 @@ c $6581 Print Character
 R $6581 A ASCII character
 R $6581 HL Target screen buffer location
   $6581,$01 Stash the screen buffer pointer on the stack.
-  $6582,$04 #HTML(#REGde=*<a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/5C36.html">CHARS</a>.)
+  $6582,$04 #REGde=*#SKOOLKID$5C36(CHARS).
 N $6586 Font data starts at character #N$20 (ASCII "SPACE"), so this allows us
 . to reference the data from a zero index.
   $6586,$02 Subtract #N$20 from the ASCII character input.
-N $6588 #HTML(<a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/5C36.html">CHARS</a>
+N $6588 #SKOOLKID$5C36(CHARS)
 . points #N$0100 bytes before the actual font data, so incrementing #REGd adds
-. #N$0100 to compensate.)
+. #N$0100 to compensate.
   $6588,$01 Increment #REGd by one (add #N$0100 to #REGde).
   $6589,$03 Set the ASCII character to print in #REGhl.
 N $658C Each ASCII character is #N$08 bytes of data, so this translates the
@@ -1630,8 +1631,8 @@ R $6621 HL Pointer to text
 R $6621 BC The length of the text to print
   $6621,$01 #REGa=*#REGhl.
   $6622,$02 Stash #REGhl and #REGbc on the stack temporarily.
-  $6624,$01 #HTML(Print to the screen using
-. <a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/0010.html">RST #N$10</a>.)
+  $6624,$01 Print to the screen using
+. #SKOOLKID$0010(RST #N$10).
   $6625,$02 Restore #REGbc and #REGhl from the stack.
   $6627,$01 Increment #REGhl by one.
   $6628,$02 Decrease the string length counter by one and loop back to #R$6621
@@ -1742,10 +1743,10 @@ M $66B5,$05 Set *#R$5FAA to #N$FF (mark Percy as carrying a worm).
 . mark this worm as collected.
   $66C2,$02 Stash #REGix on the stack.
 N $66C4 #HTML(#AUDIO0(collect-worm.wav)(#INCLUDE(CollectWorm)))
-  $66C4,$12 #HTML(Play a two-part collection sound effect by calling
-. <a rel="noopener nofollow" href="https://skoolkid.github.io/rom/asm/03B5.html">BEEP</a>
+  $66C4,$12 Play a two-part collection sound effect by calling
+. #SKOOLKID$03B5(BEEP)
 . with durations of #N($0064,$04,$04)/ #N($00C8,$04,$04) then
-. #N($0064,$04,$04)/ #N($0064,$04,$04).)
+. #N($0064,$04,$04)/ #N($0064,$04,$04).
   $66D6,$05 Restore #REGix, the room attribute pointer, worm counter and
 . position from the stack.
   $66DB,$04 Write #N$00 to clear *#R$5FA9.
@@ -1776,7 +1777,7 @@ M $66FB,$05 Set *#R$5FAC to #N$FF (enable worm drop).
 . carry is not set, increment to #N$0E for the alternate wiggle frame.
 @ $6726 label=Set_Worm_Sprite_Frame
   $6726,$03 Write the worm sprite frame index to *#REGix+#N$23.
-  $6729,$06 Jump to #R$6736 if *#R$5FAD (worm Y adjustment flag) is non-zero.
+  $6729,$06 Jump to #R$6736 if *#R$5FAD (landed on platform flag) is set.
   $672F,$07 Jump to #R$673E if Percy's Y position is not less than #N$90.
 @ $6736 label=Adjust_Worm_Y_Up
   $6736,$08 Subtract #N$04 from the worm Y position to adjust it upward.
@@ -2099,10 +2100,10 @@ N $68C7 Play the level complete sound effect.
   $68C7,$03 Call #R$693B.
   $68CA,$02 Decrease the step counter by one and loop back to
 . #R$68C7 until the sound is complete.
-  $68CC,$08 #HTML(Write #N$0F to; #LIST
-. { *<a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/5C48.html">BORDCR</a> }
+  $68CC,$08 Write #N$0F to; #LIST
+. { *#SKOOLKID$5C48(BORDCR) }
 . { *#R$5FBD }
-. LIST#)
+. LIST#
   $68D4,$04 Set border to #INK$01.
   $68D8,$02 Restore #REGix from the stack.
   $68DA,$03 Call #R$68F7.
@@ -2172,11 +2173,11 @@ N $6943 Pick a random border colour using the Memory Refresh Register.
   $6948,$01 #REGa=*#REGhl.
   $6949,$03 Write #REGa to *#R$5FB4.
   $694C,$02,b$01 Keep only bits 3-5.
-  $694E,$03 #HTML(Write #REGa to *<a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/5C48.html">BORDCR</a>.)
+  $694E,$03 Write #REGa to *#SKOOLKID$5C48(BORDCR).
 N $6951 Play a beep at the current pitch.
   $6951,$02 Restore pitch adjustment and pitch from the stack.
   $6953,$02 Stash the pitch and pitch adjustment on the stack.
-  $6955,$03 #HTML(Call <a rel="noopener nofollow" href="https://skoolkid.github.io/rom/asm/03B5.html">BEEP</a>.)
+  $6955,$03 Call #SKOOLKID$03B5(BEEP).
   $6958,$02 Restore the pitch adjustment and pitch from the stack.
 N $695A Lower the pitch for the next step by subtracting the pitch adjustment.
   $695A,$03 #REGbc=#N($000F,$04,$04).
@@ -2283,7 +2284,7 @@ N $69C6 Call the game handlers.
   $69D0,$03 Call #R$6DAB.
   $69D3,$03 Call #R$720F.
   $69D6,$08 Call #R$7082 if *#R$5FC5 is equal to #N$04.
-  $69DE,$07 Call #R$64BE if *#R$5FAD (worm Y adjustment flag) is set.
+  $69DE,$07 Call #R$64BE if *#R$5FAD (landed on platform flag) is set.
 N $69E5 Tidy up at end of frame.
   $69E5,$06 Copy *#R$5FB3 to *#R$6CC3.
   $69EB,$04 Write #N$00 to *#R$5FBE.
@@ -2344,8 +2345,8 @@ N $6A3E Red bird stole Percy's worm so return the worm to the room and play a
   $6A47,$02 Set a sound step counter in #REGb of #N$0A steps.
 @ $6A49 label=HandleRedBird_StolenSound
   $6A49,$03 Stash the step counter, pitch and duration on the stack.
-  $6A4C,$04 #HTML(#REGiy=<a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/5C3D.html">ERR_SP</a>.)
-  $6A50,$03 #HTML(Call <a rel="noopener nofollow" href="https://skoolkid.github.io/rom/asm/03B5.html">BEEP</a>.)
+  $6A4C,$04 #REGiy=#SKOOLKID$5C3D(ERR_SP).
+  $6A50,$03 Call #SKOOLKID$03B5(BEEP).
   $6A53,$01 Disable interrupts.
   $6A54,$02 Restore the duration and pitch from the stack.
   $6A56,$04 #REGhl=#N($0012,$04,$04) (raise the pitch for the next step).

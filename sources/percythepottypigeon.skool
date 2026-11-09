@@ -1,6 +1,6 @@
 @rom
 @start
-@expand=#DEF1(#SKOOLKID(addr)(name)#HTML(<a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/#EVAL({addr},16,4).html">){name}#HTML(</a>))
+@expand=#DEF1(#SKOOLKID(addr,anchor=0)(name)#HTML(<a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/#IF({{mode[base]}}==16)(hex/)asm/#IF({{mode[base]}}==16)(#EVAL({addr},16,4),#EVAL({addr})).html#IF({anchor})(#CHR(35)#IF({{mode[base]}}==16)(#EVAL({anchor},16,4),#EVAL({anchor})))">){name}#HTML(</a>))
 
 @org=$4000
 ; Loading Screen
@@ -370,8 +370,8 @@ c$5E24 LD A,($5FC5)  ; Load #REGa with *#R$5FC5.
 ; If none of the above matched, trigger an error (with an arbitrary error
 ; code).
 @label=PopulateRoomBuffer_Error
-*$5E6D RST $08       ; #HTML(Run the ERROR_1 routine:
-                     ; <a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/0008.html">RST #N$08</a>.)
+*$5E6D RST $08       ; Run the ERROR_1 routine:
+                     ; #SKOOLKID$0008(RST #N$08).
  $5E6E DEFB $04      ; Error code: #N$04 ("Out of memory").
 ; Command #N$00: no-op. Skip this byte and continue parsing.
 @label=Command00_Skip
@@ -974,8 +974,8 @@ c$5FC6 LD A,($5FC5)  ; {#REGd=*#R$5FC5.
 ; Used when the table index >= #N$11 in #R$5FC6, and when an invalid tile set
 ; is requested in #R$5E72.
 @label=Raise_Table_Error
-c$5FE7 RST $08       ; #HTML(Run the ERROR_1 routine:
-                     ; <a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/0008.html">RST #N$08</a>.)
+c$5FE7 RST $08       ; Run the ERROR_1 routine:
+                     ; #SKOOLKID$0008(RST #N$08).
  $5FE8 DEFB $0A      ; Error code: #N$0A ("Invalid argument").
 
 ; Main Game Loop
@@ -1159,8 +1159,7 @@ c$5FE9 LD A,($5FA7)    ; {If *#R$5FA7 is unset, call #R$653D.
  $60CA ADD HL,BC       ; }
  $60CB LD ($5FB7),HL   ; Write #REGhl to *#R$5FB7.
  $60CE LD DE,$0004     ; #REGde=#N($0004,$04,$04).
- $60D1 CALL $03B5      ; #HTML(Call <a rel="noopener nofollow"
-                       ; href="https://skoolkid.github.io/rom/asm/03B5.html">BEEP</a>.)
+ $60D1 CALL $03B5      ; Call #SKOOLKID$03B5(BEEP).
  $60D4 DI              ; Disable interrupts.
  $60D5 POP IX          ; Restore #REGix from the stack.
  $60D7 JR $610E        ; Jump to #R$610E.
@@ -1217,8 +1216,7 @@ c$5FE9 LD A,($5FA7)    ; {If *#R$5FA7 is unset, call #R$653D.
  $6132 LD ($5FB7),HL   ; }
  $6135 LD DE,$0004     ; #REGde=#N($0004,$04,$04).
  $6138 PUSH IX         ; Stash #REGix on the stack.
- $613A CALL $03B5      ; #HTML(Call <a rel="noopener nofollow"
-                       ; href="https://skoolkid.github.io/rom/asm/03B5.html">BEEP</a>.)
+ $613A CALL $03B5      ; Call #SKOOLKID$03B5(BEEP).
  $613D POP IX          ; Restore #REGix from the stack.
  $613F LD (IX+$02),$FF ; Write #N$FF to *#REGix+#N$02.
 ; Override input and force all directions inactive and only allow down.
@@ -1707,7 +1705,7 @@ c$6338 LD A,($5FB0)  ; #REGa=*#R$5FB0.
 ; right.
 @label=UpdatePercyAnimation_ChooseFrame
 *$6377 LD A,(IX+$01) ; {Jump to #R$639E if Percy's Y position (*#REGix+#N$01) is on the
- $637A CP $90        ; ground, or if *#R$5FAD is set (and percy has landed on a platform).
+ $637A CP $90        ; ground, or if *#R$5FAD is set (and Percy has landed on a platform).
  $637C JR NC,$639E   ;
  $637E LD A,($5FAD)  ;
  $6381 OR A          ;
@@ -1758,8 +1756,8 @@ c$6338 LD A,($5FB0)  ; #REGa=*#R$5FB0.
 c$63BB LD A,$01      ; {Write #N$01 to *#R$5FA1.
  $63BD LD ($5FA1),A  ; }
 ; Print the HUD string to the upper screen.
- $63C0 CALL $1601    ; #HTML(Call <a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/1601.html">CHAN_OPEN</a>
-                     ; to open channel #N$02 (upper screen).)
+ $63C0 CALL $1601    ; Call #SKOOLKID$1601(CHAN_OPEN)
+                     ; to open channel #N$02 (upper screen).
  $63C3 LD HL,$63E9   ; Point #REGhl at #R$63E9.
  $63C6 LD B,$4F      ; Set a counter in #REGb for the length of the string (#N$4F
                      ; characters).
@@ -1945,8 +1943,8 @@ c$6480 LD HL,$52EC   ; #REGhl=#N$52EC (screen buffer location for the energy
 ; doesn't deplete while landed).
  $649F XOR A         ; {Write #N$00 to reset *#R$5FAB.
  $64A0 LD ($5FAB),A  ; }
- $64A3 LD A,($5FAD)  ; {Return if *#R$5FAD is set, indicating Percy is landed
- $64A6 OR A          ; on a platform.
+ $64A3 LD A,($5FAD)  ; {Return if *#R$5FAD is set, indicating Percy has landed on a
+ $64A6 OR A          ; platform.
  $64A7 RET NZ        ; }
 ; Deplete the energy bar by shifting pixels left. Scans rightward from
 ; the current position to find the rightmost filled byte, then shifts it left
@@ -2161,14 +2159,13 @@ c$655C LD HL,$50F0   ; #REGhl=#N$50F0 (screen buffer location).
 ; HL Target screen buffer location
 @label=PrintCharacter
 c$6581 PUSH HL       ; Stash the screen buffer pointer on the stack.
- $6582 LD DE,($5C36) ; #HTML(#REGde=*<a rel="noopener nofollow"
-                     ; href="https://skoolkit.ca/disassemblies/rom/hex/asm/5C36.html">CHARS</a>.)
+ $6582 LD DE,($5C36) ; #REGde=*#SKOOLKID$5C36(CHARS).
 ; Font data starts at character #N$20 (ASCII "SPACE"), so this allows us
 ; to reference the data from a zero index.
  $6586 SUB $20       ; Subtract #N$20 from the ASCII character input.
-; #HTML(<a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/5C36.html">CHARS</a>
+; #SKOOLKID$5C36(CHARS)
 ; points #N$0100 bytes before the actual font data, so incrementing #REGd adds
-; #N$0100 to compensate.)
+; #N$0100 to compensate.
  $6588 INC D         ; Increment #REGd by one (add #N$0100 to #REGde).
  $6589 LD L,A        ; {Set the ASCII character to print in #REGhl.
  $658A LD H,$00      ; }
@@ -2317,8 +2314,8 @@ t$660D DEFM "PressENTER to  Start" ; #UDGTABLE
 c$6621 LD A,(HL)     ; #REGa=*#REGhl.
  $6622 PUSH HL       ; {Stash #REGhl and #REGbc on the stack temporarily.
  $6623 PUSH BC       ; }
- $6624 RST $10       ; #HTML(Print to the screen using
-                     ; <a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/0010.html">RST #N$10</a>.)
+ $6624 RST $10       ; Print to the screen using
+                     ; #SKOOLKID$0010(RST #N$10).
  $6625 POP BC        ; {Restore #REGbc and #REGhl from the stack.
  $6626 POP HL        ; }
  $6627 INC HL        ; Increment #REGhl by one.
@@ -2481,10 +2478,10 @@ c$66A8 LD A,(IX+$01) ; {Jump to #R$666A if Percy's Y position is less than #N$79
  $66C0 LD (HL),$1E   ; }
  $66C2 PUSH IX       ; Stash #REGix on the stack.
 ; #HTML(#AUDIO0(collect-worm.wav)(#INCLUDE(CollectWorm)))
- $66C4 LD DE,$0064   ; {#HTML(Play a two-part collection sound effect by calling
- $66C7 LD HL,$00C8   ; <a rel="noopener nofollow" href="https://skoolkid.github.io/rom/asm/03B5.html">BEEP</a>
+ $66C4 LD DE,$0064   ; {Play a two-part collection sound effect by calling
+ $66C7 LD HL,$00C8   ; #SKOOLKID$03B5(BEEP)
  $66CA CALL $03B5    ; with durations of #N($0064,$04,$04)/ #N($00C8,$04,$04) then
- $66CD LD HL,$0064   ; #N($0064,$04,$04)/ #N($0064,$04,$04).)
+ $66CD LD HL,$0064   ; #N($0064,$04,$04)/ #N($0064,$04,$04).
  $66D0 LD DE,$0064   ;
  $66D3 CALL $03B5    ; }
  $66D6 POP IX        ; {Restore #REGix, the room attribute pointer, worm counter and
@@ -2540,8 +2537,8 @@ c$66E1 LD A,($5FAA)   ; {Return if *#R$5FAA (worm carrying flag) is zero.
  $6725 INC C          ; }
 @label=Set_Worm_Sprite_Frame
 *$6726 LD (IX+$23),C  ; Write the worm sprite frame index to *#REGix+#N$23.
- $6729 LD A,($5FAD)   ; {Jump to #R$6736 if *#R$5FAD (worm Y adjustment flag)
- $672C OR A           ; is non-zero.
+ $6729 LD A,($5FAD)   ; {Jump to #R$6736 if *#R$5FAD (landed on platform flag)
+ $672C OR A           ; is set.
  $672D JR NZ,$6736    ; }
  $672F LD A,(IX+$01)  ; {Jump to #R$673E if Percy's Y position is not less than
  $6732 CP $90         ; #N$90.
@@ -2979,10 +2976,10 @@ c$68B8 LD HL,$5FB2   ; {Decrease *#R$5FB2 by one.
 *$68C7 CALL $693B    ; Call #R$693B.
  $68CA DJNZ $68C7    ; Decrease the step counter by one and loop back to
                      ; #R$68C7 until the sound is complete.
- $68CC LD A,$0F      ; {#HTML(Write #N$0F to; #LIST
- $68CE LD ($5C48),A  ; { *<a rel="noopener nofollow" href="https://skoolkit.ca/disassemblies/rom/hex/asm/5C48.html">BORDCR</a> }
+ $68CC LD A,$0F      ; {Write #N$0F to; #LIST
+ $68CE LD ($5C48),A  ; { *#SKOOLKID$5C48(BORDCR) }
  $68D1 LD ($5FBD),A  ; { *#R$5FBD }
-                     ; LIST#)}
+                     ; LIST#}
  $68D4 LD A,$01      ; {Set border to #INK$01.
  $68D6 OUT ($FE),A   ; }
  $68D8 POP IX        ; Restore #REGix from the stack.
@@ -3082,15 +3079,13 @@ c$693B PUSH BC       ; {Stash the step counter, pitch and pitch adjustment on
  $6948 LD A,(HL)     ; #REGa=*#REGhl.
  $6949 LD ($5FB4),A  ; Write #REGa to *#R$5FB4.
  $694C AND %00111000 ; Keep only bits 3-5.
- $694E LD ($5C48),A  ; #HTML(Write #REGa to *<a rel="noopener nofollow"
-                     ; href="https://skoolkit.ca/disassemblies/rom/hex/asm/5C48.html">BORDCR</a>.)
+ $694E LD ($5C48),A  ; Write #REGa to *#SKOOLKID$5C48(BORDCR).
 ; Play a beep at the current pitch.
  $6951 POP DE        ; {Restore pitch adjustment and pitch from the stack.
  $6952 POP HL        ; }
  $6953 PUSH HL       ; {Stash the pitch and pitch adjustment on the stack.
  $6954 PUSH DE       ; }
- $6955 CALL $03B5    ; #HTML(Call <a rel="noopener nofollow"
-                     ; href="https://skoolkid.github.io/rom/asm/03B5.html">BEEP</a>.)
+ $6955 CALL $03B5    ; Call #SKOOLKID$03B5(BEEP).
  $6958 POP DE        ; {Restore the pitch adjustment and pitch from the stack.
  $6959 POP HL        ; }
 ; Lower the pitch for the next step by subtracting the pitch adjustment.
@@ -3229,7 +3224,7 @@ c$69A7 DI            ; Disable interrupts.
  $69D6 LD A,($5FC5)  ; {Call #R$7082 if *#R$5FC5 is equal to #N$04.
  $69D9 CP $04        ;
  $69DB CALL Z,$7082  ; }
- $69DE LD A,($5FAD)  ; {Call #R$64BE if *#R$5FAD (worm Y adjustment flag) is
+ $69DE LD A,($5FAD)  ; {Call #R$64BE if *#R$5FAD (landed on platform flag) is
  $69E1 OR A          ; set.
  $69E2 CALL NZ,$64BE ; }
 ; Tidy up at end of frame.
@@ -3314,10 +3309,8 @@ c$69F7 LD A,($5FBB)    ; {Jump to #R$6A1C if *#R$5FBB is not set.
 *$6A49 PUSH BC         ; {Stash the step counter, pitch and duration on the
  $6A4A PUSH HL         ; stack.
  $6A4B PUSH DE         ; }
- $6A4C LD IY,$5C3D     ; #HTML(#REGiy=<a rel="noopener nofollow"
-                       ; href="https://skoolkit.ca/disassemblies/rom/hex/asm/5C3D.html">ERR_SP</a>.)
- $6A50 CALL $03B5      ; #HTML(Call <a rel="noopener nofollow"
-                       ; href="https://skoolkid.github.io/rom/asm/03B5.html">BEEP</a>.)
+ $6A4C LD IY,$5C3D     ; #REGiy=#SKOOLKID$5C3D(ERR_SP).
+ $6A50 CALL $03B5      ; Call #SKOOLKID$03B5(BEEP).
  $6A53 DI              ; Disable interrupts.
  $6A54 POP DE          ; {Restore the duration and pitch from the stack.
  $6A55 POP HL          ; }
